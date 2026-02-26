@@ -17,4 +17,40 @@
     </article>
     {{ partial "isso.html" . }}
   </main>
+  {{/* #region agent log — inline image load check (hypotheses H1–H5) */}}
+  <script>
+    (function() {
+      var article = document.querySelector('article.post-content');
+      if (!article) return;
+      var imgs = article.querySelectorAll('img');
+      var featured = article.querySelector('.post-featured-image img');
+      var results = [];
+      var pending = 0;
+      imgs.forEach(function(img) {
+        var isFeatured = featured && img === featured;
+        var src = img.getAttribute('src') || '';
+        var entry = { src: src, isFeatured: isFeatured, loaded: null };
+        results.push(entry);
+        pending++;
+        img.addEventListener('load', function() { entry.loaded = true; if (--pending === 0) send(); });
+        img.addEventListener('error', function() { entry.loaded = false; if (--pending === 0) send(); });
+      });
+      if (pending === 0) send();
+      function send() {
+        fetch('http://127.0.0.1:7686/ingest/e7256267-8ea5-4253-8206-dd4b740049c5', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'a98cbd' },
+          body: JSON.stringify({
+            sessionId: 'a98cbd',
+            location: 'single.html:inline-images',
+            message: 'Post content images load check',
+            data: { results: results, inlineCount: results.filter(function(r) { return !r.isFeatured; }).length },
+            timestamp: Date.now(),
+            hypothesisId: 'H1-H5'
+          })
+        }).catch(function() {});
+      }
+    })();
+  </script>
+  {{/* #endregion */}}
 {{ end }}
