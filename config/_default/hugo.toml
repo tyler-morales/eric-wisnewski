@@ -1,3 +1,4 @@
+# No theme: site uses layouts/ only. Do not add theme = '' or Cloudflare/CI will fail.
 baseURL = 'https://ericwisnewski.com'
 languageCode = 'en-us'
 title = 'Eric Wisnewski'
