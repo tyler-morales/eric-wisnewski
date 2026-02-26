@@ -8,6 +8,8 @@
 - [x] Git tracking: init, remote `https://github.com/tyler-morales/eric-wisnewski.git`, initial commit pushed to `main`.
 - [x] Robustness: CSS in assets with clamp() brand header, img/article rules, fingerprinting; head partial (OG/Twitter); hugo.toml description; Isso noscript fallback; README maintainer docs; netlify.toml build command.
 - [x] Migrated from Decap CMS to Pages CMS: `.pages.yml` at repo root; content edited via https://app.pagescms.org/ (GitHub); removed `static/admin/` and `public/admin/`; added `slug` to post front matter and archetype for Pages CMS schema alignment.
+- [x] Cloudflare Pages build fix: removed empty `theme = ''` from `config/_default/hugo.toml` so Hugo uses local layouts only (no theme module lookup).
+- [x] Pages CMS rich-text body: Body field in `.pages.yml` set to `type: rich-text` (TipTap WYSIWYG: formatting, links, inline images from media library); Hugo `markup.goldmark.renderer.unsafe = true` in `config/_default/hugo.toml` so stored HTML renders.
 
 ## Later
 - [ ] Set Isso server URL in `layouts/partials/isso.html` (replace `your-isso-domain.com` with your instance).

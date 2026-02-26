@@ -1,12 +1,16 @@
 baseURL = 'https://ericwisnewski.com'
 languageCode = 'en-us'
 title = 'Eric Wisnewski'
-theme = ''
 
 [imaging]
   quality = 85
   resampleFilter = "Lanczos"
   hint = "picture"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
 
 [params]
   description = 'Eric Wisnewski — personal site and blog'
