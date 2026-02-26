@@ -1,0 +1,9 @@
+baseURL = 'https://ericwisnewski.com'
+languageCode = 'en-us'
+title = 'Eric Wisnewski'
+theme = ''
+
+[params]
+  description = 'Eric Wisnewski — personal site and blog'
+  nav_school_sheets = '/school-sheets/'
+  nav_map = '/map/'

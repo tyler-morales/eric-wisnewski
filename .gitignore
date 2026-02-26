@@ -1,0 +1,4 @@
+/public/
+/resources/_gen/
+.cursor/
+.hugo_build.lock

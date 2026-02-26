@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Lang }}">
+  <head>
+    {{ partial "head.html" . }}
+    <title>{{ block "title" . }}{{ .Site.Title }}{{ end }}</title>
+    {{ $style := resources.Get "css/style.css" | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $style.Permalink }}" integrity="{{ $style.Data.Integrity }}">
+  </head>
+  <body>
+    {{ block "main" . }}{{ end }}
+  </body>
+</html>

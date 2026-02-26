@@ -1,0 +1,185 @@
+/* Forever-Stable Hugo Blog — Brutalist-minimalist, vanilla CSS only */
+
+:root {
+  --bg: #fff;
+  --text: #000;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Header: Big Name — clamp() for responsive scaling without media queries */
+.site-header h1.brand-name {
+  font-size: clamp(3rem, 12vw, 10rem);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  margin: 0;
+  font-weight: 900;
+  color: #000;
+  padding: 0.5rem 1rem;
+}
+
+.site-header h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-header h1 a:hover,
+.site-header h1 a:focus-visible {
+  text-decoration: underline;
+}
+
+.site-header h1 a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+/* Ensure images never blow out the layout */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Maintain a comfortable reading width for blog posts */
+article {
+  max-width: 70ch;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Nav: horizontal */
+.site-nav {
+  padding: 0.5rem 1rem 1.5rem;
+}
+
+.site-nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.site-nav a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.site-nav a:hover {
+  text-decoration: underline;
+}
+
+.site-nav a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+/* Main content area */
+main {
+  padding: 1rem;
+  max-width: 90ch;
+  margin: 0 auto;
+}
+
+/* Homepage: post list */
+.post-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.post-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.post-list li:last-child {
+  border-bottom: 0;
+}
+
+.post-list a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.post-list a:hover {
+  text-decoration: underline;
+}
+
+.post-list a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+.post-list .post-date {
+  display: block;
+  font-size: 0.875rem;
+  color: #333;
+  margin-top: 0.25rem;
+}
+
+/* Single post: long-form reading */
+article.post-content {
+  max-width: 70ch;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+article.post-content > header time {
+  display: block;
+  font-size: 0.875rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+article.post-content h1,
+article.post-content h2,
+article.post-content h3 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.25;
+}
+
+article.post-content p {
+  margin: 0 0 1em;
+}
+
+article.post-content a {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+article.post-content a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+/* Isso comments section */
+#isso-thread {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ccc;
+}
