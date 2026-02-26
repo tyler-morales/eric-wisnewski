@@ -5,4 +5,4 @@ date: 2026-02-26T10:25:00Z
 draft: false
 image: /images/uploads/wizzz.jpg
 ---
-Hi Eric Wizzzz
+Hi Eric Wizzzz. This is a test
