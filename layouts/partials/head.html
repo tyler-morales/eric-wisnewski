@@ -12,9 +12,14 @@
   {{ $imgPath := strings.TrimPrefix . "/" }}
   {{ if hasPrefix . "/images/uploads/" }}
     {{ with resources.Get $imgPath }}
-      {{ $og := .Fill "1200x630" }}
-      <meta property="og:image" content="{{ $og.Permalink | absURL }}">
-      <meta name="twitter:image" content="{{ $og.Permalink | absURL }}">
+      {{ if eq .ResourceType "image" }}
+        {{ $og := .Fill "1200x630" }}
+        <meta property="og:image" content="{{ $og.Permalink | absURL }}">
+        <meta name="twitter:image" content="{{ $og.Permalink | absURL }}">
+      {{ else }}
+        <meta property="og:image" content="{{ .Permalink | absURL }}">
+        <meta name="twitter:image" content="{{ .Permalink | absURL }}">
+      {{ end }}
     {{ else }}
       <meta property="og:image" content="{{ . | absURL }}">
       <meta name="twitter:image" content="{{ . | absURL }}">

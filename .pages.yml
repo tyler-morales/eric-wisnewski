@@ -1,9 +1,11 @@
 # Pages CMS — https://app.pagescms.org/
 # Edit content and media via GitHub; config drives the CMS UI.
 
+# Restrict to web-friendly formats to avoid huge files that can trigger 504 on upload.
 media:
   input: assets/images/uploads
   output: /images/uploads
+  extensions: [jpg, jpeg, png, webp, gif]
 
 content:
   - name: posts
@@ -33,8 +35,10 @@ content:
         label: Publish Date
         type: date
         required: true
+        description: Use a date/time that saves as ISO 8601 (e.g. 2026-02-26T10:25:00Z). If the build fails with "date front matter field is not a parsable date", re-save after picking the date again so the CMS writes a valid format.
         options:
           time: true
+          format: "yyyy-MM-dd'T'HH:mm"
       - name: draft
         label: Draft
         type: boolean
@@ -43,6 +47,9 @@ content:
         label: Featured Image
         type: image
         required: false
+        description: Pick from the media library or upload via the CMS.
+        options:
+          extensions: [jpg, jpeg, png, webp, gif]
       - name: body
         label: Body
         type: rich-text
