@@ -1,0 +1,24 @@
+{{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "header.html" . }}
+  <main class="map-page" id="main-content">
+    <h1 class="visually-hidden">{{ .Title }}</h1>
+    {{ with .Site.Params.map_viewer_url }}
+    <p class="map-origin">
+      <a href="{{ . }}" target="_blank" rel="noopener noreferrer" class="map-origin-link">Open map in Google Maps</a>
+    </p>
+    {{ end }}
+    <div class="map-embed-wrapper">
+      <iframe
+        src="https://www.google.com/maps/d/embed?mid=1iRNx3DgEm5TJJmN1A4xM0uienUMFfqc&ehbc=2E312F"
+        width="640"
+        height="480"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Google Maps"
+      ></iframe>
+    </div>
+  </main>
+{{ end }}

@@ -28,23 +28,26 @@ Deploy the `public/` directory to any static host (GitHub Pages, Netlify, Vercel
 
 ## Images (CMS and Markdown)
 
-- **Where to upload:** In Pages CMS, images are stored under `assets/images/uploads/`. This path is required so Hugo can process them (resize, WebP, fingerprint). Do not put CMS uploads in `static/`.
+- **Where to put images:** Images under `/images/uploads/` are served from `static/images/uploads/` so the Cloudflare build does not hit the resource publish error. The CMS writes to `assets/images/uploads/`; copy those files to `static/images/uploads/` so the same paths work (or add new images to `static/images/uploads/`).
 - **In post body (rich-text):** The post Body in Pages CMS is a rich-text (WYSIWYG) field. Use the editor toolbar or slash commands (`/`) to add **links** and **inline images**; “insert image” uses the same media library (`assets/images/uploads/`). Body content is stored as HTML and rendered by Hugo (Goldmark with raw HTML enabled). Inline body images are output as `<img>` tags; the responsive picture/WebP pipeline applies to images inserted via Markdown syntax in non-CMS workflows.
-- **Featured / share image:** Set the `image` field in the post’s front matter (e.g. in the CMS “Featured Image” or in the YAML as `image: /images/uploads/hero.jpg`). That image is used for `og:image` and `twitter:image` when sharing the post, and is resized to 1200×630 for social cards.
+- **Featured / share image:** Set the `image` field in the post’s front matter (e.g. in the CMS “Featured Image” or in the YAML as `image: /images/uploads/hero.jpg`). That URL is used for `og:image` and `twitter:image`; the file must exist in `static/images/uploads/`.
 ## Change the School Sheets or Map links
 
 Edit `config/_default/hugo.toml`. Under `[params]` you’ll see:
 
-- `nav_school_sheets` — URL for the “School Sheets” link in the main nav (default: `/school-sheets/`)
-- `nav_map` — URL for the “Map” link in the main nav (default: `/map/`)
+- `school_sheets_csv_url` — CSV URL for the School Sheets data. The `/school-sheets/` page fetches this at build time and displays it in a table. Use **File > Share > Publish to web** in Google Sheets and choose **Comma-separated values (.csv)** to get a permanent URL, or use the export URL if the sheet is shared "Anyone with the link can view": `https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={GID}`.
+- `nav_school_sheets` — URL for the "School Sheets" link in the main nav (default: `/school-sheets/`).
+- `nav_map` — URL for the "Map" link in the main nav (default: `/map/`)
 
-Update these values and rebuild. They’re used in the site header navigation.
+Update these values and rebuild. Nav links are used in the site header; the CSV URL is read by Hugo's `resources.GetRemote` when building the School Sheets page.
 
 ## Editing content (Pages CMS)
 
 Content and media are edited via **Pages CMS**. Sign in with GitHub at [https://app.pagescms.org/](https://app.pagescms.org/), open this repository and branch, and use the configured collections (Posts) and media (uploads). The post **Body** is a rich-text editor: you can format text (bold, italic, headings, lists, blockquotes, code), add links, and insert images from the media library. Type `/` in the body for slash commands. Configuration lives in `.pages.yml` at the repo root.
 
-**If the Cloudflare build fails** with *"date front matter field is not a parsable date"*: the CMS may have saved the Publish Date in a format Hugo doesn’t accept. Open the post in the CMS, set **Publish Date** again (e.g. pick the same date/time), save, and let the site rebuild. Hugo expects ISO 8601 (e.g. `2026-02-26T10:25:00Z`).
+**If the Cloudflare build fails** with *"date front matter field is not a parsable date"*: Hugo requires a full RFC3339 date (with seconds and timezone). In the CMS, set **Publish Date** again and save so it writes e.g. `2026-02-26T10:25:00Z`. The `.pages.yml` date format is set to `yyyy-MM-dd'T'HH:mm:ss'Z'` for this.
+
+**Images for og:image / build:** Featured and body images under `/images/uploads/` are served from `static/images/uploads/` (no Hugo resource pipeline) so the build does not hit "Failed to publish Resource: open public: is a directory". When adding images via the CMS (which writes to `assets/images/uploads/`), copy them to `static/images/uploads/` so the URLs resolve, or keep a single source in static if you prefer.
 
 ## Tech notes
 

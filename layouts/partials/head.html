@@ -9,23 +9,7 @@
 <meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}">
 <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{ if .IsPage }}{{ .Summary }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}">
 {{ with .Params.image }}
-  {{ $imgPath := strings.TrimPrefix . "/" }}
-  {{ if hasPrefix . "/images/uploads/" }}
-    {{ with resources.Get $imgPath }}
-      {{ if eq .ResourceType "image" }}
-        {{ $og := .Fill "1200x630" }}
-        <meta property="og:image" content="{{ $og.Permalink | absURL }}">
-        <meta name="twitter:image" content="{{ $og.Permalink | absURL }}">
-      {{ else }}
-        <meta property="og:image" content="{{ .Permalink | absURL }}">
-        <meta name="twitter:image" content="{{ .Permalink | absURL }}">
-      {{ end }}
-    {{ else }}
-      <meta property="og:image" content="{{ . | absURL }}">
-      <meta name="twitter:image" content="{{ . | absURL }}">
-    {{ end }}
-  {{ else }}
-    <meta property="og:image" content="{{ . | absURL }}">
-    <meta name="twitter:image" content="{{ . | absURL }}">
-  {{ end }}
+  {{/* Use URL only to avoid "Failed to publish Resource: open public: is a directory" (asset resource can have empty publish path in some Hugo/env). Image must exist under static/images/uploads/ to be served. */}}
+  <meta property="og:image" content="{{ . | absURL }}">
+  <meta name="twitter:image" content="{{ . | absURL }}">
 {{ end }}

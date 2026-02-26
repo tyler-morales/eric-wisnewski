@@ -2,8 +2,11 @@
   <h1 class="brand-name"><a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a></h1>
   <nav class="site-nav" aria-label="Main navigation">
     <ul>
-      <li><a href="{{ .Site.Params.nav_school_sheets | default "/school-sheets/" }}">School Sheets</a></li>
-      <li><a href="{{ .Site.Params.nav_map | default "/map/" }}">Map</a></li>
+      <li><a href="{{ .Site.Params.nav_school_sheets | default " /school-sheets/" }}"{{ if hasPrefix
+          (.Site.Params.nav_school_sheets | default "" ) "http" }} target="_blank" rel="noopener noreferrer" {{ end
+          }}>List of College Stadiums</a></li>
+      <li><a href="{{ .Site.Params.nav_map | default " /map/" }}"{{ if hasPrefix (.Site.Params.nav_map | default ""
+          ) "http" }} target="_blank" rel="noopener noreferrer" {{ end }}>Map</a></li>
     </ul>
   </nav>
 </header>

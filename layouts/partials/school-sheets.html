@@ -1,0 +1,65 @@
+{{ $data := slice }}
+{{ $url := .Site.Params.school_sheets_csv_url }}
+{{ if $url }}
+{{ $opts := dict "timeout" "10s" }}
+{{ with try (resources.GetRemote $url $opts) }}
+{{ with .Err }}
+{{ warnf "List of College Stadiums: failed to fetch CSV: %s" . }}
+{{ else with .Value }}
+{{ $opts := dict "targetType" "slice" }}
+{{ $parsed := .Content | transform.Unmarshal $opts }}
+{{ if $parsed }}
+{{ $data = $parsed }}
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}
+
+{{ if $data }}
+{{ $viewURL := .Site.Params.school_sheets_view_url }}
+{{ if $viewURL }}
+<p class="school-sheets-origin">
+  <a href="{{ $viewURL }}" target="_blank" rel="noopener noreferrer" class="school-sheets-origin-link">View original in
+    Google Sheets</a>
+</p>
+{{ end }}
+{{ $headers := index $data 0 }}
+<div class="school-sheets-toolbar" role="search" aria-label="Filter school table">
+  <label for="school-sheets-search" class="visually-hidden">Filter table by school, city, stadium, or other
+    column</label>
+  <input type="search" id="school-sheets-search" class="school-sheets-search"
+    placeholder="Search schools, city, stadium…" autocomplete="off" aria-describedby="school-sheets-count">
+  <span id="school-sheets-count" class="school-sheets-count" aria-live="polite"></span>
+</div>
+<div class="school-sheets-wrapper" role="region" aria-label="College basketball schools data">
+  <table class="school-sheets-table" id="school-sheets-table">
+    <caption class="visually-hidden">College basketball schools: number, school, city, stadium, arena rating, fan base,
+      campus, notes</caption>
+    <thead>
+      <tr>
+        {{ range $i, $h := $headers }}
+        {{ if ne $h "Check" }}
+        {{ $isGrade := or (eq $h "Arena Rating") (eq $h "Fan Base") (eq $h "Campus") }}
+        <th scope="col" class="school-sheets-th" data-col="{{ $i }}" data-sortable role="columnheader" tabindex="0"
+          aria-sort="none" {{ if $isGrade }} data-grade="true" {{ end }}>{{ $h }}</th>
+        {{ end }}
+        {{ end }}
+      </tr>
+    </thead>
+    <tbody>
+      {{ range $data | after 1 }}
+      <tr class="school-sheets-row">
+        {{ range $i, $cell := . }}
+        {{ if ne (index $headers $i) "Check" }}
+        <td data-col="{{ $i }}" data-value="{{ $cell }}" data-label="{{ index $headers $i }}">{{ $cell }}</td>
+        {{ end }}
+        {{ end }}
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>
+{{ else }}
+<p class="school-sheets-fallback">Data temporarily unavailable. Ensure the sheet is published to the web (File &gt;
+  Share &gt; Publish to web, CSV) or shared so the CSV URL is publicly readable.</p>
+{{ end }}

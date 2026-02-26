@@ -1,38 +1,12 @@
 {{/*
-  Render hook for markdown images. Uploads under /images/uploads/ get responsive
-  <picture> with WebP; all others get a simple <img>.
+  Render hook for markdown images. Use simple <img> for /images/uploads/ to avoid
+  "Failed to publish Resource: open public: is a directory" (asset resource publish path bug).
+  Images under static/images/uploads/ are served as-is. Other destinations get simple <img>.
 */}}
-{{ $path := strings.TrimPrefix .Destination "/" }}
-{{ $res := resources.Get $path }}
-{{ if and (hasPrefix .Destination "/images/uploads/") $res }}
-  {{ $widths := slice 480 768 1024 1280 }}
-  {{ $srcSet := slice }}
-  {{ $srcSetWebP := slice }}
-  {{ range $widths }}
-    {{ $r := $res.Resize (printf "%dx" .) }}
-    {{ $rWebP := $res.Resize (printf "%dx webp" .) }}
-    {{ $srcSet = $srcSet | append (printf "%s %dw" $r.Permalink .) }}
-    {{ $srcSetWebP = $srcSetWebP | append (printf "%s %dw" $rWebP.Permalink .) }}
-  {{ end }}
-  {{ $fallback := $res.Resize "480x" }}
-  <picture>
-    <source type="image/webp" srcset="{{ delimit $srcSetWebP ", " }}">
-    <img
-      src="{{ $fallback.Permalink }}"
-      srcset="{{ delimit $srcSet ", " }}"
-      sizes="(max-width: 70ch) 100vw, 70ch"
-      loading="lazy"
-      decoding="async"
-      alt="{{ .PlainText }}"
-      {{ with .Title }}title="{{ . }}"{{ end }}
-    >
-  </picture>
-{{ else }}
-  <img
-    src="{{ .Destination | safeURL }}"
-    alt="{{ .PlainText }}"
-    {{ with .Title }}title="{{ . }}"{{ end }}
-    loading="lazy"
-    decoding="async"
-  >
-{{ end }}
+<img
+  src="{{ .Destination | safeURL }}"
+  alt="{{ .PlainText }}"
+  {{ with .Title }}title="{{ . }}"{{ end }}
+  loading="lazy"
+  decoding="async"
+>

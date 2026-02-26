@@ -15,5 +15,11 @@ title = 'Eric Wisnewski'
 
 [params]
   description = 'Eric Wisnewski — personal site and blog'
+  # CSV URL for School Sheets page (File > Share > Publish to web, or export URL if sheet is public)
+  school_sheets_csv_url = 'https://docs.google.com/spreadsheets/d/1fyJS_hWWZw4gu_1VYxgz2Laetw5az1c2LPuvCgHrl1U/export?format=csv&gid=0'
+  # Link to open the sheet in Google Sheets (optional; used for "View original" on /school-sheets/)
+  school_sheets_view_url = 'https://docs.google.com/spreadsheets/d/1fyJS_hWWZw4gu_1VYxgz2Laetw5az1c2LPuvCgHrl1U/edit'
   nav_school_sheets = '/school-sheets/'
   nav_map = '/map/'
+  # Link to open the map in Google Maps (optional; used for "View original" on /map/)
+  map_viewer_url = 'https://www.google.com/maps/d/viewer?mid=1iRNx3DgEm5TJJmN1A4xM0uienUMFfqc'

@@ -35,10 +35,10 @@ content:
         label: Publish Date
         type: date
         required: true
-        description: Use a date/time that saves as ISO 8601 (e.g. 2026-02-26T10:25:00Z). If the build fails with "date front matter field is not a parsable date", re-save after picking the date again so the CMS writes a valid format.
+        description: Use a date/time that saves as ISO 8601 with seconds (e.g. 2026-02-26T10:25:00Z). Hugo requires RFC3339; missing seconds can cause "date front matter field is not a parsable date".
         options:
           time: true
-          format: "yyyy-MM-dd'T'HH:mm"
+          format: "yyyy-MM-dd'T'HH:mm:ss'Z'"
       - name: draft
         label: Draft
         type: boolean

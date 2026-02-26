@@ -183,3 +183,267 @@ article.post-content a:focus-visible {
   padding-top: 1.5rem;
   border-top: 1px solid #ccc;
 }
+
+/* Visually hidden but available to screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Map page: full-width embedded map */
+.map-page {
+  max-width: none;
+  padding: 1rem;
+}
+
+.map-origin {
+  margin-bottom: 1rem;
+}
+
+.map-origin-link {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.map-origin-link:hover,
+.map-origin-link:focus-visible {
+  text-decoration: none;
+}
+
+.map-origin-link:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.map-embed-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  aspect-ratio: 4 / 3;
+  min-height: 360px;
+}
+
+.map-embed-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* School Sheets page: data table from Google Sheets CSV */
+.school-sheets-page {
+  max-width: min(1400px, 100%);
+}
+
+.school-sheets-origin {
+  margin-bottom: 1rem;
+}
+
+.school-sheets-origin-link {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.school-sheets-origin-link:hover,
+.school-sheets-origin-link:focus-visible {
+  text-decoration: none;
+}
+
+.school-sheets-origin-link:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.school-sheets-toolbar {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.school-sheets-search {
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  min-width: 16ch;
+  max-width: 100%;
+}
+
+.school-sheets-search:focus {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.school-sheets-count {
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.school-sheets-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: visible;
+}
+
+/* Mobile: card layout so each row becomes a labeled block (no horizontal scroll) */
+@media (max-width: 640px) {
+  .school-sheets-wrapper {
+    overflow-x: visible;
+  }
+
+  .school-sheets-table,
+  .school-sheets-table thead,
+  .school-sheets-table tbody,
+  .school-sheets-table tr,
+  .school-sheets-table th,
+  .school-sheets-table td {
+    display: block;
+  }
+
+  .school-sheets-table thead tr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .school-sheets-table tbody tr {
+    border: 1px solid #ccc;
+    border-bottom-width: 2px;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #fff;
+  }
+
+  .school-sheets-table tbody tr:nth-child(even) {
+    background: #f9f9f9;
+  }
+
+  .school-sheets-table tbody tr:hover {
+    background: #eee;
+  }
+
+  .school-sheets-table td {
+    padding: 0.35rem 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .school-sheets-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .school-sheets-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    display: inline-block;
+    min-width: 8ch;
+    margin-right: 0.5rem;
+  }
+}
+
+.school-sheets-th[data-sortable] {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  padding-right: 1.5rem;
+  position: relative;
+}
+
+.school-sheets-th[data-sortable]:hover,
+.school-sheets-th[data-sortable]:focus {
+  text-decoration: underline;
+}
+
+.school-sheets-th[data-sortable]:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.school-sheets-th[data-sortable]::after {
+  content: '';
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0.35em solid transparent;
+  border-top-color: currentColor;
+  border-bottom: none;
+  opacity: 0.4;
+}
+
+.school-sheets-th.sort-asc::after {
+  border-top: none;
+  border-bottom-color: currentColor;
+  opacity: 1;
+}
+
+.school-sheets-th.sort-desc::after {
+  opacity: 1;
+}
+
+.school-sheets-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.school-sheets-table th,
+.school-sheets-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+.school-sheets-table th {
+  font-weight: 600;
+  background: #f5f5f5;
+}
+
+.school-sheets-table tbody tr:nth-child(odd) {
+  background: #fff;
+}
+
+.school-sheets-table tbody tr:nth-child(even) {
+  background: #f5f5f5;
+}
+
+.school-sheets-table tbody tr:hover {
+  background: #eee;
+}
+
+.school-sheets-table a {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.school-sheets-table a:hover,
+.school-sheets-table a:focus-visible {
+  text-decoration: none;
+}
+
+.school-sheets-table a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.school-sheets-fallback {
+  color: #555;
+  font-style: italic;
+}
