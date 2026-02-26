@@ -1,8 +1,26 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="canonical" href="{{ .Permalink }}">
+<meta property="og:url" content="{{ .Permalink }}">
 <meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}">
 <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ if .IsPage }}{{ .Summary }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}">
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}">
 <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{ if .IsPage }}{{ .Summary }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}">
+{{ with .Params.image }}
+  {{ $imgPath := strings.TrimPrefix . "/" }}
+  {{ if hasPrefix . "/images/uploads/" }}
+    {{ with resources.Get $imgPath }}
+      {{ $og := .Fill "1200x630" }}
+      <meta property="og:image" content="{{ $og.Permalink | absURL }}">
+      <meta name="twitter:image" content="{{ $og.Permalink | absURL }}">
+    {{ else }}
+      <meta property="og:image" content="{{ . | absURL }}">
+      <meta name="twitter:image" content="{{ . | absURL }}">
+    {{ end }}
+  {{ else }}
+    <meta property="og:image" content="{{ . | absURL }}">
+    <meta name="twitter:image" content="{{ . | absURL }}">
+  {{ end }}
+{{ end }}

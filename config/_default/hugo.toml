@@ -3,6 +3,11 @@ languageCode = 'en-us'
 title = 'Eric Wisnewski'
 theme = ''
 
+[imaging]
+  quality = 85
+  resampleFilter = "Lanczos"
+  hint = "picture"
+
 [params]
   description = 'Eric Wisnewski — personal site and blog'
   nav_school_sheets = '/school-sheets/'

@@ -1,0 +1,2 @@
+# When running `hugo server`, baseURL is overridden so links and canonicals stay local.
+baseURL = 'http://localhost:1313/'
