@@ -1,0 +1,52 @@
+# Pages CMS — https://app.pagescms.org/
+# Edit content and media via GitHub; config drives the CMS UI.
+
+media:
+  input: assets/images/uploads
+  output: /images/uploads
+
+content:
+  - name: posts
+    label: Posts
+    type: collection
+    path: content/posts
+    format: yaml-frontmatter
+    filename: "{{slug}}.md"
+    view:
+      primary: title
+      fields: [title, date, draft]
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: slug
+        label: Slug
+        type: string
+        required: true
+        description: URL-friendly identifier (e.g. my-first-post). Used for the filename.
+      - name: date
+        label: Publish Date
+        type: date
+        required: true
+        options:
+          time: true
+      - name: draft
+        label: Draft
+        type: boolean
+        default: false
+      - name: image
+        label: Featured Image
+        type: image
+        required: false
+      - name: body
+        label: Body
+        type: text
+
+settings:
+  content:
+    merge: true
