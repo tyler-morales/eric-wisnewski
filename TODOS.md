@@ -1,6 +1,9 @@
 # TODOS
 
 ## Done
+- [x] First post rewritten as a simple, non-technical guide for Eric: how to use the blog, Pages CMS, adding/editing posts, images, and troubleshooting (no code).
+- [x] Eric’s login: docs updated so Eric uses email (magic link) to sign in to Pages CMS, not GitHub; README and .pages.yml note invite-by-email for contributors.
+- [x] Featured image in post body: single post template now renders `.Params.image` in the article (figure + img with alt, lazy load, focus-visible); CMS "Featured Image" appears on the live post page.
 - [x] Image pipeline: `[imaging]` in hugo.toml; render hook `layouts/_default/_markup/render-image.html` (/images/uploads/ → responsive picture + WebP + lazy/async); featured image in head for og:image/twitter:image; Decap CMS config with media_folder assets/images/uploads.
 - [x] Image render hook `layouts/_default/_markup/render-image.html`: /images/uploads/ → responsive picture (WebP + srcset 480/768/1024/1280); else simple img with lazy/async.
 - [x] Forever-stable Hugo blog: hugo.toml, layouts (baseof, list, single, header, isso), static/css/style.css, first post.
@@ -24,6 +27,9 @@
 - [x] School and Map pages: added links to original files (Google Sheets view URL, Google Maps viewer URL) via `school_sheets_view_url` and `map_viewer_url` in hugo.toml; origin link styles with focus-visible for a11y.
 - [x] School Sheets table responsive on mobile: card layout at max-width 640px (each row as labeled block via `data-label`); horizontal scroll with `-webkit-overflow-scrolling: touch` on larger viewports; thead hidden visually on mobile but kept for a11y.
 - [x] School Sheets grade-column sort: Arena Rating, Fan Base, Campus sort by numeric grade (4.0 scale: A+=4.3 … F=0, N/A (A+)=4.3); `data-grade="true"` on those headers; `gradeToNumber()` in layout script; unparseable/blank → -Infinity so they sort to one end.
+- [x] Home page post list: each blog entry shows featured image (`.Params.image`) when set; list images use uniform 16:9 aspect-ratio box with `object-fit: cover` so all thumbnails are the same size; list link is one block (image + title + date), a11y with `alt=""` on thumbnails (link text gives context).
+- [x] Wizard emoji favicon: `static/favicon.svg` (🧙); linked in `layouts/partials/head.html` via `rel="icon"` type image/svg+xml.
+- [x] Open Graph for share previews: `og:site_name` added; default `og:image` and `twitter:image` set to favicon.svg when post has no featured image so shared links always show title, description, and an image (per-post featured image still overrides). Note: some platforms (e.g. Facebook) prefer PNG/JPEG for og:image; if preview image is missing there, add `static/images/og-default.png` (e.g. 1200×630) and point default OG image to it.
 
 ## Later
 - [ ] Re-evaluate custom upload tool (e.g. upload-image.html + Cloudflare function) if CMS uploads are unreliable.

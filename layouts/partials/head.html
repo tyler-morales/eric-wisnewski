@@ -1,7 +1,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="{{ "favicon.svg" | absURL }}" type="image/svg+xml" />
 <link rel="canonical" href="{{ .Permalink }}">
 <meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:site_name" content="{{ .Site.Title }}">
 <meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}">
 <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ if .IsPage }}{{ .Summary }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}">
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
@@ -12,4 +14,7 @@
   {{/* Use URL only to avoid "Failed to publish Resource: open public: is a directory" (asset resource can have empty publish path in some Hugo/env). Image must exist under static/images/uploads/ to be served. */}}
   <meta property="og:image" content="{{ . | absURL }}">
   <meta name="twitter:image" content="{{ . | absURL }}">
+{{ else }}
+  <meta property="og:image" content="{{ "favicon.svg" | absURL }}">
+  <meta name="twitter:image" content="{{ "favicon.svg" | absURL }}">
 {{ end }}

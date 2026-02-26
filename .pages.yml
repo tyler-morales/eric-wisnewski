@@ -1,5 +1,5 @@
 # Pages CMS — https://app.pagescms.org/
-# Edit content and media via GitHub; config drives the CMS UI.
+# Edit content and media here; contributors sign in with email (magic link). Repo backend: GitHub; config drives the CMS UI.
 
 # Restrict to web-friendly formats to avoid huge files that can trigger 504 on upload.
 media:

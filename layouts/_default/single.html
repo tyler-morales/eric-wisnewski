@@ -8,6 +8,11 @@
         <h1>{{ .Title }}</h1>
         <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
       </header>
+      {{ with .Params.image }}
+      <figure class="post-featured-image" aria-label="Featured image for {{ $.Title }}">
+        <img src="{{ . | absURL }}" alt="{{ with $.Params.image_alt }}{{ . }}{{ else }}Featured image for {{ $.Title }}{{ end }}" loading="lazy" decoding="async">
+      </figure>
+      {{ end }}
       {{ .Content }}
     </article>
     {{ partial "isso.html" . }}
