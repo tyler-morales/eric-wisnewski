@@ -19,7 +19,7 @@ Some rules I am setting in place.  I must attend a game at every division one g
     
 *   Fan Base:  This is probably the most situational of them all as teams go through program ebbs and flows of national/regional relevance.  Whatever, I cannot control that at time of attendance.  Are there students at the game?  Fan traditions? Marching band? Overall attendance? Are fans engaged in the game?
     
-*   Campus:  Aesthetic of the campus? How is the college town?  Is the university a cornerstone of the community?  
+*   Campus:  Aesthetic of the campus? How is the college town?  Is the university a cornerstone of the community?
     
 
 A lot of these rankings are a gut feeling and really are not that quantitative, but like I said I report on a bias.  These are all my opinions.  
