@@ -2,7 +2,7 @@
 title: How to Use This Blog
 slug: my-first-post
 date: 2026-02-26T10:25:00Z
-draft: false
+draft: true
 image: /images/uploads/wizzz.jpg
 ---
 Hi Eric — this post is your quick guide to using this blog. No code required.
