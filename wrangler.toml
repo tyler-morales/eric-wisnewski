@@ -1,5 +1,6 @@
 # Cloudflare Pages + Functions
 # https://developers.cloudflare.com/pages/functions/wrangler-configuration/
+name = "eric-wisnewski"
 compatibility_date = "2026-03-07"
 
 # Required for Pages to use this file (and D1 bindings) in production.
