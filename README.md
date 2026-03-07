@@ -51,16 +51,17 @@ Content and media are edited via **Pages CMS**. Eric signs in with **email** (ma
 
 ## Comments
 
-Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (one level) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/isso.html` and loads `static/js/comments.js`.
+Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (one level) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/isso.html` and loads `static/js/comments.js`. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
 
 To enable comments:
 
 1. Create a D1 database (e.g. `blog-comments`) in the Cloudflare dashboard (Workers & Pages → D1) or run `npx wrangler d1 create blog-comments` and note the `database_id`.
 2. Run the schema and migrations: `npx wrangler d1 execute blog-comments --remote --file=./migrations/0000_initial_comments.sql`, then `npx wrangler d1 execute blog-comments --remote --file=./migrations/0001_comments_v2.sql` (or run the SQL in the D1 dashboard).
 3. Bind the database to your Pages project: in the dashboard go to your Pages project → Settings → Functions → Bindings → D1, add binding name `COMMENTS_DB` and select the database. Or add the binding to `wrangler.toml` (replace `<DATABASE_ID>` in `wrangler.toml` with your database id) and deploy with the config file as source of truth.
-4. **Admin moderation (optional):** To allow the site owner to remove comments (e.g. vulgar or spam), set an environment variable in Cloudflare Pages → Settings → Environment variables: `COMMENTS_ADMIN_SECRET` with a strong random string (e.g. from `openssl rand -hex 32`). Then open **`/admin/comments/`** on the site, enter that secret once per browser session, and use the list to delete any comment. The secret is never committed to the repo; store it securely (e.g. in a password manager).
+4. **Turnstile (captcha):** In [Cloudflare Dashboard → Turnstile](https://dash.cloudflare.com/?to=/:account/turnstile) create a widget and get the **site key** and **secret key**. Set the site key in `config/_default/hugo.toml` under `[params]` as `turnstile_site_key = "your-site-key"`. Add the **secret key** as a Cloudflare Pages secret: Settings → Environment variables → **TURNSTILE_SECRET_KEY** (encrypted). If `TURNSTILE_SECRET_KEY` is not set, the API skips verification (useful for local dev without a widget).
+5. **Admin moderation (optional):** To allow the site owner to remove comments (e.g. vulgar or spam), set an environment variable in Cloudflare Pages → Settings → Environment variables: `COMMENTS_ADMIN_SECRET` with a strong random string (e.g. from `openssl rand -hex 32`). Then open **`/admin/comments/`** on the site, enter that secret once per browser session, and use the list to delete any comment. The secret is never committed to the repo; store it securely (e.g. in a password manager).
 
-Local dev with comments: run Hugo to build `public/`, then `npx wrangler pages dev ./public --d1 COMMENTS_DB=<database_id>`. For admin delete to work locally, also set `COMMENTS_ADMIN_SECRET` in your shell or in a `.dev.vars` file when using `wrangler pages dev`.
+Local dev with comments: run Hugo to build `public/`, then `npx wrangler pages dev ./public --d1 COMMENTS_DB=<database_id>`. For admin delete to work locally, also set `COMMENTS_ADMIN_SECRET` in your shell or in a `.dev.vars` file when using `wrangler pages dev`. For Turnstile, use Cloudflare’s test keys in dev or leave `TURNSTILE_SECRET_KEY` unset to skip verification.
 
 ## Tech notes
 

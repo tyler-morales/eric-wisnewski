@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/pages-XnNla8/functionsWorker-0.9281114125778074.mjs
+// .wrangler/tmp/pages-PjZr4X/functionsWorker-0.6572322971506803.mjs
 var __defProp2 = Object.defineProperty;
 var __name2 = /* @__PURE__ */ __name((target, value) => __defProp2(target, "name", { value, configurable: true }), "__name");
 var MAX_AUTHOR = 200;
@@ -81,6 +81,26 @@ async function onRequestPost(context) {
     body = await context.request.json();
   } catch {
     return jsonResponse({ error: "Invalid JSON body" }, 400);
+  }
+  const secret = context.env.TURNSTILE_SECRET_KEY;
+  if (secret) {
+    const token = body.cf_turnstile_response != null ? String(body.cf_turnstile_response).trim() : body["cf-turnstile-response"] != null ? String(body["cf-turnstile-response"]).trim() : "";
+    if (!token) {
+      return jsonResponse({ error: "Verification required" }, 400);
+    }
+    try {
+      const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ secret, response: token })
+      });
+      const verifyData = await verifyRes.json();
+      if (!verifyData || verifyData.success !== true) {
+        return jsonResponse({ error: "Verification failed" }, 400);
+      }
+    } catch (e) {
+      return jsonResponse({ error: "Verification failed" }, 400);
+    }
   }
   const url = body.url != null ? String(body.url).trim() : "";
   const author = body.author != null ? String(body.author).trim() : "";
@@ -890,7 +910,7 @@ var jsonError2 = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx
 }, "jsonError");
 var middleware_miniflare3_json_error_default2 = jsonError2;
 
-// .wrangler/tmp/bundle-IJ4tx3/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-oSq3Sz/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__2 = [
   middleware_ensure_req_body_drained_default2,
   middleware_miniflare3_json_error_default2
@@ -922,7 +942,7 @@ function __facade_invoke__2(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__2, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-IJ4tx3/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-oSq3Sz/middleware-loader.entry.ts
 var __Facade_ScheduledController__2 = class ___Facade_ScheduledController__2 {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
@@ -1022,4 +1042,4 @@ export {
   __INTERNAL_WRANGLER_MIDDLEWARE__2 as __INTERNAL_WRANGLER_MIDDLEWARE__,
   middleware_loader_entry_default2 as default
 };
-//# sourceMappingURL=functionsWorker-0.9281114125778074.js.map
+//# sourceMappingURL=functionsWorker-0.6572322971506803.js.map

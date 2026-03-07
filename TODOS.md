@@ -41,6 +41,7 @@
 - [x] Comments fix (functionality + design): applied migration 0001 locally (parent_id/edit_token columns missing caused all POSTs to 500); redesigned CSS — grid layout (avatar col | content col, replies indented below), full-width inputs/buttons everywhere, no max-width cap; simplified isso.html (removed avatar from compose, flat label→input structure); removed dead agent debug fetch from comments.js API; deleted updateComposeAvatar (no more avatar placeholder in form).
 - [x] Reply comments indent: `.comment-reply` gets `margin-left: 1.25rem` so replies sit visually at a sub-level under the parent (with existing `.comment-replies` border/padding).
 - [x] Comments section width: `#comments` constrained to `max-width: 70ch` and centered so it matches the post content column (no wider breakout).
+- [x] Cloudflare Turnstile on comments: widget on main and reply forms (explicit render); token sent as `cf_turnstile_response`; API verifies via Siteverify when `TURNSTILE_SECRET_KEY` is set; site key in Hugo `params.turnstile_site_key`; README documents env var and config.
 
 ## Later
 - [x] Inline images on live: added `scripts/sync-uploaded-images.sh` and use it before Hugo in production build so CMS uploads in `assets/images/uploads/` are copied to `static/images/uploads/` and resolve at `/images/uploads/`. README build command updated.

@@ -7,6 +7,10 @@
   var errorEl = section.querySelector('.comments-error');
   if (!listEl || !formEl) return;
 
+  var siteKey = (section.dataset && section.dataset.turnstileSitekey) ? section.dataset.turnstileSitekey.trim() : '';
+  var mainWidgetId = null;
+  var replyWidgetId = null;
+
   var STORAGE_KEY = 'comment_tokens';
   var AUTHOR_KEY = 'comment_author';
   var EMAIL_KEY = 'comment_email';
@@ -158,7 +162,13 @@
 
   function closeOpenReplyForm() {
     var open = section.querySelector('.comments-reply-form');
-    if (open) open.remove();
+    if (open) {
+      if (typeof turnstile !== 'undefined' && replyWidgetId != null) {
+        turnstile.remove(replyWidgetId);
+        replyWidgetId = null;
+      }
+      open.remove();
+    }
   }
 
   function closeOpenEdit() {
@@ -177,12 +187,14 @@
 
   function renderReplyForm(parentId, parentAuthor, onCancel) {
     closeOpenReplyForm();
+    replyWidgetId = null;
     var form = document.createElement('form');
     form.className = 'comments-form comments-reply-form';
     form.setAttribute('aria-label', 'Reply to ' + parentAuthor);
     form.innerHTML =
       '<label for="comment-reply-text">Reply</label>' +
       '<textarea id="comment-reply-text" name="text" required rows="2" maxlength="5000" placeholder="Write a reply…"></textarea>' +
+      '<div class="comments-reply-turnstile comments-turnstile" role="group" aria-label="Verification"></div>' +
       '<div class="comments-form-actions">' +
       '<button type="button" class="comment-cancel">Cancel</button>' +
       '<button type="submit">Post reply</button>' +
@@ -212,8 +224,18 @@
         showError('Enter your name in the form below, then reply.');
         return;
       }
+      if (siteKey) {
+        var replyToken = (typeof turnstile !== 'undefined' && replyWidgetId != null) ? turnstile.getResponse(replyWidgetId) : '';
+        if (!replyToken) {
+          showError('Please complete the verification.');
+          return;
+        }
+      }
       var payload = { url: normalizeUrl(), author: author.trim(), text: text.trim(), parent_id: parentId };
       if (email) payload.email = email.trim();
+      if (siteKey && typeof turnstile !== 'undefined' && replyWidgetId != null) {
+        payload.cf_turnstile_response = turnstile.getResponse(replyWidgetId);
+      }
       fetch('/api/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -236,7 +258,12 @@
           showError(err.message || 'Could not post reply.');
         });
     });
-    return form;
+    function onMount() {
+      if (!siteKey || typeof turnstile === 'undefined') return;
+      var container = form.querySelector('.comments-reply-turnstile');
+      if (container) replyWidgetId = turnstile.render(container, { sitekey: siteKey });
+    }
+    return { form: form, onMount: onMount };
   }
 
   function renderComment(c, isReply, thread, parentAuthor) {
@@ -298,9 +325,10 @@
           li.appendChild(div);
           return div;
         })();
-        var form = renderReplyForm(c.id, c.author, function () {});
-        container.insertBefore(form, container.firstChild);
-        var firstInput = form.querySelector('input, textarea');
+        var result = renderReplyForm(c.id, c.author, function () {});
+        container.insertBefore(result.form, container.firstChild);
+        if (result.onMount) result.onMount();
+        var firstInput = result.form.querySelector('input, textarea');
         if (firstInput) firstInput.focus();
       });
       appendAction(replyBtn);
@@ -459,9 +487,19 @@
       showError('Please fill in your name and comment.');
       return;
     }
+    if (siteKey) {
+      var mainToken = (typeof turnstile !== 'undefined' && mainWidgetId != null) ? turnstile.getResponse(mainWidgetId) : '';
+      if (!mainToken) {
+        showError('Please complete the verification.');
+        return;
+      }
+    }
 
     var payload = { url: normalizeUrl(), author: author, text: text };
     if (email) payload.email = email;
+    if (siteKey && typeof turnstile !== 'undefined' && mainWidgetId != null) {
+      payload.cf_turnstile_response = turnstile.getResponse(mainWidgetId);
+    }
 
     fetch('/api/comments', {
       method: 'POST',
@@ -480,6 +518,9 @@
         authorInput.value = '';
         if (emailInput) emailInput.value = '';
         textInput.value = '';
+        if (siteKey && typeof turnstile !== 'undefined' && mainWidgetId != null) {
+          turnstile.reset(mainWidgetId);
+        }
         loadComments();
         listEl.focus();
       })
@@ -487,6 +528,15 @@
         showError(err.message || 'Could not post comment.');
       });
   });
+
+  if (siteKey && typeof turnstile !== 'undefined') {
+    var container = section.querySelector('#comments-turnstile-container');
+    if (container) {
+      turnstile.ready(function () {
+        mainWidgetId = turnstile.render(container, { sitekey: siteKey });
+      });
+    }
+  }
 
   loadComments();
 })();

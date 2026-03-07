@@ -84,6 +84,30 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'Invalid JSON body' }, 400);
   }
 
+  const secret = context.env.TURNSTILE_SECRET_KEY;
+  if (secret) {
+    const token =
+      body.cf_turnstile_response != null
+        ? String(body.cf_turnstile_response).trim()
+        : (body['cf-turnstile-response'] != null ? String(body['cf-turnstile-response']).trim() : '');
+    if (!token) {
+      return jsonResponse({ error: 'Verification required' }, 400);
+    }
+    try {
+      const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret, response: token }),
+      });
+      const verifyData = await verifyRes.json();
+      if (!verifyData || verifyData.success !== true) {
+        return jsonResponse({ error: 'Verification failed' }, 400);
+      }
+    } catch (e) {
+      return jsonResponse({ error: 'Verification failed' }, 400);
+    }
+  }
+
   const url = body.url != null ? String(body.url).trim() : '';
   const author = body.author != null ? String(body.author).trim() : '';
   const text = body.text != null ? String(body.text).trim() : '';

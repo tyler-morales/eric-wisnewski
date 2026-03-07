@@ -1,4 +1,6 @@
-<section id="comments" class="comments-section" aria-label="Comments">
+<link rel="preconnect" href="https://challenges.cloudflare.com">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+<section id="comments" class="comments-section" aria-label="Comments" data-turnstile-sitekey="{{ .Site.Params.turnstile_site_key }}">
   <h2 class="comments-heading"><span class="comments-count" aria-live="polite">0</span> Comments</h2>
   <ol class="comments-list" role="list" tabindex="-1">
     <li class="comments-loading">Loading…</li>
@@ -11,6 +13,7 @@
     <input id="comment-author" name="author" type="text" required autocomplete="name" maxlength="200" placeholder="Your name">
     <label for="comment-email">Email <span class="comments-optional">(optional)</span></label>
     <input id="comment-email" name="email" type="email" autocomplete="email" placeholder="your@email.com">
+    <div id="comments-turnstile-container" class="comments-turnstile" role="group" aria-label="Verification"></div>
     <div class="comments-form-actions">
       <button type="submit">Post comment</button>
     </div>
