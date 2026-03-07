@@ -53,6 +53,15 @@ export async function onRequestGet(context) {
     }
   }
 
+  if (adminSecret) {
+    const configuredSet =
+      typeof context.env.COMMENTS_ADMIN_SECRET === 'string' && context.env.COMMENTS_ADMIN_SECRET.length > 0;
+    return jsonResponse(
+      { error: configuredSet ? 'Invalid admin secret.' : 'Admin secret not configured on server.' },
+      401
+    );
+  }
+
   if (!isValidUrlParam(url)) {
     return jsonResponse({ error: 'Missing or invalid url parameter' }, 400);
   }

@@ -134,8 +134,13 @@
       .then(function(res) {
         if (!res.ok) {
           if (res.status === 403 || res.status === 401) {
-            showSecretForm('Invalid or expired secret.');
-            return null;
+            return res.json().then(function(b) {
+              showSecretForm(b.error || 'Invalid or expired secret.');
+              return null;
+            }).catch(function() {
+              showSecretForm('Invalid or expired secret.');
+              return null;
+            });
           }
           return res.json().then(function(b) { throw new Error(b.error || res.statusText); });
         }

@@ -266,10 +266,10 @@ article.post-content hr {
   border-top: 1px solid #ccc;
 }
 
-/* Mobile: larger type, more line spacing, and increased content gaps */
+/* Mobile: 18px base (ideal reading size), more line spacing, and increased content gaps */
 @media (max-width: 768px) {
   html {
-    font-size: 106.25%;
+    font-size: 112.5%; /* 18px — comfortable minimum for mobile reading; avoids tiny text */
   }
 
   body {
