@@ -23,3 +23,5 @@ title = 'Eric Wisnewski'
   nav_map = '/map/'
   # Link to open the map in Google Maps (optional; used for "View original" on /map/)
   map_viewer_url = 'https://www.google.com/maps/d/viewer?mid=1iRNx3DgEm5TJJmN1A4xM0uienUMFfqc'
+  # Cloudflare Turnstile site key for comments (from Cloudflare Dashboard → Turnstile)
+  turnstile_site_key = '0x4AAAAAACnww42_mYvpidw1'

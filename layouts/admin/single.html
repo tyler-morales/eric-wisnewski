@@ -1,0 +1,204 @@
+{{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<header class="site-header site-header-minimal" role="banner">
+  <h1 class="brand-name"><a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a></h1>
+  <nav class="site-nav" aria-label="Breadcrumb">
+    <a href="{{ .Site.BaseURL }}">Home</a>
+  </nav>
+</header>
+<main class="admin-comments-main">
+  <h2 class="admin-comments-title">{{ .Title }}</h2>
+
+  <div id="admin-secret-form" class="admin-secret-form" aria-label="Admin authentication">
+    <label for="admin-secret-input">Admin secret</label>
+    <input id="admin-secret-input" type="password" autocomplete="off" placeholder="Enter COMMENTS_ADMIN_SECRET">
+    <button type="button" id="admin-secret-submit">Unlock</button>
+    <p id="admin-secret-error" class="admin-error" role="alert" aria-live="polite" hidden></p>
+  </div>
+
+  <div id="admin-content" class="admin-content" hidden>
+    <p id="admin-loading" class="admin-loading" aria-live="polite">Loading comments…</p>
+    <div id="admin-list" class="admin-list" role="region" aria-label="Comments by page"></div>
+    <p id="admin-list-error" class="admin-error" role="alert" aria-live="polite" hidden></p>
+  </div>
+
+  <script>
+(function() {
+  var STORAGE_KEY = 'comments_admin_secret';
+  var secretForm = document.getElementById('admin-secret-form');
+  var secretInput = document.getElementById('admin-secret-input');
+  var secretSubmit = document.getElementById('admin-secret-submit');
+  var secretError = document.getElementById('admin-secret-error');
+  var adminContent = document.getElementById('admin-content');
+  var adminLoading = document.getElementById('admin-loading');
+  var adminList = document.getElementById('admin-list');
+  var adminListError = document.getElementById('admin-list-error');
+
+  function getSecret() { return sessionStorage.getItem(STORAGE_KEY); }
+  function setSecret(s) { sessionStorage.setItem(STORAGE_KEY, s); }
+  function clearSecret() { sessionStorage.removeItem(STORAGE_KEY); }
+
+  function showSecretForm(msg) {
+    clearSecret();
+    secretForm.hidden = false;
+    adminContent.hidden = true;
+    secretError.textContent = msg || '';
+    secretError.hidden = !msg;
+  }
+
+  function showContent() {
+    secretForm.hidden = true;
+    adminContent.hidden = false;
+    secretError.hidden = true;
+  }
+
+  function groupByUrl(comments) {
+    var byUrl = {};
+    for (var i = 0; i < comments.length; i++) {
+      var c = comments[i];
+      var u = c.url || '';
+      if (!byUrl[u]) byUrl[u] = [];
+      byUrl[u].push(c);
+    }
+    return byUrl;
+  }
+
+  function escapeHtml(s) {
+    if (!s) return '';
+    var div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function renderComments(comments) {
+    adminList.innerHTML = '';
+    adminListError.hidden = true;
+    if (!comments || comments.length === 0) {
+      adminList.textContent = 'No comments yet.';
+      return;
+    }
+    var byUrl = groupByUrl(comments);
+    var urls = Object.keys(byUrl).sort();
+    for (var u = 0; u < urls.length; u++) {
+      var url = urls[u];
+      var group = byUrl[url];
+      var section = document.createElement('section');
+      section.className = 'admin-url-group';
+      section.setAttribute('aria-labelledby', 'admin-url-' + u);
+      var h3 = document.createElement('h3');
+      h3.id = 'admin-url-' + u;
+      h3.className = 'admin-url-heading';
+      var link = document.createElement('a');
+      link.href = url;
+      link.textContent = url || '(no url)';
+      link.rel = 'noopener noreferrer';
+      h3.appendChild(link);
+      section.appendChild(h3);
+      var ol = document.createElement('ol');
+      ol.className = 'admin-comment-list';
+      for (var j = 0; j < group.length; j++) {
+        var c = group[j];
+        var li = document.createElement('li');
+        li.className = 'admin-comment-item';
+        li.dataset.id = String(c.id);
+        var meta = document.createElement('div');
+        meta.className = 'admin-comment-meta';
+        meta.innerHTML = '<span class="admin-comment-author">' + escapeHtml(c.author) + '</span> <time datetime="' + escapeHtml(c.created_at) + '">' + escapeHtml(c.created_at) + '</time>';
+        li.appendChild(meta);
+        var body = document.createElement('div');
+        body.className = 'admin-comment-body';
+        body.textContent = c.body || '';
+        li.appendChild(body);
+        var delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'admin-comment-delete';
+        delBtn.textContent = 'Delete';
+        delBtn.setAttribute('aria-label', 'Delete this comment');
+        delBtn.dataset.id = String(c.id);
+        li.appendChild(delBtn);
+        ol.appendChild(li);
+      }
+      section.appendChild(ol);
+      adminList.appendChild(section);
+    }
+  }
+
+  function loadComments() {
+    var secret = getSecret();
+    if (!secret) { showSecretForm('Session expired.'); return; }
+    adminLoading.hidden = false;
+    adminList.innerHTML = '';
+    adminListError.hidden = true;
+    fetch('/api/comments?admin_secret=' + encodeURIComponent(secret))
+      .then(function(res) {
+        if (!res.ok) {
+          if (res.status === 403 || res.status === 401) {
+            showSecretForm('Invalid or expired secret.');
+            return null;
+          }
+          return res.json().then(function(b) { throw new Error(b.error || res.statusText); });
+        }
+        return res.json();
+      })
+      .then(function(data) {
+        adminLoading.hidden = true;
+        if (data) renderComments(data);
+      })
+      .catch(function(err) {
+        adminLoading.hidden = true;
+        adminListError.textContent = err.message || 'Failed to load comments.';
+        adminListError.hidden = false;
+      });
+  }
+
+  function doDelete(id) {
+    var secret = getSecret();
+    if (!secret) { showSecretForm('Session expired.'); return; }
+    if (!confirm('Delete this comment? Replies (if any) will also be deleted.')) return;
+    fetch('/api/comments?id=' + encodeURIComponent(id) + '&admin_secret=' + encodeURIComponent(secret), { method: 'DELETE' })
+      .then(function(res) {
+        if (res.status === 403 || res.status === 401) {
+          showSecretForm('Invalid or expired secret.');
+          return;
+        }
+        if (res.status !== 204) {
+          return res.json().then(function(b) { throw new Error(b.error || res.statusText); });
+        }
+        loadComments();
+      })
+      .catch(function(err) {
+        adminListError.textContent = err.message || 'Failed to delete.';
+        adminListError.hidden = false;
+      });
+  }
+
+  secretSubmit.addEventListener('click', function() {
+    var s = (secretInput.value || '').trim();
+    if (!s) {
+      secretError.textContent = 'Enter the admin secret.';
+      secretError.hidden = false;
+      return;
+    }
+    setSecret(s);
+    showContent();
+    loadComments();
+  });
+
+  secretInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') secretSubmit.click();
+  });
+
+  adminList.addEventListener('click', function(e) {
+    var btn = e.target.closest('.admin-comment-delete');
+    if (btn && btn.dataset.id) doDelete(btn.dataset.id);
+  });
+
+  if (getSecret()) {
+    showContent();
+    loadComments();
+  }
+})();
+  </script>
+</main>
+{{ end }}

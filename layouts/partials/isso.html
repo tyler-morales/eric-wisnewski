@@ -1,5 +1,23 @@
-<section id="isso-thread" aria-label="Comments">
-  <noscript>Please enable JavaScript to view comments.</noscript>
+<link rel="preconnect" href="https://challenges.cloudflare.com">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+<section id="comments" class="comments-section" aria-label="Comments" data-turnstile-sitekey="{{ .Site.Params.turnstile_site_key }}">
+  <h2 class="comments-heading"><span class="comments-count" aria-live="polite">0</span> Comments</h2>
+  <ol class="comments-list" role="list" tabindex="-1">
+    <li class="comments-loading">Loading…</li>
+  </ol>
+  <p class="comments-error" role="alert" aria-live="polite" hidden></p>
+  <form class="comments-form comments-form-main" aria-label="Add a comment">
+    <label for="comment-text">Join the discussion</label>
+    <textarea id="comment-text" name="text" required rows="3" maxlength="5000" placeholder="Write a comment…"></textarea>
+    <label for="comment-author">Name</label>
+    <input id="comment-author" name="author" type="text" required autocomplete="name" maxlength="200" placeholder="Your name">
+    <label for="comment-email">Email <span class="comments-optional">(optional)</span></label>
+    <input id="comment-email" name="email" type="email" autocomplete="email" placeholder="your@email.com">
+    <div id="comments-turnstile-container" class="comments-turnstile" role="group" aria-label="Verification"></div>
+    <div class="comments-form-actions">
+      <button type="submit">Post comment</button>
+    </div>
+  </form>
+  <noscript>Please enable JavaScript to view and post comments.</noscript>
 </section>
-<!-- Set data-isso and src to your Isso server URL (e.g. //comments.example.com/) -->
-<script data-isso="//your-isso-domain.com/" src="//your-isso-domain.com/js/embed.min.js" data-isso-css="false" data-isso-lang="en"></script>
+<script src="{{ "/js/comments.js" | relURL }}" defer></script>
