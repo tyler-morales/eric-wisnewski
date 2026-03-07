@@ -58,8 +58,9 @@ To enable comments:
 1. Create a D1 database (e.g. `blog-comments`) in the Cloudflare dashboard (Workers & Pages → D1) or run `npx wrangler d1 create blog-comments` and note the `database_id`.
 2. Run the schema and migrations: `npx wrangler d1 execute blog-comments --remote --file=./migrations/0000_initial_comments.sql`, then `npx wrangler d1 execute blog-comments --remote --file=./migrations/0001_comments_v2.sql` (or run the SQL in the D1 dashboard).
 3. Bind the database to your Pages project: in the dashboard go to your Pages project → Settings → Functions → Bindings → D1, add binding name `COMMENTS_DB` and select the database. Or add the binding to `wrangler.toml` (replace `<DATABASE_ID>` in `wrangler.toml` with your database id) and deploy with the config file as source of truth.
+4. **Admin moderation (optional):** To allow the site owner to remove comments (e.g. vulgar or spam), set an environment variable in Cloudflare Pages → Settings → Environment variables: `COMMENTS_ADMIN_SECRET` with a strong random string (e.g. from `openssl rand -hex 32`). Then open **`/admin/comments/`** on the site, enter that secret once per browser session, and use the list to delete any comment. The secret is never committed to the repo; store it securely (e.g. in a password manager).
 
-Local dev with comments: run Hugo to build `public/`, then `npx wrangler pages dev ./public --d1 COMMENTS_DB=<database_id>`.
+Local dev with comments: run Hugo to build `public/`, then `npx wrangler pages dev ./public --d1 COMMENTS_DB=<database_id>`. For admin delete to work locally, also set `COMMENTS_ADMIN_SECRET` in your shell or in a `.dev.vars` file when using `wrangler pages dev`.
 
 ## Tech notes
 

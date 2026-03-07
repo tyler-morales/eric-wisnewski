@@ -1,10 +1,9 @@
-# Cloudflare Pages + D1 for blog comments API.
-# Replace <DATABASE_ID> with your D1 database id (dashboard or: npx wrangler d1 create blog-comments).
-# Build output must match Cloudflare Pages build directory (e.g. public).
-name = "eric-wisnewski"
-pages_build_output_dir = "./public"
+# Cloudflare Pages + Functions
+# https://developers.cloudflare.com/pages/functions/wrangler-configuration/
+compatibility_date = "2026-03-07"
 
+# D1 binding for comments (use same id for local dev or override via CLI)
 [[d1_databases]]
 binding = "COMMENTS_DB"
-database_name = "eric-blog-comments"
+database_name = "comments"
 database_id = "2d261c98-9706-46f1-81b2-c29d5777bf8a"

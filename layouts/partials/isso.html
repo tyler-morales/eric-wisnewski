@@ -1,18 +1,16 @@
 <section id="comments" class="comments-section" aria-label="Comments">
-  <h2 class="comments-heading">Comments</h2>
+  <h2 class="comments-heading"><span class="comments-count" aria-live="polite">0</span> Comments</h2>
   <ol class="comments-list" role="list" tabindex="-1">
     <li class="comments-loading">Loading…</li>
   </ol>
   <p class="comments-error" role="alert" aria-live="polite" hidden></p>
   <form class="comments-form comments-form-main" aria-label="Add a comment">
-    <div class="comments-form-row">
-      <label for="comment-author">Name</label>
-      <input id="comment-author" name="author" type="text" required autocomplete="name" maxlength="200" placeholder="Name">
-      <label for="comment-email">Email</label>
-      <input id="comment-email" name="email" type="email" autocomplete="email" placeholder="Optional">
-    </div>
-    <label for="comment-text">Comment</label>
+    <label for="comment-text">Join the discussion</label>
     <textarea id="comment-text" name="text" required rows="3" maxlength="5000" placeholder="Write a comment…"></textarea>
+    <label for="comment-author">Name</label>
+    <input id="comment-author" name="author" type="text" required autocomplete="name" maxlength="200" placeholder="Your name">
+    <label for="comment-email">Email <span class="comments-optional">(optional)</span></label>
+    <input id="comment-email" name="email" type="email" autocomplete="email" placeholder="your@email.com">
     <div class="comments-form-actions">
       <button type="submit">Post comment</button>
     </div>

@@ -19,25 +19,31 @@ function jsonResponse(body, status = 200) {
   });
 }
 
+function isAdmin(secret, env) {
+  const configured = env.COMMENTS_ADMIN_SECRET;
+  return typeof configured === 'string' && configured.length > 0 && secret === configured;
+}
+
 export async function onRequestGet(context) {
   const db = context.env.COMMENTS_DB;
   if (!db) return jsonResponse({ error: 'Comments not configured' }, 503);
 
-  const url = new URL(context.request.url).searchParams.get('url');
-  // #region agent log
-  fetch('http://127.0.0.1:7686/ingest/1f2a7c1a-b240-4716-9fcc-d7c56788a7e8', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '313ca2' },
-    body: JSON.stringify({
-      sessionId: '313ca2',
-      location: 'functions/api/comments.js:onRequestGet',
-      message: 'GET comments entry',
-      data: { urlParam: url != null ? url.substring(0, 80) : null, hasDb: true },
-      timestamp: Date.now(),
-      hypothesisId: 'H3'
-    })
-  }).catch(() => {});
-  // #endregion
+  const { searchParams } = new URL(context.request.url);
+  const url = searchParams.get('url');
+  const adminSecret = searchParams.get('admin_secret') ?? '';
+
+  if (adminSecret && isAdmin(adminSecret, context.env)) {
+    try {
+      const stmt = db.prepare(
+        'SELECT id, url, author, email, body, created_at, parent_id, edit_token FROM comments ORDER BY url ASC, created_at ASC'
+      );
+      const { results } = await stmt.all();
+      return jsonResponse(results ?? []);
+    } catch (e) {
+      return jsonResponse({ error: 'Failed to load comments' }, 500);
+    }
+  }
+
   if (!isValidUrlParam(url)) {
     return jsonResponse({ error: 'Missing or invalid url parameter' }, 400);
   }
@@ -58,20 +64,6 @@ export async function onRequestGet(context) {
         );
         const { results: legacyResults } = await stmtLegacy.bind(url.trim()).all();
         const withParentId = (legacyResults || []).map((row) => ({ ...row, parent_id: null }));
-        // #region agent log
-        fetch('http://127.0.0.1:7686/ingest/1f2a7c1a-b240-4716-9fcc-d7c56788a7e8', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '313ca2' },
-          body: JSON.stringify({
-            sessionId: '313ca2',
-            location: 'functions/api/comments.js:onRequestGet:legacy',
-            message: 'GET comments used legacy query (no parent_id)',
-            data: { rowCount: withParentId.length },
-            timestamp: Date.now(),
-            runId: 'post-fix'
-          })
-        }).catch(() => {});
-        // #endregion
         return jsonResponse(withParentId);
       } catch (e2) {
         return jsonResponse({ error: 'Failed to load comments' }, 500);
@@ -200,19 +192,23 @@ export async function onRequestDelete(context) {
 
   const { searchParams } = new URL(context.request.url);
   const id = searchParams.get('id') != null ? Number(searchParams.get('id')) : null;
-  const editToken = searchParams.get('edit_token') || '';
+  const editToken = searchParams.get('edit_token') ?? '';
+  const adminSecret = searchParams.get('admin_secret') ?? '';
+  const asAdmin = adminSecret && isAdmin(adminSecret, context.env);
 
   if (!Number.isInteger(id) || id < 1) {
     return jsonResponse({ error: 'Invalid or missing id' }, 400);
   }
-  if (!editToken) return jsonResponse({ error: 'edit_token is required' }, 400);
+  if (!asAdmin && !editToken) {
+    return jsonResponse({ error: 'edit_token or admin_secret is required' }, 400);
+  }
 
   const row = await db
     .prepare('SELECT id, edit_token, parent_id FROM comments WHERE id = ?')
     .bind(id)
     .first();
   if (!row) return jsonResponse({ error: 'Comment not found' }, 404);
-  if (row.edit_token !== editToken) {
+  if (!asAdmin && row.edit_token !== editToken) {
     return jsonResponse({ error: 'Not authorized to delete this comment' }, 403);
   }
 
