@@ -1,6 +1,11 @@
 # Cloudflare Pages + Functions
 # https://developers.cloudflare.com/pages/functions/wrangler-configuration/
+name = "eric-wisnewski"
 compatibility_date = "2026-03-07"
+
+# Required for Pages to use this file (and D1 bindings) in production.
+# Hugo outputs to public/ by default.
+pages_build_output_dir = "public"
 
 # D1 binding for comments (use same id for local dev or override via CLI)
 [[d1_databases]]

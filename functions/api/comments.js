@@ -12,6 +12,15 @@ function isValidUrlParam(url) {
   return t.startsWith('/') && !t.startsWith('//') && !t.includes('://');
 }
 
+/** Canonical form: trim, ensure single leading slash, trailing slash (except for "/"). */
+function canonicalCommentUrl(url) {
+  if (typeof url !== 'string' || !url) return '';
+  const t = url.trim().replace(/\/+/g, '/');
+  if (!t.startsWith('/')) return '';
+  if (t === '/') return '/';
+  return t.endsWith('/') ? t : t + '/';
+}
+
 function jsonResponse(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -48,21 +57,24 @@ export async function onRequestGet(context) {
     return jsonResponse({ error: 'Missing or invalid url parameter' }, 400);
   }
 
+  const canonical = canonicalCommentUrl(url);
+  const alt = canonical === '/' ? '/' : canonical.slice(0, -1);
+
   try {
     const stmt = db.prepare(
-      'SELECT id, url, author, body, created_at, parent_id FROM comments WHERE url = ? ORDER BY created_at ASC'
+      'SELECT id, url, author, body, created_at, parent_id FROM comments WHERE url = ? OR url = ? ORDER BY created_at ASC'
     );
-    const { results } = await stmt.bind(url.trim()).all();
-    return jsonResponse(results);
+    const { results } = await stmt.bind(canonical, alt).all();
+    return jsonResponse(results ?? []);
   } catch (e) {
     const msg = e?.message != null ? String(e.message) : '';
     const missingColumn = /no such column|parent_id/i.test(msg);
     if (missingColumn) {
       try {
         const stmtLegacy = db.prepare(
-          'SELECT id, url, author, body, created_at FROM comments WHERE url = ? ORDER BY created_at ASC'
+          'SELECT id, url, author, body, created_at FROM comments WHERE url = ? OR url = ? ORDER BY created_at ASC'
         );
-        const { results: legacyResults } = await stmtLegacy.bind(url.trim()).all();
+        const { results: legacyResults } = await stmtLegacy.bind(canonical, alt).all();
         const withParentId = (legacyResults || []).map((row) => ({ ...row, parent_id: null }));
         return jsonResponse(withParentId);
       } catch (e2) {
@@ -108,13 +120,14 @@ export async function onRequestPost(context) {
     }
   }
 
-  const url = body.url != null ? String(body.url).trim() : '';
+  const rawUrl = body.url != null ? String(body.url).trim() : '';
+  const url = canonicalCommentUrl(rawUrl);
   const author = body.author != null ? String(body.author).trim() : '';
   const text = body.text != null ? String(body.text).trim() : '';
   const email = body.email != null ? String(body.email).trim() : null;
   const parentId = body.parent_id != null ? Number(body.parent_id) : null;
 
-  if (!isValidUrlParam(url)) {
+  if (!url || !isValidUrlParam(rawUrl)) {
     return jsonResponse({ error: 'Missing or invalid url' }, 400);
   }
   if (!author) return jsonResponse({ error: 'Author is required' }, 400);
@@ -130,9 +143,10 @@ export async function onRequestPost(context) {
     if (!Number.isInteger(parentId) || parentId < 1) {
       return jsonResponse({ error: 'Invalid parent_id' }, 400);
     }
+    const altUrl = url === '/' ? '/' : url.slice(0, -1);
     const parent = await db
-      .prepare('SELECT id, parent_id FROM comments WHERE id = ? AND url = ?')
-      .bind(parentId, url)
+      .prepare('SELECT id, parent_id FROM comments WHERE id = ? AND (url = ? OR url = ?)')
+      .bind(parentId, url, altUrl)
       .first();
     if (!parent) {
       return jsonResponse({ error: 'Parent comment not found' }, 400);
@@ -177,6 +191,7 @@ export async function onRequestPut(context) {
   const id = body.id != null ? Number(body.id) : null;
   const text = body.text != null ? String(body.text).trim() : '';
   const editToken = body.edit_token != null ? String(body.edit_token).trim() : '';
+  const author = body.author != null ? String(body.author).trim() : null;
 
   if (!Number.isInteger(id) || id < 1) {
     return jsonResponse({ error: 'Invalid or missing id' }, 400);
@@ -186,9 +201,15 @@ export async function onRequestPut(context) {
   if (text.length > MAX_TEXT) {
     return jsonResponse({ error: `Comment must be at most ${MAX_TEXT} characters` }, 400);
   }
+  if (author !== null) {
+    if (!author) return jsonResponse({ error: 'Author cannot be empty' }, 400);
+    if (author.length > MAX_AUTHOR) {
+      return jsonResponse({ error: `Author must be at most ${MAX_AUTHOR} characters` }, 400);
+    }
+  }
 
   const row = await db
-    .prepare('SELECT id, edit_token FROM comments WHERE id = ?')
+    .prepare('SELECT id, edit_token, email FROM comments WHERE id = ?')
     .bind(id)
     .first();
   if (!row) return jsonResponse({ error: 'Comment not found' }, 404);
@@ -197,6 +218,13 @@ export async function onRequestPut(context) {
   }
 
   try {
+    if (author !== null) {
+      if (row.email) {
+        await db.prepare('UPDATE comments SET author = ? WHERE email = ?').bind(author, row.email).run();
+      } else {
+        await db.prepare('UPDATE comments SET author = ? WHERE id = ?').bind(author, id).run();
+      }
+    }
     await db.prepare('UPDATE comments SET body = ? WHERE id = ?').bind(text, id).run();
     const updated = await db
       .prepare(
