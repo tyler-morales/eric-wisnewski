@@ -44,11 +44,20 @@ export async function onRequestGet(context) {
   if (adminSecret && isAdmin(adminSecret, context.env)) {
     try {
       const stmt = db.prepare(
-        'SELECT id, url, author, email, body, created_at, parent_id, edit_token FROM comments ORDER BY url ASC, created_at ASC'
+        `SELECT id, url, author, email, body, created_at, parent_id, edit_token FROM comments
+         WHERE status = 'pending' ORDER BY url ASC, created_at ASC`
       );
       const { results } = await stmt.all();
       return jsonResponse(results ?? []);
     } catch (e) {
+      const msg = e?.message != null ? String(e.message) : '';
+      if (/no such column: status/i.test(msg)) {
+        const stmt = db.prepare(
+          'SELECT id, url, author, email, body, created_at, parent_id, edit_token FROM comments ORDER BY url ASC, created_at ASC'
+        );
+        const { results } = await stmt.all();
+        return jsonResponse(results ?? []);
+      }
       return jsonResponse({ error: 'Failed to load comments' }, 500);
     }
   }
@@ -71,13 +80,14 @@ export async function onRequestGet(context) {
 
   try {
     const stmt = db.prepare(
-      'SELECT id, url, author, body, created_at, parent_id FROM comments WHERE url = ? OR url = ? ORDER BY created_at ASC'
+      `SELECT id, url, author, body, created_at, parent_id FROM comments
+       WHERE (url = ? OR url = ?) AND (status IS NULL OR status = 'approved') ORDER BY created_at ASC`
     );
     const { results } = await stmt.bind(canonical, alt).all();
     return jsonResponse(results ?? []);
   } catch (e) {
     const msg = e?.message != null ? String(e.message) : '';
-    const missingColumn = /no such column|parent_id/i.test(msg);
+    const missingColumn = /no such column/i.test(msg);
     if (missingColumn) {
       try {
         const stmtLegacy = db.prepare(
@@ -91,6 +101,47 @@ export async function onRequestGet(context) {
       }
     }
     return jsonResponse({ error: 'Failed to load comments' }, 500);
+  }
+}
+
+export async function onRequestPatch(context) {
+  const db = context.env.COMMENTS_DB;
+  if (!db) return jsonResponse({ error: 'Comments not configured' }, 503);
+
+  const { searchParams } = new URL(context.request.url);
+  const id = searchParams.get('id') != null ? Number(searchParams.get('id')) : null;
+  const adminSecret = searchParams.get('admin_secret') ?? '';
+
+  if (!Number.isInteger(id) || id < 1) {
+    return jsonResponse({ error: 'Invalid or missing id' }, 400);
+  }
+  if (!adminSecret || !isAdmin(adminSecret, context.env)) {
+    if (adminSecret) {
+      const configuredSet =
+        typeof context.env.COMMENTS_ADMIN_SECRET === 'string' &&
+        context.env.COMMENTS_ADMIN_SECRET.length > 0;
+      return jsonResponse(
+        {
+          error: configuredSet ? 'Invalid admin secret.' : 'Admin secret not configured on server.',
+        },
+        401
+      );
+    }
+    return jsonResponse({ error: 'admin_secret is required' }, 400);
+  }
+
+  const row = await db.prepare('SELECT id FROM comments WHERE id = ?').bind(id).first();
+  if (!row) return jsonResponse({ error: 'Comment not found' }, 404);
+
+  try {
+    await db.prepare('UPDATE comments SET status = ? WHERE id = ?').bind('approved', id).run();
+    return new Response(null, { status: 204 });
+  } catch (e) {
+    const msg = e?.message != null ? String(e.message) : '';
+    if (/no such column: status/i.test(msg)) {
+      return jsonResponse({ error: 'Comment approval not available (migration required)' }, 501);
+    }
+    return jsonResponse({ error: 'Failed to approve comment' }, 500);
   }
 }
 
@@ -168,12 +219,29 @@ export async function onRequestPost(context) {
   const editToken = crypto.randomUUID();
 
   try {
-    const stmt = db.prepare(
-      'INSERT INTO comments (url, author, email, body, parent_id, edit_token) VALUES (?, ?, ?, ?, ?, ?)'
-    );
-    const { meta } = await stmt
-      .bind(url, author, email || null, text, parentId, editToken)
-      .run();
+    let meta;
+    try {
+      const stmt = db.prepare(
+        'INSERT INTO comments (url, author, email, body, parent_id, edit_token, status) VALUES (?, ?, ?, ?, ?, ?, ?)'
+      );
+      const result = await stmt
+        .bind(url, author, email || null, text, parentId, editToken, 'pending')
+        .run();
+      meta = result.meta;
+    } catch (insertErr) {
+      const msg = insertErr?.message != null ? String(insertErr.message) : '';
+      if (/no such column: status/i.test(msg)) {
+        const stmt = db.prepare(
+          'INSERT INTO comments (url, author, email, body, parent_id, edit_token) VALUES (?, ?, ?, ?, ?, ?)'
+        );
+        const result = await stmt
+          .bind(url, author, email || null, text, parentId, editToken)
+          .run();
+        meta = result.meta;
+      } else {
+        throw insertErr;
+      }
+    }
     const row = await db
       .prepare(
         'SELECT id, url, author, body, created_at, parent_id FROM comments WHERE id = ?'

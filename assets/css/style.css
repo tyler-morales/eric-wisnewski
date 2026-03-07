@@ -1072,6 +1072,30 @@ article.post-content hr {
   word-break: break-word;
 }
 
+.admin-comment-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.admin-comment-allow {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  border: 1px solid #0a0;
+  background: #fff;
+  color: #0a0;
+}
+
+.admin-comment-allow:hover,
+.admin-comment-allow:focus-visible {
+  background: #0a0;
+  color: #fff;
+  outline: 2px solid #0a0;
+  outline-offset: 2px;
+}
+
 .admin-comment-delete {
   padding: 0.25rem 0.5rem;
   font-size: 0.8125rem;
