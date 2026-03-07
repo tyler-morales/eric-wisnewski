@@ -30,11 +30,11 @@
 - [x] Home page post list: each blog entry shows featured image (`.Params.image`) when set; list images use uniform 16:9 aspect-ratio box with `object-fit: cover` so all thumbnails are the same size; list link is one block (image + title + date), a11y with `alt=""` on thumbnails (link text gives context).
 - [x] Wizard emoji favicon: `static/favicon.svg` (🧙); linked in `layouts/partials/head.html` via `rel="icon"` type image/svg+xml.
 - [x] Open Graph for share previews: `og:site_name` added; default `og:image` and `twitter:image` set to favicon.svg when post has no featured image so shared links always show title, description, and an image (per-post featured image still overrides). Note: some platforms (e.g. Facebook) prefer PNG/JPEG for og:image; if preview image is missing there, add `static/images/og-default.png` (e.g. 1200×630) and point default OG image to it.
+- [x] Comments: Cloudflare Pages Function + D1 + widget (replaced Isso placeholder); API at `/api/comments`, widget in `layouts/partials/isso.html`, JS in `static/js/comments.js`; D1 binding and optional `wrangler.toml`.
 
 ## Later
 - [x] Inline images on live: added `scripts/sync-uploaded-images.sh` and use it before Hugo in production build so CMS uploads in `assets/images/uploads/` are copied to `static/images/uploads/` and resolve at `/images/uploads/`. README build command updated.
 - [ ] Re-evaluate custom upload tool (e.g. upload-image.html + Cloudflare function) if CMS uploads are unreliable.
-- [ ] Set Isso server URL in `layouts/partials/isso.html` (replace `your-isso-domain.com` with your instance).
 - [ ] Content is edited via Pages CMS (app.pagescms.org); ensure repo is connected and `.pages.yml` is present on the branch you use.
 - [ ] Cloudflare Pages: if builds still fail with "module not found", ensure the **branch Cloudflare builds from** has the fix (no `theme = ''` in `config/_default/hugo.toml`). If Pages CMS pushes to a different branch, merge `main` into it or remove the theme line on that branch.
 - [ ] Consider cache-bust or refresh note for Eric: when he updates the Google Sheet, a new deploy (or rebuild) is needed for the School Sheets page to show fresh data; optional: document or add a cache key hint in config.

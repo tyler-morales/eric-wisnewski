@@ -49,7 +49,18 @@ Content and media are edited via **Pages CMS**. Eric signs in with **email** (ma
 
 **Images for og:image / build:** Featured and body images under `/images/uploads/` are served from `static/images/uploads/`. Run `./scripts/sync-uploaded-images.sh` before `hugo` (or use the full build command above) so CMS uploads are available in the built site.
 
+## Comments
+
+Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET to list by page URL, POST to submit). The widget is in `layouts/partials/isso.html` and loads `static/js/comments.js`.
+
+To enable comments:
+
+1. Create a D1 database (e.g. `blog-comments`) in the Cloudflare dashboard (Workers & Pages → D1) or run `npx wrangler d1 create blog-comments` and note the `database_id`.
+2. Run the schema once: `npx wrangler d1 execute blog-comments --remote --file=./migrations/0000_initial_comments.sql` (or run the SQL in the D1 dashboard).
+3. Bind the database to your Pages project: in the dashboard go to your Pages project → Settings → Functions → Bindings → D1, add binding name `COMMENTS_DB` and select the database. Or add the binding to `wrangler.toml` (replace `<DATABASE_ID>` in `wrangler.toml` with your database id) and deploy with the config file as source of truth.
+
+Local dev with comments: run Hugo to build `public/`, then `npx wrangler pages dev ./public --d1 COMMENTS_DB=<database_id>`.
+
 ## Tech notes
 
 - CSS lives in `assets/css/style.css` and is fingerprinted on build so cache updates when you change styles.
-- Comments are powered by Isso; configure the Isso server URL in `layouts/partials/isso.html` (`data-isso` and `src` on the script tag).

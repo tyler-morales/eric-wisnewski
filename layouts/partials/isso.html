@@ -1,5 +1,18 @@
-<section id="isso-thread" aria-label="Comments">
-  <noscript>Please enable JavaScript to view comments.</noscript>
+<section id="comments" class="comments-section" aria-label="Comments">
+  <h2 class="comments-heading">Comments</h2>
+  <ol class="comments-list" role="list" tabindex="-1">
+    <li class="comments-loading">Loading…</li>
+  </ol>
+  <p class="comments-error" role="alert" aria-live="polite" hidden></p>
+  <form class="comments-form" aria-label="Add a comment">
+    <label for="comment-author">Name <span aria-hidden="true">(required)</span></label>
+    <input id="comment-author" name="author" type="text" required autocomplete="name" maxlength="200">
+    <label for="comment-email">Email <span aria-hidden="true">(optional, not displayed)</span></label>
+    <input id="comment-email" name="email" type="email" autocomplete="email">
+    <label for="comment-text">Comment <span aria-hidden="true">(required)</span></label>
+    <textarea id="comment-text" name="text" required rows="4" maxlength="5000"></textarea>
+    <button type="submit">Post comment</button>
+  </form>
+  <noscript>Please enable JavaScript to view and post comments.</noscript>
 </section>
-<!-- Set data-isso and src to your Isso server URL (e.g. //comments.example.com/) -->
-<script data-isso="//your-isso-domain.com/" src="//your-isso-domain.com/js/embed.min.js" data-isso-css="false" data-isso-lang="en"></script>
+<script src="{{ "/js/comments.js" | relURL }}" defer></script>
