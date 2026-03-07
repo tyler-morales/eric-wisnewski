@@ -9,7 +9,6 @@
 
   var siteKey = (section.dataset && section.dataset.turnstileSitekey) ? section.dataset.turnstileSitekey.trim() : '';
   var mainWidgetId = null;
-  var replyWidgetId = null;
 
   var STORAGE_KEY = 'comment_tokens';
   var AUTHOR_KEY = 'comment_author';
@@ -162,13 +161,7 @@
 
   function closeOpenReplyForm() {
     var open = section.querySelector('.comments-reply-form');
-    if (open) {
-      if (typeof turnstile !== 'undefined' && replyWidgetId != null) {
-        turnstile.remove(replyWidgetId);
-        replyWidgetId = null;
-      }
-      open.remove();
-    }
+    if (open) open.remove();
   }
 
   function closeOpenEdit() {
@@ -187,14 +180,12 @@
 
   function renderReplyForm(parentId, parentAuthor, onCancel) {
     closeOpenReplyForm();
-    replyWidgetId = null;
     var form = document.createElement('form');
     form.className = 'comments-form comments-reply-form';
     form.setAttribute('aria-label', 'Reply to ' + parentAuthor);
     form.innerHTML =
       '<label for="comment-reply-text">Reply</label>' +
       '<textarea id="comment-reply-text" name="text" required rows="2" maxlength="5000" placeholder="Write a reply…"></textarea>' +
-      '<div class="comments-reply-turnstile comments-turnstile" role="group" aria-label="Verification"></div>' +
       '<div class="comments-form-actions">' +
       '<button type="button" class="comment-cancel">Cancel</button>' +
       '<button type="submit">Post reply</button>' +
@@ -224,18 +215,17 @@
         showError('Enter your name in the form below, then reply.');
         return;
       }
-      if (siteKey) {
-        var replyToken = (typeof turnstile !== 'undefined' && replyWidgetId != null) ? turnstile.getResponse(replyWidgetId) : '';
-        if (!replyToken) {
-          showError('Please complete the verification.');
+      var hasWidget = siteKey && typeof turnstile !== 'undefined' && mainWidgetId != null;
+      if (hasWidget) {
+        var token = turnstile.getResponse(mainWidgetId);
+        if (!token) {
+          showError('Please complete the verification in the form below.');
           return;
         }
       }
       var payload = { url: normalizeUrl(), author: author.trim(), text: text.trim(), parent_id: parentId };
       if (email) payload.email = email.trim();
-      if (siteKey && typeof turnstile !== 'undefined' && replyWidgetId != null) {
-        payload.cf_turnstile_response = turnstile.getResponse(replyWidgetId);
-      }
+      if (hasWidget) payload.cf_turnstile_response = turnstile.getResponse(mainWidgetId);
       fetch('/api/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -250,6 +240,7 @@
         .then(function (data) {
           if (data.edit_token) saveToken(data.id, data.edit_token);
           saveAuthorEmail(author, email);
+          if (hasWidget && typeof turnstile !== 'undefined') turnstile.reset(mainWidgetId);
           closeOpenReplyForm();
           loadComments();
           listEl.focus();
@@ -258,12 +249,7 @@
           showError(err.message || 'Could not post reply.');
         });
     });
-    function onMount() {
-      if (!siteKey || typeof turnstile === 'undefined') return;
-      var container = form.querySelector('.comments-reply-turnstile');
-      if (container) replyWidgetId = turnstile.render(container, { sitekey: siteKey });
-    }
-    return { form: form, onMount: onMount };
+    return { form: form };
   }
 
   function renderComment(c, isReply, thread, parentAuthor) {
@@ -327,7 +313,6 @@
         })();
         var result = renderReplyForm(c.id, c.author, function () {});
         container.insertBefore(result.form, container.firstChild);
-        if (result.onMount) result.onMount();
         var firstInput = result.form.querySelector('input, textarea');
         if (firstInput) firstInput.focus();
       });
@@ -345,6 +330,16 @@
         bodyEl.hidden = true;
         var wrap = document.createElement('div');
         wrap.className = 'comment-edit-active';
+        var nameLabel = document.createElement('label');
+        nameLabel.htmlFor = 'comment-edit-author-' + c.id;
+        nameLabel.textContent = 'Display name';
+        var nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.id = 'comment-edit-author-' + c.id;
+        nameInput.className = 'comment-edit-author';
+        nameInput.maxLength = 200;
+        nameInput.value = c.author || '';
+        nameInput.setAttribute('aria-label', 'Your display name (updates on all your comments if you used the same email)');
         var textarea = document.createElement('textarea');
         textarea.rows = 3;
         textarea.maxLength = 5000;
@@ -370,10 +365,13 @@
             showError('Session expired. Refresh to edit.');
             return;
           }
+          var newAuthor = (nameInput.value && nameInput.value.trim()) || null;
+          var payload = { id: c.id, text: newText, edit_token: token };
+          if (newAuthor !== null) payload.author = newAuthor.trim();
           fetch('/api/comments', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: c.id, text: newText, edit_token: token })
+            body: JSON.stringify(payload)
           })
             .then(function (r) {
               return parseJson(r).then(function (data) {
@@ -394,6 +392,8 @@
         });
         btnWrap.appendChild(cancelBtn);
         btnWrap.appendChild(saveBtn);
+        wrap.appendChild(nameLabel);
+        wrap.appendChild(nameInput);
         wrap.appendChild(textarea);
         wrap.appendChild(btnWrap);
         bodyWrap.appendChild(wrap);
@@ -460,16 +460,22 @@
     });
   }
 
+  function showLoadError(msg) {
+    listEl.innerHTML = '<li class="comments-error-state" role="alert">' + escapeHtml(msg || 'Could not load comments.') + '</li>';
+    showError(msg || 'Could not load comments.');
+  }
+
   function loadComments() {
     var url = normalizeUrl();
-    fetch('/api/comments?url=' + encodeURIComponent(url))
+    var fetchUrl = '/api/comments?url=' + encodeURIComponent(url);
+    fetch(fetchUrl)
       .then(function (r) {
         if (!r.ok) throw new Error('Failed to load comments');
         return parseJson(r);
       })
       .then(renderComments)
       .catch(function (err) {
-        showError(err.message || 'Could not load comments.');
+        showLoadError(err.message || 'Could not load comments. Check that the comments API is running.');
       });
   }
 
@@ -487,8 +493,9 @@
       showError('Please fill in your name and comment.');
       return;
     }
-    if (siteKey) {
-      var mainToken = (typeof turnstile !== 'undefined' && mainWidgetId != null) ? turnstile.getResponse(mainWidgetId) : '';
+    var hasWidget = siteKey && typeof turnstile !== 'undefined' && mainWidgetId != null;
+    if (hasWidget) {
+      var mainToken = turnstile.getResponse(mainWidgetId);
       if (!mainToken) {
         showError('Please complete the verification.');
         return;
@@ -497,9 +504,7 @@
 
     var payload = { url: normalizeUrl(), author: author, text: text };
     if (email) payload.email = email;
-    if (siteKey && typeof turnstile !== 'undefined' && mainWidgetId != null) {
-      payload.cf_turnstile_response = turnstile.getResponse(mainWidgetId);
-    }
+    if (hasWidget) payload.cf_turnstile_response = turnstile.getResponse(mainWidgetId);
 
     fetch('/api/comments', {
       method: 'POST',
@@ -518,9 +523,7 @@
         authorInput.value = '';
         if (emailInput) emailInput.value = '';
         textInput.value = '';
-        if (siteKey && typeof turnstile !== 'undefined' && mainWidgetId != null) {
-          turnstile.reset(mainWidgetId);
-        }
+        if (hasWidget) turnstile.reset(mainWidgetId);
         loadComments();
         listEl.focus();
       })
@@ -529,14 +532,16 @@
       });
   });
 
-  if (siteKey && typeof turnstile !== 'undefined') {
-    var container = section.querySelector('#comments-turnstile-container');
-    if (container) {
-      turnstile.ready(function () {
-        mainWidgetId = turnstile.render(container, { sitekey: siteKey });
-      });
+  try {
+    if (siteKey && typeof turnstile !== 'undefined') {
+      var container = section.querySelector('#comments-turnstile-container');
+      if (container) {
+        turnstile.ready(function () {
+          mainWidgetId = turnstile.render(container, { sitekey: siteKey });
+        });
+      }
     }
-  }
+  } catch (_) {}
 
   loadComments();
 })();
