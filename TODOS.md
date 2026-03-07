@@ -49,6 +49,8 @@
 
 - [x] Comments "not configured" on prod: added `pages_build_output_dir = "public"` to `wrangler.toml` so Cloudflare Pages uses the file (and D1 binding) in production; without it the file was local-only and `COMMENTS_DB` was undefined in prod.
 - [x] Comments load-on-page-load fix: `turnstile.ready()` threw an uncaught error that killed the IIFE before `loadComments()` could run; wrapped Turnstile setup in try-catch so comments always load on page load regardless of Turnstile state.
+- [x] Admin comments docs and API fix: API returns 503 "Admin secret not configured on server" when admin_secret sent but COMMENTS_ADMIN_SECRET unset; README documents .dev.vars location, restart wrangler, and troubleshooting; admin layout/CSS tweaks.
+- [x] Comment approval flow: new comments are pending; admin list shows only pending; Allow button (PATCH) sets status to approved and comment leaves list; migration `0002_comments_allow.sql` adds `status`; public GET only returns approved; README and TODOS updated.
 
 ## Later
 - [x] Inline images on live: added `scripts/sync-uploaded-images.sh` and use it before Hugo in production build so CMS uploads in `assets/images/uploads/` are copied to `static/images/uploads/` and resolve at `/images/uploads/`. README build command updated.

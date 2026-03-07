@@ -75,7 +75,7 @@
     adminList.innerHTML = '';
     adminListError.hidden = true;
     if (!comments || comments.length === 0) {
-      adminList.textContent = 'No comments yet.';
+      adminList.textContent = 'No pending comments.';
       return;
     }
     var byUrl = groupByUrl(comments);
@@ -110,13 +110,23 @@
         body.className = 'admin-comment-body';
         body.textContent = c.body || '';
         li.appendChild(body);
+        var actions = document.createElement('div');
+        actions.className = 'admin-comment-actions';
+        var allowBtn = document.createElement('button');
+        allowBtn.type = 'button';
+        allowBtn.className = 'admin-comment-allow';
+        allowBtn.textContent = 'Allow';
+        allowBtn.setAttribute('aria-label', 'Allow this comment (show on site)');
+        allowBtn.dataset.id = String(c.id);
+        actions.appendChild(allowBtn);
         var delBtn = document.createElement('button');
         delBtn.type = 'button';
         delBtn.className = 'admin-comment-delete';
         delBtn.textContent = 'Delete';
         delBtn.setAttribute('aria-label', 'Delete this comment');
         delBtn.dataset.id = String(c.id);
-        li.appendChild(delBtn);
+        actions.appendChild(delBtn);
+        li.appendChild(actions);
         ol.appendChild(li);
       }
       section.appendChild(ol);
@@ -134,8 +144,13 @@
       .then(function(res) {
         if (!res.ok) {
           if (res.status === 403 || res.status === 401) {
-            showSecretForm('Invalid or expired secret.');
-            return null;
+            return res.json().then(function(b) {
+              showSecretForm(b.error || 'Invalid or expired secret.');
+              return null;
+            }).catch(function() {
+              showSecretForm('Invalid or expired secret.');
+              return null;
+            });
           }
           return res.json().then(function(b) { throw new Error(b.error || res.statusText); });
         }
@@ -148,6 +163,26 @@
       .catch(function(err) {
         adminLoading.hidden = true;
         adminListError.textContent = err.message || 'Failed to load comments.';
+        adminListError.hidden = false;
+      });
+  }
+
+  function doAllow(id) {
+    var secret = getSecret();
+    if (!secret) { showSecretForm('Session expired.'); return; }
+    fetch('/api/comments?id=' + encodeURIComponent(id) + '&admin_secret=' + encodeURIComponent(secret), { method: 'PATCH' })
+      .then(function(res) {
+        if (res.status === 403 || res.status === 401) {
+          showSecretForm('Invalid or expired secret.');
+          return;
+        }
+        if (res.status !== 204) {
+          return res.json().then(function(b) { throw new Error(b.error || res.statusText); });
+        }
+        loadComments();
+      })
+      .catch(function(err) {
+        adminListError.textContent = err.message || 'Failed to allow comment.';
         adminListError.hidden = false;
       });
   }
@@ -190,8 +225,10 @@
   });
 
   adminList.addEventListener('click', function(e) {
-    var btn = e.target.closest('.admin-comment-delete');
-    if (btn && btn.dataset.id) doDelete(btn.dataset.id);
+    var allowBtn = e.target.closest('.admin-comment-allow');
+    if (allowBtn && allowBtn.dataset.id) { doAllow(allowBtn.dataset.id); return; }
+    var delBtn = e.target.closest('.admin-comment-delete');
+    if (delBtn && delBtn.dataset.id) doDelete(delBtn.dataset.id);
   });
 
   if (getSecret()) {
