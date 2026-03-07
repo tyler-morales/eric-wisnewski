@@ -7,6 +7,10 @@
   var errorEl = section.querySelector('.comments-error');
   if (!listEl || !formEl) return;
 
+  var STORAGE_KEY = 'comment_tokens';
+  var AUTHOR_KEY = 'comment_author';
+  var EMAIL_KEY = 'comment_email';
+
   function normalizeUrl() {
     return location.pathname.replace(/\/?$/, '/');
   }
@@ -43,21 +47,50 @@
     }
   }
 
-  function renderComments(comments) {
-    listEl.innerHTML = '';
-    if (!comments || comments.length === 0) {
-      listEl.innerHTML = '<li class="comments-empty">No comments yet.</li>';
-      return;
+  function getTokens() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (_) {
+      return {};
     }
-    comments.forEach(function (c) {
-      var li = document.createElement('li');
-      li.className = 'comment-item';
-      li.innerHTML =
-        '<cite class="comment-author">' + escapeHtml(c.author) + '</cite> ' +
-        '<time class="comment-date" datetime="' + escapeHtml(c.created_at) + '">' + formatDate(c.created_at) + '</time>' +
-        '<div class="comment-body">' + escapeHtml(c.body) + '</div>';
-      listEl.appendChild(li);
-    });
+  }
+
+  function saveToken(id, token) {
+    var tokens = getTokens();
+    tokens[String(id)] = token;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
+    } catch (_) {}
+  }
+
+  function saveAuthorEmail(author, email) {
+    try {
+      if (author) localStorage.setItem(AUTHOR_KEY, author);
+      if (email != null) localStorage.setItem(EMAIL_KEY, email);
+    } catch (_) {}
+  }
+
+  function getAuthorEmail() {
+    var author = null;
+    var email = null;
+    try {
+      author = localStorage.getItem(AUTHOR_KEY);
+      email = localStorage.getItem(EMAIL_KEY);
+    } catch (_) {}
+    return { author: author || '', email: email || '' };
+  }
+
+  function getToken(id) {
+    return getTokens()[String(id)];
+  }
+
+  function removeToken(id) {
+    var tokens = getTokens();
+    delete tokens[String(id)];
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
+    } catch (_) {}
   }
 
   function parseJson(r) {
@@ -66,6 +99,282 @@
       throw new Error('Comments service unavailable. Is the comments API running?');
     }
     return r.json();
+  }
+
+  function buildThread(comments) {
+    var top = [];
+    var byParent = {};
+    (comments || []).forEach(function (c) {
+      var pid = c.parent_id;
+      if (pid == null) {
+        top.push(c);
+      } else {
+        if (!byParent[pid]) byParent[pid] = [];
+        byParent[pid].push(c);
+      }
+    });
+    top.sort(function (a, b) {
+      return new Date(a.created_at) - new Date(b.created_at);
+    });
+    Object.keys(byParent).forEach(function (pid) {
+      byParent[pid].sort(function (a, b) {
+        return new Date(a.created_at) - new Date(b.created_at);
+      });
+    });
+    return { top: top, byParent: byParent };
+  }
+
+  function closeOpenReplyForm() {
+    var open = section.querySelector('.comments-reply-form');
+    if (open) open.remove();
+  }
+
+  function closeOpenEdit() {
+    var open = section.querySelector('.comment-item .comment-edit-active');
+    if (open) {
+      var item = open.closest('.comment-item');
+      var body = item.querySelector('.comment-body');
+      var current = item.getAttribute('data-body');
+      if (body && current != null) {
+        body.textContent = current;
+        body.hidden = false;
+      }
+      open.remove();
+    }
+  }
+
+  function renderReplyForm(parentId, parentAuthor, onCancel) {
+    closeOpenReplyForm();
+    var form = document.createElement('form');
+    form.className = 'comments-form comments-reply-form';
+    form.setAttribute('aria-label', 'Reply to ' + parentAuthor);
+    form.innerHTML =
+      '<label for="comment-reply-text">Reply</label>' +
+      '<textarea id="comment-reply-text" name="text" required rows="2" maxlength="5000" placeholder="Write a reply…"></textarea>' +
+      '<div class="comments-form-actions">' +
+      '<button type="button" class="comment-cancel">Cancel</button>' +
+      '<button type="submit">Post reply</button>' +
+      '</div>';
+    form.querySelector('.comment-cancel').addEventListener('click', function () {
+      closeOpenReplyForm();
+      if (onCancel) onCancel();
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearError();
+      var text = (form.querySelector('[name="text"]') || {}).value;
+      if (!text || !text.trim()) {
+        showError('Please enter a reply.');
+        return;
+      }
+      var authorInput = formEl.querySelector('[name="author"]');
+      var emailInput = formEl.querySelector('[name="email"]');
+      var author = (authorInput && authorInput.value && authorInput.value.trim()) || '';
+      var email = (emailInput && emailInput.value && emailInput.value.trim()) || '';
+      if (!author) {
+        var stored = getAuthorEmail();
+        author = stored.author;
+        email = email || stored.email;
+      }
+      if (!author) {
+        showError('Enter your name in the form below, then reply.');
+        return;
+      }
+      var payload = { url: normalizeUrl(), author: author.trim(), text: text.trim(), parent_id: parentId };
+      if (email) payload.email = email.trim();
+      fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(function (r) {
+          return parseJson(r).then(function (data) {
+            if (!r.ok) throw new Error(data.error || 'Failed to post reply');
+            return data;
+          });
+        })
+        .then(function (data) {
+          if (data.edit_token) saveToken(data.id, data.edit_token);
+          saveAuthorEmail(author, email);
+          closeOpenReplyForm();
+          loadComments();
+          listEl.focus();
+        })
+        .catch(function (err) {
+          showError(err.message || 'Could not post reply.');
+        });
+    });
+    return form;
+  }
+
+  function renderComment(c, isReply, thread) {
+    var li = document.createElement('li');
+    li.className = 'comment-item' + (isReply ? ' comment-reply' : '');
+    li.setAttribute('data-comment-id', c.id);
+    li.setAttribute('data-body', c.body);
+
+    var meta = document.createElement('div');
+    meta.className = 'comment-meta';
+    meta.innerHTML =
+      '<cite class="comment-author">' + escapeHtml(c.author) + '</cite> ' +
+      '<time class="comment-date" datetime="' + escapeHtml(c.created_at) + '">' + formatDate(c.created_at) + '</time>';
+    li.appendChild(meta);
+
+    var bodyWrap = document.createElement('div');
+    bodyWrap.className = 'comment-body-wrap';
+    var bodyEl = document.createElement('div');
+    bodyEl.className = 'comment-body';
+    bodyEl.textContent = c.body;
+    bodyWrap.appendChild(bodyEl);
+    li.appendChild(bodyWrap);
+
+    var actions = document.createElement('div');
+    actions.className = 'comment-actions';
+    var canEdit = !!getToken(c.id);
+
+    if (!isReply) {
+      var replyBtn = document.createElement('button');
+      replyBtn.type = 'button';
+      replyBtn.className = 'comment-action comment-reply-btn';
+      replyBtn.textContent = 'Reply';
+      replyBtn.setAttribute('aria-label', 'Reply to ' + escapeHtml(c.author));
+      replyBtn.addEventListener('click', function () {
+        closeOpenEdit();
+        var container = li.querySelector('.comment-replies') || (function () {
+          var div = document.createElement('div');
+          div.className = 'comment-replies';
+          li.appendChild(div);
+          return div;
+        })();
+        var form = renderReplyForm(c.id, c.author, function () {});
+        container.insertBefore(form, container.firstChild);
+        var firstInput = form.querySelector('input, textarea');
+        if (firstInput) firstInput.focus();
+      });
+      actions.appendChild(replyBtn);
+    }
+    if (canEdit) {
+      var editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'comment-action comment-edit-btn';
+      editBtn.textContent = 'Edit';
+      editBtn.setAttribute('aria-label', 'Edit your comment');
+      editBtn.addEventListener('click', function () {
+        closeOpenReplyForm();
+        closeOpenEdit();
+        bodyEl.hidden = true;
+        var wrap = document.createElement('div');
+        wrap.className = 'comment-edit-active';
+        var textarea = document.createElement('textarea');
+        textarea.rows = 3;
+        textarea.maxLength = 5000;
+        textarea.value = c.body;
+        textarea.setAttribute('aria-label', 'Edit comment text');
+        var btnWrap = document.createElement('div');
+        btnWrap.className = 'comment-edit-actions';
+        var cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.addEventListener('click', function () {
+          bodyEl.hidden = false;
+          wrap.remove();
+        });
+        var saveBtn = document.createElement('button');
+        saveBtn.type = 'button';
+        saveBtn.textContent = 'Save';
+        saveBtn.addEventListener('click', function () {
+          var newText = textarea.value.trim();
+          if (!newText) return;
+          var token = getToken(c.id);
+          if (!token) {
+            showError('Session expired. Refresh to edit.');
+            return;
+          }
+          fetch('/api/comments', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: c.id, text: newText, edit_token: token })
+          })
+            .then(function (r) {
+              return parseJson(r).then(function (data) {
+                if (!r.ok) throw new Error(data.error || 'Failed to update');
+                return data;
+              });
+            })
+            .then(function () {
+              li.setAttribute('data-body', newText);
+              bodyEl.textContent = newText;
+              bodyEl.hidden = false;
+              wrap.remove();
+              loadComments();
+            })
+            .catch(function (err) {
+              showError(err.message || 'Could not update comment.');
+            });
+        });
+        btnWrap.appendChild(cancelBtn);
+        btnWrap.appendChild(saveBtn);
+        wrap.appendChild(textarea);
+        wrap.appendChild(btnWrap);
+        bodyWrap.appendChild(wrap);
+        textarea.focus();
+      });
+      actions.appendChild(editBtn);
+
+      var delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'comment-action comment-delete-btn';
+      delBtn.textContent = 'Delete';
+      delBtn.setAttribute('aria-label', 'Delete your comment');
+      delBtn.addEventListener('click', function () {
+        if (!confirm('Delete this comment? This cannot be undone.')) return;
+        var token = getToken(c.id);
+        if (!token) {
+          showError('Session expired. Refresh the page.');
+          return;
+        }
+        fetch('/api/comments?id=' + encodeURIComponent(c.id) + '&edit_token=' + encodeURIComponent(token), {
+          method: 'DELETE'
+        })
+          .then(function (r) {
+            if (!r.ok) return r.json().then(function (data) { throw new Error(data.error || 'Delete failed'); });
+          })
+          .then(function () {
+            removeToken(c.id);
+            loadComments();
+          })
+          .catch(function (err) {
+            showError(err.message || 'Could not delete comment.');
+          });
+      });
+      actions.appendChild(delBtn);
+    }
+    li.appendChild(actions);
+
+    if (!isReply && thread && thread.byParent[c.id] && thread.byParent[c.id].length) {
+      var repliesDiv = document.createElement('div');
+      repliesDiv.className = 'comment-replies';
+      thread.byParent[c.id].forEach(function (r) {
+        repliesDiv.appendChild(renderComment(r, true, null));
+      });
+      li.appendChild(repliesDiv);
+    }
+
+    return li;
+  }
+
+  function renderComments(comments) {
+    closeOpenReplyForm();
+    closeOpenEdit();
+    listEl.innerHTML = '';
+    if (!comments || comments.length === 0) {
+      listEl.innerHTML = '<li class="comments-empty">No comments yet.</li>';
+      return;
+    }
+    var thread = buildThread(comments);
+    thread.top.forEach(function (c) {
+      listEl.appendChild(renderComment(c, false, thread));
+    });
   }
 
   function loadComments() {
@@ -110,7 +419,9 @@
           return data;
         });
       })
-      .then(function () {
+      .then(function (data) {
+        if (data.edit_token) saveToken(data.id, data.edit_token);
+        saveAuthorEmail(author, email);
         authorInput.value = '';
         if (emailInput) emailInput.value = '';
         textInput.value = '';

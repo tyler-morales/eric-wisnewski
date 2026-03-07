@@ -51,12 +51,12 @@ Content and media are edited via **Pages CMS**. Eric signs in with **email** (ma
 
 ## Comments
 
-Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET to list by page URL, POST to submit). The widget is in `layouts/partials/isso.html` and loads `static/js/comments.js`.
+Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (one level) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/isso.html` and loads `static/js/comments.js`.
 
 To enable comments:
 
 1. Create a D1 database (e.g. `blog-comments`) in the Cloudflare dashboard (Workers & Pages → D1) or run `npx wrangler d1 create blog-comments` and note the `database_id`.
-2. Run the schema once: `npx wrangler d1 execute blog-comments --remote --file=./migrations/0000_initial_comments.sql` (or run the SQL in the D1 dashboard).
+2. Run the schema and migrations: `npx wrangler d1 execute blog-comments --remote --file=./migrations/0000_initial_comments.sql`, then `npx wrangler d1 execute blog-comments --remote --file=./migrations/0001_comments_v2.sql` (or run the SQL in the D1 dashboard).
 3. Bind the database to your Pages project: in the dashboard go to your Pages project → Settings → Functions → Bindings → D1, add binding name `COMMENTS_DB` and select the database. Or add the binding to `wrangler.toml` (replace `<DATABASE_ID>` in `wrangler.toml` with your database id) and deploy with the config file as source of truth.
 
 Local dev with comments: run Hugo to build `public/`, then `npx wrangler pages dev ./public --d1 COMMENTS_DB=<database_id>`.

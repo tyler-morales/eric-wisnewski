@@ -31,6 +31,9 @@
 - [x] Wizard emoji favicon: `static/favicon.svg` (🧙); linked in `layouts/partials/head.html` via `rel="icon"` type image/svg+xml.
 - [x] Open Graph for share previews: `og:site_name` added; default `og:image` and `twitter:image` set to favicon.svg when post has no featured image so shared links always show title, description, and an image (per-post featured image still overrides). Note: some platforms (e.g. Facebook) prefer PNG/JPEG for og:image; if preview image is missing there, add `static/images/og-default.png` (e.g. 1200×630) and point default OG image to it.
 - [x] Comments: Cloudflare Pages Function + D1 + widget (replaced Isso placeholder); API at `/api/comments`, widget in `layouts/partials/isso.html`, JS in `static/js/comments.js`; D1 binding and optional `wrangler.toml`.
+- [x] Comments v2: threaded replies (1-level), edit/delete for authors via localStorage token; migration `0001_comments_v2.sql` (parent_id, edit_token); PUT/DELETE API; mobile-first UI (primary button, action links, reply form).
+- [x] Comments UI minimal: reply form is textarea + Cancel/Post reply only (name/email from main form or localStorage); main form labels shortened; CSS tightened (clear list vs “Add comment” separation, compact reply form).
+- [x] Comments mobile: mobile-first layout — name+email in one row (2-col grid), smaller type and spacing; reply form as compact card (bg + radius on mobile only); balanced Cancel/Post reply buttons; desktop at 640px.
 
 ## Later
 - [x] Inline images on live: added `scripts/sync-uploaded-images.sh` and use it before Hugo in production build so CMS uploads in `assets/images/uploads/` are copied to `static/images/uploads/` and resolve at `/images/uploads/`. README build command updated.

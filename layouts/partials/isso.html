@@ -4,14 +4,18 @@
     <li class="comments-loading">Loading…</li>
   </ol>
   <p class="comments-error" role="alert" aria-live="polite" hidden></p>
-  <form class="comments-form" aria-label="Add a comment">
-    <label for="comment-author">Name <span aria-hidden="true">(required)</span></label>
-    <input id="comment-author" name="author" type="text" required autocomplete="name" maxlength="200">
-    <label for="comment-email">Email <span aria-hidden="true">(optional, not displayed)</span></label>
-    <input id="comment-email" name="email" type="email" autocomplete="email">
-    <label for="comment-text">Comment <span aria-hidden="true">(required)</span></label>
-    <textarea id="comment-text" name="text" required rows="4" maxlength="5000"></textarea>
-    <button type="submit">Post comment</button>
+  <form class="comments-form comments-form-main" aria-label="Add a comment">
+    <div class="comments-form-row">
+      <label for="comment-author">Name</label>
+      <input id="comment-author" name="author" type="text" required autocomplete="name" maxlength="200" placeholder="Name">
+      <label for="comment-email">Email</label>
+      <input id="comment-email" name="email" type="email" autocomplete="email" placeholder="Optional">
+    </div>
+    <label for="comment-text">Comment</label>
+    <textarea id="comment-text" name="text" required rows="3" maxlength="5000" placeholder="Write a comment…"></textarea>
+    <div class="comments-form-actions">
+      <button type="submit">Post comment</button>
+    </div>
   </form>
   <noscript>Please enable JavaScript to view and post comments.</noscript>
 </section>
