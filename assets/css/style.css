@@ -124,7 +124,7 @@ main {
   color: var(--text);
   text-decoration: none;
   font-weight: 500;
-  padding: 0.5rem 0;
+  padding: 1.25rem 0;
 }
 
 .post-list-link:hover {
@@ -340,7 +340,7 @@ article.post-content hr {
 
   /* Post list: slightly more padding for touch and scan */
   .post-list-link {
-    padding: 0.75rem 0;
+    padding: 1.5rem 0;
   }
 
   .site-nav a {
