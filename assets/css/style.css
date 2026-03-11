@@ -111,7 +111,7 @@ main {
 }
 
 .post-list li {
-  padding: 0;
+  padding: 1.75rem 0 1.25rem 0;
   border-bottom: 1px solid #ccc;
 }
 
@@ -174,7 +174,7 @@ article.post-content {
   line-height: 1.6;
 }
 
-article.post-content > header time {
+article.post-content>header time {
   display: block;
   font-size: 0.875rem;
   color: #333;
@@ -269,7 +269,8 @@ article.post-content hr {
 /* Mobile: 18px base (ideal reading size), more line spacing, and increased content gaps */
 @media (max-width: 768px) {
   html {
-    font-size: 112.5%; /* 18px — comfortable minimum for mobile reading; avoids tiny text */
+    font-size: 112.5%;
+    /* 18px — comfortable minimum for mobile reading; avoids tiny text */
   }
 
   body {
