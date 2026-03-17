@@ -242,14 +242,22 @@ export async function onRequestPost(context) {
         throw insertErr;
       }
     }
+    const lastId = meta?.last_row_id;
+    if (lastId == null) {
+      return jsonResponse({ error: 'Failed to save comment' }, 500);
+    }
     const row = await db
       .prepare(
         'SELECT id, url, author, body, created_at, parent_id FROM comments WHERE id = ?'
       )
-      .bind(meta.last_row_id)
+      .bind(lastId)
       .first();
+    if (!row) {
+      return jsonResponse({ error: 'Failed to save comment' }, 500);
+    }
     return jsonResponse({ ...row, edit_token: editToken }, 201);
   } catch (e) {
+    console.error(e);
     return jsonResponse({ error: 'Failed to save comment' }, 500);
   }
 }
