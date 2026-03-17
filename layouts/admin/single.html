@@ -24,218 +24,312 @@
   </div>
 
   <script>
-(function() {
-  var STORAGE_KEY = 'comments_admin_secret';
-  var secretForm = document.getElementById('admin-secret-form');
-  var secretInput = document.getElementById('admin-secret-input');
-  var secretSubmit = document.getElementById('admin-secret-submit');
-  var secretError = document.getElementById('admin-secret-error');
-  var adminContent = document.getElementById('admin-content');
-  var adminLoading = document.getElementById('admin-loading');
-  var adminList = document.getElementById('admin-list');
-  var adminListError = document.getElementById('admin-list-error');
+    (function () {
+      var STORAGE_KEY = 'comments_admin_secret';
+      var secretForm = document.getElementById('admin-secret-form');
+      var secretInput = document.getElementById('admin-secret-input');
+      var secretSubmit = document.getElementById('admin-secret-submit');
+      var secretError = document.getElementById('admin-secret-error');
+      var adminContent = document.getElementById('admin-content');
+      var adminLoading = document.getElementById('admin-loading');
+      var adminList = document.getElementById('admin-list');
+      var adminListError = document.getElementById('admin-list-error');
 
-  function getSecret() { return sessionStorage.getItem(STORAGE_KEY); }
-  function setSecret(s) { sessionStorage.setItem(STORAGE_KEY, s); }
-  function clearSecret() { sessionStorage.removeItem(STORAGE_KEY); }
+      function getSecret() { return sessionStorage.getItem(STORAGE_KEY); }
+      function setSecret(s) { sessionStorage.setItem(STORAGE_KEY, s); }
+      function clearSecret() { sessionStorage.removeItem(STORAGE_KEY); }
 
-  function showSecretForm(msg) {
-    clearSecret();
-    secretForm.hidden = false;
-    adminContent.hidden = true;
-    secretError.textContent = msg || '';
-    secretError.hidden = !msg;
-  }
-
-  function showContent() {
-    secretForm.hidden = true;
-    adminContent.hidden = false;
-    secretError.hidden = true;
-  }
-
-  function groupByUrl(comments) {
-    var byUrl = {};
-    for (var i = 0; i < comments.length; i++) {
-      var c = comments[i];
-      var u = c.url || '';
-      if (!byUrl[u]) byUrl[u] = [];
-      byUrl[u].push(c);
-    }
-    return byUrl;
-  }
-
-  function escapeHtml(s) {
-    if (!s) return '';
-    var div = document.createElement('div');
-    div.textContent = s;
-    return div.innerHTML;
-  }
-
-  function renderComments(comments) {
-    adminList.innerHTML = '';
-    adminListError.hidden = true;
-    if (!comments || comments.length === 0) {
-      adminList.textContent = 'No pending comments.';
-      return;
-    }
-    var byUrl = groupByUrl(comments);
-    var urls = Object.keys(byUrl).sort();
-    for (var u = 0; u < urls.length; u++) {
-      var url = urls[u];
-      var group = byUrl[url];
-      var section = document.createElement('section');
-      section.className = 'admin-url-group';
-      section.setAttribute('aria-labelledby', 'admin-url-' + u);
-      var h3 = document.createElement('h3');
-      h3.id = 'admin-url-' + u;
-      h3.className = 'admin-url-heading';
-      var link = document.createElement('a');
-      link.href = url;
-      link.textContent = url || '(no url)';
-      link.rel = 'noopener noreferrer';
-      h3.appendChild(link);
-      section.appendChild(h3);
-      var ol = document.createElement('ol');
-      ol.className = 'admin-comment-list';
-      for (var j = 0; j < group.length; j++) {
-        var c = group[j];
-        var li = document.createElement('li');
-        li.className = 'admin-comment-item';
-        li.dataset.id = String(c.id);
-        var meta = document.createElement('div');
-        meta.className = 'admin-comment-meta';
-        meta.innerHTML = '<span class="admin-comment-author">' + escapeHtml(c.author) + '</span> <time datetime="' + escapeHtml(c.created_at) + '">' + escapeHtml(c.created_at) + '</time>';
-        li.appendChild(meta);
-        var body = document.createElement('div');
-        body.className = 'admin-comment-body';
-        body.textContent = c.body || '';
-        li.appendChild(body);
-        var actions = document.createElement('div');
-        actions.className = 'admin-comment-actions';
-        var allowBtn = document.createElement('button');
-        allowBtn.type = 'button';
-        allowBtn.className = 'admin-comment-allow';
-        allowBtn.textContent = 'Allow';
-        allowBtn.setAttribute('aria-label', 'Allow this comment (show on site)');
-        allowBtn.dataset.id = String(c.id);
-        actions.appendChild(allowBtn);
-        var delBtn = document.createElement('button');
-        delBtn.type = 'button';
-        delBtn.className = 'admin-comment-delete';
-        delBtn.textContent = 'Delete';
-        delBtn.setAttribute('aria-label', 'Delete this comment');
-        delBtn.dataset.id = String(c.id);
-        actions.appendChild(delBtn);
-        li.appendChild(actions);
-        ol.appendChild(li);
+      function showSecretForm(msg) {
+        clearSecret();
+        secretForm.hidden = false;
+        adminContent.hidden = true;
+        secretError.textContent = msg || '';
+        secretError.hidden = !msg;
       }
-      section.appendChild(ol);
-      adminList.appendChild(section);
-    }
-  }
 
-  function loadComments() {
-    var secret = getSecret();
-    if (!secret) { showSecretForm('Session expired.'); return; }
-    adminLoading.hidden = false;
-    adminList.innerHTML = '';
-    adminListError.hidden = true;
-    fetch('/api/comments?admin_secret=' + encodeURIComponent(secret))
-      .then(function(res) {
-        if (!res.ok) {
-          if (res.status === 403 || res.status === 401) {
-            return res.json().then(function(b) {
-              showSecretForm(b.error || 'Invalid or expired secret.');
-              return null;
-            }).catch(function() {
-              showSecretForm('Invalid or expired secret.');
-              return null;
-            });
+      function showContent() {
+        secretForm.hidden = true;
+        adminContent.hidden = false;
+        secretError.hidden = true;
+      }
+
+      function groupByUrl(comments) {
+        var byUrl = {};
+        for (var i = 0; i < comments.length; i++) {
+          var c = comments[i];
+          var u = c.url || '';
+          if (!byUrl[u]) byUrl[u] = [];
+          byUrl[u].push(c);
+        }
+        return byUrl;
+      }
+
+      function escapeHtml(s) {
+        if (!s) return '';
+        var div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+
+      function renderComments(comments) {
+        adminList.innerHTML = '';
+        adminListError.hidden = true;
+        if (!comments || comments.length === 0) {
+          adminList.textContent = 'No comments yet.';
+          return;
+        }
+        var byUrl = groupByUrl(comments);
+        var urls = Object.keys(byUrl).sort();
+        for (var u = 0; u < urls.length; u++) {
+          var url = urls[u];
+          var group = byUrl[url];
+          var section = document.createElement('section');
+          section.className = 'admin-url-group';
+          section.setAttribute('aria-labelledby', 'admin-url-' + u);
+          var h3 = document.createElement('h3');
+          h3.id = 'admin-url-' + u;
+          h3.className = 'admin-url-heading';
+          var link = document.createElement('a');
+          link.href = url;
+          link.textContent = url || '(no url)';
+          link.rel = 'noopener noreferrer';
+          h3.appendChild(link);
+          section.appendChild(h3);
+          var ol = document.createElement('ol');
+          ol.className = 'admin-comment-list';
+          for (var j = 0; j < group.length; j++) {
+            var c = group[j];
+            var li = document.createElement('li');
+            li.className = 'admin-comment-item';
+            li.dataset.id = String(c.id);
+            var view = document.createElement('div');
+            view.className = 'admin-comment-view';
+            var meta = document.createElement('div');
+            meta.className = 'admin-comment-meta';
+            var statusLabel = (c.status === 'pending') ? 'pending' : 'approved';
+            meta.innerHTML = '<span class="admin-comment-author">' + escapeHtml(c.author) + '</span> <time datetime="' + escapeHtml(c.created_at) + '">' + escapeHtml(c.created_at) + '</time> <span class="admin-comment-status admin-comment-status-' + statusLabel + '" aria-label="Status">' + escapeHtml(statusLabel) + '</span>';
+            view.appendChild(meta);
+            var body = document.createElement('div');
+            body.className = 'admin-comment-body';
+            body.textContent = c.body || '';
+            view.appendChild(body);
+            var actions = document.createElement('div');
+            actions.className = 'admin-comment-actions';
+            var editBtn = document.createElement('button');
+            editBtn.type = 'button';
+            editBtn.className = 'admin-comment-edit';
+            editBtn.textContent = 'Edit';
+            editBtn.setAttribute('aria-label', 'Edit this comment');
+            editBtn.dataset.id = String(c.id);
+            actions.appendChild(editBtn);
+            var delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'admin-comment-delete';
+            delBtn.textContent = 'Delete';
+            delBtn.setAttribute('aria-label', 'Delete this comment');
+            delBtn.dataset.id = String(c.id);
+            actions.appendChild(delBtn);
+            view.appendChild(actions);
+            li.appendChild(view);
+            var editForm = document.createElement('div');
+            editForm.className = 'admin-comment-edit-form';
+            editForm.hidden = true;
+            editForm.setAttribute('aria-label', 'Edit comment');
+            var authorLabel = document.createElement('label');
+            authorLabel.htmlFor = 'admin-edit-author-' + c.id;
+            authorLabel.textContent = 'Author';
+            var authorInput = document.createElement('input');
+            authorInput.type = 'text';
+            authorInput.id = 'admin-edit-author-' + c.id;
+            authorInput.className = 'admin-edit-author';
+            authorInput.value = c.author || '';
+            authorInput.maxLength = 200;
+            authorInput.setAttribute('aria-label', 'Comment author name');
+            var bodyLabel = document.createElement('label');
+            bodyLabel.htmlFor = 'admin-edit-body-' + c.id;
+            bodyLabel.textContent = 'Comment';
+            var bodyTextarea = document.createElement('textarea');
+            bodyTextarea.id = 'admin-edit-body-' + c.id;
+            bodyTextarea.className = 'admin-edit-body';
+            bodyTextarea.rows = 3;
+            bodyTextarea.maxLength = 5000;
+            bodyTextarea.value = c.body || '';
+            bodyTextarea.setAttribute('aria-label', 'Comment text');
+            var editActions = document.createElement('div');
+            editActions.className = 'admin-comment-edit-actions';
+            var saveBtn = document.createElement('button');
+            saveBtn.type = 'button';
+            saveBtn.className = 'admin-comment-save';
+            saveBtn.textContent = 'Save';
+            saveBtn.setAttribute('aria-label', 'Save changes');
+            saveBtn.dataset.id = String(c.id);
+            var cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button';
+            cancelBtn.className = 'admin-comment-cancel';
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.setAttribute('aria-label', 'Cancel editing');
+            cancelBtn.dataset.id = String(c.id);
+            editActions.appendChild(saveBtn);
+            editActions.appendChild(cancelBtn);
+            editForm.appendChild(authorLabel);
+            editForm.appendChild(authorInput);
+            editForm.appendChild(bodyLabel);
+            editForm.appendChild(bodyTextarea);
+            editForm.appendChild(editActions);
+            li.appendChild(editForm);
+            ol.appendChild(li);
           }
-          return res.json().then(function(b) { throw new Error(b.error || res.statusText); });
+          section.appendChild(ol);
+          adminList.appendChild(section);
         }
-        return res.json();
-      })
-      .then(function(data) {
-        adminLoading.hidden = true;
-        if (data) renderComments(data);
-      })
-      .catch(function(err) {
-        adminLoading.hidden = true;
-        adminListError.textContent = err.message || 'Failed to load comments.';
-        adminListError.hidden = false;
-      });
-  }
+      }
 
-  function doAllow(id) {
-    var secret = getSecret();
-    if (!secret) { showSecretForm('Session expired.'); return; }
-    fetch('/api/comments?id=' + encodeURIComponent(id) + '&admin_secret=' + encodeURIComponent(secret), { method: 'PATCH' })
-      .then(function(res) {
-        if (res.status === 403 || res.status === 401) {
-          showSecretForm('Invalid or expired secret.');
+      function loadComments() {
+        var secret = getSecret();
+        if (!secret) { showSecretForm('Session expired.'); return; }
+        adminLoading.hidden = false;
+        adminList.innerHTML = '';
+        adminListError.hidden = true;
+        fetch('/api/comments?admin_secret=' + encodeURIComponent(secret))
+          .then(function (res) {
+            if (!res.ok) {
+              if (res.status === 403 || res.status === 401) {
+                return res.json().then(function (b) {
+                  showSecretForm(b.error || 'Invalid or expired secret.');
+                  return null;
+                }).catch(function () {
+                  showSecretForm('Invalid or expired secret.');
+                  return null;
+                });
+              }
+              return res.json().then(function (b) { throw new Error(b.error || res.statusText); });
+            }
+            return res.json();
+          })
+          .then(function (data) {
+            adminLoading.hidden = true;
+            if (data) renderComments(data);
+          })
+          .catch(function (err) {
+            adminLoading.hidden = true;
+            adminListError.textContent = err.message || 'Failed to load comments.';
+            adminListError.hidden = false;
+          });
+      }
+
+      function toggleEdit(li) {
+        var view = li.querySelector('.admin-comment-view');
+        var form = li.querySelector('.admin-comment-edit-form');
+        if (!view || !form) return;
+        if (form.hidden) {
+          view.hidden = true;
+          form.hidden = false;
+          var bodyInput = form.querySelector('.admin-edit-body');
+          if (bodyInput) bodyInput.focus();
+        } else {
+          view.hidden = false;
+          form.hidden = true;
+        }
+      }
+
+      function doSave(id) {
+        var secret = getSecret();
+        if (!secret) { showSecretForm('Session expired.'); return; }
+        var li = adminList.querySelector('.admin-comment-item[data-id="' + id + '"]');
+        if (!li) return;
+        var form = li.querySelector('.admin-comment-edit-form');
+        if (!form) return;
+        var authorInput = form.querySelector('.admin-edit-author');
+        var bodyInput = form.querySelector('.admin-edit-body');
+        var author = authorInput && authorInput.value ? authorInput.value.trim() : '';
+        var text = bodyInput && bodyInput.value ? bodyInput.value.trim() : '';
+        if (!text) {
+          adminListError.textContent = 'Comment text is required.';
+          adminListError.hidden = false;
           return;
         }
-        if (res.status !== 204) {
-          return res.json().then(function(b) { throw new Error(b.error || res.statusText); });
-        }
-        loadComments();
-      })
-      .catch(function(err) {
-        adminListError.textContent = err.message || 'Failed to allow comment.';
-        adminListError.hidden = false;
-      });
-  }
+        fetch('/api/comments', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: parseInt(id, 10), author: author, text: text, admin_secret: secret })
+        })
+          .then(function (res) {
+            if (res.status === 403 || res.status === 401) {
+              showSecretForm('Invalid or expired secret.');
+              return;
+            }
+            if (!res.ok) {
+              return res.json().then(function (b) { throw new Error(b.error || res.statusText); });
+            }
+            loadComments();
+          })
+          .catch(function (err) {
+            adminListError.textContent = err.message || 'Failed to update comment.';
+            adminListError.hidden = false;
+          });
+      }
 
-  function doDelete(id) {
-    var secret = getSecret();
-    if (!secret) { showSecretForm('Session expired.'); return; }
-    if (!confirm('Delete this comment? Replies (if any) will also be deleted.')) return;
-    fetch('/api/comments?id=' + encodeURIComponent(id) + '&admin_secret=' + encodeURIComponent(secret), { method: 'DELETE' })
-      .then(function(res) {
-        if (res.status === 403 || res.status === 401) {
-          showSecretForm('Invalid or expired secret.');
+      function doDelete(id) {
+        var secret = getSecret();
+        if (!secret) { showSecretForm('Session expired.'); return; }
+        if (!confirm('Delete this comment? Replies (if any) will also be deleted.')) return;
+        fetch('/api/comments?id=' + encodeURIComponent(id) + '&admin_secret=' + encodeURIComponent(secret), { method: 'DELETE' })
+          .then(function (res) {
+            if (res.status === 403 || res.status === 401) {
+              showSecretForm('Invalid or expired secret.');
+              return;
+            }
+            if (res.status !== 204) {
+              return res.json().then(function (b) { throw new Error(b.error || res.statusText); });
+            }
+            loadComments();
+          })
+          .catch(function (err) {
+            adminListError.textContent = err.message || 'Failed to delete.';
+            adminListError.hidden = false;
+          });
+      }
+
+      secretSubmit.addEventListener('click', function () {
+        var s = (secretInput.value || '').trim();
+        if (!s) {
+          secretError.textContent = 'Enter the admin secret.';
+          secretError.hidden = false;
           return;
         }
-        if (res.status !== 204) {
-          return res.json().then(function(b) { throw new Error(b.error || res.statusText); });
-        }
+        setSecret(s);
+        showContent();
         loadComments();
-      })
-      .catch(function(err) {
-        adminListError.textContent = err.message || 'Failed to delete.';
-        adminListError.hidden = false;
       });
-  }
 
-  secretSubmit.addEventListener('click', function() {
-    var s = (secretInput.value || '').trim();
-    if (!s) {
-      secretError.textContent = 'Enter the admin secret.';
-      secretError.hidden = false;
-      return;
-    }
-    setSecret(s);
-    showContent();
-    loadComments();
-  });
+      secretInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') secretSubmit.click();
+      });
 
-  secretInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') secretSubmit.click();
-  });
+      adminList.addEventListener('click', function (e) {
+        var editBtn = e.target.closest('.admin-comment-edit');
+        if (editBtn && editBtn.dataset.id) {
+          var li = editBtn.closest('.admin-comment-item');
+          if (li) toggleEdit(li);
+          return;
+        }
+        var saveBtn = e.target.closest('.admin-comment-save');
+        if (saveBtn && saveBtn.dataset.id) { doSave(saveBtn.dataset.id); return; }
+        var cancelBtn = e.target.closest('.admin-comment-cancel');
+        if (cancelBtn && cancelBtn.dataset.id) {
+          var li = cancelBtn.closest('.admin-comment-item');
+          if (li) toggleEdit(li);
+          return;
+        }
+        var delBtn = e.target.closest('.admin-comment-delete');
+        if (delBtn && delBtn.dataset.id) doDelete(delBtn.dataset.id);
+      });
 
-  adminList.addEventListener('click', function(e) {
-    var allowBtn = e.target.closest('.admin-comment-allow');
-    if (allowBtn && allowBtn.dataset.id) { doAllow(allowBtn.dataset.id); return; }
-    var delBtn = e.target.closest('.admin-comment-delete');
-    if (delBtn && delBtn.dataset.id) doDelete(delBtn.dataset.id);
-  });
-
-  if (getSecret()) {
-    showContent();
-    loadComments();
-  }
-})();
+      if (getSecret()) {
+        showContent();
+        loadComments();
+      }
+    })();
   </script>
 </main>
 {{ end }}
