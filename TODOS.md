@@ -52,6 +52,7 @@
 - [x] Admin comments docs and API fix: API returns 503 "Admin secret not configured on server" when admin_secret sent but COMMENTS_ADMIN_SECRET unset; README documents .dev.vars location, restart wrangler, and troubleshooting; admin layout/CSS tweaks.
 - [x] Comment approval flow: new comments are pending; admin list shows only pending; Allow button (PATCH) sets status to approved and comment leaves list; migration `0002_comments_allow.sql` adds `status`; public GET only returns approved; README and TODOS updated.
 - [x] Comments 500 hardening: POST handler logs errors with `console.error(e)`, guards `meta?.last_row_id` and null `row` before spreading; README troubleshooting note for 500 (migrations + D1 binding).
+- [x] Instant comments + admin edit/delete: new comments insert with `status = 'approved'` so they appear immediately after submit; admin GET returns all comments (not just pending) with status; PUT accepts `admin_secret` so admins can edit any comment; admin page shows all comments with status badge, Edit (inline form) and Delete; removed Allow button and pre-approval queue; PATCH endpoint kept for backward compatibility.
 
 ## Later
 - [x] Inline images on live: added `scripts/sync-uploaded-images.sh` and use it before Hugo in production build so CMS uploads in `assets/images/uploads/` are copied to `static/images/uploads/` and resolve at `/images/uploads/`. README build command updated.

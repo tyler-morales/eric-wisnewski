@@ -44,8 +44,8 @@ export async function onRequestGet(context) {
   if (adminSecret && isAdmin(adminSecret, context.env)) {
     try {
       const stmt = db.prepare(
-        `SELECT id, url, author, email, body, created_at, parent_id, edit_token FROM comments
-         WHERE status = 'pending' ORDER BY url ASC, created_at ASC`
+        `SELECT id, url, author, email, body, created_at, parent_id, edit_token, status FROM comments
+         ORDER BY created_at DESC`
       );
       const { results } = await stmt.all();
       return jsonResponse(results ?? []);
@@ -53,10 +53,10 @@ export async function onRequestGet(context) {
       const msg = e?.message != null ? String(e.message) : '';
       if (/no such column: status/i.test(msg)) {
         const stmt = db.prepare(
-          'SELECT id, url, author, email, body, created_at, parent_id, edit_token FROM comments ORDER BY url ASC, created_at ASC'
+          'SELECT id, url, author, email, body, created_at, parent_id, edit_token FROM comments ORDER BY created_at DESC'
         );
         const { results } = await stmt.all();
-        return jsonResponse(results ?? []);
+        return jsonResponse((results ?? []).map((row) => ({ ...row, status: 'approved' })));
       }
       return jsonResponse({ error: 'Failed to load comments' }, 500);
     }
@@ -225,7 +225,7 @@ export async function onRequestPost(context) {
         'INSERT INTO comments (url, author, email, body, parent_id, edit_token, status) VALUES (?, ?, ?, ?, ?, ?, ?)'
       );
       const result = await stmt
-        .bind(url, author, email || null, text, parentId, editToken, 'pending')
+        .bind(url, author, email || null, text, parentId, editToken, 'approved')
         .run();
       meta = result.meta;
     } catch (insertErr) {
@@ -273,15 +273,20 @@ export async function onRequestPut(context) {
     return jsonResponse({ error: 'Invalid JSON body' }, 400);
   }
 
+  const { searchParams } = new URL(context.request.url);
   const id = body.id != null ? Number(body.id) : null;
   const text = body.text != null ? String(body.text).trim() : '';
   const editToken = body.edit_token != null ? String(body.edit_token).trim() : '';
+  const adminSecret = body.admin_secret != null ? String(body.admin_secret).trim() : (searchParams.get('admin_secret') ?? '');
   const author = body.author != null ? String(body.author).trim() : null;
+  const asAdmin = adminSecret && isAdmin(adminSecret, context.env);
 
   if (!Number.isInteger(id) || id < 1) {
     return jsonResponse({ error: 'Invalid or missing id' }, 400);
   }
-  if (!editToken) return jsonResponse({ error: 'edit_token is required' }, 400);
+  if (!asAdmin && !editToken) {
+    return jsonResponse({ error: 'edit_token or admin_secret is required' }, 400);
+  }
   if (!text) return jsonResponse({ error: 'Comment text is required' }, 400);
   if (text.length > MAX_TEXT) {
     return jsonResponse({ error: `Comment must be at most ${MAX_TEXT} characters` }, 400);
@@ -298,7 +303,7 @@ export async function onRequestPut(context) {
     .bind(id)
     .first();
   if (!row) return jsonResponse({ error: 'Comment not found' }, 404);
-  if (row.edit_token !== editToken) {
+  if (!asAdmin && row.edit_token !== editToken) {
     return jsonResponse({ error: 'Not authorized to edit this comment' }, 403);
   }
 

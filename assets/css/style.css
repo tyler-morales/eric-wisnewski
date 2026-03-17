@@ -174,7 +174,7 @@ article.post-content {
   line-height: 1.6;
 }
 
-article.post-content > header time {
+article.post-content>header time {
   display: block;
   font-size: 0.875rem;
   color: #333;
@@ -269,7 +269,8 @@ article.post-content hr {
 /* Mobile: 18px base (ideal reading size), more line spacing, and increased content gaps */
 @media (max-width: 768px) {
   html {
-    font-size: 112.5%; /* 18px — comfortable minimum for mobile reading; avoids tiny text */
+    font-size: 112.5%;
+    /* 18px — comfortable minimum for mobile reading; avoids tiny text */
   }
 
   body {
@@ -1079,20 +1080,113 @@ article.post-content hr {
   margin-top: 0.25rem;
 }
 
-.admin-comment-allow {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8125rem;
-  cursor: pointer;
-  border: 1px solid #0a0;
-  background: #fff;
+.admin-comment-status {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
+  margin-left: 0.5rem;
+}
+
+.admin-comment-status-approved {
+  background: #e0f2e0;
   color: #0a0;
 }
 
-.admin-comment-allow:hover,
-.admin-comment-allow:focus-visible {
-  background: #0a0;
+.admin-comment-status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.admin-comment-edit {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  border: 1px solid #0891b2;
+  background: #fff;
+  color: #0891b2;
+}
+
+.admin-comment-edit:hover,
+.admin-comment-edit:focus-visible {
+  background: #0891b2;
   color: #fff;
-  outline: 2px solid #0a0;
+  outline: 2px solid #0891b2;
+  outline-offset: 2px;
+}
+
+.admin-comment-edit-form {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border, #ddd);
+  border-radius: 4px;
+  background: var(--bg-subtle, #f9f9f9);
+}
+
+.admin-comment-edit-form label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.admin-comment-edit-form label:first-child {
+  margin-top: 0;
+}
+
+.admin-comment-edit-form .admin-edit-author,
+.admin-comment-edit-form .admin-edit-body {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--border, #ccc);
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.admin-comment-edit-form .admin-edit-body {
+  min-height: 4rem;
+  resize: vertical;
+}
+
+.admin-comment-edit-form .admin-edit-author:focus-visible,
+.admin-comment-edit-form .admin-edit-body:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
+}
+
+.admin-comment-edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.admin-comment-save {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  border: 1px solid #0891b2;
+  background: #0891b2;
+  color: #fff;
+}
+
+.admin-comment-save:hover,
+.admin-comment-save:focus-visible {
+  outline: 2px solid #0891b2;
+  outline-offset: 2px;
+}
+
+.admin-comment-cancel {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  border: 1px solid #555;
+  background: #fff;
+  color: #555;
+}
+
+.admin-comment-cancel:hover,
+.admin-comment-cancel:focus-visible {
+  outline: 2px solid #555;
   outline-offset: 2px;
 }
 
