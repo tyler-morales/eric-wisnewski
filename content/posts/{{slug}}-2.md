@@ -1,7 +1,7 @@
 ---
 title: Northern Illinois - NIU Convocation Center
 slug: northern-illinois
-date: 2026-03-23T21:58:00Z
+date: 2026-03-23T21:28:00Z
 draft: false
 image: /images/uploads/IMG_3719.jpeg
 ---
