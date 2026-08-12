@@ -9,15 +9,24 @@ A forever-stable Hugo blog: no JavaScript frameworks, no CSS frameworks, no Node
 
 Deploy the `public/` directory to any static host (GitHub Pages, Netlify, Vercel, Cloudflare Pages). Set the build command to `./scripts/sync-uploaded-images.sh && hugo --gc --minify` in your host’s dashboard (or use the included `netlify.toml` if you use Netlify).
 
+## Authors / contributors
+
+Posts have an `author` front matter field that references a slug under `content/authors/` (e.g. `eric-wisnewski`, `grady-davis`). Each author file has `name`, `slug`, `bio`, and optional `image`. The single-post page shows a byline and an author bio block under the post; the home list shows the author name.
+
+In **Pages CMS**, use the **Authors** collection to edit bios/photos, and set **Author** on each post. Invite contributors by email in Pages CMS so they can sign in with a magic link and write posts (pick themselves as Author).
+
+Placeholder bios/images can be replaced anytime by editing the author files in the CMS or in `content/authors/`.
+
 ## Add a new post (without the CMS)
 
 1. Create a new file under `content/posts/`, e.g. `content/posts/my-new-post.md`.
-2. Add front matter at the top (include `slug` to match the filename):
+2. Add front matter at the top (include `slug` to match the filename and `author`):
 
    ```yaml
    ---
    title: "Your Post Title"
    slug: my-new-post
+   author: eric-wisnewski
    date: 2025-02-26T00:00:00Z
    draft: false
    ---

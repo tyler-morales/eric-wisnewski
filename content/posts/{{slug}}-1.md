@@ -1,6 +1,7 @@
 ---
 title: Boston College - Conte Fourm
 slug: boston-college
+author: eric-wisnewski
 date: 2026-03-10T20:52:00Z
 draft: false
 image: /images/uploads/IMG_3656 (1).jpeg

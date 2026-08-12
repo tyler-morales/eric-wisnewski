@@ -174,11 +174,69 @@ article.post-content {
   line-height: 1.6;
 }
 
+article.post-content>header .post-byline {
+  margin: 0.35rem 0 0;
+  font-size: 0.9375rem;
+  color: #333;
+}
+
 article.post-content>header time {
   display: block;
   font-size: 0.875rem;
   color: #333;
+  margin-top: 0.25rem;
   margin-bottom: 1.5rem;
+}
+
+/* Author bio under post */
+.author-bio {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin: 2.5rem 0 0;
+  padding: 1.25rem 0 0;
+  border-top: 1px solid #ccc;
+  max-width: 70ch;
+}
+
+.author-bio-image {
+  flex-shrink: 0;
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0.25rem;
+  background: #eee;
+}
+
+.author-bio-image:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.author-bio-text {
+  min-width: 0;
+}
+
+.author-bio-name {
+  margin: 0 0 0.35rem;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.author-bio-blurb {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #333;
+}
+
+.post-list-author {
+  display: block;
+  font-size: 0.875rem;
+  color: #333;
+  margin-top: 0.2rem;
+  font-weight: 400;
 }
 
 article.post-content .post-featured-image {

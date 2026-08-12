@@ -1,6 +1,7 @@
 ---
 title: How to Use This Blog
 slug: my-first-post
+author: eric-wisnewski
 date: 2026-02-26T10:25:00Z
 draft: true
 image: /images/uploads/wizzz.jpg
@@ -31,6 +32,8 @@ Each post has:
 *   **Title** — what shows at the top of the post and in the list.
     
 *   **Slug** — a short, URL-friendly name (e.g. `my-first-post`). Use lowercase letters and hyphens, no spaces. This becomes part of the post’s web address.
+
+*   **Author** — who wrote the post (e.g. Eric Wisnewski or Grady Davis). Pick from the list; that person’s bio shows under the post.
     
 *   **Publish Date** — when the post goes live. Make sure you set a full date and time; the editor will save it in the right format.
     

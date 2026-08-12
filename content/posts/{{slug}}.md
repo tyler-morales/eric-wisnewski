@@ -1,6 +1,7 @@
 ---
 title: An Introduction
 slug: an-introduction
+author: eric-wisnewski
 date: 2026-03-03T20:31:00Z
 draft: false
 image: /images/uploads/72655055905__E98C2FFF-48C4-4CFF-91AB-251323F9AC7D.jpeg

@@ -56,6 +56,8 @@
 
 ## Later
 - [x] Inline images on live: added `scripts/sync-uploaded-images.sh` and use it before Hugo in production build so CMS uploads in `assets/images/uploads/` are copied to `static/images/uploads/` and resolve at `/images/uploads/`. README build command updated.
+- [x] Multi-author support: Authors collection in `.pages.yml` (`content/authors/`); post `author` reference field; Eric + Grady author files with placeholder bios; byline + author bio under posts; author name on home list; existing posts attributed to Eric. Replace placeholder bios/photos when real copy arrives.
+- [ ] Swap in real author bios and photos for Eric Wisnewski and Grady Davis (CMS Authors or `content/authors/`).
 - [ ] Re-evaluate custom upload tool (e.g. upload-image.html + Cloudflare function) if CMS uploads are unreliable.
 - [ ] Content is edited via Pages CMS (app.pagescms.org); ensure repo is connected and `.pages.yml` is present on the branch you use.
 - [ ] Cloudflare Pages: if builds still fail with "module not found", ensure the **branch Cloudflare builds from** has the fix (no `theme = ''` in `config/_default/hugo.toml`). If Pages CMS pushes to a different branch, merge `main` into it or remove the theme line on that branch.

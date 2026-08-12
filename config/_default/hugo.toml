@@ -25,3 +25,11 @@ title = 'Eric Wisnewski'
   map_viewer_url = 'https://www.google.com/maps/d/viewer?mid=1iRNx3DgEm5TJJmN1A4xM0uienUMFfqc'
   # Cloudflare Turnstile site key for comments (from Cloudflare Dashboard → Turnstile)
   turnstile_site_key = '0x4AAAAAACnww42_mYvpidw1'
+
+# Author profiles are CMS data only — do not publish /authors/ pages.
+[[cascade]]
+  [cascade.build]
+    list = 'never'
+    render = 'never'
+  [cascade.target]
+    path = '{/authors,/authors/**}'

@@ -1,0 +1,8 @@
+{{/*
+  Compact byline: "By Name". Expects page context with .Params.author slug.
+*/}}
+{{ with .Params.author }}
+  {{ with $.Site.GetPage (printf "/authors/%s" .) }}
+  <p class="post-byline">By {{ .Params.name | default .Title }}</p>
+  {{ end }}
+{{ end }}
