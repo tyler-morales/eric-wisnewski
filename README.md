@@ -13,6 +13,8 @@ Deploy the `public/` directory to any static host (GitHub Pages, Netlify, Vercel
 
 Posts have an `author` front matter field that references a slug under `content/authors/` (e.g. `eric-wisnewski`, `grady-davis`). Each author file has `name`, `slug`, `bio`, and optional `image`. The single-post page shows a byline and an author bio block under the post; the home list shows the author name.
 
+**Grady’s Tour:** Posts with `author: grady-davis` appear only on `/gradys-tour/` (nav: **Grady’s Tour**, next to Map). The home page lists everyone except Grady. Set **Author** to Grady Davis in the CMS so new posts land in that section.
+
 In **Pages CMS**, use the **Authors** collection to edit bios/photos, and set **Author** on each post. Invite contributors by email in Pages CMS so they can sign in with a magic link and write posts (pick themselves as Author).
 
 Placeholder bios/images can be replaced anytime by editing the author files in the CMS or in `content/authors/`.
@@ -45,8 +47,9 @@ Placeholder bios/images can be replaced anytime by editing the author files in t
 Edit `config/_default/hugo.toml`. Under `[params]` you’ll see:
 
 - `school_sheets_csv_url` — CSV URL for the School Sheets data. The `/school-sheets/` page fetches this at build time and displays it in a table. Use **File > Share > Publish to web** in Google Sheets and choose **Comma-separated values (.csv)** to get a permanent URL, or use the export URL if the sheet is shared "Anyone with the link can view": `https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={GID}`.
-- `nav_school_sheets` — URL for the "School Sheets" link in the main nav (default: `/school-sheets/`).
+- `nav_school_sheets` — URL for the "School Sheets" / "List of College Stadiums" link in the main nav (default: `/school-sheets/`).
 - `nav_map` — URL for the "Map" link in the main nav (default: `/map/`)
+- `nav_gradys_tour` — URL for the "Grady's Tour" link in the main nav (default: `/gradys-tour/`)
 
 Update these values and rebuild. Nav links are used in the site header; the CSV URL is read by Hugo's `resources.GetRemote` when building the School Sheets page.
 

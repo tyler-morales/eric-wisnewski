@@ -110,6 +110,11 @@ main {
   list-style: none;
 }
 
+.gradys-tour-empty {
+  margin: 1.5rem 0;
+  color: #333;
+}
+
 .post-list li {
   padding: 0;
   border-bottom: 1px solid #ccc;

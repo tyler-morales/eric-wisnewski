@@ -21,6 +21,7 @@ title = 'Eric Wisnewski'
   school_sheets_view_url = 'https://docs.google.com/spreadsheets/d/1fyJS_hWWZw4gu_1VYxgz2Laetw5az1c2LPuvCgHrl1U/edit'
   nav_school_sheets = '/school-sheets/'
   nav_map = '/map/'
+  nav_gradys_tour = '/gradys-tour/'
   # Link to open the map in Google Maps (optional; used for "View original" on /map/)
   map_viewer_url = 'https://www.google.com/maps/d/viewer?mid=1iRNx3DgEm5TJJmN1A4xM0uienUMFfqc'
   # Cloudflare Turnstile site key for comments (from Cloudflare Dashboard → Turnstile)

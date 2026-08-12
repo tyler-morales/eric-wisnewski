@@ -1,18 +1,17 @@
 ---
-title: How to Use This Blog
-slug: my-first-post
-author: eric-wisnewski
-date: 2026-02-26T10:25:00Z
-draft: true
-image: /images/uploads/wizzz.jpg
+title: How to Use This Blog (Grady)
+slug: gradys-how-to-use-this-blog
+author: grady-davis
+date: 2026-08-12T16:00:00Z
+draft: false
 ---
-Hi Eric — this post is your quick guide to using this blog. No code required.
+Hi Grady — this post is your quick guide to using this blog. No code required. Keep it as a draft reference while you get started; when you’re ready to publish real tour posts, create new ones and set **Author** to Grady Davis.
 
 * * *
 
 ## What is this site?
 
-This is your personal blog. When you publish a post here, it shows up on the main page and gets its own link that you can share. The site also has a **List of College Stadiums** page, a **Map** page, and **Grady’s Tour** (Grady’s posts only); those links are in the menu at the top.
+This is Eric’s college-basketball road-trip blog. Your posts live under **Grady’s Tour** in the menu at the top (next to Map). Eric’s posts stay on the home page; yours show only on Grady’s Tour. There is also a **List of College Stadiums** page and a **Map** page.
 
 * * *
 
@@ -33,7 +32,7 @@ Each post has:
     
 *   **Slug** — a short, URL-friendly name (e.g. `my-first-post`). Use lowercase letters and hyphens, no spaces. This becomes part of the post’s web address.
 
-*   **Author** — who wrote the post (e.g. Eric Wisnewski or Grady Davis). Pick from the list; that person’s bio shows under the post.
+*   **Author** — pick **Grady Davis** so the post appears on **Grady’s Tour** (not on Eric’s home list).
     
 *   **Publish Date** — when the post goes live. Make sure you set a full date and time; the editor will save it in the right format.
     
@@ -52,8 +51,6 @@ When you’re done, **save**. The site will rebuild automatically and your chang
     
 *   **Images inside a post:** In the **Body** of the post, type **/** and choose something like “Insert image,” then pick from your uploaded images.
     
-*   ![](/images/uploads/PXL_20250405_004250419.RAW-01.MP.COVER.jpg)
-    
 
 If someone has set up the site so that images are stored in a specific folder, new images you add through the CMS will be saved there. You don’t need to touch any files or folders yourself.
 
@@ -68,4 +65,4 @@ If someone has set up the site so that images are stored in a specific folder, n
 
 * * *
 
-That’s it. Write your posts in the CMS, add a title and a slug, set a date and optional featured image, and hit save. The rest happens automatically.
+That’s it. Write your posts in the CMS, set **Author** to Grady Davis, add a title and a slug, set a date and optional featured image, and hit save. Your posts will show up under **Grady’s Tour**.

@@ -7,6 +7,7 @@
           }}>List of College Stadiums</a></li>
       <li><a href="{{ .Site.Params.nav_map | default " /map/" }}"{{ if hasPrefix (.Site.Params.nav_map | default ""
           ) "http" }} target="_blank" rel="noopener noreferrer" {{ end }}>Map</a></li>
+      <li><a href="{{ .Site.Params.nav_gradys_tour | default "/gradys-tour/" }}">Grady's Tour</a></li>
     </ul>
   </nav>
 </header>

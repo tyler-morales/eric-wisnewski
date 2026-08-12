@@ -4,25 +4,10 @@
   {{ partial "header.html" . }}
   <main>
     <ul class="post-list">
-      {{ range where .Site.RegularPages "Section" "posts" }}
-        <li class="post-list-item">
-          <a href="{{ .Permalink }}" class="post-list-link">
-            {{ with .Params.image }}
-            <span class="post-list-image" aria-hidden="true">
-              <img src="{{ . | absURL }}" alt="" width="640" height="360" loading="lazy" decoding="async">
-            </span>
-            {{ end }}
-            <span class="post-list-meta">
-              <span class="post-list-title">{{ .Title }}</span>
-              {{ with .Params.author }}
-                {{ with $.Site.GetPage (printf "/authors/%s" .) }}
-                <span class="post-list-author">{{ .Params.name | default .Title }}</span>
-                {{ end }}
-              {{ end }}
-              <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-            </span>
-          </a>
-        </li>
+      {{ $posts := where .Site.RegularPages "Section" "posts" }}
+      {{ $posts = where $posts "Params.author" "!=" "grady-davis" }}
+      {{ range $posts }}
+        {{ partial "post-list-item.html" . }}
       {{ end }}
     </ul>
   </main>

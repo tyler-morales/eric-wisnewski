@@ -1,0 +1,19 @@
+{{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "header.html" . }}
+  <main id="main-content">
+    <h1 class="visually-hidden">{{ .Title }}</h1>
+    {{ $posts := where .Site.RegularPages "Section" "posts" }}
+    {{ $posts = where $posts "Params.author" "eq" "grady-davis" }}
+    {{ if $posts }}
+    <ul class="post-list">
+      {{ range $posts }}
+        {{ partial "post-list-item.html" . }}
+      {{ end }}
+    </ul>
+    {{ else }}
+    <p class="gradys-tour-empty">No posts from Grady yet. Check back soon.</p>
+    {{ end }}
+  </main>
+{{ end }}
