@@ -4,6 +4,7 @@ slug: northern-illinois
 date: 2026-03-23T21:28:00Z
 draft: false
 image: /images/uploads/IMG_3719.jpeg
+author: eric-wisnewski
 ---
 Located about an hour west of Chicago is the city of DeKalb, Illinois.  My familiarity with the city comes from its famous DeKalb Oasis.  The Oasis is home to greats such as multiple claw machines, a perpetually closed Popeyes, and maybe the grossest bathroom in Illinois.  Northern Illinois University is also there, where my friend Mike and I spent a windy afternoon watching Northern Illinois take on MAC rival Ball State.  
 
@@ -55,4 +56,3 @@ Mike believes that at the time, my criticism of the crowd was harsh, but I hope 
 
 ![](/images/uploads/IMG_3733.jpeg)
 
-&nbsp;
