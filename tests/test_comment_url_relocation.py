@@ -10,7 +10,6 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-COMMENT_URLS_JS = REPO_ROOT / "functions" / "_lib" / "comment-urls.js"
 COMMENTS_API = REPO_ROOT / "functions" / "api" / "comments.js"
 ADMIN_LAYOUT = REPO_ROOT / "layouts" / "admin" / "single.html"
 ISSO_PARTIAL = REPO_ROOT / "layouts" / "partials" / "isso.html"
@@ -21,11 +20,11 @@ HUGO_TOML = REPO_ROOT / "config" / "_default" / "hugo.toml"
 
 
 def call_comment_url_fn(fn_name: str, arg: str | None) -> str | list[str]:
-    """Run an exported helper from functions/_lib/comment-urls.js via Node."""
-    if not COMMENT_URLS_JS.is_file():
-        raise FileNotFoundError(COMMENT_URLS_JS)
+    """Run an exported helper from functions/api/comments.js via Node."""
+    if not COMMENTS_API.is_file():
+        raise FileNotFoundError(COMMENTS_API)
     script = (
-        f"import {{ {fn_name} }} from {json.dumps(COMMENT_URLS_JS.as_uri())};\n"
+        f"import {{ {fn_name} }} from {json.dumps(COMMENTS_API.as_uri())};\n"
         f"console.log(JSON.stringify({fn_name}({json.dumps(arg)})));\n"
     )
     result = subprocess.run(
@@ -88,11 +87,13 @@ class CommentUrlLookupVariantTests(unittest.TestCase):
 
 
 class CommentUrlWiringTests(unittest.TestCase):
-    def test_api_imports_and_queries_url_variants(self) -> None:
+    def test_api_queries_url_variants_without_relative_import(self) -> None:
         source = COMMENTS_API.read_text(encoding="utf-8")
         self.assertIn("commentUrlLookupVariants", source)
         self.assertIn("relocateCommentUrl", source)
         self.assertIn("url IN (", source)
+        self.assertNotIn("from '../", source)
+        self.assertNotIn('from "../', source)
 
     def test_widget_uses_hugo_permalink_not_only_location(self) -> None:
         isso = ISSO_PARTIAL.read_text(encoding="utf-8")
