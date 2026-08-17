@@ -61,6 +61,21 @@ Content and media are edited via **Pages CMS**. Eric signs in with **email** (ma
 
 **Images for og:image / build:** Featured and body images under `/images/uploads/` are served from `static/images/uploads/`. Run `./scripts/sync-uploaded-images.sh` before `hugo` (or use the full build command above) so CMS uploads are available in the built site.
 
+## Analytics (Umami)
+
+Privacy-friendly page views via [Umami Cloud](https://cloud.umami.is) (alternative to Cloudflare Web Analytics). The tracking script is injected from `layouts/partials/head.html` only when `hugo.IsProduction` and `params.umami_website_id` are set (so `hugo server` does not count local visits).
+
+1. Sign up at [cloud.umami.is](https://cloud.umami.is) and add a website with domain `ericwisnewski.com`.
+2. Copy the **Website ID** (UUID) from the Umami dashboard (Settings → Tracking code / website details).
+3. In `config/_default/hugo.toml` under `[params]`, set:
+   ```toml
+   umami_website_id = 'YOUR-WEBSITE-UUID'
+   umami_script_url = 'https://cloud.umami.is/script.js'
+   ```
+4. Deploy. Stats appear in the Umami dashboard after a few page views on the live site.
+
+Self-hosted Umami: point `umami_script_url` at your instance’s `/script.js` and use that instance’s website ID.
+
 ## Comments
 
 Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (one level) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/isso.html` and loads `static/js/comments.js`. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.

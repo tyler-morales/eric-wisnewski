@@ -55,6 +55,8 @@
 - [x] Instant comments + admin edit/delete: new comments insert with `status = 'approved'` so they appear immediately after submit; admin GET returns all comments (not just pending) with status; PUT accepts `admin_secret` so admins can edit any comment; admin page shows all comments with status badge, Edit (inline form) and Delete; removed Allow button and pre-approval queue; PATCH endpoint kept for backward compatibility.
 
 ## Later
+- [x] Umami analytics: tracking script in `layouts/partials/head.html` (production only); `umami_script_url` + optional `umami_website_id` in hugo.toml; README setup steps. Fill in `umami_website_id` after creating the site in Umami Cloud.
+- [x] Set `umami_website_id` in `config/_default/hugo.toml` (Umami Cloud site configured).
 - [x] Inline images on live: added `scripts/sync-uploaded-images.sh` and use it before Hugo in production build so CMS uploads in `assets/images/uploads/` are copied to `static/images/uploads/` and resolve at `/images/uploads/`. README build command updated.
 - [x] Multi-author support: Authors collection in `.pages.yml` (`content/authors/`); post `author` reference field; Eric + Grady author files with placeholder bios; byline + author bio under posts; author name on home list; existing posts attributed to Eric. Replace placeholder bios/photos when real copy arrives.
 - [x] Grady’s Tour: nav tab next to Map (`/gradys-tour/`); lists only `author: grady-davis` posts; home excludes Grady; starter guide `content/posts/gradys-how-to-use-this-blog.md` published (`draft: false`) so it shows on Grady’s Tour.
