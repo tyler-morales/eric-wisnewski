@@ -15,6 +15,10 @@
   var EMAIL_KEY = 'comment_email';
 
   function normalizeUrl() {
+    var fromPage = section.dataset && section.dataset.pageUrl;
+    if (fromPage) {
+      return fromPage.replace(/\/?$/, '/');
+    }
     return location.pathname.replace(/\/?$/, '/');
   }
 

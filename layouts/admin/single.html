@@ -56,11 +56,25 @@
         secretError.hidden = true;
       }
 
+      function relocateCommentUrl(url) {
+        if (typeof url !== 'string' || !url) return '';
+        var t = url.trim().replace(/\/+/g, '/');
+        if (!t.startsWith('/')) return '';
+        if (t !== '/' && !t.endsWith('/')) t += '/';
+        if (t === '/posts/gradys-how-to-use-this-blog/') {
+          return '/gradys-tour/how-to-use-this-blog/';
+        }
+        if (t.indexOf('/posts/gradys-tour/') === 0) {
+          return '/gradys-tour/' + t.slice('/posts/gradys-tour/'.length);
+        }
+        return t;
+      }
+
       function groupByUrl(comments) {
         var byUrl = {};
         for (var i = 0; i < comments.length; i++) {
           var c = comments[i];
-          var u = c.url || '';
+          var u = relocateCommentUrl(c.url || '') || c.url || '';
           if (!byUrl[u]) byUrl[u] = [];
           byUrl[u].push(c);
         }
@@ -93,8 +107,8 @@
           h3.id = 'admin-url-' + u;
           h3.className = 'admin-url-heading';
           var link = document.createElement('a');
-          link.href = url;
-          link.textContent = url || '(no url)';
+          link.href = relocateCommentUrl(url) || url;
+          link.textContent = relocateCommentUrl(url) || url || '(no url)';
           link.rel = 'noopener noreferrer';
           h3.appendChild(link);
           section.appendChild(h3);

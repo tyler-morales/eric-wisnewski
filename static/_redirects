@@ -1,0 +1,5 @@
+# Grady's Tour posts used to live under /posts/gradys-tour/. Cloudflare Pages
+# would otherwise serve the home page for those missing paths (SPA 404 fallback).
+/posts/gradys-tour/* /gradys-tour/:splat 301
+/posts/gradys-how-to-use-this-blog /gradys-tour/how-to-use-this-blog/ 301
+/posts/gradys-how-to-use-this-blog/ /gradys-tour/how-to-use-this-blog/ 301

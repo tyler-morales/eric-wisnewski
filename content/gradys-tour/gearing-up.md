@@ -5,6 +5,8 @@ author: grady-davis
 date: 2026-08-13T18:01:00Z
 draft: false
 image: /images/uploads/IMG_0846-4.jpeg
+aliases:
+  - /posts/gradys-tour/gearing-up/
 ---
 ![](/images/uploads/IMG_0532.jpeg)
 

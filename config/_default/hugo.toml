@@ -13,6 +13,11 @@ title = 'Eric Wisnewski'
     [markup.goldmark.renderer]
       unsafe = true
 
+# Pin section URLs so author collections cannot drift if CMS creates subfolders.
+[permalinks]
+  posts = '/posts/:slug/'
+  gradys-tour = '/gradys-tour/:slug/'
+
 [params]
   description = 'Eric Wisnewski — personal site and blog'
   # CSV URL for School Sheets page (File > Share > Publish to web, or export URL if sheet is public)

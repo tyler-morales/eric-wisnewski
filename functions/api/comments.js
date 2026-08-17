@@ -3,6 +3,11 @@
  * D1 binding: COMMENTS_DB.
  */
 
+import {
+  commentUrlLookupVariants,
+  relocateCommentUrl,
+} from '../_lib/comment-urls.js';
+
 const MAX_AUTHOR = 200;
 const MAX_TEXT = 5000;
 
@@ -12,13 +17,8 @@ function isValidUrlParam(url) {
   return t.startsWith('/') && !t.startsWith('//') && !t.includes('://');
 }
 
-/** Canonical form: trim, ensure single leading slash, trailing slash (except for "/"). */
-function canonicalCommentUrl(url) {
-  if (typeof url !== 'string' || !url) return '';
-  const t = url.trim().replace(/\/+/g, '/');
-  if (!t.startsWith('/')) return '';
-  if (t === '/') return '/';
-  return t.endsWith('/') ? t : t + '/';
+function urlInPlaceholders(variants) {
+  return variants.map(() => '?').join(', ');
 }
 
 function jsonResponse(body, status = 200) {
@@ -75,15 +75,18 @@ export async function onRequestGet(context) {
     return jsonResponse({ error: 'Missing or invalid url parameter' }, 400);
   }
 
-  const canonical = canonicalCommentUrl(url);
-  const alt = canonical === '/' ? '/' : canonical.slice(0, -1);
+  const variants = commentUrlLookupVariants(url);
+  if (!variants.length) {
+    return jsonResponse({ error: 'Missing or invalid url parameter' }, 400);
+  }
+  const placeholders = urlInPlaceholders(variants);
 
   try {
     const stmt = db.prepare(
       `SELECT id, url, author, body, created_at, parent_id FROM comments
-       WHERE (url = ? OR url = ?) AND (status IS NULL OR status = 'approved') ORDER BY created_at ASC`
+       WHERE url IN (${placeholders}) AND (status IS NULL OR status = 'approved') ORDER BY created_at ASC`
     );
-    const { results } = await stmt.bind(canonical, alt).all();
+    const { results } = await stmt.bind(...variants).all();
     return jsonResponse(results ?? []);
   } catch (e) {
     const msg = e?.message != null ? String(e.message) : '';
@@ -91,9 +94,9 @@ export async function onRequestGet(context) {
     if (missingColumn) {
       try {
         const stmtLegacy = db.prepare(
-          'SELECT id, url, author, body, created_at FROM comments WHERE url = ? OR url = ? ORDER BY created_at ASC'
+          `SELECT id, url, author, body, created_at FROM comments WHERE url IN (${placeholders}) ORDER BY created_at ASC`
         );
-        const { results: legacyResults } = await stmtLegacy.bind(canonical, alt).all();
+        const { results: legacyResults } = await stmtLegacy.bind(...variants).all();
         const withParentId = (legacyResults || []).map((row) => ({ ...row, parent_id: null }));
         return jsonResponse(withParentId);
       } catch (e2) {
@@ -181,7 +184,7 @@ export async function onRequestPost(context) {
   }
 
   const rawUrl = body.url != null ? String(body.url).trim() : '';
-  const url = canonicalCommentUrl(rawUrl);
+  const url = relocateCommentUrl(rawUrl);
   const author = body.author != null ? String(body.author).trim() : '';
   const text = body.text != null ? String(body.text).trim() : '';
   const email = body.email != null ? String(body.email).trim() : null;
@@ -203,10 +206,12 @@ export async function onRequestPost(context) {
     if (!Number.isInteger(parentId) || parentId < 1) {
       return jsonResponse({ error: 'Invalid parent_id' }, 400);
     }
-    const altUrl = url === '/' ? '/' : url.slice(0, -1);
+    const variants = commentUrlLookupVariants(url);
     const parent = await db
-      .prepare('SELECT id, parent_id FROM comments WHERE id = ? AND (url = ? OR url = ?)')
-      .bind(parentId, url, altUrl)
+      .prepare(
+        `SELECT id, parent_id FROM comments WHERE id = ? AND url IN (${urlInPlaceholders(variants)})`
+      )
+      .bind(parentId, ...variants)
       .first();
     if (!parent) {
       return jsonResponse({ error: 'Parent comment not found' }, 400);
