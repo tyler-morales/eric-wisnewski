@@ -1,0 +1,13 @@
+{{/*
+  True when a page belongs on Grady's Tour (not the home list).
+  Source of truth is the content/gradys-tour/ section; path + author are fallbacks
+  so a misplaced CMS file cannot leak onto the home page.
+*/}}
+{{- $dir := "" -}}
+{{- with .File }}{{ $dir = lower .Dir }}{{ end -}}
+{{- return or
+  (eq .Section "gradys-tour")
+  (in $dir "gradys-tour")
+  (in $dir "grady's tour")
+  (eq .Params.author "grady-davis")
+-}}

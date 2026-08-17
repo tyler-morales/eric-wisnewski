@@ -9,10 +9,13 @@
 </header>
 <main class="admin-comments-main">
   <h2 class="admin-comments-title">{{ .Title }}</h2>
+  <div class="admin-comments-guide">
+    {{ .Content }}
+  </div>
 
-  <div id="admin-secret-form" class="admin-secret-form" aria-label="Admin authentication">
-    <label for="admin-secret-input">Admin secret</label>
-    <input id="admin-secret-input" type="password" autocomplete="off" placeholder="Enter COMMENTS_ADMIN_SECRET">
+  <div id="admin-secret-form" class="admin-secret-form" aria-label="Unlock comment tools">
+    <label for="admin-secret-input">Password</label>
+    <input id="admin-secret-input" type="password" autocomplete="off" placeholder="Password Tyler gave you">
     <button type="button" id="admin-secret-submit">Unlock</button>
     <p id="admin-secret-error" class="admin-error" role="alert" aria-live="polite" hidden></p>
   </div>
@@ -293,7 +296,7 @@
       secretSubmit.addEventListener('click', function () {
         var s = (secretInput.value || '').trim();
         if (!s) {
-          secretError.textContent = 'Enter the admin secret.';
+          secretError.textContent = 'Enter the password.';
           secretError.hidden = false;
           return;
         }

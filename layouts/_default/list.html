@@ -5,9 +5,10 @@
   <main>
     <ul class="post-list">
       {{ $posts := where .Site.RegularPages "Section" "posts" }}
-      {{ $posts = where $posts "Params.author" "!=" "grady-davis" }}
       {{ range $posts }}
-        {{ partial "post-list-item.html" . }}
+        {{ if not (partial "is-tour-post.html" .) }}
+          {{ partial "post-list-item.html" . }}
+        {{ end }}
       {{ end }}
     </ul>
   </main>

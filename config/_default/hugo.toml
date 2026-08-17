@@ -37,3 +37,10 @@ title = 'Eric Wisnewski'
     render = 'never'
   [cascade.target]
     path = '{/authors,/authors/**}'
+
+# Grady's Tour posts always attribute to Grady even if CMS author is missing.
+[[cascade]]
+  [cascade.params]
+    author = 'grady-davis'
+  [cascade.target]
+    path = '{/gradys-tour,/gradys-tour/**}'

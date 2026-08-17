@@ -1,6 +1,10 @@
 ---
-title: Comment moderation
+title: Remove comments
 type: admin
 ---
 
-Use this page to approve or remove pending comments. New comments are hidden until you click **Allow**; they then appear on the site and leave this list. Access is restricted by admin secret.
+1. Type the password Tyler gave you, then click **Unlock**.
+2. Find the comment.
+3. Click **Delete**, then confirm.
+
+That comment is gone from the site. Click **Edit** only if you want to change the wording instead.

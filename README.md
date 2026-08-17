@@ -13,7 +13,7 @@ Deploy the `public/` directory to any static host (GitHub Pages, Netlify, Vercel
 
 Posts have an `author` front matter field that references a slug under `content/authors/` (e.g. `eric-wisnewski`, `grady-davis`). Each author file has `name`, `slug`, `bio`, and optional `image`. The single-post page shows a byline and an author bio block under the post; the home list shows the author name.
 
-**Grady’s Tour:** Posts with `author: grady-davis` appear only on `/gradys-tour/` (nav: **Grady’s Tour**, next to Map). The home page lists everyone except Grady. Set **Author** to Grady Davis in the CMS so new posts land in that section.
+**Grady’s Tour:** Travel posts live in `content/gradys-tour/` (CMS collection **Grady’s Tour**). They appear only on `/gradys-tour/` and never on the home page. Use **Posts** for Eric’s home-page writing; do not put Grady’s travel posts there.
 
 In **Pages CMS**, use the **Authors** collection to edit bios/photos, and set **Author** on each post. Invite contributors by email in Pages CMS so they can sign in with a magic link and write posts (pick themselves as Author).
 
@@ -21,7 +21,7 @@ Placeholder bios/images can be replaced anytime by editing the author files in t
 
 ## Add a new post (without the CMS)
 
-1. Create a new file under `content/posts/`, e.g. `content/posts/my-new-post.md`.
+1. Create a new file under `content/posts/` (Eric / home page) or `content/gradys-tour/` (Grady’s travel posts), e.g. `content/posts/my-new-post.md`.
 2. Add front matter at the top (include `slug` to match the filename and `author`):
 
    ```yaml
@@ -35,7 +35,7 @@ Placeholder bios/images can be replaced anytime by editing the author files in t
    ```
 
 3. Write your content below the front matter in Markdown.
-4. Run `hugo` (or `hugo --gc --minify`) to rebuild. The new post will appear in the list and at its own URL.
+4. Run `hugo` (or `hugo --gc --minify`) to rebuild. Home-page posts appear at `/`; Grady’s travel posts appear at `/gradys-tour/` and their own `/gradys-tour/<slug>/` URL.
 
 ## Images (CMS and Markdown)
 
@@ -55,7 +55,7 @@ Update these values and rebuild. Nav links are used in the site header; the CSV 
 
 ## Editing content (Pages CMS)
 
-Content and media are edited via **Pages CMS**. Eric signs in with **email** (magic link sent to his inbox; invite him by email in the CMS if needed). Maintainers can use GitHub at [https://app.pagescms.org/](https://app.pagescms.org/); open this repository and branch, and use the configured collections (Posts) and media (uploads). The post **Body** is a rich-text editor: you can format text (bold, italic, headings, lists, blockquotes, code), add links, and insert images from the media library. Type `/` in the body for slash commands. Configuration lives in `.pages.yml` at the repo root.
+Content and media are edited via **Pages CMS**. Eric signs in with **email** (magic link sent to his inbox; invite him by email in the CMS if needed). Maintainers can use GitHub at [https://app.pagescms.org/](https://app.pagescms.org/); open this repository and branch, and use the configured collections (**Posts** for the home page, **Grady’s Tour** for travel posts) and media (uploads). The post **Body** is a rich-text editor: you can format text (bold, italic, headings, lists, blockquotes, code), add links, and insert images from the media library. Type `/` in the body for slash commands. Configuration lives in `.pages.yml` at the repo root.
 
 **If the Cloudflare build fails** with *"date front matter field is not a parsable date"*: Hugo requires a full RFC3339 date (with seconds and timezone). In the CMS, set **Publish Date** again and save so it writes e.g. `2026-02-26T10:25:00Z`. The `.pages.yml` date format is set to `yyyy-MM-dd'T'HH:mm:ss'Z'` for this.
 
@@ -86,7 +86,7 @@ To enable comments:
 2. Run the schema and migrations: `npx wrangler d1 execute blog-comments --remote --file=./migrations/0000_initial_comments.sql`, then `0001_comments_v2.sql`, then `0002_comments_allow.sql` (or run the SQL in the D1 dashboard).
 3. Bind the database to your Pages project: in the dashboard go to your Pages project → Settings → Functions → Bindings → D1, add binding name `COMMENTS_DB` and select the database. Or add the binding to `wrangler.toml` (replace `<DATABASE_ID>` in `wrangler.toml` with your database id) and deploy with the config file as source of truth.
 4. **Turnstile (captcha):** In [Cloudflare Dashboard → Turnstile](https://dash.cloudflare.com/?to=/:account/turnstile) create a widget and get the **site key** and **secret key**. Set the site key in `config/_default/hugo.toml` under `[params]` as `turnstile_site_key = "your-site-key"`. Add the **secret key** as a Cloudflare Pages secret: Settings → Environment variables → **TURNSTILE_SECRET_KEY** (encrypted). If `TURNSTILE_SECRET_KEY` is not set, the API skips verification (useful for local dev without a widget).
-5. **Admin moderation (optional):** New comments are **pending** until approved. Set `COMMENTS_ADMIN_SECRET` in Cloudflare Pages → Environment variables (e.g. `openssl rand -hex 32`). Open **`/admin/comments/`**, enter the secret, and you’ll see only pending comments. Use **Allow** to approve a comment (it then appears on the site and is removed from the admin list), or **Delete** to remove it. The secret is never committed; store it securely (e.g. in a password manager).
+5. **Remove comments:** There is no public Flag button. Open **`/admin/comments/`**, enter `COMMENTS_ADMIN_SECRET`, click **Unlock**, then **Delete** (or **Edit**). Set that secret in Cloudflare Pages → Environment variables (e.g. `openssl rand -hex 32`) and share it with Eric/Grady; never commit it. The how-to on that page is the site-facing guide.
 
 **If comments return 500:** Verify all three migrations have been run against the production D1 database and that the Pages D1 binding uses that database (see step 2 and 3 above). Check Functions logs in the Cloudflare dashboard for the underlying error.
 

@@ -1029,6 +1029,30 @@ article.post-content hr {
   margin: 0 0 1rem;
 }
 
+.admin-comments-guide {
+  margin: 0 0 1.5rem;
+}
+
+.admin-comments-guide h2,
+.admin-comments-guide h3 {
+  font-size: 1.05rem;
+  margin: 0 0 0.5rem;
+}
+
+.admin-comments-guide ol {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.admin-comments-guide li {
+  margin: 0 0 0.35rem;
+}
+
+.admin-comments-guide p {
+  margin: 0;
+  color: #555;
+}
+
 .admin-secret-form {
   display: flex;
   flex-wrap: wrap;

@@ -1,17 +1,17 @@
 ---
 title: How to Use This Blog (Grady)
-slug: gradys-how-to-use-this-blog
+slug: how-to-use-this-blog
 author: grady-davis
 date: 2026-08-12T16:00:00Z
 draft: true
 ---
-Hi Grady — this post is your quick guide to using this blog. No code required. Keep it as a draft reference while you get started; when you’re ready to publish real tour posts, create new ones and set **Author** to Grady Davis.
+Hi Grady — this post is your quick guide to using this blog. No code required. Keep it as a draft reference while you get started; when you’re ready to publish real tour posts, create them under **Grady’s Tour** in the CMS.
 
 ---
 
 ## What is this site?
 
-This is Eric’s college-basketball road-trip blog. Your posts live under **Grady’s Tour** in the menu at the top (next to Map). Eric’s posts stay on the home page; yours show only on Grady’s Tour. There is also a **List of College Stadiums** page and a **Map** page.
+This is Eric’s college-basketball road-trip blog. Your travel posts live under **Grady’s Tour** in the menu at the top (next to Map). Eric’s posts stay on the home page; yours show only on Grady’s Tour. There is also a **List of College Stadiums** page and a **Map** page.
 
 ---
 
@@ -20,19 +20,19 @@ This is Eric’s college-basketball road-trip blog. Your posts live under **Grad
 You edit everything through a simple web editor called **Pages CMS**.
 
 1. Go to **[https://app.pagescms.org/](https://app.pagescms.org/)** and sign in with your **email**. (You’ll get a sign-in link sent to your inbox — no password needed. If you haven’t been set up yet, ask Tyler to invite your email address.)
-2. Open this site in the CMS and look for **Posts** in the sidebar.
+2. Open this site in the CMS and look for **Grady’s Tour** in the sidebar (not **Posts** — that collection is Eric’s home page).
 3. Click a post to edit it, or create a **new post** to write something new.
 
 Each post has:
 
 - **Title** — what shows at the top of the post and in the list.
-- **Slug** — a short, URL-friendly name (e.g. `my-first-post`). Use lowercase letters and hyphens, no spaces. This becomes part of the post’s web address.
-- **Author** — pick **Grady Davis** so the post appears on **Grady’s Tour** (not on Eric’s home list).
+- **Slug** — a short, URL-friendly name (e.g. `from-boat-to-bus`). Use lowercase letters and hyphens, no spaces. This becomes part of the post’s web address.
+- **Author** — pick **Grady Davis**.
 - **Publish Date** — when the post goes live. Make sure you set a full date and time; the editor will save it in the right format.
 - **Featured Image** — the image used when the post is shared (e.g. on social media). Use an image you’ve already uploaded to the site’s media library.
 - **Body** — the main content. You can type normally, use the toolbar for **bold**, *italic*, headings, lists, and links. Type **/** in the body to see extra options (like inserting an image).
 
-When you’re done, **save**. The site will rebuild automatically and your changes will go live.
+When you’re done, **save**. The site will rebuild automatically and your changes will go live on **Grady’s Tour** only — not on the home page.
 
 ---
 
@@ -52,4 +52,4 @@ If someone has set up the site so that images are stored in a specific folder, n
 
 ---
 
-That’s it. Write your posts in the CMS, set **Author** to Grady Davis, add a title and a slug, set a date and optional featured image, and hit save. Your posts will show up under **Grady’s Tour**.
+That’s it. Write your posts in the **Grady’s Tour** collection, add a title and a slug, set a date and optional featured image, and hit save. Your posts will show up under **Grady’s Tour**, not on Eric’s home page.

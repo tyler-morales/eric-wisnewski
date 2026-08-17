@@ -57,6 +57,7 @@ content:
     path: content/posts
     format: yaml-frontmatter
     filename: "{{slug}}.md"
+    subfolders: false
     view:
       primary: title
       fields: [title, author, date, draft]
@@ -78,7 +79,66 @@ content:
         label: Author
         type: reference
         required: true
-        description: Who wrote this post. Add people under Authors first.
+        description: Who wrote this post. Add people under Authors first. Grady's travel posts belong in the Grady's Tour collection, not here.
+        options:
+          collection: authors
+          search: "name,slug"
+          value: "{fields.slug}"
+          label: "{fields.name}"
+      - name: date
+        label: Publish Date
+        type: date
+        required: true
+        description: Use a date/time that saves as ISO 8601 with seconds (e.g. 2026-02-26T10:25:00Z). Hugo requires RFC3339; missing seconds can cause "date front matter field is not a parsable date".
+        options:
+          time: true
+          format: "yyyy-MM-dd'T'HH:mm:ss'Z'"
+      - name: draft
+        label: Draft
+        type: boolean
+        default: false
+      - name: image
+        label: Featured Image
+        type: image
+        required: false
+        description: Pick from the media library or upload via the CMS.
+        options:
+          extensions: [jpg, jpeg, png, webp, gif]
+      - name: body
+        label: Body
+        type: rich-text
+
+  - name: gradys-tour
+    label: Grady's Tour
+    type: collection
+    path: content/gradys-tour
+    format: yaml-frontmatter
+    filename: "{fields.slug}.md"
+    exclude: [_index.md]
+    subfolders: false
+    view:
+      primary: title
+      fields: [title, author, date, draft]
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: slug
+        label: Slug
+        type: string
+        required: true
+        description: URL-friendly identifier (e.g. from-boat-to-bus). Used for the filename.
+      - name: author
+        label: Author
+        type: reference
+        required: true
+        default: grady-davis
+        description: Who wrote this post. Travel posts in this folder appear only on Grady's Tour, not the home page.
         options:
           collection: authors
           search: "name,slug"

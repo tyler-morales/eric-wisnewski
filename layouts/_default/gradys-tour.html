@@ -4,8 +4,7 @@
   {{ partial "header.html" . }}
   <main id="main-content">
     <h1 class="visually-hidden">{{ .Title }}</h1>
-    {{ $posts := where .Site.RegularPages "Section" "posts" }}
-    {{ $posts = where $posts "Params.author" "eq" "grady-davis" }}
+    {{ $posts := .RegularPages }}
     {{ if $posts }}
     <ul class="post-list">
       {{ range $posts }}
