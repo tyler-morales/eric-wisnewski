@@ -11,15 +11,15 @@ Bayeux, NOR | We made it to our first stop for our bike journey, we just don’t
 
 *Luckily I airtagged my bike before leaving*
 
-Bayeux is old and pleasant. Not a bad place to be stuck, but we are ready to hit the road. If tomorrow passes and my bike doesnt show I’m buying a new setup. T-Mo just bought a new bike and picked up some gear. 
+Bayeux is old and pleasant. Not a bad place to be stuck, but we are ready to hit the road. If tomorrow passes and my bike doesn't show, I’m buying a new setup. T-Mo just bought a new bike and picked up some gear. 
 
-![IMG_0927.heic](blob:https:/app.pagescms.org/9bd9c1e9-a0aa-411f-88df-a106e6c1e2c4)
+![](/images/uploads/IMG_0957.jpeg)
 
+*Bayeux*
 
+![](/images/uploads/IMG_0959.jpeg)
 
-![IMG_0957.heic](blob:https:/app.pagescms.org/5082a3e8-2689-4a43-8628-486981a4330f)
+*T-Mo and friendly bike salesman Florian*
 
-
-
-![IMG_0950.heic](blob:https:/app.pagescms.org/47009abf-3773-4cc0-8817-cc97fde4648a)
+![](/images/uploads/IMG_0950.jpeg)
 
