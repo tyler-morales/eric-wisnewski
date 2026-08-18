@@ -25,6 +25,10 @@ Bayeux is old and pleasant. Not a bad place to be stranded, but we are ready to 
 
 *T-Mo and friendly bike salesman Florian*
 
+![](/images/uploads/IMG_0962.jpeg)
+
+*Fueling up*
+
 Next update will include biking 🫡
 
 -Grady
