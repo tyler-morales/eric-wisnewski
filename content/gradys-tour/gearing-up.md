@@ -51,3 +51,5 @@ Me and T-Mo (Japan, 25’). Known from his many magazines there is little doubt 
 Above all thank you to Eric Wisnewski for graciously extending the offer to write about my adventures on his blog. I’ll try not to let you down E.
 
 -Grady
+
+Aug 16th 26’
