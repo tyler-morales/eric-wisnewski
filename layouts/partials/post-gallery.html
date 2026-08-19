@@ -1,0 +1,32 @@
+{{/*
+  Extra photos from the CMS Gallery field (Pages CMS image + options.multiple).
+  A single leftover pick is stored as a string; several picks are a list.
+  Per-image alt is not in the CMS schema (keep the Photos multi-select flow).
+*/}}
+{{- $raw := .Params.gallery -}}
+{{- $items := slice -}}
+{{- if reflect.IsSlice $raw -}}
+  {{- range $raw -}}
+    {{- if . -}}
+      {{- $items = $items | append . -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if $raw -}}
+  {{- $items = slice $raw -}}
+{{- end -}}
+{{- if gt (len $items) 0 -}}
+<section class="post-gallery" aria-label="Photos for {{ .Title }}">
+  <ul class="post-gallery-list">
+    {{- range $index, $src := $items -}}
+    <li>
+      <img
+        src="{{ $src | absURL }}"
+        alt="{{ $.Title }} photo {{ add $index 1 }}"
+        loading="lazy"
+        decoding="async"
+      >
+    </li>
+    {{- end -}}
+  </ul>
+</section>
+{{- end -}}

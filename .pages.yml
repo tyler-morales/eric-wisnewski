@@ -89,7 +89,7 @@ content:
         label: Publish Date
         type: date
         required: true
-        description: Use a date/time that saves as ISO 8601 with seconds (e.g. 2026-02-26T10:25:00Z). Hugo requires RFC3339; missing seconds can cause "date front matter field is not a parsable date".
+        description: Use a date/time that saves as ISO 8601 with seconds (e.g. 2026-02-26T10:25:00Z). Hugo requires RFC3339; missing seconds can cause "date front matter field is not a parsable date". The value is stored as UTC.
         options:
           time: true
           format: "yyyy-MM-dd'T'HH:mm:ss'Z'"
@@ -103,6 +103,16 @@ content:
         required: false
         description: Pick from the media library or upload via the CMS.
         options:
+          extensions: [jpg, jpeg, png, webp, gif]
+      - name: gallery
+        label: Gallery
+        type: image
+        required: false
+        description: Upload several photos at once (Photos app or files), then remove any you do not want. They appear as a grid on the post. Prefer JPEG/PNG; huge originals can fail to save.
+        options:
+          multiple:
+            max: 12
+          unique: true
           extensions: [jpg, jpeg, png, webp, gif]
       - name: body
         label: Body
@@ -132,7 +142,7 @@ content:
         label: Slug
         type: string
         required: true
-        description: URL-friendly identifier (e.g. from-boat-to-bus). Used for the filename.
+        description: URL-friendly identifier (e.g. from-boat-to-bus). Lowercase letters and hyphens only; this becomes the filename and /gradys-tour/<slug>/ URL.
       - name: author
         label: Author
         type: reference
@@ -148,7 +158,7 @@ content:
         label: Publish Date
         type: date
         required: true
-        description: Use a date/time that saves as ISO 8601 with seconds (e.g. 2026-02-26T10:25:00Z). Hugo requires RFC3339; missing seconds can cause "date front matter field is not a parsable date".
+        description: Use a date/time that saves as ISO 8601 with seconds (e.g. 2026-02-26T10:25:00Z). Hugo requires RFC3339; missing seconds can cause "date front matter field is not a parsable date". The value is stored as UTC.
         options:
           time: true
           format: "yyyy-MM-dd'T'HH:mm:ss'Z'"
@@ -162,6 +172,16 @@ content:
         required: false
         description: Pick from the media library or upload via the CMS.
         options:
+          extensions: [jpg, jpeg, png, webp, gif]
+      - name: gallery
+        label: Gallery
+        type: image
+        required: false
+        description: Upload several photos at once (Photos app or files), then remove any you do not want. They appear as a grid on the post. Prefer JPEG/PNG; huge originals can fail to save.
+        options:
+          multiple:
+            max: 12
+          unique: true
           extensions: [jpg, jpeg, png, webp, gif]
       - name: body
         label: Body

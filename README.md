@@ -13,7 +13,7 @@ Deploy the `public/` directory to any static host (GitHub Pages, Netlify, Vercel
 
 Posts have an `author` front matter field that references a slug under `content/authors/` (e.g. `eric-wisnewski`, `grady-davis`). Each author file has `name`, `slug`, `bio`, and optional `image`. The single-post page shows a byline and an author bio block under the post; the home list shows the author name.
 
-**Grady’s Tour:** Travel posts live in `content/gradys-tour/` (CMS collection **Grady’s Tour**) and always publish at `/gradys-tour/<slug>/`. They appear only on `/gradys-tour/` and never on the home page. Use **Posts** for Eric’s home-page writing (`/posts/<slug>/`); do not put Grady’s travel posts there.
+**Grady’s Tour:** Travel posts live in `content/gradys-tour/` (CMS collection **Grady’s Tour**) and always publish at `/gradys-tour/<slug>/`. They appear only on `/gradys-tour/` and never on the home page. Use **Posts** for Eric’s home-page writing (`/posts/<slug>/`); do not put Grady’s travel posts there. `buildFuture = true` in `hugo.toml` so a CMS publish date that is a few minutes ahead of the Cloudflare build still goes live (otherwise Hugo omits the post and the URL falls through to the home page).
 
 In **Pages CMS**, use the **Authors** collection to edit bios/photos, and set **Author** on each post. Invite contributors by email in Pages CMS so they can sign in with a magic link and write posts (pick themselves as Author).
 
@@ -39,7 +39,8 @@ Placeholder bios/images can be replaced anytime by editing the author files in t
 
 ## Images (CMS and Markdown)
 
-- **Where to put images:** Images under `/images/uploads/` are served from `static/images/uploads/`. The CMS writes to `assets/images/uploads/`; the build script `scripts/sync-uploaded-images.sh` copies them into `static/images/uploads/` before Hugo runs, so featured and inline images work on the live site without manual copy.
+- **Where to put images:** Images under `/images/uploads/` are served from `static/images/uploads/`. The CMS writes to `assets/images/uploads/`; the build script `scripts/sync-uploaded-images.sh` copies them into `static/images/uploads/` before Hugo runs, so featured, gallery, and inline images work on the live site without manual copy.
+- **Gallery (several at once):** Posts have a `gallery` front matter list. In Pages CMS, **Gallery** is an image field with `options.multiple` so the author can pick several photos from Photos in one upload, then remove any they do not want. Hugo renders that list as a grid via `layouts/partials/post-gallery.html`. Do not set `multiple` on Featured Image (`image` must stay a single path).
 - **In post body (rich-text):** The post Body in Pages CMS is a rich-text (WYSIWYG) field. Use the editor toolbar or slash commands (`/`) to add **links** and **inline images**; “insert image” uses the same media library (`assets/images/uploads/`). Body content is stored as HTML and rendered by Hugo (Goldmark with raw HTML enabled). Inline body images are output as `<img>` tags; the responsive picture/WebP pipeline applies to images inserted via Markdown syntax in non-CMS workflows.
 - **Featured / share image:** Set the `image` field in the post’s front matter (e.g. in the CMS “Featured Image” or in the YAML as `image: /images/uploads/hero.jpg`). That URL is used for `og:image` and `twitter:image`; the file must exist in `static/images/uploads/`.
 ## Change the School Sheets or Map links
@@ -55,11 +56,13 @@ Update these values and rebuild. Nav links are used in the site header; the CSV 
 
 ## Editing content (Pages CMS)
 
-Content and media are edited via **Pages CMS**. Eric signs in with **email** (magic link sent to his inbox; invite him by email in the CMS if needed). Maintainers can use GitHub at [https://app.pagescms.org/](https://app.pagescms.org/); open this repository and branch, and use the configured collections (**Posts** for the home page, **Grady’s Tour** for travel posts) and media (uploads). The post **Body** is a rich-text editor: you can format text (bold, italic, headings, lists, blockquotes, code), add links, and insert images from the media library. Type `/` in the body for slash commands. Configuration lives in `.pages.yml` at the repo root.
+Content and media are edited via **Pages CMS**. Eric signs in with **email** (magic link sent to his inbox; invite him by email in the CMS if needed). Maintainers can use GitHub at [https://app.pagescms.org/](https://app.pagescms.org/); open this repository and branch, and use the configured collections (**Posts** for the home page, **Grady’s Tour** for travel posts) and media (uploads). The post **Gallery** field accepts several photos at once; **Body** is a rich-text editor (format text, links, slash commands). Configuration lives in `.pages.yml` at the repo root.
 
 **If the Cloudflare build fails** with *"date front matter field is not a parsable date"*: Hugo requires a full RFC3339 date (with seconds and timezone). In the CMS, set **Publish Date** again and save so it writes e.g. `2026-02-26T10:25:00Z`. The `.pages.yml` date format is set to `yyyy-MM-dd'T'HH:mm:ss'Z'` for this.
 
-**Images for og:image / build:** Featured and body images under `/images/uploads/` are served from `static/images/uploads/`. Run `./scripts/sync-uploaded-images.sh` before `hugo` (or use the full build command above) so CMS uploads are available in the built site.
+**If a new Grady’s Tour post is missing from `/gradys-tour/`:** Confirm it lives in `content/gradys-tour/` with `draft: false`. A publish date still in the future used to drop the post from the Hugo build; `buildFuture = true` keeps those posts in the output. Missing URLs on Cloudflare Pages fall through to the home page, which looks like the post “isn’t there.”
+
+**Images for og:image / build:** Featured, gallery, and body images under `/images/uploads/` are served from `static/images/uploads/`. Run `./scripts/sync-uploaded-images.sh` before `hugo` (or use the full build command above) so CMS uploads are available in the built site.
 
 ## Analytics (Umami)
 

@@ -257,6 +257,36 @@ article.post-content .post-featured-image img:focus-visible {
   outline-offset: 2px;
 }
 
+article.post-content .post-gallery {
+  margin: 1.5rem 0 2rem;
+}
+
+article.post-content .post-gallery-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  article.post-content .post-gallery-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+article.post-content .post-gallery-list li {
+  margin: 0;
+}
+
+article.post-content .post-gallery-list img {
+  width: 100%;
+  height: auto;
+  margin: 0;
+  border-radius: 0.25rem;
+}
+
 article.post-content h1,
 article.post-content h2,
 article.post-content h3 {
@@ -392,6 +422,11 @@ article.post-content hr {
 
   article.post-content .post-featured-image img {
     margin: 0;
+  }
+
+  article.post-content .post-gallery {
+    margin-top: 1.75rem;
+    margin-bottom: 2rem;
   }
 
   article.post-content pre {

@@ -26,10 +26,11 @@ You edit everything through a simple web editor called **Pages CMS**.
 Each post has:
 
 - **Title** — what shows at the top of the post and in the list.
-- **Slug** — a short, URL-friendly name (e.g. `from-boat-to-bus`). Use lowercase letters and hyphens, no spaces. This becomes part of the post’s web address.
+- **Slug** — a short, URL-friendly name (e.g. `from-boat-to-bus`). Use lowercase letters and hyphens, no spaces. This becomes the `/gradys-tour/<slug>/` address.
 - **Author** — pick **Grady Davis**.
-- **Publish Date** — when the post goes live. Make sure you set a full date and time; the editor will save it in the right format.
+- **Publish Date** — when the post goes live. Set a full date and time; the editor saves it as UTC. The site still publishes the post if that time is a few minutes ahead of the deploy.
 - **Featured Image** — the image used when the post is shared (e.g. on social media). Use an image you’ve already uploaded to the site’s media library.
+- **Gallery** — add several photos at once. Open the field, pick photos from your Photos app (you can tap more than one), then remove any you don’t want. Those photos show as a grid on the published post.
 - **Body** — the main content. You can type normally, use the toolbar for **bold**, *italic*, headings, lists, and links. Type **/** in the body to see extra options (like inserting an image).
 
 When you’re done, **save**. The site will rebuild automatically and your changes will go live on **Grady’s Tour** only — not on the home page.
@@ -38,10 +39,11 @@ When you’re done, **save**. The site will rebuild automatically and your chang
 
 ## How do I add images?
 
-- **Featured image (for sharing):** In the post editor, set the **Featured Image** field to an image from the media library. Those images live under “Media” or “Uploads” in the CMS — upload new ones there if you need to.
-- **Images inside a post:** In the **Body** of the post, type **/** and choose something like “Insert image,” then pick from your uploaded images.
+- **Several photos at once (the usual flow):** In the post editor, open **Gallery**. Pick a handful of photos from your Photos app in one go, then remove any you don’t want. They show as a grid at the bottom of the post. JPEG or PNG is best; very large originals can fail to save.
+- **Featured image (for sharing):** In the post editor, set the **Featured Image** field to one image (from the gallery uploads or the media library). That one is the share/hero image.
+- **A photo in a specific paragraph:** In the **Body**, type **/** and choose “Insert image,” then pick from the photos you already uploaded.
 
-If someone has set up the site so that images are stored in a specific folder, new images you add through the CMS will be saved there. You don’t need to touch any files or folders yourself.
+You don’t need to touch any files or folders yourself.
 
 ---
 
@@ -52,4 +54,4 @@ If someone has set up the site so that images are stored in a specific folder, n
 
 ---
 
-That’s it. Write your posts in the **Grady’s Tour** collection, add a title and a slug, set a date and optional featured image, and hit save. Your posts will show up under **Grady’s Tour**, not on Eric’s home page.
+That’s it. Write your posts in the **Grady’s Tour** collection, add a title and a slug, set a date, add photos in **Gallery** if you have them, and hit save. Your posts will show up under **Grady’s Tour**, not on Eric’s home page.
