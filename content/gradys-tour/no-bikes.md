@@ -4,7 +4,6 @@ slug: no-bikes
 author: grady-davis
 date: 2026-08-18T23:52:00Z
 draft: false
-image: /images/uploads/IMG_0967.jpeg
 ---
 Aug 18th 26’
 
