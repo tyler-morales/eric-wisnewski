@@ -4,7 +4,7 @@ slug: gearing-up
 author: grady-davis
 date: 2026-08-16T18:01:00Z
 draft: false
-image: /images/uploads/IMG_0846-4.jpeg
+image: /images/uploads/IMG_0968.jpeg
 aliases:
   - /posts/gradys-tour/gearing-up/
 ---
