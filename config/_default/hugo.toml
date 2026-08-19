@@ -2,6 +2,11 @@
 baseURL = 'https://ericwisnewski.com'
 languageCode = 'en-us'
 title = 'Eric Wisnewski'
+# Pages CMS stores publish dates with a literal Z (UTC). Contributors often save a
+# local "now" that is still a few minutes in the future at deploy time; without this,
+# Hugo omits the post and Cloudflare serves the home page at its URL. Applies to all
+# sections (Eric's Posts and Grady's Tour) — intended for this CMS-edited site.
+buildFuture = true
 
 [imaging]
   quality = 85

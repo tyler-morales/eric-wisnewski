@@ -1,6 +1,6 @@
 ---
 title: Bike-less in Bayeux
-slug: No-bikes
+slug: no-bikes
 author: grady-davis
 date: 2026-08-18T23:52:00Z
 draft: false
