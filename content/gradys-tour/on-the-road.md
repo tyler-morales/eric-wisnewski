@@ -14,36 +14,28 @@ Time to buy a bike. After two days of sitting around we were ready to go. I head
 
 ![](/images/uploads/IMG_2927.jpeg)
 
-All new gear came out to a lot more.
+*Florian and Richard our helpful staff* 
 
 ![image.jpeg](/images/uploads/image-1.jpeg)
 
+*€€€ came out to a lot more than expected*
+
 After a full day shopping we headed off to Omaha Beach. Liberating to be on the road.
 
-[photo]
+PHOTO
 
-After a an amazing 12 mile road through French countryside we arrived at our AirBnb where we helped the inebriated staff load in a new washer and dryer, so they could speed off back to drinking.
-
-
+We arrived at our BnB where we helped the drunken staff load in a new washer and dryer. 
 
 [photo money in bandana]
-
-
 
 Next was the American military cemetery .
 
 [photos]
 
-A tiny USA.
+*A tiny USA*
 
-
-
-Then there were hills, lots of hills. The initial buzz of the trip slowly turned to regret, then acceptance when we saw no help coming. The newly geared up bikes become dead weight dragging up mile long stretches of hill. It didn’t help that T-Mo and I (known for our military level of preparedness) grossly underestimated our access to food and water. We went the next 7 hours biking passing only one town with food and water.
-
-
+Then there were the hills. 3,300 feet of elevation gain maid the newly geared up bikes feel like dead weight. It didn’t help that T-Mo and I (known for our military level of preparedness) grossly underestimated our access to food and water. We went the next 7 hours biking passing only one town with food and water.
 
 [photo]
 
-
-
-Mile 40: deluded by hungry we cursed ourselves for not grabbing at least a sugar packet to snack on. Without food, the once beautiful Normand hills chateau’s began to feel hellish; passing livestock our best dinner option. Tension turned into severe anxiety when we began to run out of water. Our savior came in the village of Fleury from a 24/7 pizza taco machine, and a local crepe stand. We ordered 2 sandwiches, 2 pizzas, 4 orange sodas, 4 crepes, 8 waters and fries with caramelized onions+sauce. Happily, we slept in the towns tiny park.
+Mile 40: deluded by hungry we cursed ourselves for not grabbing at least a sugar packet to snack on. Without food, the once beautiful Normand hills and chateau’s looked hellish; passing livestock our best dinner option. Tension turned into severe anxiety when we began to run out of water. Our savior came in the village of Fleury from a 24/7 pizza taco machine, and a local crepe stand. We ordered 2 sandwiches, 2 pizzas, 4 orange sodas, 4 crepes, 8 waters and fries with caramelized onions+sauce. Happily, we slept in the towns tiny park.
