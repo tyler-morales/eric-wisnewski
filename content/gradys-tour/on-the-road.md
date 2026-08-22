@@ -4,20 +4,19 @@ slug: On-the-road
 author: grady-davis
 date: 2026-08-22T22:43:00Z
 draft: true
+image: /images/uploads/IMG_1041-1.jpeg
 ---
 Aug 20, 26’
 
-Day 1 and 2: Mile 111
+Day 0 and 1: Mile 60
 
 Time to buy a bike. After two days of sitting around we were ready to go. I headed to the local bike shop Planet Velo Bayeux. Its staff Florian and Richard - real cyclists unlike us - suited me up with a Scott Gravel bike for €1,499.
 
-[planet velo photo]
+![](/images/uploads/IMG_2927.jpeg)
 
 All new gear came out to a lot more.
 
-[burning money photo]
-
-
+![image.jpeg](/images/uploads/image-1.jpeg)
 
 After a full day shopping we headed off to Omaha Beach. It felt liberating to be on the road.
 
