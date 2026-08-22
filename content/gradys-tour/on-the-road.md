@@ -18,11 +18,9 @@ All new gear came out to a lot more.
 
 ![image.jpeg](/images/uploads/image-1.jpeg)
 
-After a full day shopping we headed off to Omaha Beach. It felt liberating to be on the road.
+After a full day shopping we headed off to Omaha Beach. Liberating to be on the road.
 
 [photo]
-
-
 
 After a an amazing 12 mile road through French countryside we arrived at our AirBnb where we helped the inebriated staff load in a new washer and dryer, so they could speed off back to drinking.
 
