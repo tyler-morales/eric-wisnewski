@@ -44,8 +44,18 @@ Next was the American military cemetery .
 
 *A tiny USA*
 
-Then there were the hills. 3,300 feet of elevation gain maid the newly geared up bikes feel like dead weight. It didn’t help that T-Mo and I (known for our military level of preparedness) grossly underestimated our access to food and water. We went the next 7 hours biking passing only one town with food and water.
-
-[photo]
+Then there were the hills. 3,300 feet of elevation gain made the newly geared up bikes feel like dragging dead weight. It didn’t help that T-Mo and I (known for our military level of preparedness) grossly underestimated our access to resources. We went the next 7 hours, passing only one town with food and water.
 
 Mile 40: deluded by hungry we cursed ourselves for not grabbing at least a sugar packet to snack on. Without food, the once beautiful Normand hills and chateau’s looked hellish; passing livestock our best dinner option. Tension turned into severe anxiety when we began to run out of water. Our savior came in the village of Fleury from a 24/7 pizza taco machine, and a local crepe stand. We ordered 2 sandwiches, 2 pizzas, 4 orange sodas, 4 crepes, 8 waters and fries with caramelized onions+sauce. Happily, we slept in the towns tiny park.
+
+![](/images/uploads/IMG_1150.jpeg)
+
+*Dinner*
+
+![](/images/uploads/IMG_1151.jpeg)
+
+*Our site*
+
+Day 1 done.
+
+-GD
