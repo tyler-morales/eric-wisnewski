@@ -16,13 +16,21 @@ Time to buy a bike. After two days of sitting around we were ready to go. I head
 
 *Florian and Richard our helpful staff* 
 
-![image.jpeg](/images/uploads/image-1.jpeg)
+![image.jpeg](blob:https:/app.pagescms.org/212df55c-fbd9-4094-8172-e529a36445a0)
 
-*€€€ came out to a lot more than expected*
+*Buying a full new set of everything, €€€ came out to a lot more than expected*
 
 After a full day shopping we headed off to Omaha Beach. Liberating to be on the road.
 
-PHOTO
+![](/images/uploads/PXL_20260819_165819736.TS-000-02.ORIGINAL_Original.jpeg)
+
+*Omaha Beach*
+
+![](/images/uploads/IMG_1149.jpeg)
+
+*Omaha Beach: what is T-Mo pondering?* 
+
+
 
 We arrived at our BnB where we helped the drunken staff load in a new washer and dryer. 
 
