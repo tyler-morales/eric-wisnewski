@@ -3,7 +3,7 @@ title: On The Road
 slug: On-the-road
 author: grady-davis
 date: 2026-08-22T22:43:00Z
-draft: true
+draft: false
 image: /images/uploads/IMG_1041-1.jpeg
 ---
 Aug 20, 26’
@@ -44,6 +44,10 @@ After a full day shopping we headed off to Omaha Beach. Liberating to be on the 
 
 *Omaha Beach: what is T-Mo pondering?* 
 
+![](/images/uploads/IMG_1156.jpeg)
+
+*Omaha Beach*
+
 We arrived at our BnB where we helped the drunken staff load in a new washer and dryer. 
 
 ![](/images/uploads/IMG_1152.jpeg)
@@ -52,9 +56,9 @@ We arrived at our BnB where we helped the drunken staff load in a new washer and
 
 Next was the American military cemetery .
 
-![](/images/uploads/IMG_1156.jpeg)
+![](/images/uploads/IMG_1157.jpeg)
 
-*A tiny USA*
+*American Military Cemetery*
 
 Then there were the hills. 3,300 feet of elevation gain made the newly geared up bikes feel like dragging dead weight. It didn’t help that T-Mo and I (known for our military level of preparedness) grossly underestimated our access to resources. We went the next 7 hours, passing only one town with food and water.
 
