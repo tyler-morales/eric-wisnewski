@@ -12,19 +12,27 @@ Day 0 and 1: Mile 60
 
 ![image.jpeg](/images/uploads/image-2.jpeg)
 
+*The route*
+
+![](/images/uploads/IMG_1153.jpeg)
+
+*The new setup*
+
 Time to buy a bike. After two days of sitting around we were ready to go. I headed to the local bike shop Planet Velo Bayeux. Its staff Florian and Richard - real cyclists unlike us - suited me up with a Scott Gravel bike for €1,499.
 
 ![](/images/uploads/IMG_2927.jpeg)
 
-*Florian and Richard our helpful staff* 
+*Richard and Florian our helpful staff* 
 
-![image.jpeg](blob:https:/app.pagescms.org/212df55c-fbd9-4094-8172-e529a36445a0)
+![](/images/uploads/IMG_1154.jpeg)
 
-*Buying a full new set of everything, €€€ came out to a lot more than expected*
+*Buying a full set of everything, €€€ came more than expected*
 
-![image.jpeg](blob:https:/app.pagescms.org/47aaa0cc-aaec-41bb-8705-115a3a705144)
 
-*Jimmyrigging. Cut my backpack to pieces to save the buckles*
+
+![](/images/uploads/IMG_1155.jpeg)
+
+*Jimmy rigging. Cut my backpack to pieces to save the buckles*
 
 After a full day shopping we headed off to Omaha Beach. Liberating to be on the road. An easy 12 miles.
 
@@ -38,11 +46,13 @@ After a full day shopping we headed off to Omaha Beach. Liberating to be on the 
 
 We arrived at our BnB where we helped the drunken staff load in a new washer and dryer. 
 
-[euro in banda photo]
+![](/images/uploads/IMG_1152.jpeg)
+
+*A gentlemen's dispute. After refusing payment for helping load the washer and dryer, payment was made*
 
 Next was the American military cemetery .
 
-[photos]
+![](/images/uploads/IMG_1156.jpeg)
 
 *A tiny USA*
 
