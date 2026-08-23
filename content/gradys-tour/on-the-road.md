@@ -20,6 +20,10 @@ Time to buy a bike. After two days of sitting around we were ready to go. I head
 
 *Buying a full new set of everything, €€€ came out to a lot more than expected*
 
+![image.jpeg](blob:https:/app.pagescms.org/47aaa0cc-aaec-41bb-8705-115a3a705144)
+
+*Jimmyrigging. Cut my backpack to pieces to save the buckles*
+
 After a full day shopping we headed off to Omaha Beach. Liberating to be on the road.
 
 ![](/images/uploads/PXL_20260819_165819736.TS-000-02.ORIGINAL_Original.jpeg)
