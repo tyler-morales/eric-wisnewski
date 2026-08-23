@@ -24,7 +24,7 @@ Time to buy a bike. After two days of sitting around we were ready to go. I head
 
 *Jimmyrigging. Cut my backpack to pieces to save the buckles*
 
-After a full day shopping we headed off to Omaha Beach. Liberating to be on the road.
+After a full day shopping we headed off to Omaha Beach. Liberating to be on the road. An easy 12 miles.
 
 ![](/images/uploads/PXL_20260819_165819736.TS-000-02.ORIGINAL_Original.jpeg)
 
