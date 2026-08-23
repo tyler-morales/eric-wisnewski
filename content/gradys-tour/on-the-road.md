@@ -10,6 +10,8 @@ Aug 20, 26’
 
 Day 0 and 1: Mile 60
 
+![image.jpeg](/images/uploads/image-2.jpeg)
+
 Time to buy a bike. After two days of sitting around we were ready to go. I headed to the local bike shop Planet Velo Bayeux. Its staff Florian and Richard - real cyclists unlike us - suited me up with a Scott Gravel bike for €1,499.
 
 ![](/images/uploads/IMG_2927.jpeg)
