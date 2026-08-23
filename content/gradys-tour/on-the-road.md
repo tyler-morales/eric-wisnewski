@@ -34,11 +34,9 @@ After a full day shopping we headed off to Omaha Beach. Liberating to be on the 
 
 *Omaha Beach: what is T-Mo pondering?* 
 
-
-
 We arrived at our BnB where we helped the drunken staff load in a new washer and dryer. 
 
-[photo money in bandana]
+[euro in banda photo]
 
 Next was the American military cemetery .
 
