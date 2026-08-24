@@ -1,5 +1,5 @@
 ---
-title: On The Road. Day 0-1
+title: "On The Road: Day 0-1"
 slug: On-the-road
 author: grady-davis
 date: 2026-08-22T22:43:00Z
