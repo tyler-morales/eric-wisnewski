@@ -1,0 +1,27 @@
+# Poll RSS feeds and email new posts to per-list subscribers.
+# Requires repo secret NEWSLETTER_DISPATCH_SECRET (same value as Cloudflare Pages).
+
+name: Newsletter dispatch
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch:
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger newsletter dispatch
+        env:
+          NEWSLETTER_DISPATCH_SECRET: ${{ secrets.NEWSLETTER_DISPATCH_SECRET }}
+        run: |
+          if [ -z "$NEWSLETTER_DISPATCH_SECRET" ]; then
+            echo "NEWSLETTER_DISPATCH_SECRET is not set; skip."
+            exit 0
+          fi
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${NEWSLETTER_DISPATCH_SECRET}" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            "https://ericwisnewski.com/api/newsletter"

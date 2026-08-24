@@ -1378,6 +1378,139 @@ article.post-content hr {
   font-size: 0.875rem;
 }
 
+/* Newsletter subscribe */
+.subscribe-section {
+  max-width: 70ch;
+  margin: 2.5rem auto 2rem;
+  padding: 1.25rem 0 0;
+  border-top: 1px solid #ddd;
+}
+
+.subscribe-heading {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+}
+
+.subscribe-intro {
+  margin: 0 0 1rem;
+  color: #333;
+  font-size: 0.9375rem;
+}
+
+.subscribe-form label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.35rem;
+}
+
+.subscribe-form input[type="email"] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  border: 1px solid #333;
+  border-radius: 0;
+  background: #fff;
+  color: #000;
+}
+
+.subscribe-form input[type="email"]:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+.subscribe-lists {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+}
+
+.subscribe-lists legend {
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0 0.35rem;
+}
+
+.subscribe-list-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 400;
+  margin: 0.4rem 0;
+  cursor: pointer;
+}
+
+.subscribe-list-option input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: #000;
+}
+
+.subscribe-list-option input:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+.subscribe-turnstile {
+  margin: 1rem 0;
+  min-height: 1px;
+}
+
+.subscribe-form-actions {
+  margin: 0.75rem 0;
+}
+
+.subscribe-form-actions button[type="submit"] {
+  padding: 0.65rem 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #000;
+  background: #000;
+  color: #fff;
+}
+
+.subscribe-form-actions button[type="submit"]:hover,
+.subscribe-form-actions button[type="submit"]:focus-visible {
+  background: #222;
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+.subscribe-form-actions button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.subscribe-status,
+.subscribe-error {
+  margin: 0.75rem 0 0;
+  font-size: 0.9375rem;
+}
+
+.subscribe-error {
+  color: #b00020;
+}
+
+.subscribe-status-page a:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .subscribe-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+  }
+
+  .subscribe-form-actions button[type="submit"] {
+    width: 100%;
+  }
+}
+
 .add-photos-main {
   max-width: 70ch;
   margin: 0 auto;

@@ -40,6 +40,8 @@ buildFuture = true
   # Umami analytics (https://cloud.umami.is). Script loads only in production when website_id is set.
   umami_website_id = '8c6d1d8a-61c0-4a59-b7bd-28ba660afd08'
   umami_script_url = 'https://cloud.umami.is/script.js'
+  # Newsletter (D1 + Resend). Form is live; emails need RESEND_API_KEY on Cloudflare Pages.
+  newsletter_enabled = true
 
 # Publish /authors/<slug>/ profiles; keep the /authors/ index unpublished.
 [[cascade]]

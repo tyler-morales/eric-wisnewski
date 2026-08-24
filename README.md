@@ -86,16 +86,32 @@ Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `
 To enable comments:
 
 1. Create a D1 database (e.g. `blog-comments`) in the Cloudflare dashboard (Workers & Pages → D1) or run `npx wrangler d1 create blog-comments` and note the `database_id`.
-2. Run the schema and migrations: `npx wrangler d1 execute blog-comments --remote --file=./migrations/0000_initial_comments.sql`, then `0001_comments_v2.sql`, then `0002_comments_allow.sql`, then `0003_relocate_gradys_tour_comment_urls.sql` (or run the SQL in the D1 dashboard).
+2. Run the schema and migrations: `npx wrangler d1 execute blog-comments --remote --file=./migrations/0000_initial_comments.sql`, then `0001_comments_v2.sql`, then `0002_comments_allow.sql`, then `0003_relocate_gradys_tour_comment_urls.sql`, then `0004_newsletter.sql` (or run the SQL in the D1 dashboard).
 3. Bind the database to your Pages project: in the dashboard go to your Pages project → Settings → Functions → Bindings → D1, add binding name `COMMENTS_DB` and select the database. Or add the binding to `wrangler.toml` (replace `<DATABASE_ID>` in `wrangler.toml` with your database id) and deploy with the config file as source of truth.
 4. **Turnstile (captcha):** In [Cloudflare Dashboard → Turnstile](https://dash.cloudflare.com/?to=/:account/turnstile) create a widget and get the **site key** and **secret key**. Set the site key in `config/_default/hugo.toml` under `[params]` as `turnstile_site_key = "your-site-key"`. Add the **secret key** as a Cloudflare Pages secret: Settings → Environment variables → **TURNSTILE_SECRET_KEY** (encrypted). If `TURNSTILE_SECRET_KEY` is not set, the API skips verification (useful for local dev without a widget).
 5. **Remove comments:** There is no public Flag button. Open **`/admin/comments/`**, enter `COMMENTS_ADMIN_SECRET`, click **Unlock**, then **Delete** (or **Edit**). Set that secret in Cloudflare Pages → Environment variables (e.g. `openssl rand -hex 32`) and share it with Eric/Grady; never commit it. The how-to on that page is the site-facing guide.
 
-**If comments return 500:** Verify all four migrations have been run against the production D1 database and that the Pages D1 binding uses that database (see step 2 and 3 above). Check Functions logs in the Cloudflare dashboard for the underlying error.
+**If comments return 500:** Verify all five migrations have been run against the production D1 database and that the Pages D1 binding uses that database (see step 2 and 3 above). Check Functions logs in the Cloudflare dashboard for the underlying error.
 
 **Grady’s Tour comment URLs:** Travel posts live at `/gradys-tour/<slug>/`. Comments posted when those pages still lived under `/posts/gradys-tour/<slug>/` are looked up under both paths, so they show on the live post. The admin comment list rewrites those old paths so the heading link goes to `/gradys-tour/<slug>/` instead of a missing `/posts/...` URL (which was falling through to the home page). `static/_redirects` 301s `/posts/gradys-tour/*` to the live URLs. After deploy, run migration `0003_relocate_gradys_tour_comment_urls.sql` so stored rows match the live paths (the lookup still works if that migration has not been run yet).
 
 **Local dev with comments:** Build with the development config so the Turnstile test key is used (widget loads on localhost): `hugo --environment development`, then `npx wrangler pages dev ./public --d1 COMMENTS_DB=<database_id>`. Copy `.dev.vars.example` to `.dev.vars`; the example includes the optional Turnstile test secret so verification passes in dev. If `TURNSTILE_SECRET_KEY` is unset, the API skips verification. For admin delete locally, set `COMMENTS_ADMIN_SECRET` in `.dev.vars` (project root, same directory as `wrangler.toml`); uncomment the line and restart `wrangler pages dev` after changing `.dev.vars`. If you see "Admin secret not configured on server", the variable was not loaded—check the name and restart the dev server. If the comments list stays on "Loading…", the API may be unreachable (e.g. wrong origin); the UI now shows an error in the list when the fetch fails.
+
+## Newsletter (per-type email alerts)
+
+Subscribers can opt into **Eric’s blog** (`posts`), **Grady’s Tour** (`gradys-tour`), or both. Signups live in the same **Cloudflare D1** database as comments. Double opt-in and new-post emails go through **[Resend](https://resend.com)** via `/api/subscribe` and `/api/newsletter`. The form appears on the home page, Grady’s Tour list, and post pages when `newsletter_enabled = true` in `config/_default/hugo.toml`.
+
+**Cloudflare Pages secrets (Production):**
+
+| Name | Notes |
+| --- | --- |
+| `RESEND_API_KEY` | From Resend → API Keys (`re_...`) |
+| `NEWSLETTER_DISPATCH_SECRET` | e.g. `openssl rand -hex 32` |
+| `TURNSTILE_SECRET_KEY` | Same as comments (subscribe uses Turnstile) |
+
+**GitHub:** repo → Settings → Secrets → Actions → `NEWSLETTER_DISPATCH_SECRET` (same value as Cloudflare). The workflow `.github/workflows/newsletter-dispatch.yml` POSTs `/api/newsletter` every 20 minutes.
+
+**Go-live:** verify `ericwisnewski.com` in Resend, run migration `0004` on D1, set secrets above, deploy. First dispatch run **seeds** existing RSS items without emailing; only new posts email after that. Feeds: `/posts/index.xml` and `/gradys-tour/index.xml` (not home `/index.xml`).
 
 ## Add photos (`/add-photos/`)
 
