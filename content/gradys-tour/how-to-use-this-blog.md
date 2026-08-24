@@ -30,7 +30,7 @@ Each post has:
 - **Author** — pick **Grady Davis**.
 - **Publish Date** — when the post goes live. Set a full date and time; the editor saves it as UTC. The site still publishes the post if that time is a few minutes ahead of the deploy.
 - **Featured Image** — the image used when the post is shared (e.g. on social media). Use an image you’ve already uploaded to the site’s media library.
-- **Gallery** — add several photos at once. Open the field, pick photos from your Photos app (you can tap more than one), then remove any you don’t want. Those photos show as a grid on the published post.
+- **Gallery** — after photos are on **[Add photos](/add-photos/)**, pick them from the media library here. They show as a grid on the published post.
 - **Body** — the main content. You can type normally, use the toolbar for **bold**, *italic*, headings, lists, and links. Type **/** in the body to see extra options (like inserting an image).
 
 When you’re done, **save**. The site will rebuild automatically and your changes will go live on **Grady’s Tour** only — not on the home page.
@@ -39,9 +39,12 @@ When you’re done, **save**. The site will rebuild automatically and your chang
 
 ## How do I add images?
 
-- **Several photos at once (the usual flow):** In the post editor, open **Gallery**. Pick a handful of photos from your Photos app in one go, then remove any you don’t want. They show as a grid at the bottom of the post. JPEG or PNG is best; very large originals can fail to save.
-- **Featured image (for sharing):** In the post editor, set the **Featured Image** field to one image (from the gallery uploads or the media library). That one is the share/hero image.
-- **A photo in a specific paragraph:** In the **Body**, type **/** and choose “Insert image,” then pick from the photos you already uploaded.
+Do **not** upload photos in Pages CMS. Large Google Photos / iPhone files fail there.
+
+1. Open **[Add photos](/add-photos/)** (Tyler will give you the password).
+2. Choose **Google Photos** or files on this phone. The site shrinks them and saves them for you.
+3. Wait until each file says **Saved**, then wait a minute for the site to rebuild.
+4. In Pages CMS, open the post and attach those files from the media library: **Gallery**, **Featured Image**, or **/** → Insert image in the Body.
 
 You don’t need to touch any files or folders yourself.
 

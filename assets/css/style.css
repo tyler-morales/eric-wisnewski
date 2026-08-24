@@ -1336,3 +1336,70 @@ article.post-content hr {
 .site-header-minimal .site-nav a {
   font-size: 0.875rem;
 }
+
+.add-photos-main {
+  max-width: 70ch;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.add-photos-title {
+  font-size: 1.25rem;
+  margin: 0 0 1rem;
+}
+
+.add-photos-guide {
+  margin: 0 0 1.5rem;
+}
+
+.add-photos-guide ol {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.add-photos-tools {
+  display: grid;
+  gap: 1rem;
+}
+
+.add-photos-actions {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.add-photos-button,
+.add-photos-file-label {
+  font: inherit;
+  cursor: pointer;
+}
+
+.add-photos-button {
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  background: var(--text);
+  color: var(--bg);
+}
+
+.add-photos-button:focus-visible,
+.add-photos-file-label input:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.add-photos-file-label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.add-photos-status {
+  margin: 0;
+}
+
+.add-photos-list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.add-photos-list li {
+  margin: 0 0 0.35rem;
+}

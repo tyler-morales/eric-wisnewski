@@ -18,6 +18,9 @@
   <meta property="og:image" content="{{ "favicon.svg" | absURL }}">
   <meta name="twitter:image" content="{{ "favicon.svg" | absURL }}">
 {{ end }}
+{{ if eq .Params.robots "noindex" }}
+<meta name="robots" content="noindex, nofollow">
+{{ end }}
 {{ if and hugo.IsProduction .Site.Params.umami_website_id }}
 <script defer src="{{ .Site.Params.umami_script_url | default "https://cloud.umami.is/script.js" }}" data-website-id="{{ .Site.Params.umami_website_id }}"></script>
 {{ end }}
