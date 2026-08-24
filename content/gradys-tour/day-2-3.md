@@ -78,6 +78,8 @@ We stop in St Malo for coffee then a night in Dinan. Dinan is amazing. Full of o
 
 ![](/images/uploads/IMG_1210.jpeg)
 
+*Benoit, on the peaceful Canal d’ille Rance*
+
 The next morning we head to Rennes. On the canal trail we meet friendly inn keeper: Benoit. He is a pinball and Schwinn bicycle enthusiast with a 10 year lease on the hostel. I vow to return before it’s over.
 
 ![](/images/uploads/PXL_20260823_111059171.RAW-01.COVER_Original.jpeg)
