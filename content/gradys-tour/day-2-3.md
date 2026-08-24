@@ -1,8 +1,8 @@
 ---
-title: Day 2-4
+title: "Getting Some Miles: Day 2-4"
 slug: Day-2-4
 author: grady-davis
 date: 2026-08-23T11:17:00Z
-draft: false
+draft: true
 image: /images/uploads/IMG_1184.jpeg
 ---
