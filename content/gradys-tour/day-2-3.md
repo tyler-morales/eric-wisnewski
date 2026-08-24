@@ -12,7 +12,9 @@ Day 2 and 4: Mile 179
 
 ![](/images/uploads/IMG_1179.jpeg)
 
-Our bones creaking we get back on the saddle. Next is Avranches. The city sits atop a rocky hill surrounded by stunning medieval ramparts. Energized we climb the steep road in. Its a quaint town, full of life. The most welcoming  so far. A local bike enthusiast comments on my ride, we speak a while through our broken english and french. I explain my bike was lost and in a sense of camaraderie he says “shit” then “fuck you!”. We try to offload some gear to the post office to send to Chicago but they say something about the US president and that they won’t take our goods, Arthur at the tourist office calls it scandalous. 
+Our bones creaking, we face our toughest challenge, getting back on the saddle. Riding a bike on bumpy roads for this long is not so pleasant on the bottom. 
+
+Next is Avranches. The city sits atop a rocky hill surrounded by stunning medieval ramparts. Energized we climb the steep road in. Its a quaint town, full of life. The most welcoming  so far. A local bike enthusiast comments on my ride, we speak a while through our broken english and french. I explain my bike was lost and in a sense of camaraderie he says “shit” then “fuck you!”. We try to offload some gear to the post office to send to Chicago but they say something about the US president and that they won’t take our goods, Arthur at the tourist office calls it scandalous. 
 
 ![image.jpeg](/images/uploads/image-3.jpeg)
 
@@ -40,7 +42,7 @@ Through winding cornfields we take a welcomed downhill ride to Le Mont Saint Mic
 
 *Many people here! Too many, time to go*
 
-We meet the Eurovelo 4 ocean trail. Car free we catch up on pace. We enter Brittany it’s architecture distinct tubular homes stone work and laid back atmosphere. The coast is littered with oyster farms. We enjoy some fine french food bike until dark enjoy some wine from friendly Italian RVers until crashing to our respective tents.
+We meet the Eurovelo 4 ocean trail. Car free we catch up on pace. We enter Brittany it’s architecture distinct tubular homes stone work and laid back atmosphere. The coast is littered with oyster farms. We enjoy some fine french food, many Britt here. They drink their wine fast! They order sausage and a little boy complains mussels “don’t taste very nice. Do they”. The little bloke wants fish and chips! We bike along the calm coast for hours. As the light fades, we pass hunters, and the crowded bistros look so inviting.  We set up camp and our invited for wine from some friendly Italian RVers.
 
 ![](/images/uploads/IMG_1077.jpeg)
 
@@ -62,19 +64,21 @@ We meet the Eurovelo 4 ocean trail. Car free we catch up on pace. We enter Britt
 
 *St. Malo*
 
-Next St. Malos center, then Dinan, and finally Rennes.
+Next, St. Malos center, then Dinan, and finally Rennes.
 
-We stop in St Malo for coffee then a night in Dinan. Dinan is amazing. Full of old timbered homes, it feels like there should be mimes and gestures popping out of dark alleys.
+We stop in St Malo for coffee then a night in Dinan. Dinan is amazing. Full of old timbered homes, I wait in fear for mimes and gestures to pop out of dark alleyways.
 
 ![](/images/uploads/IMG_1211.jpeg)
 
+*Dinan*
+
 ![](/images/uploads/PXL_20260822_175312914.TS-000-01.MP.COVER_Original.jpeg)
 
-*Central Dinan, best meal of the trip: Crepes de Anha. They make a special table for us across the street held up by coasters.*
+*Dinan, best meal of the trip: Crepes de Anha. They make a special table for us across the street held up by coasters.*
 
 ![](/images/uploads/IMG_1210.jpeg)
 
-On the canal trail we meet a friendly inn keeper Benoit, a pinball and Schwinn bicycle enthusiast. He has a 10 year lease on the hostel.
+The next morning we head to Rennes. On the canal trail we meet friendly inn keeper: Benoit. He is a pinball and Schwinn bicycle enthusiast with a 10 year lease on the hostel. I vow to return before it’s over.
 
 ![](/images/uploads/PXL_20260823_111059171.RAW-01.COVER_Original.jpeg)
 
@@ -106,3 +110,6 @@ Always good to see a familiar face.
 
 ![](/images/uploads/IMG_1215.jpeg)
 
+![](/images/uploads/IMG_1218.jpeg)
+
+*We hoard food now, like animals.*
