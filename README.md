@@ -11,9 +11,9 @@ Deploy the `public/` directory to any static host (GitHub Pages, Netlify, Vercel
 
 ## Authors / contributors
 
-Posts have an `author` front matter field that references a slug under `content/authors/` (e.g. `eric-wisnewski`, `grady-davis`). Each author file has `name`, `slug`, `bio`, and optional `image`. The single-post page shows a byline and an author bio block under the post; the home list shows the author name.
+Posts have an `author` front matter field that references a slug under `content/authors/` (e.g. `eric-wisnewski`, `grady-davis`). Each author file has `name`, `slug`, `bio`, and optional `image`. The single-post page shows a byline and an author bio block under the post; the home list shows the author name. Clicking an author name goes to `/authors/<slug>/` (photo, bio, then that author’s posts). The home page lists **all** published posts from **Posts** and **Grady’s Tour**, newest first.
 
-**Grady’s Tour:** Travel posts live in `content/gradys-tour/` (CMS collection **Grady’s Tour**) and always publish at `/gradys-tour/<slug>/`. They appear only on `/gradys-tour/` and never on the home page. Use **Posts** for Eric’s home-page writing (`/posts/<slug>/`); do not put Grady’s travel posts there. `buildFuture = true` in `hugo.toml` so a CMS publish date that is a few minutes ahead of the Cloudflare build still goes live (otherwise Hugo omits the post and the URL falls through to the home page).
+**Grady’s Tour:** Travel posts live in `content/gradys-tour/` (CMS collection **Grady’s Tour**) and always publish at `/gradys-tour/<slug>/`. They also appear on the home page in chronological order with everyone else’s posts. Use **Posts** for Eric’s writing (`/posts/<slug>/`); do not put Grady’s travel posts there. `buildFuture = true` in `hugo.toml` so a CMS publish date that is a few minutes ahead of the Cloudflare build still goes live (otherwise Hugo omits the post and the URL falls through to the home page).
 
 In **Pages CMS**, use the **Authors** collection to edit bios/photos, and set **Author** on each post. Invite contributors by email in Pages CMS so they can sign in with a magic link and write posts (pick themselves as Author).
 
@@ -35,7 +35,7 @@ Placeholder bios/images can be replaced anytime by editing the author files in t
    ```
 
 3. Write your content below the front matter in Markdown.
-4. Run `hugo` (or `hugo --gc --minify`) to rebuild. Home-page posts appear at `/`; Grady’s travel posts appear at `/gradys-tour/` and their own `/gradys-tour/<slug>/` URL.
+4. Run `hugo` (or `hugo --gc --minify`) to rebuild. Home lists every published post (newest first) at `/`. Grady’s travel posts also appear on `/gradys-tour/` and at their own `/gradys-tour/<slug>/` URL. Author names link to `/authors/<slug>/`.
 
 ## Images (CMS and Markdown)
 

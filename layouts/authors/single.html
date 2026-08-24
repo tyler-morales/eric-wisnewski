@@ -1,0 +1,23 @@
+{{ define "title" }}{{ .Params.name | default .Title }} | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+{{ partial "header.html" . }}
+<main>
+  {{ partial "author-card.html" (dict "author" . "profile" true "element" "header") }}
+  {{ $keys := slice .File.ContentBaseName }}
+  {{ with .Params.slug }}
+  {{ if not (in $keys .) }}{{ $keys = $keys | append . }}{{ end }}
+  {{ end }}
+  {{ $posts := where (where .Site.RegularPages "Section" "in" (slice "posts" "gradys-tour")) "Params.author" "in" $keys
+  }}
+  {{ if $posts }}
+  <ul class="post-list">
+    {{ range $posts }}
+    {{ partial "post-list-item.html" . }}
+    {{ end }}
+  </ul>
+  {{ else }}
+  <p class="author-empty">No posts from {{ .Params.name | default .Title }} yet.</p>
+  {{ end }}
+</main>
+{{ end }}

@@ -1,14 +1,15 @@
-{{ define "title" }}{{ .Site.Title }}{{ end }}
+{{ define "title" }}{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}{{ end }}
 
 {{ define "main" }}
   {{ partial "header.html" . }}
   <main>
     <ul class="post-list">
-      {{ $posts := where .Site.RegularPages "Section" "posts" }}
-      {{ range $posts }}
-        {{ if not (partial "is-tour-post.html" .) }}
-          {{ partial "post-list-item.html" . }}
-        {{ end }}
+      {{ $sections := slice "posts" }}
+      {{ if .IsHome }}
+        {{ $sections = slice "posts" "gradys-tour" }}
+      {{ end }}
+      {{ range where .Site.RegularPages "Section" "in" $sections }}
+        {{ partial "post-list-item.html" . }}
       {{ end }}
     </ul>
   </main>

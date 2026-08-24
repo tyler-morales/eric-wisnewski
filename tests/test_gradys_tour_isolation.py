@@ -1,4 +1,4 @@
-"""Grady's travel posts belong on /gradys-tour/, never on the home list."""
+"""Grady's travel posts live in content/gradys-tour/ and list on /gradys-tour/."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ POSTS_DIR = REPO_ROOT / "content" / "posts"
 HUGO_TOML = REPO_ROOT / "config" / "_default" / "hugo.toml"
 HUGO_TIMEOUT_SECONDS = 120
 POST_LIST_RE = re.compile(r'<ul class="post-list">(.*?)</ul>', re.DOTALL)
-TITLE_RE = re.compile(r'class="post-list-title">(.*?)</span>', re.DOTALL)
+TITLE_RE = re.compile(r'class="post-list-title"[^>]*>(.*?)</(?:span|a)>', re.DOTALL)
 FRONT_MATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
 
 
@@ -124,12 +124,13 @@ class GradyTourFolderConventionTests(unittest.TestCase):
         )
         self.assertTrue(TOUR_SECTION_DIR.is_dir(), "content/gradys-tour/ must exist")
 
-    def test_home_template_does_not_list_tour_section(self) -> None:
+    def test_home_template_lists_posts_and_tour_when_home(self) -> None:
         list_template = (REPO_ROOT / "layouts" / "_default" / "list.html").read_text(
             encoding="utf-8"
         )
-        self.assertRegex(list_template, r'where\s+\S+\s+"Section"\s+"posts"')
-        self.assertNotIn('"gradys-tour"', list_template)
+        self.assertIn(".IsHome", list_template)
+        self.assertIn('"posts"', list_template)
+        self.assertIn('"gradys-tour"', list_template)
 
     def test_tour_template_lists_section_pages_only(self) -> None:
         tour_template = (REPO_ROOT / "layouts" / "_default" / "gradys-tour.html").read_text(
@@ -195,9 +196,13 @@ class GradyTourBuildIsolationTests(unittest.TestCase):
     def tearDownClass(cls) -> None:
         shutil.rmtree(cls._output_dir, ignore_errors=True)
 
-    def test_home_post_list_excludes_tour_posts(self) -> None:
-        leaked = tour_titles(tour_markdown()) & set(post_list_titles(self.home_html))
-        self.assertEqual(leaked, set(), f"Home list included Grady's Tour posts: {leaked}")
+    def test_home_post_list_includes_published_tour_posts(self) -> None:
+        missing = tour_titles(published_tour_markdown()) - set(post_list_titles(self.home_html))
+        self.assertEqual(
+            missing,
+            set(),
+            f"Home list omitted published Grady's Tour posts: {missing}",
+        )
 
     def test_tour_page_lists_every_published_post(self) -> None:
         titles = post_list_titles(self.tour_html)
@@ -222,9 +227,10 @@ class GradyTourBuildIsolationTests(unittest.TestCase):
             f"Draft tour posts appeared on the live Grady's Tour list: {leaked_drafts}",
         )
 
-    def test_tour_and_home_lists_do_not_overlap(self) -> None:
-        overlap = set(post_list_titles(self.tour_html)) & set(post_list_titles(self.home_html))
-        self.assertEqual(overlap, set(), f"Posts appeared on both home and tour: {overlap}")
+    def test_tour_page_does_not_list_non_tour_posts(self) -> None:
+        tour_titles_on_page = set(post_list_titles(self.tour_html))
+        self.assertNotIn("An Introduction", tour_titles_on_page)
+        self.assertTrue(tour_titles_on_page, "Grady's Tour list was empty")
 
 
 class GradyTourFuturePublishTests(unittest.TestCase):

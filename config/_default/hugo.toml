@@ -22,6 +22,7 @@ buildFuture = true
 [permalinks]
   posts = '/posts/:slug/'
   gradys-tour = '/gradys-tour/:slug/'
+  authors = '/authors/:slug/'
 
 [params]
   description = 'Eric Wisnewski — personal site and blog'
@@ -40,13 +41,13 @@ buildFuture = true
   umami_website_id = '8c6d1d8a-61c0-4a59-b7bd-28ba660afd08'
   umami_script_url = 'https://cloud.umami.is/script.js'
 
-# Author profiles are CMS data only — do not publish /authors/ pages.
+# Publish /authors/<slug>/ profiles; keep the /authors/ index unpublished.
 [[cascade]]
   [cascade.build]
     list = 'never'
     render = 'never'
   [cascade.target]
-    path = '{/authors,/authors/**}'
+    path = '/authors'
 
 # Grady's Tour posts always attribute to Grady even if CMS author is missing.
 [[cascade]]

@@ -1,0 +1,40 @@
+{{/*
+  Author photo + name + bio.
+  dict: author (page), profile (bool), link_name (bool), element (aside|header)
+*/}}
+{{- $author := .author -}}
+{{- $name := $author.Params.name | default $author.Title -}}
+{{- $profile := .profile | default false -}}
+{{- $linkName := .link_name | default false -}}
+{{- $el := .element | default "aside" -}}
+{{- $class := "author-bio" -}}
+{{- if $profile }}{{ $class = "author-bio author-profile" }}{{ end -}}
+{{ printf `<%s class="%s" aria-label="About %s">` $el $class $name | safeHTML }}
+  {{ with $author.Params.image }}
+  <img
+    class="author-bio-image"
+    src="{{ . | absURL }}"
+    alt="{{ $name }}"
+    width="96"
+    height="96"
+    loading="lazy"
+    decoding="async"
+  >
+  {{ end }}
+  <div class="author-bio-text">
+    {{ if $profile }}
+    <h1 class="author-bio-name">{{ $name }}</h1>
+    {{ else }}
+    <p class="author-bio-name">
+      {{ if $linkName }}
+      <a href="{{ $author.RelPermalink }}" class="author-name-link">{{ $name }}</a>
+      {{ else }}
+      {{ $name }}
+      {{ end }}
+    </p>
+    {{ end }}
+    {{ with $author.Params.bio }}
+    <p class="author-bio-blurb">{{ . }}</p>
+    {{ end }}
+  </div>
+{{ printf `</%s>` $el | safeHTML }}

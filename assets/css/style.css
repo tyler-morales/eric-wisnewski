@@ -110,13 +110,14 @@ main {
   list-style: none;
 }
 
-.gradys-tour-empty {
+.gradys-tour-empty,
+.author-empty {
   margin: 1.5rem 0;
   color: #333;
 }
 
 .post-list li {
-  padding: 0;
+  padding: 1.25rem 0;
   border-bottom: 1px solid #ccc;
 }
 
@@ -124,19 +125,26 @@ main {
   border-bottom: 0;
 }
 
-.post-list-link {
+.post-list-image-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.post-list-title {
   display: block;
   color: var(--text);
   text-decoration: none;
   font-weight: 500;
-  padding: 1.25rem 0;
 }
 
-.post-list-link:hover {
+.post-list-title:hover {
   text-decoration: underline;
 }
 
-.post-list-link:focus-visible {
+.post-list-title:focus-visible,
+.post-list-author:focus-visible,
+.author-name-link:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 4px;
 }
@@ -229,6 +237,33 @@ article.post-content>header time {
   font-size: 1rem;
 }
 
+.author-name-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.author-name-link:hover {
+  text-decoration-thickness: 2px;
+}
+
+.author-profile {
+  border-top: 0;
+  margin: 0 0 2rem;
+  padding: 0;
+}
+
+.author-profile .author-bio-image {
+  width: 6.5rem;
+  height: 6.5rem;
+}
+
+.author-profile .author-bio-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
 .author-bio-blurb {
   margin: 0;
   font-size: 0.9375rem;
@@ -242,6 +277,12 @@ article.post-content>header time {
   color: #333;
   margin-top: 0.2rem;
   font-weight: 400;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.post-list-author:hover {
+  text-decoration: underline;
 }
 
 article.post-content .post-featured-image {
@@ -438,7 +479,7 @@ article.post-content hr {
   }
 
   /* Post list: slightly more padding for touch and scan */
-  .post-list-link {
+  .post-list-item {
     padding: 1.5rem 0;
   }
 

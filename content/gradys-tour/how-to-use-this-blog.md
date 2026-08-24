@@ -11,7 +11,7 @@ Hi Grady — this post is your quick guide to using this blog. No code required.
 
 ## What is this site?
 
-This is Eric’s college-basketball road-trip blog. Your travel posts live under **Grady’s Tour** in the menu at the top (next to Map). Eric’s posts stay on the home page; yours show only on Grady’s Tour. There is also a **List of College Stadiums** page and a **Map** page.
+This is Eric’s college-basketball road-trip blog. Your travel posts live under **Grady’s Tour** in the menu at the top (next to Map). They also show on the home page with everyone else’s posts (newest first). Clicking your name goes to your author page. There is also a **List of College Stadiums** page and a **Map** page.
 
 ---
 
@@ -33,7 +33,7 @@ Each post has:
 - **Gallery** — after photos are on **[Add photos](/add-photos/)**, pick them from the media library here. They show as a grid on the published post.
 - **Body** — the main content. You can type normally, use the toolbar for **bold**, *italic*, headings, lists, and links. Type **/** in the body to see extra options (like inserting an image).
 
-When you’re done, **save**. The site will rebuild automatically and your changes will go live on **Grady’s Tour** only — not on the home page.
+When you’re done, **save**. The site will rebuild automatically and your changes will go live on **Grady’s Tour** and the home page.
 
 ---
 
@@ -57,4 +57,4 @@ You don’t need to touch any files or folders yourself.
 
 ---
 
-That’s it. Write your posts in the **Grady’s Tour** collection, add a title and a slug, set a date, add photos in **Gallery** if you have them, and hit save. Your posts will show up under **Grady’s Tour**, not on Eric’s home page.
+That’s it. Write your posts in the **Grady’s Tour** collection, add a title and a slug, set a date, add photos in **Gallery** if you have them, and hit save. Your posts show under **Grady’s Tour**, on the home page, and on your author page.

@@ -1,8 +1,6 @@
 {{/*
-  Compact byline: "By Name". Expects page context with .Params.author slug.
+  Compact byline: "By Name" linking to the author page.
 */}}
-{{ with .Params.author }}
-  {{ with $.Site.GetPage (printf "/authors/%s" .) }}
-  <p class="post-byline">By {{ .Params.name | default .Title }}</p>
-  {{ end }}
+{{ with (partial "author-page.html" .) }}
+  <p class="post-byline">By <a href="{{ .RelPermalink }}" class="author-name-link">{{ .Params.name | default .Title }}</a></p>
 {{ end }}

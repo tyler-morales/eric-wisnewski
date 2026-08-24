@@ -1,28 +1,6 @@
 {{/*
-  Post author byline + bio. Expects .Params.author as an authors slug
-  (e.g. eric-wisnewski). Looks up content/authors/<slug>.md.
+  Post author bio under the article. Name links to /authors/<slug>/.
 */}}
-{{ with .Params.author }}
-  {{ with $.Site.GetPage (printf "/authors/%s" .) }}
-  {{ $authorName := .Params.name | default .Title }}
-  <aside class="author-bio" aria-label="About the author">
-    {{ with .Params.image }}
-    <img
-      class="author-bio-image"
-      src="{{ . | absURL }}"
-      alt="{{ $authorName }}"
-      width="96"
-      height="96"
-      loading="lazy"
-      decoding="async"
-    >
-    {{ end }}
-    <div class="author-bio-text">
-      <p class="author-bio-name">{{ $authorName }}</p>
-      {{ with .Params.bio }}
-      <p class="author-bio-blurb">{{ . }}</p>
-      {{ end }}
-    </div>
-  </aside>
-  {{ end }}
+{{ with (partial "author-page.html" .) }}
+  {{ partial "author-card.html" (dict "author" . "link_name" true) }}
 {{ end }}

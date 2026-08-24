@@ -1,0 +1,19 @@
+{{/*
+Resolve a post's author page from Params.author (CMS slug).
+Falls back to matching content/authors filename or slug if they drifted.
+*/}}
+{{- $key := .Params.author -}}
+{{- $found := false -}}
+{{- with $key -}}
+{{- $found = $.Site.GetPage (printf "/authors/%s" .) -}}
+{{- end -}}
+{{- if not $found -}}
+{{- with $.Site.GetPage "/authors" -}}
+{{- range .Pages -}}
+{{- if or (eq .Params.slug $key) (eq .File.ContentBaseName $key) -}}
+{{- $found = . -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- return $found -}}

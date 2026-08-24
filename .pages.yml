@@ -31,12 +31,12 @@ content:
         label: Slug
         type: string
         required: true
-        description: URL-friendly id (e.g. eric-wisnewski). Posts reference this value.
+        description: URL-friendly id (e.g. eric-wisnewski). Must match the filename. Posts reference this value; the public page is /authors/<slug>/.
       - name: bio
         label: Bio
         type: text
         required: true
-        description: Short bio shown under posts by this author.
+        description: Short bio shown at the top of the author page and under posts.
       - name: image
         label: Photo
         type: image
@@ -148,7 +148,7 @@ content:
         type: reference
         required: true
         default: grady-davis
-        description: Who wrote this post. Travel posts in this folder appear only on Grady's Tour, not the home page.
+        description: Who wrote this post. Travel posts in this folder also appear on the home page (latest first) and on this author's /authors/<slug>/ page.
         options:
           collection: authors
           search: "name,slug"
