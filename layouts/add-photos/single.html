@@ -1,0 +1,36 @@
+{{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<header class="site-header site-header-minimal" role="banner">
+  <h1 class="brand-name"><a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a></h1>
+  <nav class="site-nav" aria-label="Breadcrumb">
+    <a href="{{ .Site.BaseURL }}">Home</a>
+  </nav>
+</header>
+<main class="add-photos-main">
+  <h2 class="add-photos-title">{{ .Title }}</h2>
+  <div class="add-photos-guide">
+    {{ .Content }}
+  </div>
+
+  <form id="add-photos-unlock" class="admin-secret-form" aria-label="Unlock photo upload">
+    <label for="add-photos-secret">Password</label>
+    <input id="add-photos-secret" type="password" autocomplete="off" placeholder="Password Tyler gave you">
+    <button type="submit">Unlock</button>
+    <p id="add-photos-unlock-error" class="admin-error" role="alert" aria-live="polite" hidden></p>
+  </form>
+
+  <div id="add-photos-tools" class="add-photos-tools" hidden>
+    <div class="add-photos-actions">
+      <button type="button" id="add-photos-google" class="add-photos-button">Choose from Google Photos</button>
+      <label class="add-photos-file-label">
+        <span>Or pick files on this device</span>
+        <input id="add-photos-files" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple>
+      </label>
+    </div>
+    <p id="add-photos-status" class="add-photos-status" role="status" aria-live="polite"></p>
+    <ul id="add-photos-list" class="add-photos-list" aria-label="Upload progress"></ul>
+  </div>
+</main>
+<script src="{{ "js/add-photos.js" | relURL }}"></script>
+{{ end }}

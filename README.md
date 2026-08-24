@@ -97,6 +97,24 @@ To enable comments:
 
 **Local dev with comments:** Build with the development config so the Turnstile test key is used (widget loads on localhost): `hugo --environment development`, then `npx wrangler pages dev ./public --d1 COMMENTS_DB=<database_id>`. Copy `.dev.vars.example` to `.dev.vars`; the example includes the optional Turnstile test secret so verification passes in dev. If `TURNSTILE_SECRET_KEY` is unset, the API skips verification. For admin delete locally, set `COMMENTS_ADMIN_SECRET` in `.dev.vars` (project root, same directory as `wrangler.toml`); uncomment the line and restart `wrangler pages dev` after changing `.dev.vars`. If you see "Admin secret not configured on server", the variable was not loaded—check the name and restart the dev server. If the comments list stays on "Loading…", the API may be unreachable (e.g. wrong origin); the UI now shows an error in the list when the fetch fails.
 
+## Add photos (`/add-photos/`)
+
+Authors add images on **`/add-photos/`**, not through Pages CMS (CMS uploads fail around 4.5 MB). The page compresses photos in the browser and a Pages Function commits them to `assets/images/uploads/`.
+
+Cloudflare Pages → project `eric-wisnewski` → **Settings → Variables and secrets** (Production):
+
+| Name | Notes |
+| --- | --- |
+| `GOOGLE_CLIENT_ID` | Google OAuth Web client ID |
+| `GOOGLE_CLIENT_SECRET` | Encrypt |
+| `UPLOAD_SECRET` | Password for `/add-photos/`. Encrypt |
+| `GITHUB_TOKEN` | Fine-grained PAT: Contents **Read and write** on this repo. Encrypt |
+| `GITHUB_REPO` | Optional. Default `tyler-morales/eric-wisnewski` |
+
+Google Cloud: Photos Picker API on, OAuth consent (External, test users under **Audience**), redirect `https://ericwisnewski.com/add-photos/`.
+
+After upload, attach files in Pages CMS Gallery / Featured Image / Body.
+
 ## Tech notes
 
 - CSS lives in `assets/css/style.css` and is fingerprinted on build so cache updates when you change styles.
