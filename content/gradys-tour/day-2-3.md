@@ -56,3 +56,53 @@ Mount Saint Michel
 
 *Eurovelo 4 Brittany Trail*
 
+![](/images/uploads/IMG_1207.jpeg)
+
+Brittany
+
+![](/images/uploads/IMG_1208.jpeg)
+
+*We refill a flat*
+
+![](/images/uploads/IMG_1209-1.jpeg)
+
+*St. Malo*
+
+The next to we go to take a ride to the St. Malos center, to Dinan, and finally Rennes.
+
+We stop in St Malo for coffee then a night in Dinan. Dinan is one of the most amazing stops fall of old timbered homes. It feels like there should be mimes and gestures in the street.
+
+![](/images/uploads/IMG_1211.jpeg)
+
+*Central Dinan, best meal of the trip Crepes de Anha, they make a special table for us across the street held up by coasters.*
+
+![](/images/uploads/IMG_1210.jpeg)
+
+On the canal trail we meet a friendly inn keeper Benoit, a pinball and Schwinn bicycle enthusiast.
+
+![](/images/uploads/PXL_20260823_111059171.RAW-01.COVER_Original.jpeg)
+
+The final stretch is a tranquil trail to from Dinan to Rennes along a canal full of house, boats, and small towns.
+
+![](/images/uploads/IMG_1186-2.jpeg)
+
+*Rennes*
+
+![](/images/uploads/IMG_1213.jpeg)
+
+*Rennes*
+
+![](/images/uploads/IMG_1212.jpeg)
+
+*Rennes*
+
+We setup camp in a hostel. I lose my keys and thy waive the €20 fee. Tomorrow we head towards the coast to Eurovelo 1.
+
+-GD
+
+ps.
+
+Always good to see a familiar face.
+
+![](/images/uploads/IMG_1215.jpeg)
+
