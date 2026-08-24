@@ -1,6 +1,7 @@
 # TODOS
 
 ## Done
+- [x] Site footer on all pages via `layouts/partials/footer.html` in `baseof.html`: © year + site title, Privacy (`/privacy/`), send comments/questions to the webmaster Tyler Morales → https://tylermorales.pro. Tests in `tests/test_site_footer.py`.
 - [x] First post rewritten as a simple, non-technical guide for Eric: how to use the blog, Pages CMS, adding/editing posts, images, and troubleshooting (no code).
 - [x] Eric’s login: docs updated so Eric uses email (magic link) to sign in to Pages CMS, not GitHub; README and .pages.yml note invite-by-email for contributors.
 - [x] Featured image in post body: single post template now renders `.Params.image` in the article (figure + img with alt, lazy load, focus-visible); CMS "Featured Image" appears on the live post page.

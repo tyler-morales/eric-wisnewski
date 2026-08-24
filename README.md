@@ -131,6 +131,10 @@ Google Cloud: Photos Picker API on, OAuth consent (External, test users under **
 
 After upload, attach files in Pages CMS Gallery / Featured Image / Body.
 
+## Footer
+
+Every page includes a short footer from `layouts/partials/footer.html` (wired in `layouts/_default/baseof.html`): copyright, a [Privacy](/privacy/) page, and “Send comments or questions to the webmaster, Tyler Morales” linking to [tylermorales.pro](https://tylermorales.pro). Name and URL are `builder_name` and `builder_url` in `config/_default/hugo.toml`.
+
 ## Tech notes
 
 - CSS lives in `assets/css/style.css` and is fingerprinted on build so cache updates when you change styles.

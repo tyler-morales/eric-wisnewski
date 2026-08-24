@@ -1,0 +1,8 @@
+<footer class="site-footer">
+  <p class="site-footer-copy">© {{ now.Year }} {{ .Site.Title }}. All rights reserved.</p>
+  <p class="site-footer-meta">
+    Send comments or questions to the webmaster, <a href="{{ .Site.Params.builder_url | default "https://tylermorales.pro" }}">{{ .Site.Params.builder_name | default "Tyler Morales" }}</a>
+    <span aria-hidden="true"> · </span>
+    <a href="{{ "privacy/" | relURL }}">Privacy</a>
+  </p>
+</footer>

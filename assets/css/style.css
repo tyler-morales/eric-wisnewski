@@ -24,6 +24,9 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
   line-height: 1.6;
   overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Header: Big Name — clamp() for responsive scaling without media queries */
@@ -101,6 +104,41 @@ main {
   padding: 1rem;
   max-width: 90ch;
   margin: 0 auto;
+  flex: 1 0 auto;
+  width: 100%;
+}
+
+/* Footer: copyright + legal + webmaster contact */
+.site-footer {
+  margin-top: auto;
+  padding: 1rem 1rem 1.25rem;
+  border-top: 1px solid #ccc;
+  font-size: 0.8125rem;
+  color: #555;
+  width: 100%;
+}
+
+.site-footer p {
+  margin: 0 auto;
+  max-width: 90ch;
+}
+
+.site-footer-meta {
+  margin-top: 0.25rem;
+}
+
+.site-footer a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.site-footer a:hover {
+  color: var(--text);
+}
+
+.site-footer a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
 }
 
 /* Homepage: post list */
@@ -412,6 +450,11 @@ article.post-content hr {
   }
 
   main {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .site-footer {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
