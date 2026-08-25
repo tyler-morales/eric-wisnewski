@@ -1,6 +1,6 @@
 ---
 title: Subscribe
-_build:
+build:
   list: never
   render: never
 ---

@@ -54,6 +54,22 @@ buildFuture = true
   [cascade.target]
     path = '/authors'
 
+# Updates: the log page is public; individual notes are not listed on home
+# and do not get their own URLs.
+[[cascade]]
+  [cascade.build]
+    list = 'never'
+  [cascade.target]
+    path = '/updates'
+
+[[cascade]]
+  [cascade.build]
+    list = 'local'
+    render = 'never'
+  [cascade.target]
+    kind = 'page'
+    path = '/updates/**'
+
 # Grady's Tour posts always attribute to Grady even if CMS author is missing.
 [[cascade]]
   [cascade.params]

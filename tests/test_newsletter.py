@@ -13,7 +13,11 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SUBSCRIBE_API = REPO_ROOT / "functions" / "api" / "subscribe.js"
 NEWSLETTER_API = REPO_ROOT / "functions" / "api" / "newsletter.js"
+SUBSCRIBE_JS = REPO_ROOT / "static" / "js" / "subscribe.js"
 SUBSCRIBE_PARTIAL = REPO_ROOT / "layouts" / "partials" / "subscribe.html"
+SUBSCRIBE_MANAGE_LAYOUT = REPO_ROOT / "layouts" / "_default" / "subscribe-manage.html"
+SUBSCRIBE_MANAGE_CONTENT = REPO_ROOT / "content" / "subscribe" / "manage.md"
+SUBSCRIBE_INVALID_CONTENT = REPO_ROOT / "content" / "subscribe" / "invalid.md"
 LIST_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "list.html"
 TOUR_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "gradys-tour.html"
 SINGLE_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "single.html"
@@ -109,6 +113,23 @@ class NewsletterHelperTests(unittest.TestCase):
     def test_list_label_unknown_failure(self) -> None:
         self.assertEqual(call_js_fn(SUBSCRIBE_API, "listLabel", "nope"), "")
 
+    def test_newsletter_from_header_uses_from_email_success(self) -> None:
+        env = {"NEWSLETTER_FROM_EMAIL": "hello@ericwisnewski.com"}
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_API, "newsletterFromHeader", env, "Eric Wisnewski"),
+            "Eric Wisnewski <hello@ericwisnewski.com>",
+        )
+        self.assertEqual(
+            call_js_fn(NEWSLETTER_API, "newsletterFromHeader", env, "Grady's Tour"),
+            "Grady's Tour <hello@ericwisnewski.com>",
+        )
+
+    def test_newsletter_from_header_defaults_when_unset_failure(self) -> None:
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_API, "newsletterFromHeader", {}, "Eric Wisnewski"),
+            "Eric Wisnewski <hello@ericwisnewski.com>",
+        )
+
     def test_parse_rss_items_success(self) -> None:
         xml = """<?xml version="1.0"?>
         <rss><channel>
@@ -150,6 +171,223 @@ class NewsletterHelperTests(unittest.TestCase):
         lists = call_js_fn(SUBSCRIBE_API, "getValidLists")
         self.assertEqual(sorted(lists), ["gradys-tour", "posts"])
 
+    def test_already_subscribed_message_success(self) -> None:
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_API, "subscriptionStatusMessage", ["posts"], []),
+            "You're already subscribed to Eric's blog.",
+        )
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "subscriptionStatusMessage",
+                ["posts", "gradys-tour"],
+                [],
+            ),
+            "You're already subscribed to Eric's blog and Grady's Tour.",
+        )
+
+    def test_already_subscribed_message_mixed_success(self) -> None:
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "subscriptionStatusMessage",
+                ["posts"],
+                ["gradys-tour"],
+            ),
+            "You're already subscribed to Eric's blog. Check your inbox to confirm Grady's Tour.",
+        )
+
+    def test_already_subscribed_message_new_signup_failure(self) -> None:
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_API, "subscriptionStatusMessage", [], ["posts"]),
+            "Check your inbox to confirm your subscription. If you don't see it, look in spam.",
+        )
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_API, "subscriptionStatusMessage", [], []),
+            "Check your inbox to confirm your subscription. If you don't see it, look in spam.",
+        )
+
+    def test_is_valid_token_success(self) -> None:
+        self.assertTrue(call_js_fn(SUBSCRIBE_API, "isValidToken", "ab" * 24))
+
+    def test_is_valid_token_failure(self) -> None:
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "isValidToken", ""))
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "isValidToken", None))
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "isValidToken", "abc123"))
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "isValidToken", "g" + ("a" * 47)))
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "isValidToken", ("a" * 48) + "a"))
+
+    def test_confirm_outcome_pending_success(self) -> None:
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "confirmOutcome",
+                [{"status": "pending"}, {"status": "confirmed"}],
+            ),
+            "confirm",
+        )
+
+    def test_confirm_outcome_already_confirmed_success(self) -> None:
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_API, "confirmOutcome", [{"status": "confirmed"}]),
+            "already",
+        )
+
+    def test_confirm_outcome_invalid_failure(self) -> None:
+        self.assertEqual(call_js_fn(SUBSCRIBE_API, "confirmOutcome", []), "invalid")
+        self.assertEqual(call_js_fn(SUBSCRIBE_API, "confirmOutcome", None), "invalid")
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "confirmOutcome",
+                [{"status": "unsubscribed"}],
+            ),
+            "invalid",
+        )
+
+    def test_confirm_redirect_path_success(self) -> None:
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "confirmRedirectPath",
+                [{"status": "pending"}],
+            ),
+            "/subscribe/confirmed/",
+        )
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "confirmRedirectPath",
+                [{"status": "confirmed"}],
+            ),
+            "/subscribe/confirmed/",
+        )
+
+    def test_confirm_redirect_path_invalid_failure(self) -> None:
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_API, "confirmRedirectPath", []),
+            "/subscribe/invalid/",
+        )
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "confirmRedirectPath",
+                [{"status": "unsubscribed"}],
+            ),
+            "/subscribe/invalid/",
+        )
+
+    def test_public_origin_pinned_success(self) -> None:
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "publicOrigin",
+                {"NEWSLETTER_SITE_ORIGIN": "https://ericwisnewski.com/"},
+                {"url": "https://evil.example/api/subscribe"},
+            ),
+            "https://ericwisnewski.com",
+        )
+
+    def test_public_origin_rejects_non_http_failure(self) -> None:
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "publicOrigin",
+                {"NEWSLETTER_SITE_ORIGIN": "javascript:alert(1)"},
+                {"url": "https://ericwisnewski.com/api/subscribe"},
+            ),
+            "https://ericwisnewski.com",
+        )
+
+    def test_normalize_lists_accepts_single_string_success(self) -> None:
+        self.assertEqual(call_js_fn(SUBSCRIBE_API, "normalizeLists", "posts"), ["posts"])
+
+    def test_normalize_lists_string_invalid_failure(self) -> None:
+        self.assertEqual(call_js_fn(SUBSCRIBE_API, "normalizeLists", "spam"), [])
+
+    def test_is_valid_email_rejects_header_injection_failure(self) -> None:
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "isValidEmail", "a@b.com\nCc:x@y.z"))
+
+    def test_preference_update_plan_pending_confirms_success(self) -> None:
+        current = [{"list": "posts", "status": "pending"}]
+        plan = call_js_fn(SUBSCRIBE_API, "preferenceUpdatePlan", current, ["posts"])
+        self.assertEqual(plan["subscribe"], ["posts"])
+        self.assertEqual(plan["unsubscribe"], [])
+
+    def test_preference_update_plan_subscribe_success(self) -> None:
+        current = [{"list": "posts", "status": "confirmed"}]
+        plan = call_js_fn(
+            SUBSCRIBE_API, "preferenceUpdatePlan", current, ["posts", "gradys-tour"]
+        )
+        self.assertEqual(plan["subscribe"], ["gradys-tour"])
+        self.assertEqual(plan["unsubscribe"], [])
+
+    def test_preference_update_plan_unsubscribe_success(self) -> None:
+        current = [
+            {"list": "posts", "status": "confirmed"},
+            {"list": "gradys-tour", "status": "confirmed"},
+        ]
+        plan = call_js_fn(SUBSCRIBE_API, "preferenceUpdatePlan", current, ["posts"])
+        self.assertEqual(plan["subscribe"], [])
+        self.assertEqual(plan["unsubscribe"], ["gradys-tour"])
+
+    def test_preference_update_plan_empty_unsubscribes_all_failure(self) -> None:
+        current = [{"list": "posts", "status": "confirmed"}]
+        plan = call_js_fn(SUBSCRIBE_API, "preferenceUpdatePlan", current, [])
+        self.assertEqual(plan["subscribe"], [])
+        self.assertEqual(plan["unsubscribe"], ["posts"])
+
+    def test_preference_update_plan_ignores_invalid_lists_failure(self) -> None:
+        current = [{"list": "posts", "status": "confirmed"}]
+        plan = call_js_fn(SUBSCRIBE_API, "preferenceUpdatePlan", current, ["spam"])
+        self.assertEqual(plan["subscribe"], [])
+        self.assertEqual(plan["unsubscribe"], ["posts"])
+
+    def test_preferences_payload_success(self) -> None:
+        payload = call_js_fn(
+            SUBSCRIBE_API,
+            "preferencesPayload",
+            "a@b.co",
+            [
+                {"list": "posts", "status": "confirmed"},
+                {"list": "gradys-tour", "status": "unsubscribed"},
+            ],
+        )
+        self.assertEqual(payload["ok"], True)
+        self.assertEqual(payload["email"], "a@b.co")
+        self.assertEqual(payload["lists"], ["posts"])
+
+    def test_preferences_payload_empty_failure(self) -> None:
+        payload = call_js_fn(SUBSCRIBE_API, "preferencesPayload", "a@b.co", [])
+        self.assertEqual(payload["ok"], True)
+        self.assertEqual(payload["lists"], [])
+
+    def test_newsletter_links_manage_and_one_click_success(self) -> None:
+        links = call_js_fn(
+            NEWSLETTER_API,
+            "newsletterLinks",
+            "https://ericwisnewski.com",
+            "abc123",
+        )
+        self.assertEqual(
+            links["manageUrl"],
+            "https://ericwisnewski.com/subscribe/manage/?token=abc123",
+        )
+        self.assertEqual(
+            links["oneClickUrl"],
+            "https://ericwisnewski.com/api/subscribe?unsubscribe=abc123",
+        )
+
+    def test_newsletter_links_encodes_token_failure(self) -> None:
+        links = call_js_fn(
+            NEWSLETTER_API,
+            "newsletterLinks",
+            "https://ericwisnewski.com",
+            "a b",
+        )
+        self.assertIn("token=a%20b", links["manageUrl"])
+        self.assertNotEqual(links["manageUrl"], links["oneClickUrl"])
+
 
 class NewsletterTemplateTests(unittest.TestCase):
     def test_partial_exists_with_a11y_fields(self) -> None:
@@ -162,6 +400,49 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn("fieldset", html)
         self.assertIn("aria-live", html)
         self.assertIn("/js/subscribe.js", html)
+        self.assertNotIn("Choose Eric", html)
+        self.assertNotIn("confirmation link", html)
+        self.assertNotIn("subscribe-intro", html)
+
+    def test_subscribe_js_keeps_checkboxes_after_submit_success(self) -> None:
+        js = SUBSCRIBE_JS.read_text(encoding="utf-8")
+        self.assertNotIn("formEl.reset()", js)
+        self.assertNotIn("form.reset()", js)
+        self.assertIn("selectedLists(formEl)", js)
+
+    def test_subscribe_js_reset_form_failure(self) -> None:
+        js = SUBSCRIBE_JS.read_text(encoding="utf-8")
+        self.assertNotRegex(js, r"dataset\.defaultList")
+
+    def test_manage_page_has_list_checkboxes_success(self) -> None:
+        self.assertTrue(SUBSCRIBE_MANAGE_LAYOUT.is_file())
+        self.assertTrue(SUBSCRIBE_MANAGE_CONTENT.is_file())
+        html = SUBSCRIBE_MANAGE_LAYOUT.read_text(encoding="utf-8")
+        self.assertIn('id="subscribe-manage"', html)
+        self.assertIn('value="posts"', html)
+        self.assertIn('value="gradys-tour"', html)
+        self.assertIn("fieldset", html)
+        self.assertIn("aria-live", html)
+        self.assertIn("/js/subscribe.js", html)
+        self.assertIn('type="submit"', html)
+
+    def test_manage_page_missing_token_copy_failure(self) -> None:
+        html = SUBSCRIBE_MANAGE_LAYOUT.read_text(encoding="utf-8")
+        self.assertIn("role=\"alert\"", html)
+        self.assertNotIn("cf-turnstile", html.lower())
+        self.assertNotIn("turnstile", html.lower())
+
+    def test_invalid_link_page_exists_success(self) -> None:
+        self.assertTrue(SUBSCRIBE_INVALID_CONTENT.is_file())
+        text = SUBSCRIBE_INVALID_CONTENT.read_text(encoding="utf-8")
+        self.assertIn("invalid", text.lower())
+        self.assertNotIn("You’re confirmed", text)
+        self.assertNotIn("You're confirmed", text)
+
+    def test_subscribe_js_parses_non_json_safely_success(self) -> None:
+        js = SUBSCRIBE_JS.read_text(encoding="utf-8")
+        self.assertIn("JSON.parse", js)
+        self.assertIn("res.text()", js)
 
     def test_home_and_tour_and_single_include_partial(self) -> None:
         self.assertTrue(template_includes_subscribe(LIST_TEMPLATE.read_text(encoding="utf-8")))
@@ -200,6 +481,14 @@ class NewsletterBuildTests(unittest.TestCase):
         tour_single = cls._output_dir / "gradys-tour" / "gearing-up" / "index.html"
         cls.tour_single = (
             tour_single.read_text(encoding="utf-8") if tour_single.is_file() else ""
+        )
+        manage_page = cls._output_dir / "subscribe" / "manage" / "index.html"
+        cls.manage_html = (
+            manage_page.read_text(encoding="utf-8") if manage_page.is_file() else ""
+        )
+        invalid_page = cls._output_dir / "subscribe" / "invalid" / "index.html"
+        cls.invalid_html = (
+            invalid_page.read_text(encoding="utf-8") if invalid_page.is_file() else ""
         )
 
         # Second build with newsletter enabled so form defaults are verified even
@@ -313,6 +602,24 @@ class NewsletterBuildTests(unittest.TestCase):
         if not self.tour_single_enabled:
             self.skipTest("enabled-newsletter hugo build failed")
         self.assertIn('data-default-list="gradys-tour"', self.tour_single_enabled)
+
+    def test_manage_page_builds_with_preference_form_success(self) -> None:
+        self.assertTrue(self.manage_html, "/subscribe/manage/ must build")
+        self.assertIn('id="subscribe-manage"', self.manage_html)
+        self.assertIn('value="posts"', self.manage_html)
+        self.assertIn('value="gradys-tour"', self.manage_html)
+        self.assertIn("Save preferences", self.manage_html)
+
+    def test_home_form_omits_intro_copy_when_enabled(self) -> None:
+        if not self.home_enabled:
+            self.skipTest("enabled-newsletter hugo build failed")
+        self.assertNotIn("Choose Eric", self.home_enabled)
+        self.assertNotIn("confirmation link", self.home_enabled)
+
+    def test_invalid_link_page_builds_success(self) -> None:
+        self.assertTrue(self.invalid_html, "/subscribe/invalid/ must build")
+        self.assertNotIn("You’re confirmed", self.invalid_html)
+        self.assertIn("home page", self.invalid_html.lower())
 
 
 if __name__ == "__main__":

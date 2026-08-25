@@ -108,7 +108,7 @@ main {
   width: 100%;
 }
 
-/* Footer: copyright + legal + webmaster contact */
+/* Footer: copyright + legal + builder credit */
 .site-footer {
   margin-top: auto;
   padding: 1rem 1rem 1.25rem;
@@ -139,6 +139,41 @@ main {
 .site-footer a:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 4px;
+}
+
+/* Updates log (footer page) */
+.updates-month {
+  margin-top: 2.5rem;
+}
+
+.updates-month > h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #555;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.35rem;
+  margin-bottom: 1.25rem;
+}
+
+.updates-note {
+  margin-bottom: 1.75rem;
+}
+
+.updates-note > h3 {
+  margin-bottom: 0.15rem;
+}
+
+.updates-note > time {
+  display: block;
+  font-size: 0.875rem;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+.updates-page a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
 }
 
 /* Homepage: post list */
@@ -1431,14 +1466,8 @@ article.post-content hr {
 
 .subscribe-heading {
   font-size: 1.25rem;
-  margin: 0 0 0.5rem;
-  font-weight: 700;
-}
-
-.subscribe-intro {
   margin: 0 0 1rem;
-  color: #333;
-  font-size: 0.9375rem;
+  font-weight: 700;
 }
 
 .subscribe-form label {
@@ -1539,6 +1568,22 @@ article.post-content hr {
 }
 
 .subscribe-status-page a:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+.subscribe-manage {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.subscribe-manage-email {
+  margin: 0 0 1rem;
+  font-size: 0.9375rem;
+}
+
+.subscribe-error:focus {
   outline: 2px solid #000;
   outline-offset: 2px;
 }

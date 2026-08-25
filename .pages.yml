@@ -187,6 +187,49 @@ content:
         label: Body
         type: rich-text
 
+  - name: updates
+    label: Site updates
+    type: collection
+    path: content/updates
+    format: yaml-frontmatter
+    filename: "{{slug}}.md"
+    exclude: [_index.md]
+    subfolders: false
+    view:
+      primary: title
+      fields: [title, date, draft]
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+        description: Short headline for readers (not a blog post).
+      - name: slug
+        label: Slug
+        type: string
+        required: true
+        description: URL-friendly id (e.g. email-if-you-want). Used for the filename.
+      - name: date
+        label: Date
+        type: date
+        required: true
+        description: Use a date/time that saves as ISO 8601 with seconds (e.g. 2026-08-22T12:00:00Z).
+        options:
+          time: true
+          format: "yyyy-MM-dd'T'HH:mm:ss'Z'"
+      - name: draft
+        label: Draft
+        type: boolean
+        default: false
+      - name: body
+        label: Body
+        type: rich-text
+        description: A few sentences, in plain language, about what got better for readers.
+
 settings:
   content:
     merge: true

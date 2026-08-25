@@ -1,0 +1,38 @@
+{{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "header.html" . }}
+  <main>
+    <article class="post-content subscribe-status-page">
+      <header>
+        <h1>{{ .Title }}</h1>
+      </header>
+      <section
+        id="subscribe-manage"
+        class="subscribe-section subscribe-manage"
+        aria-label="Email preferences"
+      >
+        <p id="subscribe-manage-email" class="subscribe-manage-email" hidden></p>
+        <form class="subscribe-form" aria-label="Update email preferences">
+          <fieldset class="subscribe-lists">
+            <legend>Notify me about</legend>
+            <label class="subscribe-list-option">
+              <input type="checkbox" name="lists" value="posts">
+              Eric’s blog
+            </label>
+            <label class="subscribe-list-option">
+              <input type="checkbox" name="lists" value="gradys-tour">
+              Grady’s Tour
+            </label>
+          </fieldset>
+          <div class="subscribe-form-actions">
+            <button type="submit">Save preferences</button>
+          </div>
+          <p class="subscribe-status" role="status" aria-live="polite" hidden></p>
+          <p class="subscribe-error" role="alert" aria-live="assertive" tabindex="-1" hidden></p>
+        </form>
+      </section>
+    </article>
+  </main>
+  <script src="{{ "/js/subscribe.js" | relURL }}" defer></script>
+{{ end }}

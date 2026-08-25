@@ -12,6 +12,22 @@ const LIST_LABELS = {
   posts: "Eric's blog",
   'gradys-tour': "Grady's Tour",
 };
+const DEFAULT_FROM_EMAIL = 'hello@ericwisnewski.com';
+
+export function newsletterFromHeader(env, displayName) {
+  const name =
+    typeof displayName === 'string' && displayName.trim()
+      ? displayName.trim()
+      : 'Eric Wisnewski';
+  const fromEmail =
+    typeof env?.NEWSLETTER_FROM_EMAIL === 'string' && env.NEWSLETTER_FROM_EMAIL.trim()
+      ? env.NEWSLETTER_FROM_EMAIL.trim()
+      : DEFAULT_FROM_EMAIL;
+  const from = typeof env?.NEWSLETTER_FROM === 'string' ? env.NEWSLETTER_FROM.trim() : '';
+  if (from.includes('<')) return from;
+  const email = from.includes('@') ? from : fromEmail;
+  return `${name} <${email}>`;
+}
 
 export function parseRssItems(xml) {
   if (typeof xml !== 'string' || !xml) return [];
@@ -85,9 +101,22 @@ function isAuthorized(request, env) {
   return bearer === configured || querySecret === configured;
 }
 
-function originFromRequest(request) {
+function originFromRequest(request, env) {
+  const pinned =
+    env && typeof env.NEWSLETTER_SITE_ORIGIN === 'string'
+      ? env.NEWSLETTER_SITE_ORIGIN.trim().replace(/\/+$/, '')
+      : '';
+  if (pinned && /^https?:\/\//i.test(pinned)) return pinned;
   const url = new URL(request.url);
   return `${url.protocol}//${url.host}`;
+}
+
+export function newsletterLinks(origin, unsubToken) {
+  const token = encodeURIComponent(unsubToken || '');
+  return {
+    manageUrl: `${origin}/subscribe/manage/?token=${token}`,
+    oneClickUrl: `${origin}/api/subscribe?unsubscribe=${token}`,
+  };
 }
 
 async function sendResendEmail(env, { from, to, subject, html, text, headers }) {
@@ -112,7 +141,7 @@ async function sendResendEmail(env, { from, to, subject, html, text, headers }) 
 
 function postEmailContent(listId, item, origin, unsubToken, postalAddress) {
   const label = LIST_LABELS[listId] || listId;
-  const unsubUrl = `${origin}/api/subscribe?unsubscribe=${encodeURIComponent(unsubToken)}`;
+  const links = newsletterLinks(origin, unsubToken);
   const subject = `New on ${label}: ${item.title}`;
   const addressLine = postalAddress
     ? `<p style="color:#666;font-size:12px;">${escapeHtml(postalAddress)}</p>`
@@ -121,12 +150,12 @@ function postEmailContent(listId, item, origin, unsubToken, postalAddress) {
 <p><a href="${escapeAttr(item.url)}">${escapeHtml(item.title)}</a></p>
 <p><a href="${escapeAttr(item.url)}">Read the post</a></p>
 <hr>
-<p style="color:#666;font-size:12px;"><a href="${escapeAttr(unsubUrl)}">Unsubscribe</a> from ${escapeHtml(label)} emails.</p>
+<p style="color:#666;font-size:12px;"><a href="${escapeAttr(links.manageUrl)}">Unsubscribe or manage email preferences</a></p>
 ${addressLine}`;
-  const text = `There's a new post on ${label}: ${item.title}\n\n${item.url}\n\nUnsubscribe: ${unsubUrl}${
+  const text = `There's a new post on ${label}: ${item.title}\n\n${item.url}\n\nUnsubscribe or manage email preferences: ${links.manageUrl}${
     postalAddress ? `\n\n${postalAddress}` : ''
   }`;
-  return { subject, html, text, unsubUrl };
+  return { subject, html, text, unsubUrl: links.oneClickUrl };
 }
 
 function escapeHtml(s) {
@@ -185,8 +214,7 @@ async function processList(db, env, origin, listConfig) {
     .bind(listConfig.id)
     .all();
   const recipients = subscribers.results || [];
-  const fromEmail = env.NEWSLETTER_FROM_EMAIL || 'hello@ericwisnewski.com';
-  const from = `${listConfig.fromName} <${fromEmail}>`;
+  const from = newsletterFromHeader(env, listConfig.fromName);
   const postal = env.NEWSLETTER_POSTAL_ADDRESS || '';
 
   for (const item of toSend) {
@@ -234,7 +262,7 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'RESEND_API_KEY not configured' }, 503);
   }
 
-  const origin = originFromRequest(context.request);
+  const origin = originFromRequest(context.request, context.env);
   const results = [];
 
   try {

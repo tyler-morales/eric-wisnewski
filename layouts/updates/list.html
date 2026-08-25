@@ -1,0 +1,25 @@
+{{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "header.html" . }}
+  <main>
+    <article class="post-content updates-page">
+      <header>
+        <h1>{{ .Title }}</h1>
+      </header>
+      {{ .Content }}
+      {{ range .Pages.GroupByDate "January 2006" }}
+      <section class="updates-month" aria-labelledby="updates-{{ .Key | urlize }}">
+        <h2 id="updates-{{ .Key | urlize }}">{{ .Key }}</h2>
+        {{ range .Pages }}
+        <section class="updates-note">
+          <h3>{{ .Title }}</h3>
+          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+          {{ .Content }}
+        </section>
+        {{ end }}
+      </section>
+      {{ end }}
+    </article>
+  </main>
+{{ end }}
