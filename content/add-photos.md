@@ -2,7 +2,7 @@
 title: Add photos
 type: add-photos
 robots: noindex
-_build:
+build:
   list: never
 ---
 

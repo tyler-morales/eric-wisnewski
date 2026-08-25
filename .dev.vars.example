@@ -9,8 +9,10 @@ TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 # GOOGLE_CLIENT_SECRET=
 # GITHUB_TOKEN=github_pat_...
 # GITHUB_REPO=tyler-morales/eric-wisnewski
+# GITHUB_BRANCH=main
 # Newsletter (Resend + dispatch cron). Omit until domain is verified in Resend.
 # RESEND_API_KEY=re_xxx
 # NEWSLETTER_DISPATCH_SECRET=openssl-rand-hex-32
 # NEWSLETTER_FROM_EMAIL=hello@ericwisnewski.com
 # NEWSLETTER_POSTAL_ADDRESS=Your Name, City, ST
+# NEWSLETTER_SITE_ORIGIN=https://ericwisnewski.com

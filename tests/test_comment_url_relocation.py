@@ -12,7 +12,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 COMMENTS_API = REPO_ROOT / "functions" / "api" / "comments.js"
 ADMIN_LAYOUT = REPO_ROOT / "layouts" / "admin" / "single.html"
-ISSO_PARTIAL = REPO_ROOT / "layouts" / "partials" / "isso.html"
+COMMENTS_PARTIAL = REPO_ROOT / "layouts" / "partials" / "comments.html"
 COMMENTS_WIDGET = REPO_ROOT / "static" / "js" / "comments.js"
 REDIRECTS = REPO_ROOT / "static" / "_redirects"
 GEARING_UP = REPO_ROOT / "content" / "gradys-tour" / "gearing-up.md"
@@ -96,10 +96,10 @@ class CommentUrlWiringTests(unittest.TestCase):
         self.assertNotIn('from "../', source)
 
     def test_widget_uses_hugo_permalink_not_only_location(self) -> None:
-        isso = ISSO_PARTIAL.read_text(encoding="utf-8")
+        comments = COMMENTS_PARTIAL.read_text(encoding="utf-8")
         widget = COMMENTS_WIDGET.read_text(encoding="utf-8")
-        self.assertIn("data-page-url", isso)
-        self.assertIn(".RelPermalink", isso)
+        self.assertIn("data-page-url", comments)
+        self.assertIn(".RelPermalink", comments)
         self.assertIn("dataset.pageUrl", widget)
 
     def test_admin_links_use_live_post_url(self) -> None:

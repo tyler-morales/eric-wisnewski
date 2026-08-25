@@ -109,15 +109,15 @@ function bytesToBase64(bytes) {
 }
 
 function googleClientId(env) {
-  return env.GOOGLE_CLIENT_ID || env.GOOGLE_CLIENT_ID || '';
+  return env.GOOGLE_CLIENT_ID || '';
 }
 
 function googleClientSecret(env) {
-  return env.GOOGLE_CLIENT_SECRET || env.GOOGLE_CLIENT_SECRET || '';
+  return env.GOOGLE_CLIENT_SECRET || '';
 }
 
 function uploadSecret(env) {
-  return env.UPLOAD_SECRET || env.UPLOAD_SECRET || '';
+  return env.UPLOAD_SECRET || '';
 }
 
 function requireSecret(env, secret) {

@@ -141,6 +141,7 @@ class AuthorTemplateContractTests(unittest.TestCase):
         self.assertIn("author-card.html", layout)
         self.assertIn("author-profile", card)
         self.assertIn("post-list", layout)
+        self.assertNotIn("comments.html", layout)
         self.assertNotIn("isso.html", layout)
 
     def test_author_names_are_links_not_nested_success(self) -> None:

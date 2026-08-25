@@ -1,6 +1,8 @@
 # TODOS
 
 ## Done
+- [x] Updates log: footer-only `/updates/` with monthly reader notes (`content/updates/`); not in main nav; no comments/subscribe; CMS collection **Site updates**. Tests in `tests/test_updates.py`.
+- [x] Dead-code cleanup (`chore/dead-code-cleanup`): stop tracking `dist/` and `.wrangler/`; rename CMS leftover `content/posts/{{slug}}*.md` to real slugs; `isso.html` → `comments.html`; drop unused comments PATCH; unify newsletter From on `NEWSLETTER_FROM_EMAIL`; delete duplicate `content/gradys-tour/day-2-3.md`; Hugo `build:` instead of deprecated `_build:`. Tests in `tests/test_repo_hygiene.py`.
 - [x] Site footer on all pages via `layouts/partials/footer.html` in `baseof.html`: © year + site title, Privacy (`/privacy/`), send comments/questions to the webmaster Tyler Morales → https://tylermorales.pro. Tests in `tests/test_site_footer.py`.
 - [x] First post rewritten as a simple, non-technical guide for Eric: how to use the blog, Pages CMS, adding/editing posts, images, and troubleshooting (no code).
 - [x] Eric’s login: docs updated so Eric uses email (magic link) to sign in to Pages CMS, not GitHub; README and .pages.yml note invite-by-email for contributors.
@@ -58,6 +60,8 @@
 - [x] Comment removal guide: `/admin/comments/` now shows a 3-step Unlock → Delete how-to (page markdown rendered in `.admin-comments-guide`); password label simplified; README no longer describes the old Allow/pending queue. Deleted/consolidated: outdated “hidden until Allow” copy on the admin page.
 - [x] Pages CMS post gallery: **Gallery** image field with `options.multiple` (max 12, unique) on Posts and Grady's Tour; authors upload several photos from Photos then remove any they do not want. `layouts/partials/post-gallery.html` renders the list as a grid (handles a CMS single-string leftover). Featured Image stays a single `image` path. README + Grady how-to updated. Tests in `tests/test_post_gallery.py`.
 - [x] Per-type newsletter: Eric’s blog and/or Grady’s Tour via D1 + Resend; double opt-in; `/api/subscribe` + `/api/newsletter`; migration `0004_newsletter.sql`; GitHub Action every 20m; `newsletter_enabled = true`. Tests in `tests/test_newsletter.py`.
+- [x] Newsletter signup UX: keep checked lists after Subscribe; tell people they are already subscribed; unsubscribe links open `/subscribe/manage/` to choose lists. Deleted/consolidated: subscribe intro copy; form reset that cleared Eric’s checkbox on Grady’s Tour.
+- [x] Newsletter hardening: invalid/expired confirm links no longer say “You’re confirmed”; tokens must be 48-hex; confirm emails are not faked when Resend is missing; spam hint on inbox copy.
 
 ## Later
 - [x] Umami analytics: tracking script in `layouts/partials/head.html` (production only); `umami_script_url` + optional `umami_website_id` in hugo.toml; README setup steps. Fill in `umami_website_id` after creating the site in Umami Cloud.
@@ -68,6 +72,7 @@
 - [x] Author pages: `/authors/<slug>/` shows photo, bio, then that author’s posts; author names on home, bylines, and bios link there. Home no longer excludes Grady. Deleted/consolidated: home `is-tour-post` filter; duplicated author GetPage lookups now `author-page.html` + `author-card.html`.
 - [x] Grady’s Tour missing post: CMS saved “Bike-less in Bayeux” (`content/gradys-tour/no-bikes.md`) with a publish date still in the future at deploy time, so Hugo omitted it and Cloudflare served the home page at `/gradys-tour/no-bikes/`. Enabled `buildFuture = true`; lowercased the slug; production-like tests now require every published tour markdown file on `/gradys-tour/`.
 - [ ] Swap in real author bios and photos for Eric Wisnewski and Grady Davis (CMS Authors or `content/authors/`).
+- [ ] When shipping a reader-facing site change, add a short note under `content/updates/` (or Pages CMS **Site updates**) so `/updates/` stays current.
 - [x] Re-evaluate custom upload tool (e.g. upload-image.html + Cloudflare function) if CMS uploads are unreliable.
 - [x] Google Photos → blog: `/add-photos/` (password) + Pages Function `functions/api/photos.js` compresses in the browser and commits to `assets/images/uploads/`. Google Photos Picker or device files. Authors attach in Pages CMS after rebuild. Needs `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `UPLOAD_SECRET`, `GITHUB_TOKEN` on Cloudflare. Do not hotlink Google `baseUrl`.
 - [ ] Content is edited via Pages CMS (app.pagescms.org); ensure repo is connected and `.pages.yml` is present on the branch you use.

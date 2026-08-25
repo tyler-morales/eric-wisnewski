@@ -1,6 +1,9 @@
 ---
 title: "Chipping Away: Day 2-4"
-slug: Day-2-4
+slug: day-2-4
+aliases:
+  - /gradys-tour/Day-2-4/
+  - /gradys-tour/day-2-3/
 author: grady-davis
 date: 2026-08-23T11:17:00Z
 draft: false

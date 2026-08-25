@@ -7,7 +7,7 @@ A forever-stable Hugo blog: no JavaScript frameworks, no CSS frameworks, no Node
 - **Preview (dev):** `hugo server` — uses **http://localhost:1313/** so you stay local (no redirect to production).
 - **Production build:** Run `./scripts/sync-uploaded-images.sh` then `hugo --gc --minify`. The sync copies CMS uploads from `assets/images/uploads/` to `static/images/uploads/` so featured and inline images resolve on the live site.
 
-Deploy the `public/` directory to any static host (GitHub Pages, Netlify, Vercel, Cloudflare Pages). Set the build command to `./scripts/sync-uploaded-images.sh && hugo --gc --minify` in your host’s dashboard (or use the included `netlify.toml` if you use Netlify).
+This site is hosted on **Cloudflare Pages**. Set the build command to `./scripts/sync-uploaded-images.sh && hugo --gc --minify` in the Pages project. You can also deploy the `public/` directory to another static host if needed.
 
 ## Authors / contributors
 
@@ -56,7 +56,7 @@ Update these values and rebuild. Nav links are used in the site header; the CSV 
 
 ## Editing content (Pages CMS)
 
-Content and media are edited via **Pages CMS**. Eric signs in with **email** (magic link sent to his inbox; invite him by email in the CMS if needed). Maintainers can use GitHub at [https://app.pagescms.org/](https://app.pagescms.org/); open this repository and branch, and use the configured collections (**Posts** for the home page, **Grady’s Tour** for travel posts) and media (uploads). The post **Gallery** field accepts several photos at once; **Body** is a rich-text editor (format text, links, slash commands). Configuration lives in `.pages.yml` at the repo root.
+Content and media are edited via **Pages CMS**. Eric signs in with **email** (magic link sent to his inbox; invite him by email in the CMS if needed). Maintainers can use GitHub at [https://app.pagescms.org/](https://app.pagescms.org/); open this repository and branch, and use the configured collections (**Posts** for the home page, **Grady’s Tour** for travel posts, **Site updates** for the footer Updates log) and media (uploads). The post **Gallery** field accepts several photos at once; **Body** is a rich-text editor (format text, links, slash commands). Configuration lives in `.pages.yml` at the repo root.
 
 **If the Cloudflare build fails** with *"date front matter field is not a parsable date"*: Hugo requires a full RFC3339 date (with seconds and timezone). In the CMS, set **Publish Date** again and save so it writes e.g. `2026-02-26T10:25:00Z`. The `.pages.yml` date format is set to `yyyy-MM-dd'T'HH:mm:ss'Z'` for this.
 
@@ -81,7 +81,7 @@ Self-hosted Umami: point `umami_script_url` at your instance’s `/script.js` an
 
 ## Comments
 
-Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (one level) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/isso.html` and loads `static/js/comments.js`. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
+Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (one level) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/comments.html` and loads `static/js/comments.js`. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
 
 To enable comments:
 
@@ -101,17 +101,22 @@ To enable comments:
 
 Subscribers can opt into **Eric’s blog** (`posts`), **Grady’s Tour** (`gradys-tour`), or both. Signups live in the same **Cloudflare D1** database as comments. Double opt-in and new-post emails go through **[Resend](https://resend.com)** via `/api/subscribe` and `/api/newsletter`. The form appears on the home page, Grady’s Tour list, and post pages when `newsletter_enabled = true` in `config/_default/hugo.toml`.
 
+If someone submits an address that is already confirmed for the lists they checked, the form stays as they left it and tells them they are already subscribed (no extra confirmation email). Broken or expired confirm links go to `/subscribe/invalid/` instead of saying the person is confirmed. New-post emails include an **Unsubscribe or manage email preferences** link to `/subscribe/manage/?token=…`, where they can turn Eric’s blog and Grady’s Tour on or off. Mail-client one-click unsubscribe (`List-Unsubscribe`) still drops that list immediately.
+
 **Cloudflare Pages secrets (Production):**
 
 | Name | Notes |
 | --- | --- |
 | `RESEND_API_KEY` | From Resend → API Keys (`re_...`) |
 | `NEWSLETTER_DISPATCH_SECRET` | e.g. `openssl rand -hex 32` |
+| `NEWSLETTER_FROM_EMAIL` | Optional. Default `hello@ericwisnewski.com` (confirm + dispatch) |
 | `TURNSTILE_SECRET_KEY` | Same as comments (subscribe uses Turnstile) |
+| `NEWSLETTER_POSTAL_ADDRESS` | Physical mailing address in new-post footers (CAN-SPAM) |
+| `NEWSLETTER_SITE_ORIGIN` | Optional. Pin confirm/unsubscribe links to `https://ericwisnewski.com` |
 
 **GitHub:** repo → Settings → Secrets → Actions → `NEWSLETTER_DISPATCH_SECRET` (same value as Cloudflare). The workflow `.github/workflows/newsletter-dispatch.yml` POSTs `/api/newsletter` every 20 minutes.
 
-**Go-live:** verify `ericwisnewski.com` in Resend, run migration `0004` on D1, set secrets above, deploy. First dispatch run **seeds** existing RSS items without emailing; only new posts email after that. Feeds: `/posts/index.xml` and `/gradys-tour/index.xml` (not home `/index.xml`).
+**Go-live:** verify `ericwisnewski.com` in Resend, run migration `0004` on D1, set secrets above (including postal address), deploy. First dispatch run **seeds** existing RSS items without emailing; only new posts email after that. Feeds: `/posts/index.xml` and `/gradys-tour/index.xml` (not home `/index.xml`).
 
 ## Add photos (`/add-photos/`)
 
@@ -126,6 +131,7 @@ Cloudflare Pages → project `eric-wisnewski` → **Settings → Variables and s
 | `UPLOAD_SECRET` | Password for `/add-photos/`. Encrypt |
 | `GITHUB_TOKEN` | Fine-grained PAT: Contents **Read and write** on this repo. Encrypt |
 | `GITHUB_REPO` | Optional. Default `tyler-morales/eric-wisnewski` |
+| `GITHUB_BRANCH` | Optional. Default `main` |
 
 Google Cloud: Photos Picker API on, OAuth consent (External, test users under **Audience**), redirect `https://ericwisnewski.com/add-photos/`.
 
@@ -133,7 +139,9 @@ After upload, attach files in Pages CMS Gallery / Featured Image / Body.
 
 ## Footer
 
-Every page includes a short footer from `layouts/partials/footer.html` (wired in `layouts/_default/baseof.html`): copyright, a [Privacy](/privacy/) page, and “Send comments or questions to the webmaster, Tyler Morales” linking to [tylermorales.pro](https://tylermorales.pro). Name and URL are `builder_name` and `builder_url` in `config/_default/hugo.toml`.
+Every page includes a short footer from `layouts/partials/footer.html` (wired in `layouts/_default/baseof.html`): copyright, [Updates](/updates/) (plain-language notes when the site gets better), a [Privacy](/privacy/) page, and “Send comments or questions to the webmaster, Tyler Morales” linking to [tylermorales.pro](https://tylermorales.pro). Name and URL are `builder_name` and `builder_url` in `config/_default/hugo.toml`.
+
+**Updates log:** `/updates/` is footer-only (not in the main nav). Notes live in `content/updates/` and are grouped by month on one page. They are not blog posts, have no comments, and do not appear on the home page. In Pages CMS the collection is **Site updates**. Write for readers, not developers. Add a note when something on the site changes for the better.
 
 ## Tech notes
 

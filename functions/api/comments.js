@@ -165,47 +165,6 @@ export async function onRequestGet(context) {
   }
 }
 
-export async function onRequestPatch(context) {
-  const db = context.env.COMMENTS_DB;
-  if (!db) return jsonResponse({ error: 'Comments not configured' }, 503);
-
-  const { searchParams } = new URL(context.request.url);
-  const id = searchParams.get('id') != null ? Number(searchParams.get('id')) : null;
-  const adminSecret = searchParams.get('admin_secret') ?? '';
-
-  if (!Number.isInteger(id) || id < 1) {
-    return jsonResponse({ error: 'Invalid or missing id' }, 400);
-  }
-  if (!adminSecret || !isAdmin(adminSecret, context.env)) {
-    if (adminSecret) {
-      const configuredSet =
-        typeof context.env.COMMENTS_ADMIN_SECRET === 'string' &&
-        context.env.COMMENTS_ADMIN_SECRET.length > 0;
-      return jsonResponse(
-        {
-          error: configuredSet ? 'Invalid admin secret.' : 'Admin secret not configured on server.',
-        },
-        401
-      );
-    }
-    return jsonResponse({ error: 'admin_secret is required' }, 400);
-  }
-
-  const row = await db.prepare('SELECT id FROM comments WHERE id = ?').bind(id).first();
-  if (!row) return jsonResponse({ error: 'Comment not found' }, 404);
-
-  try {
-    await db.prepare('UPDATE comments SET status = ? WHERE id = ?').bind('approved', id).run();
-    return new Response(null, { status: 204 });
-  } catch (e) {
-    const msg = e?.message != null ? String(e.message) : '';
-    if (/no such column: status/i.test(msg)) {
-      return jsonResponse({ error: 'Comment approval not available (migration required)' }, 501);
-    }
-    return jsonResponse({ error: 'Failed to approve comment' }, 500);
-  }
-}
-
 export async function onRequestPost(context) {
   const db = context.env.COMMENTS_DB;
   if (!db) return jsonResponse({ error: 'Comments not configured' }, 503);

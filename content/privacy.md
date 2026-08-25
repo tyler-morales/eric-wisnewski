@@ -1,7 +1,7 @@
 ---
 title: Privacy
 layout: subscribe-status
-_build:
+build:
   list: never
 ---
 
