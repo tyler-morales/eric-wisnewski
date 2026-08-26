@@ -1,0 +1,20 @@
+{{ define "title" }}{{ .Title }} | Updates | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "header.html" . }}
+  <main>
+    <article class="post-content updates-entry-page">
+      <header>
+        <p class="updates-back"><a href="{{ "updates/" | relURL }}"><span aria-hidden="true">←</span> All updates</a></p>
+        <h1>{{ .Title }}</h1>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+      </header>
+      {{ with .Params.image }}
+      <figure class="post-featured-image">
+        <img src="{{ . | absURL }}" alt="{{ with $.Params.image_alt }}{{ . }}{{ else }}{{ $.Title }}{{ end }}" loading="lazy" decoding="async">
+      </figure>
+      {{ end }}
+      {{ .Content }}
+    </article>
+  </main>
+{{ end }}

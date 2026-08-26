@@ -212,7 +212,19 @@ content:
         label: Slug
         type: string
         required: true
-        description: URL-friendly id (e.g. email-if-you-want). Used for the filename.
+        description: URL-friendly id (e.g. email-if-you-want). Used for the filename and the /updates/<slug>/ page.
+      - name: summary
+        label: Summary
+        type: text
+        required: true
+        description: One sentence shown in the list on /updates/. Say what changed for readers.
+      - name: image
+        label: Image
+        type: image
+        required: false
+        description: Optional picture shown with this note.
+        options:
+          extensions: [jpg, jpeg, png, webp, gif]
       - name: date
         label: Date
         type: date

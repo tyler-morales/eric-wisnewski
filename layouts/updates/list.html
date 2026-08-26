@@ -3,23 +3,35 @@
 {{ define "main" }}
   {{ partial "header.html" . }}
   <main>
-    <article class="post-content updates-page">
-      <header>
+    <div class="updates-page">
+      <header class="updates-intro">
         <h1>{{ .Title }}</h1>
+        {{ .Content }}
       </header>
-      {{ .Content }}
-      {{ range .Pages.GroupByDate "January 2006" }}
-      <section class="updates-month" aria-labelledby="updates-{{ .Key | urlize }}">
-        <h2 id="updates-{{ .Key | urlize }}">{{ .Key }}</h2>
-        {{ range .Pages }}
-        <section class="updates-note">
-          <h3>{{ .Title }}</h3>
-          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-          {{ .Content }}
-        </section>
-        {{ end }}
+      {{ range .Pages.GroupByDate "2006-01-02" }}
+      {{ $day := time.AsTime .Key }}
+      <section class="updates-day" aria-labelledby="updates-{{ .Key }}">
+        <h2 class="updates-day-date" id="updates-{{ .Key }}">
+          <time datetime="{{ .Key }}">{{ $day.Format "January 2, 2006" }}</time>
+        </h2>
+        <ul class="updates-entries">
+          {{ range .Pages }}
+          {{ $entry := . }}
+          <li class="updates-entry">
+            {{ with .Params.image }}
+            <a href="{{ $entry.RelPermalink }}" class="updates-entry-image-link" tabindex="-1" aria-hidden="true">
+              <span class="updates-entry-image">
+                <img src="{{ . | absURL }}" alt="" width="640" height="360" loading="lazy" decoding="async">
+              </span>
+            </a>
+            {{ end }}
+            <h3 class="updates-entry-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+            <p class="updates-entry-summary">{{ with .Params.summary }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 200 }}{{ end }}</p>
+          </li>
+          {{ end }}
+        </ul>
       </section>
       {{ end }}
-    </article>
+    </div>
   </main>
 {{ end }}

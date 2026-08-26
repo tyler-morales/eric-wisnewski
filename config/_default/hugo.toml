@@ -23,6 +23,7 @@ buildFuture = true
   posts = '/posts/:slug/'
   gradys-tour = '/gradys-tour/:slug/'
   authors = '/authors/:slug/'
+  updates = '/updates/:slug/'
 
 [params]
   description = 'Eric Wisnewski — personal site and blog'
@@ -54,8 +55,8 @@ buildFuture = true
   [cascade.target]
     path = '/authors'
 
-# Updates: the log page is public; individual notes are not listed on home
-# and do not get their own URLs.
+# Updates: each note has its own page at /updates/<slug>/, but notes are listed
+# only on /updates/ — never mixed into the home page feed of posts.
 [[cascade]]
   [cascade.build]
     list = 'never'
@@ -65,7 +66,6 @@ buildFuture = true
 [[cascade]]
   [cascade.build]
     list = 'local'
-    render = 'never'
   [cascade.target]
     kind = 'page'
     path = '/updates/**'
