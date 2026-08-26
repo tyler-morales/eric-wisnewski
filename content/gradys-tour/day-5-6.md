@@ -10,7 +10,7 @@ Aug 26, 26’
 
 Day 5 and 6: Mile 320
 
-Its dark and grey here
+Its dark and grey here, but we are motivated by the *hard, exhilarating pleasure of action.* 
 
 ![](/images/uploads/IMG_1245.jpeg)
 
