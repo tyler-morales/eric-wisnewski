@@ -18,3 +18,4 @@ Well rested after a day off lounging in Les Choutes Hostel in Rennes, we biked t
 
 ![](/images/uploads/IMG_1216-1.jpeg)
 
+As we progressed from the suburban grey of southern Rennes the sun opened along with the river into a spectacular byway. The river is littered with loch house
