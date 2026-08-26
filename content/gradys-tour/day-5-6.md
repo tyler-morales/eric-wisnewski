@@ -10,7 +10,11 @@ Aug 26, 26’
 
 Day 5 and 6: Mile 320
 
-Well rested after a day off lounging in Les Choutes Hostel in Rennes we set off 9:01am sharp. We biked three hours straight at a 13mph pace along the a gravel canal trail.
+Well rested after a day off lounging in Les Choutes Hostel in Rennes, we biked three hours straight along gravel Vilaine River trail.
 
 ![](/images/uploads/4dc38324-a11a-4ed0-9121-ad4b12773a16.jpeg)
+
+![](/images/uploads/IMG_1412.jpeg)
+
+![](/images/uploads/IMG_1216-1.jpeg)
 
