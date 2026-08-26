@@ -31,6 +31,10 @@ Not lazy about: understanding the problem (read it fully and trace the real flow
 
 Ruleset from [ponytail](https://github.com/DietrichGebert/ponytail) (MIT).
 
+## This project
+
+Hugo blog at <https://github.com/tyler-morales/eric-wisnewski.git>, hosted on **Cloudflare** Pages (Pages Functions + D1); the domain is registered at **Porkbun**. Check the Cloudflare and Porkbun docs rather than guessing at either.
+
 ## The one runnable check, in this repo
 
 `python3 -m unittest discover -s tests` — stdlib `unittest`, no pytest, no fixtures, no new dependency. Tests assert against template/function source text and against a real `hugo` build into a temp directory; JavaScript helpers in `functions/api/` are exercised by importing them through `node`, which is why those files export their pure helpers and never import a sibling module.
