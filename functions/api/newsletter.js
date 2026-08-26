@@ -1,33 +1,22 @@
 /**
  * Newsletter dispatch: secret-gated RSS poll + per-list send via Resend.
- * D1 binding: COMMENTS_DB. Self-contained (no sibling imports).
+ * D1 binding: COMMENTS_DB.
  */
+
+import {
+  LIST_LABELS,
+  jsonResponse,
+  newsletterFromHeader,
+  publicOrigin,
+  sendResendEmail,
+} from '../../lib/api.js';
 
 const LISTS = [
   { id: 'posts', feedPath: '/posts/index.xml', fromName: 'Eric Wisnewski' },
   { id: 'gradys-tour', feedPath: '/gradys-tour/index.xml', fromName: "Grady's Tour" },
 ];
 
-const LIST_LABELS = {
-  posts: "Eric's blog",
-  'gradys-tour': "Grady's Tour",
-};
-const DEFAULT_FROM_EMAIL = 'hello@ericwisnewski.com';
-
-export function newsletterFromHeader(env, displayName) {
-  const name =
-    typeof displayName === 'string' && displayName.trim()
-      ? displayName.trim()
-      : 'Eric Wisnewski';
-  const fromEmail =
-    typeof env?.NEWSLETTER_FROM_EMAIL === 'string' && env.NEWSLETTER_FROM_EMAIL.trim()
-      ? env.NEWSLETTER_FROM_EMAIL.trim()
-      : DEFAULT_FROM_EMAIL;
-  const from = typeof env?.NEWSLETTER_FROM === 'string' ? env.NEWSLETTER_FROM.trim() : '';
-  if (from.includes('<')) return from;
-  const email = from.includes('@') ? from : fromEmail;
-  return `${name} <${email}>`;
-}
+export { newsletterFromHeader };
 
 export function parseRssItems(xml) {
   if (typeof xml !== 'string' || !xml) return [];
@@ -84,13 +73,6 @@ function decodeXml(s) {
     .replace(/&#39;/g, "'");
 }
 
-function jsonResponse(body, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  });
-}
-
 function isAuthorized(request, env) {
   const configured = env.NEWSLETTER_DISPATCH_SECRET;
   if (typeof configured !== 'string' || !configured) return false;
@@ -101,42 +83,12 @@ function isAuthorized(request, env) {
   return bearer === configured || querySecret === configured;
 }
 
-function originFromRequest(request, env) {
-  const pinned =
-    env && typeof env.NEWSLETTER_SITE_ORIGIN === 'string'
-      ? env.NEWSLETTER_SITE_ORIGIN.trim().replace(/\/+$/, '')
-      : '';
-  if (pinned && /^https?:\/\//i.test(pinned)) return pinned;
-  const url = new URL(request.url);
-  return `${url.protocol}//${url.host}`;
-}
-
 export function newsletterLinks(origin, unsubToken) {
   const token = encodeURIComponent(unsubToken || '');
   return {
     manageUrl: `${origin}/subscribe/manage/?token=${token}`,
     oneClickUrl: `${origin}/api/subscribe?unsubscribe=${token}`,
   };
-}
-
-async function sendResendEmail(env, { from, to, subject, html, text, headers }) {
-  const apiKey = env.RESEND_API_KEY;
-  if (!apiKey) throw new Error('RESEND_API_KEY not configured');
-  const payload = { from, to: [to], subject, html, text };
-  if (headers) payload.headers = headers;
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) {
-    const errBody = await res.text();
-    throw new Error(`Resend failed (${res.status}): ${errBody}`);
-  }
-  return res.json();
 }
 
 function postEmailContent(listId, item, origin, unsubToken, postalAddress) {
@@ -262,7 +214,7 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'RESEND_API_KEY not configured' }, 503);
   }
 
-  const origin = originFromRequest(context.request, context.env);
+  const origin = publicOrigin(context.env, context.request);
   const results = [];
 
   try {

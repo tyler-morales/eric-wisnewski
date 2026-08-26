@@ -37,6 +37,8 @@ Hugo blog at <https://github.com/tyler-morales/eric-wisnewski.git>, hosted on **
 
 ## The one runnable check, in this repo
 
-`python3 -m unittest discover -s tests` — stdlib `unittest`, no pytest, no fixtures, no new dependency. Tests assert against template/function source text and against a real `hugo` build into a temp directory; JavaScript helpers in `functions/api/` are exercised by importing them through `node`, which is why those files export their pure helpers and never import a sibling module.
+`python3 -m unittest discover -s tests` — stdlib `unittest`, no pytest, no fixtures, no new dependency. Tests assert against template/function source text and against a real `hugo` build into a temp directory; JavaScript helpers are exercised by importing them through `node`, so keep them pure and exported.
+
+Helpers shared by more than one Pages Function live in `lib/`, imported as `../../lib/api.js`. They must stay **outside** `functions/`, where every module is part of the file-based router — a shared file inside it once failed the Cloudflare build and left the previous deploy serving. After changing anything under `functions/`, run `npx wrangler pages functions build --outdir=/tmp/pf-build` and confirm it compiles.
 
 Record what you changed in `TODOS.md`, including what you deleted or consolidated.

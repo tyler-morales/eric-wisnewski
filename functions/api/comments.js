@@ -2,10 +2,11 @@
  * Blog comments API: GET list by url, POST new comment, PUT edit, DELETE comment.
  * D1 binding: COMMENTS_DB.
  *
- * URL helpers live in this file (no relative imports). A sibling import of
- * functions/_lib/comment-urls.js failed the Cloudflare Pages Functions build,
- * so production kept serving the previous deploy.
+ * The URL helpers stay here because they are only used by this route; shared
+ * helpers come from lib/, outside the functions/ router.
  */
+
+import { jsonResponse, verifyTurnstile } from '../../lib/api.js';
 
 const MAX_AUTHOR = 200;
 const MAX_TEXT = 5000;
@@ -77,13 +78,6 @@ export function commentUrlLookupVariants(url) {
   }
 
   return [...variants];
-}
-
-function jsonResponse(body, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  });
 }
 
 function isAdmin(secret, env) {
@@ -185,17 +179,7 @@ export async function onRequestPost(context) {
     if (!token) {
       return jsonResponse({ error: 'Verification required' }, 400);
     }
-    try {
-      const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret, response: token }),
-      });
-      const verifyData = await verifyRes.json();
-      if (!verifyData || verifyData.success !== true) {
-        return jsonResponse({ error: 'Verification failed' }, 400);
-      }
-    } catch (e) {
+    if (!(await verifyTurnstile(token, secret))) {
       return jsonResponse({ error: 'Verification failed' }, 400);
     }
   }

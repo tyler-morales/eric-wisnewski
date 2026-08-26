@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 import tempfile
@@ -10,6 +11,7 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+FUNCTIONS_DIR = REPO_ROOT / "functions"
 COMMENTS_API = REPO_ROOT / "functions" / "api" / "comments.js"
 ADMIN_LAYOUT = REPO_ROOT / "layouts" / "admin" / "single.html"
 COMMENTS_PARTIAL = REPO_ROOT / "layouts" / "partials" / "comments.html"
@@ -87,13 +89,23 @@ class CommentUrlLookupVariantTests(unittest.TestCase):
 
 
 class CommentUrlWiringTests(unittest.TestCase):
-    def test_api_queries_url_variants_without_relative_import(self) -> None:
+    def test_api_queries_url_variants_success(self) -> None:
         source = COMMENTS_API.read_text(encoding="utf-8")
         self.assertIn("commentUrlLookupVariants", source)
         self.assertIn("relocateCommentUrl", source)
         self.assertIn("url IN (", source)
-        self.assertNotIn("from '../", source)
-        self.assertNotIn('from "../', source)
+
+    def test_shared_imports_come_from_outside_functions_failure(self) -> None:
+        """A sibling import inside functions/ once broke the Pages build."""
+        for api in FUNCTIONS_DIR.rglob("*.js"):
+            source = api.read_text(encoding="utf-8")
+            for match in re.findall(r"""from ['"](\.[^'"]+)['"]""", source):
+                resolved = (api.parent / match).resolve()
+                self.assertFalse(
+                    resolved.is_relative_to(FUNCTIONS_DIR),
+                    f"{api.name} imports {match}, which is inside functions/",
+                )
+                self.assertTrue(resolved.exists(), f"{api.name} imports missing {match}")
 
     def test_widget_uses_hugo_permalink_not_only_location(self) -> None:
         comments = COMMENTS_PARTIAL.read_text(encoding="utf-8")

@@ -1,9 +1,10 @@
 /**
  * Photo ingest for /add-photos/: Google Photos picker + compressed uploads.
  * Commits files into assets/images/uploads/ through the GitHub Contents API.
- * Helpers are exported for tests. This file is self-contained — sibling
- * imports broke Pages Functions and left the previous deploy live.
+ * Helpers are exported for tests.
  */
+
+import { jsonResponse } from '../../lib/api.js';
 
 const MAX_BYTES = 8 * 1024 * 1024;
 const UPLOAD_DIR = 'assets/images/uploads';
@@ -82,13 +83,6 @@ export function isAllowedRedirectUri(uri) {
   } catch {
     return false;
   }
-}
-
-function jsonResponse(body, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  });
 }
 
 function bytesFromBase64(b64) {

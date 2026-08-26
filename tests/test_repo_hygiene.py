@@ -18,6 +18,7 @@ COMMENTS_API = REPO_ROOT / "functions" / "api" / "comments.js"
 PHOTOS_API = REPO_ROOT / "functions" / "api" / "photos.js"
 SUBSCRIBE_API = REPO_ROOT / "functions" / "api" / "subscribe.js"
 NEWSLETTER_API = REPO_ROOT / "functions" / "api" / "newsletter.js"
+SHARED_API = REPO_ROOT / "lib" / "api.js"
 DEV_VARS_EXAMPLE = REPO_ROOT / ".dev.vars.example"
 SLUG_RE = re.compile(r"(?m)^slug:\s*['\"]?([A-Za-z0-9-]+)")
 
@@ -78,12 +79,21 @@ class DeadApiTests(unittest.TestCase):
         self.assertNotIn("env.UPLOAD_SECRET || env.UPLOAD_SECRET", source)
 
     def test_newsletter_from_uses_documented_env_success(self) -> None:
-        subscribe = SUBSCRIBE_API.read_text(encoding="utf-8")
-        newsletter = NEWSLETTER_API.read_text(encoding="utf-8")
-        self.assertIn("NEWSLETTER_FROM_EMAIL", subscribe)
-        self.assertIn("NEWSLETTER_FROM_EMAIL", newsletter)
-        self.assertIn("newsletterFromHeader", subscribe)
-        self.assertIn("newsletterFromHeader", newsletter)
+        shared = SHARED_API.read_text(encoding="utf-8")
+        self.assertIn("NEWSLETTER_FROM_EMAIL", shared)
+        for api in (SUBSCRIBE_API, NEWSLETTER_API):
+            self.assertIn("newsletterFromHeader", api.read_text(encoding="utf-8"))
+
+    def test_shared_helpers_are_defined_once_failure(self) -> None:
+        """Both mail paths must read the same helper, or they drift apart."""
+        for helper in ("newsletterFromHeader", "sendResendEmail", "jsonResponse"):
+            defined_in = [
+                api.name
+                for api in (SUBSCRIBE_API, NEWSLETTER_API, COMMENTS_API, PHOTOS_API)
+                if f"function {helper}(" in api.read_text(encoding="utf-8")
+            ]
+            self.assertEqual([], defined_in, f"{helper} redefined in {defined_in}")
+            self.assertIn(f"function {helper}(", SHARED_API.read_text(encoding="utf-8"))
 
 
 class GitignoreTests(unittest.TestCase):
