@@ -3,8 +3,11 @@
   <p class="site-footer-meta">
     Send comments or questions to the webmaster, <a href="{{ .Site.Params.builder_url | default "https://tylermorales.pro" }}">{{ .Site.Params.builder_name | default "Tyler Morales" }}</a>
     <span aria-hidden="true"> · </span>
-    <a href="{{ "updates/" | relURL }}">Updates</a>
+    {{/* Staged sections build with render 'never', which leaves no RelPermalink. */}}
+    {{ with .Site.GetPage "/updates" }}{{ with .RelPermalink }}
+    <a href="{{ . }}">Updates</a>
     <span aria-hidden="true"> · </span>
+    {{ end }}{{ end }}
     <a href="{{ "privacy/" | relURL }}">Privacy</a>
   </p>
 </footer>

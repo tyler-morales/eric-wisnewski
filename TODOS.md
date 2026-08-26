@@ -1,6 +1,10 @@
 # TODOS
 
+## Next
+- [ ] Publish the Updates log when the site is ready: delete the `build:`/`cascade:` block in `content/updates/_index.md` and push. No other file holds the switch, and the suite passes in both states.
+
 ## Done
+- [x] Updates log staged off the live site via one front matter block in `content/updates/_index.md`; the footer link now gates on `.Site.GetPage "/updates"` having a `.RelPermalink`, so it disappears and returns on its own. Rejected an environment config (`config/production/`) first: Hugo **replaces** the `[[cascade]]` array per environment rather than merging, which silently republished the `/authors/` index. `tests/test_updates.py` builds an unstaged copy of `content/` via `--contentDir` so the feature stays verified while hidden.
 - [x] Shared Pages Functions helpers in `lib/api.js` (`chore/dead-code-cleanup`). Deleted/consolidated: 4 copies of `jsonResponse`, 2 each of `newsletterFromHeader`, `sendResendEmail` and `LIST_LABELS`, the `publicOrigin`/`originFromRequest` pair, and the inline Turnstile fetch in `comments.js` — one definition each, net −53 lines. The module sits outside `functions/` because that directory is the router; verified with `npx wrangler pages functions build`. Guards in `tests/test_repo_hygiene.py` and `tests/test_comment_url_relocation.py`.
 - [x] `AGENTS.md` holds the [ponytail](https://github.com/DietrichGebert/ponytail) ruleset plus the project rules that used to sit in gitignored `.cursor/rules/`.
 - [x] Updates log as a changelog feed (Vercel-style): `/updates/` groups notes by day with a sticky date rail; each note is a card (optional image, linked title, one-sentence `summary`) with its own page at `/updates/<slug>/` via `layouts/updates/single.html` + `[permalinks]`. Footer-only, no comments/subscribe, never on home. CMS **Site updates** gained `summary` (required) and `image`. Deleted/consolidated: month-grouped `.updates-month`/`.updates-note` markup and CSS; duplicate footer-link test in `tests/test_updates.py` (owned by `tests/test_site_footer.py`); entry pages reuse `.post-content` + `.post-featured-image` instead of new styles. Tests in `tests/test_updates.py`.

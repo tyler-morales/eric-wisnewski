@@ -53,16 +53,6 @@ def has_privacy_link(html: str) -> bool:
     )
 
 
-def has_updates_link(html: str) -> bool:
-    return bool(
-        re.search(
-            r'<a\b[^>]*href="[^"]*updates[^"]*"[^>]*>\s*Updates\s*</a>',
-            html,
-            re.IGNORECASE,
-        )
-    )
-
-
 class FooterTemplateTests(unittest.TestCase):
     def test_baseof_includes_footer_partial_success(self) -> None:
         template = BASEOF.read_text(encoding="utf-8")
@@ -102,10 +92,13 @@ class FooterTemplateTests(unittest.TestCase):
         self.assertIn("privacy/", partial)
         self.assertIn(">Privacy</a>", partial)
 
-    def test_footer_partial_links_updates_success(self) -> None:
+    def test_footer_updates_link_gates_on_the_page_having_a_url_success(self) -> None:
+        """Staged sections render 'never', so the link must follow RelPermalink."""
         partial = FOOTER_PARTIAL.read_text(encoding="utf-8")
-        self.assertIn("updates/", partial)
+        self.assertIn('.Site.GetPage "/updates"', partial)
+        self.assertIn("RelPermalink", partial)
         self.assertIn(">Updates</a>", partial)
+        self.assertNotIn('"updates/" | relURL', partial)
 
     def test_hugo_toml_has_builder_params_success(self) -> None:
         toml = HUGO_TOML.read_text(encoding="utf-8")
@@ -177,7 +170,6 @@ class FooterBuildTests(unittest.TestCase):
         self.assertTrue(footer, "home page must include a <footer>")
         self.assertTrue(has_copyright(footer))
         self.assertTrue(has_privacy_link(footer))
-        self.assertTrue(has_updates_link(footer))
         self.assertTrue(has_webmaster_invite(footer))
 
     def test_map_and_tour_and_admin_include_footer_success(self) -> None:

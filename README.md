@@ -141,7 +141,9 @@ After upload, attach files in Pages CMS Gallery / Featured Image / Body.
 
 Every page includes a short footer from `layouts/partials/footer.html` (wired in `layouts/_default/baseof.html`): copyright, [Updates](/updates/) (plain-language notes when the site gets better), a [Privacy](/privacy/) page, and “Send comments or questions to the webmaster, Tyler Morales” linking to [tylermorales.pro](https://tylermorales.pro). Name and URL are `builder_name` and `builder_url` in `config/_default/hugo.toml`.
 
-**Updates log:** `/updates/` is footer-only (not in the main nav). It reads like a product changelog: notes are grouped by day, newest first, with the date in a rail beside each entry. The feed shows each note’s **Summary**; the full note lives at `/updates/<slug>/` (pinned in `[permalinks]`). Notes are not blog posts, have no comments or subscribe form, and never appear on the home page (`build.list = 'local'`).
+**Updates log — staged, not live.** The feature is finished and tested, but `content/updates/_index.md` carries a `build: render: never` block (with a matching `cascade:`) that keeps the feed, the note pages, and the footer link off the published site. **To go live, delete that block and push** — nothing else changes, because the footer link follows whether the page has a URL. The tests read the block and expect either state, so they stay green before and after.
+
+Once published, `/updates/` is footer-only (not in the main nav). It reads like a product changelog: notes are grouped by day, newest first, with the date in a rail beside each entry. The feed shows each note’s **Summary**; the full note lives at `/updates/<slug>/` (pinned in `[permalinks]`). Notes are not blog posts, have no comments or subscribe form, and never appear on the home page (`build.list = 'local'`).
 
 Add one in Pages CMS under **Site updates** (or as markdown in `content/updates/`) with `title`, `slug`, `date`, `summary`, an optional `image`, and a body that adds detail the summary does not. Write for readers, not developers — `tests/test_updates.py` fails the build if a note uses tooling words.
 

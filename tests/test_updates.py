@@ -84,6 +84,39 @@ def main_nav_html(html: str) -> str:
     return match.group(1) if match else ""
 
 
+def is_staged() -> bool:
+    match = FRONT_MATTER_RE.match(UPDATES_INDEX.read_text(encoding="utf-8"))
+    return bool(match and "render: never" in match.group(1))
+
+
+def unstage(text: str) -> str:
+    """Front matter as it will read once the staging block is deleted."""
+    match = FRONT_MATTER_RE.match(text)
+    assert match is not None
+    kept: list[str] = []
+    in_block = False
+    for line in match.group(1).splitlines():
+        if line.startswith(("build:", "cascade:")):
+            in_block = True
+            continue
+        if in_block:
+            if not line.strip() or line.startswith((" ", "\t")):
+                continue
+            in_block = False
+        if not line.startswith("#"):
+            kept.append(line)
+    return text.replace(match.group(1), "\n".join(kept), 1)
+
+
+def unstaged_content_dir(tmp: Path) -> Path:
+    """A copy of content/ with /updates/ published, to prove it still builds."""
+    copy = tmp / "content"
+    shutil.copytree(REPO_ROOT / "content", copy)
+    index = copy / "updates" / "_index.md"
+    index.write_text(unstage(index.read_text(encoding="utf-8")), encoding="utf-8")
+    return copy
+
+
 class UpdatesTemplateTests(unittest.TestCase):
     def test_header_omits_updates_failure(self) -> None:
         header = HEADER_PARTIAL.read_text(encoding="utf-8")
@@ -158,7 +191,17 @@ class UpdatesTemplateTests(unittest.TestCase):
     def test_hugo_pins_update_permalinks_success(self) -> None:
         toml = HUGO_TOML.read_text(encoding="utf-8")
         self.assertRegex(toml, r"updates\s*=\s*'/updates/:slug/'")
-        self.assertNotRegex(toml, r"(?s)path = '/updates/\*\*'.*?render = 'never'")
+
+    def test_staging_is_one_deletable_block_success(self) -> None:
+        """Publishing must stay a delete: no other file holds the switch."""
+        text = UPDATES_INDEX.read_text(encoding="utf-8")
+        self.assertNotIn("render: never", unstage(text))
+        self.assertIn("title: Updates", unstage(text))
+        self.assertNotIn("render = 'never'", HUGO_TOML.read_text(encoding="utf-8").split("/updates")[-1])
+        if is_staged():
+            front_matter = FRONT_MATTER_RE.match(text)
+            assert front_matter is not None
+            self.assertIn("cascade:", front_matter.group(1), "notes must be staged too")
 
     def test_pages_cms_updates_collection_has_feed_fields_success(self) -> None:
         config = PAGES_YML.read_text(encoding="utf-8")
@@ -180,11 +223,21 @@ class UpdatesTemplateTests(unittest.TestCase):
 
 
 class UpdatesBuildTests(unittest.TestCase):
+    """Staged, so it builds against an unstaged copy of content/ to stay honest."""
+
     @classmethod
     def setUpClass(cls) -> None:
-        cls._output_dir = Path(tempfile.mkdtemp(prefix="site-updates-hugo-"))
+        cls._tmp = Path(tempfile.mkdtemp(prefix="site-updates-live-"))
+        cls._output_dir = cls._tmp / "out"
         result = subprocess.run(
-            ["hugo", "--destination", str(cls._output_dir), "--quiet"],
+            [
+                "hugo",
+                "--contentDir",
+                str(unstaged_content_dir(cls._tmp)),
+                "--destination",
+                str(cls._output_dir),
+                "--quiet",
+            ],
             cwd=REPO_ROOT,
             capture_output=True,
             text=True,
@@ -192,7 +245,7 @@ class UpdatesBuildTests(unittest.TestCase):
             timeout=HUGO_TIMEOUT_SECONDS,
         )
         if result.returncode != 0:
-            shutil.rmtree(cls._output_dir, ignore_errors=True)
+            shutil.rmtree(cls._tmp, ignore_errors=True)
             raise unittest.SkipTest(
                 f"hugo build failed; check that hugo is on PATH:\n{result.stderr}"
             )
@@ -203,7 +256,7 @@ class UpdatesBuildTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        shutil.rmtree(cls._output_dir, ignore_errors=True)
+        shutil.rmtree(cls._tmp, ignore_errors=True)
 
     def entry_html(self, path: Path) -> str:
         page = self.output_dir / "updates" / note_slug(path) / "index.html"
@@ -272,6 +325,49 @@ class UpdatesBuildTests(unittest.TestCase):
                 html = self.entry_html(path)
                 self.assertNotIn('id="comments"', html)
                 self.assertNotIn('id="subscribe"', html)
+
+
+class UpdatesVisibilityTests(unittest.TestCase):
+    """The live build must agree with the staging block, whichever way it is set."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls._output_dir = Path(tempfile.mkdtemp(prefix="site-updates-prod-"))
+        result = subprocess.run(
+            ["hugo", "--destination", str(cls._output_dir), "--quiet"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=HUGO_TIMEOUT_SECONDS,
+        )
+        if result.returncode != 0:
+            shutil.rmtree(cls._output_dir, ignore_errors=True)
+            raise unittest.SkipTest(f"hugo build failed:\n{result.stderr}")
+        cls.output_dir = cls._output_dir
+        cls.home = (cls._output_dir / "index.html").read_text(encoding="utf-8")
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        shutil.rmtree(cls._output_dir, ignore_errors=True)
+
+    def test_feed_and_note_pages_match_staging_failure(self) -> None:
+        published = not is_staged()
+        self.assertEqual((self.output_dir / "updates" / "index.html").is_file(), published)
+        for path in update_note_paths():
+            with self.subTest(note=path.name):
+                page = self.output_dir / "updates" / note_slug(path) / "index.html"
+                self.assertEqual(page.is_file(), published)
+
+    def test_footer_link_matches_staging_failure(self) -> None:
+        """A staged page has no URL, so a link to it would be a dead link."""
+        self.assertEqual('href="/updates/"' in self.home, not is_staged())
+
+    def test_updates_stay_out_of_the_sitemap_failure(self) -> None:
+        """Footer-only either way: the section lists 'never', so it is never indexed."""
+        sitemap = self.output_dir / "sitemap.xml"
+        self.assertTrue(sitemap.is_file())
+        self.assertNotIn("/updates/", sitemap.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
