@@ -69,6 +69,7 @@
 - [x] Per-type newsletter: Eric’s blog and/or Grady’s Tour via D1 + Resend; double opt-in; `/api/subscribe` + `/api/newsletter`; migration `0004_newsletter.sql`; GitHub Action every 20m; `newsletter_enabled = true`. Tests in `tests/test_newsletter.py`.
 - [x] Newsletter signup UX: keep checked lists after Subscribe; tell people they are already subscribed; unsubscribe links open `/subscribe/manage/` to choose lists. Deleted/consolidated: subscribe intro copy; form reset that cleared Eric’s checkbox on Grady’s Tour.
 - [x] Newsletter hardening: invalid/expired confirm links no longer say “You’re confirmed”; tokens must be 48-hex; confirm emails are not faked when Resend is missing; spam hint on inbox copy.
+- [x] New-post email: one link (the post title). Deleted the redundant “Read the post” line that pointed at the same URL. Tests in `tests/test_newsletter.py`.
 - [x] Author invite: [docs/invite-author.md](docs/invite-author.md) checklist + copy-paste email; Posts and Authors CMS `draft` default true so new writers stay unpublished until you undraft them. Live Eric/Grady author files set `draft: false`. Tests in `tests/test_author_invite.py`.
 
 ## Later

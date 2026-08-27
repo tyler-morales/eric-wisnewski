@@ -91,7 +91,7 @@ export function newsletterLinks(origin, unsubToken) {
   };
 }
 
-function postEmailContent(listId, item, origin, unsubToken, postalAddress) {
+export function postEmailContent(listId, item, origin, unsubToken, postalAddress) {
   const label = LIST_LABELS[listId] || listId;
   const links = newsletterLinks(origin, unsubToken);
   const subject = `New on ${label}: ${item.title}`;
@@ -100,7 +100,6 @@ function postEmailContent(listId, item, origin, unsubToken, postalAddress) {
     : '';
   const html = `<p>There's a new post on <strong>${escapeHtml(label)}</strong>.</p>
 <p><a href="${escapeAttr(item.url)}">${escapeHtml(item.title)}</a></p>
-<p><a href="${escapeAttr(item.url)}">Read the post</a></p>
 <hr>
 <p style="color:#666;font-size:12px;"><a href="${escapeAttr(links.manageUrl)}">Unsubscribe or manage email preferences</a></p>
 ${addressLine}`;

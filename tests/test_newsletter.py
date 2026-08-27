@@ -388,6 +388,41 @@ class NewsletterHelperTests(unittest.TestCase):
         self.assertIn("token=a%20b", links["manageUrl"])
         self.assertNotEqual(links["manageUrl"], links["oneClickUrl"])
 
+    def test_post_email_content_links_title_success(self) -> None:
+        mail = call_js_fn(
+            NEWSLETTER_API,
+            "postEmailContent",
+            "gradys-tour",
+            {
+                "title": "Pushing to 100: Day 5-6",
+                "url": "https://ericwisnewski.com/gradys-tour/day-5-6/",
+            },
+            "https://ericwisnewski.com",
+            "tok",
+            "",
+        )
+        self.assertIn(
+            '<a href="https://ericwisnewski.com/gradys-tour/day-5-6/">'
+            "Pushing to 100: Day 5-6</a>",
+            mail["html"],
+        )
+        self.assertEqual(mail["html"].count("<a href="), 2)
+        self.assertIn("Unsubscribe or manage email preferences", mail["html"])
+
+    def test_post_email_content_omits_read_the_post_failure(self) -> None:
+        mail = call_js_fn(
+            NEWSLETTER_API,
+            "postEmailContent",
+            "posts",
+            {"title": "Hello", "url": "https://ericwisnewski.com/posts/hello/"},
+            "https://ericwisnewski.com",
+            "tok",
+            "",
+        )
+        self.assertNotIn("Read the post", mail["html"])
+        self.assertNotIn("Read the post", mail["text"])
+        self.assertIn("https://ericwisnewski.com/posts/hello/", mail["text"])
+
 
 class NewsletterTemplateTests(unittest.TestCase):
     def test_partial_exists_with_a11y_fields(self) -> None:
