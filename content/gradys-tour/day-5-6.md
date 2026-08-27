@@ -12,11 +12,7 @@ Day 5 and 7: Mile 381
 
 ![](/images/uploads/IMG_1450.jpeg)
 
-A jolly garbage man joins us as we run through T-Mos “mobility routine”. Its dark and grey here, but we are motivated by the *hard, exhilarating pleasure of action.* After a day off we go for our biggest day and it takes its toll. We leave Rennes at 9am headed to the coast.
-
-![](/images/uploads/IMG_1245.jpeg)
-
-*Mile 50, T-mo feeling the heat.*
+A portly garbage man joins us as we run through T-Mos “mobility routine”. Two spandexed men and a garbage man swinging their arms like monkeys in the dark grey morning. After a day off we are motivated by the *hard, exhilarating pleasure of action.* We leave Rennes at 9am headed to the Atlantic coast.
 
 We bike three hours straight along the gravel Vilaine River trail. As we pass Rennes suburban grey the trail opened into a spectacular byway. 
 
@@ -37,6 +33,10 @@ The fires 36 miles goes fast, our flattest of the trip. We sit for lunch and fue
 The ride is tough. We’re taken off-road on bumpy hiking trail, having to lift our bikes over barriers. 
 
 ![](/images/uploads/63dca1c2-3547-48a0-ba27-620268fa6c5f.jpeg)
+
+![image.jpeg](/images/uploads/image-5.jpeg)
+
+*Mile 50, T-mo feeling the heat.*
 
 But as the miles creep into the 60s and 70s we agree to push to the ocean 93miles.
 
