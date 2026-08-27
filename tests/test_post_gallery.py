@@ -189,6 +189,7 @@ class GalleryBuildTests(unittest.TestCase):
                 "--destination",
                 str(cls._output_dir),
                 "--quiet",
+                "--noBuildLock",
             ],
             cwd=REPO_ROOT,
             capture_output=True,

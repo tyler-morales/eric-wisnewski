@@ -57,7 +57,7 @@ def post_list_titles(html: str) -> list[str]:
 
 
 def run_hugo(*, destination: Path, content_dir: Path | None = None) -> subprocess.CompletedProcess[str]:
-    command = ["hugo", "--destination", str(destination), "--quiet"]
+    command = ["hugo", "--destination", str(destination), "--quiet", "--noBuildLock"]
     if content_dir is not None:
         command.extend(["--contentDir", str(content_dir)])
     return subprocess.run(
@@ -103,11 +103,11 @@ class DaBreakdownContractTests(unittest.TestCase):
         self.assertIn("Da Breakdown w Tad", header)
         self.assertIn("Grady's Tour", header)
         self.assertIn("RegularPages", gate)
-        self.assertIn('"da-breakdown-w-tad"', gate)
+        self.assertIn("GetPage", gate)
 
     def test_nav_without_post_gate_failure(self) -> None:
         header = HEADER_PARTIAL.read_text(encoding="utf-8")
-        self.assertNotIn("GetPage", header)
+        self.assertNotIn(".Site.RegularPages", header)
         self.assertNotIn("render 'never'", header)
 
     def test_home_and_author_templates_include_section_success(self) -> None:

@@ -147,6 +147,7 @@ class TourPermalinkBuildTests(unittest.TestCase):
                 "--destination",
                 str(cls.output_dir),
                 "--quiet",
+                "--noBuildLock",
             ],
             cwd=REPO_ROOT,
             capture_output=True,

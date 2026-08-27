@@ -1,5 +1,6 @@
 export var AUTHOR_KEY = 'comment_author';
 export var EMAIL_KEY = 'comment_email';
+export var EMAIL_REPLY_HINT = "We'll email you if someone replies.";
 
 export function readIdentity(storage) {
   var author = '';
@@ -215,7 +216,7 @@ function initComments() {
     var identity = identityFromForm(form);
     if (identity.author) fillIdentityFields(form, identity);
     if (!fields) return;
-    var hideFields = !!(collapsed && identity.author);
+    var hideFields = !!(collapsed && identity.author && identity.email);
     fields.hidden = hideFields;
     if (status) status.hidden = !identity.author;
     if (authorInput) authorInput.required = !hideFields;
@@ -303,7 +304,8 @@ function initComments() {
       '<label for="comment-reply-author">Name</label>' +
       '<input id="comment-reply-author" name="author" type="text" required autocomplete="name" maxlength="200" placeholder="Your name">' +
       '<label for="comment-reply-email">Email <span class="comments-optional">(optional)</span></label>' +
-      '<input id="comment-reply-email" name="email" type="email" autocomplete="email" placeholder="your@email.com">' +
+      '<input id="comment-reply-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" aria-describedby="comment-reply-email-hint">' +
+      '<p id="comment-reply-email-hint" class="comments-email-hint">' + EMAIL_REPLY_HINT + '</p>' +
       '</div>' +
       '<div class="comments-turnstile comments-reply-turnstile" role="group" aria-label="Verification"></div>' +
       '<div class="comments-form-actions">' +
@@ -570,6 +572,7 @@ function initComments() {
     if (thread && thread.byParent[c.id] && thread.byParent[c.id].length) {
       var repliesList = document.createElement('ul');
       repliesList.className = 'comment-replies';
+      repliesList.setAttribute('role', 'list');
       repliesList.setAttribute('aria-label', 'Replies to ' + c.author);
       thread.byParent[c.id].forEach(function (r) {
         repliesList.appendChild(renderComment(r, true, thread, c.author));

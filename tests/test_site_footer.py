@@ -139,7 +139,7 @@ class FooterBuildTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls._output_dir = Path(tempfile.mkdtemp(prefix="site-footer-hugo-"))
         result = subprocess.run(
-            ["hugo", "--destination", str(cls._output_dir), "--quiet"],
+            ["hugo", "--destination", str(cls._output_dir), "--quiet", "--noBuildLock"],
             cwd=REPO_ROOT,
             capture_output=True,
             text=True,

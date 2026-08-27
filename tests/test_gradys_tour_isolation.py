@@ -78,7 +78,7 @@ def post_list_titles(html: str) -> list[str]:
 
 
 def run_hugo(*, destination: Path, content_dir: Path | None = None) -> subprocess.CompletedProcess[str]:
-    command = ["hugo", "--destination", str(destination), "--quiet"]
+    command = ["hugo", "--destination", str(destination), "--quiet", "--noBuildLock"]
     if content_dir is not None:
         command.extend(["--contentDir", str(content_dir)])
     return subprocess.run(

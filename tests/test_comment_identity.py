@@ -10,6 +10,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 COMMENTS_WIDGET = REPO_ROOT / "static" / "js" / "comments.js"
 COMMENTS_PARTIAL = REPO_ROOT / "layouts" / "partials" / "comments.html"
+COMMENTS_API = REPO_ROOT / "functions" / "api" / "comments.js"
+COMMENTS_CSS = REPO_ROOT / "assets" / "css" / "style.css"
+REPLY_EMAIL_HINT = "We'll email you if someone replies."
 
 
 def call_identity(fn_name: str, script_body: str) -> object:
@@ -97,6 +100,27 @@ console.log(JSON.stringify({
         self.assertEqual(payload["stored"], {"author": "Stored", "email": "s@example.com"})
 
 
+def call_comments_api(fn_name: str, *args: object) -> object:
+    if not COMMENTS_API.is_file():
+        raise FileNotFoundError(COMMENTS_API)
+    arg_list = ", ".join(json.dumps(a) for a in args)
+    script = (
+        f"import {{ {fn_name} }} from {json.dumps(COMMENTS_API.as_uri())};\n"
+        f"const result = {fn_name}({arg_list});\n"
+        "Promise.resolve(result).then((v) => console.log(JSON.stringify(v)));\n"
+    )
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr or result.stdout or "node failed")
+    return json.loads(result.stdout)
+
+
 class CommentReplyUxTests(unittest.TestCase):
     def test_reply_form_collects_name_inline_success(self) -> None:
         js = COMMENTS_WIDGET.read_text(encoding="utf-8")
@@ -107,6 +131,7 @@ class CommentReplyUxTests(unittest.TestCase):
         self.assertIn("Post comment", html)
         self.assertIn('type="module"', html)
         self.assertIn("/js/comments.js", html)
+        self.assertNotIn('" /js/comments.js"', html)
         self.assertIn("md5", html)
         self.assertIn("comments-identity-fields", html)
         self.assertIn("readIdentity", js)
@@ -179,15 +204,89 @@ console.log(JSON.stringify({
         api = (REPO_ROOT / "functions" / "api" / "comments.js").read_text(encoding="utf-8")
         self.assertIn("comment-reply-btn", js)
         self.assertIn("renderComment(r, true, thread", js)
+        self.assertIn("setAttribute('role', 'list')", js)
         self.assertIn("WITH RECURSIVE tree(id)", api)
+        self.assertIn("DELETE FROM comments WHERE id IN (SELECT id FROM tree)", api)
         self.assertNotIn("if (!isReply)", js)
         self.assertNotIn("Replies can only be to top-level comments", api)
 
     def test_api_no_longer_blocks_reply_to_reply_failure(self) -> None:
-        api = (REPO_ROOT / "functions" / "api" / "comments.js").read_text(encoding="utf-8")
+        api = COMMENTS_API.read_text(encoding="utf-8")
         self.assertNotIn("Replies can only be to top-level comments", api)
         self.assertNotIn("DELETE FROM comments WHERE id = ? OR parent_id = ?", api)
         self.assertIn("Parent comment not found", api)
+
+
+class CommentReplyEmailHintTests(unittest.TestCase):
+    def test_email_field_explains_reply_notice_success(self) -> None:
+        html = COMMENTS_PARTIAL.read_text(encoding="utf-8")
+        js = COMMENTS_WIDGET.read_text(encoding="utf-8")
+        css = COMMENTS_CSS.read_text(encoding="utf-8")
+        self.assertIn(REPLY_EMAIL_HINT, html)
+        self.assertIn(REPLY_EMAIL_HINT, js)
+        self.assertIn('aria-describedby="comment-email-hint"', html)
+        self.assertIn("comment-reply-email-hint", js)
+        self.assertIn("comments-email-hint", css)
+        self.assertIn("identity.author && identity.email", js)
+        self.assertNotIn('required', html.split('id="comment-email"', 1)[1][:200])
+
+    def test_email_stays_optional_failure(self) -> None:
+        html = COMMENTS_PARTIAL.read_text(encoding="utf-8")
+        js = COMMENTS_WIDGET.read_text(encoding="utf-8")
+        self.assertIn("comments-optional", html)
+        self.assertIn("(optional)", html)
+        self.assertIn("(optional)", js)
+        self.assertNotIn("required", js.split('id="comment-reply-email"', 1)[1][:180])
+
+
+class CommentReplyNotifyHelperTests(unittest.TestCase):
+    def test_parent_reply_notify_to_success(self) -> None:
+        self.assertEqual(
+            call_comments_api("parentReplyNotifyTo", " Pat@Example.com ", "other@example.com"),
+            "Pat@Example.com",
+        )
+
+    def test_parent_reply_notify_to_skips_self_and_junk_failure(self) -> None:
+        self.assertEqual(call_comments_api("parentReplyNotifyTo", "a@b.co", "A@B.co"), "")
+        self.assertEqual(call_comments_api("parentReplyNotifyTo", "not-an-email", "b@c.co"), "")
+        self.assertEqual(call_comments_api("parentReplyNotifyTo", "", "b@c.co"), "")
+        self.assertEqual(call_comments_api("parentReplyNotifyTo", "a@b.co\nbad@c.co", "d@e.co"), "")
+
+    def test_reply_notify_email_includes_reply_and_link_success(self) -> None:
+        mail = call_comments_api(
+            "replyNotifyEmail",
+            {
+                "parentAuthor": "Pat",
+                "replyAuthor": "Grady",
+                "replyText": "See you at 6.",
+                "postUrl": "https://ericwisnewski.com/posts/hi/#comments",
+            },
+        )
+        self.assertEqual(mail["subject"], "Grady replied to your comment")
+        self.assertIn("See you at 6.", mail["text"])
+        self.assertIn("https://ericwisnewski.com/posts/hi/#comments", mail["html"])
+        self.assertIn("Grady", mail["html"])
+
+    def test_reply_notify_email_escapes_html_failure(self) -> None:
+        mail = call_comments_api(
+            "replyNotifyEmail",
+            {
+                "parentAuthor": "Pat",
+                "replyAuthor": "<script>",
+                "replyText": "Hi <b>there</b>",
+                "postUrl": "https://ericwisnewski.com/posts/hi/#comments",
+            },
+        )
+        self.assertNotIn("<script>", mail["html"])
+        self.assertNotIn("<b>there</b>", mail["html"])
+        self.assertIn("&lt;script&gt;", mail["html"])
+
+    def test_api_sends_reply_notice_in_background_success(self) -> None:
+        api = COMMENTS_API.read_text(encoding="utf-8")
+        self.assertIn("parentReplyNotifyTo", api)
+        self.assertIn("sendResendEmail", api)
+        self.assertIn("context.waitUntil", api)
+        self.assertIn("SELECT id, author, email FROM comments WHERE id = ?", api)
 
 
 if __name__ == "__main__":

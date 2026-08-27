@@ -1,6 +1,9 @@
 {{/*
   True when Da Breakdown w Tad has at least one published post.
   Nav tab and newsletter checkbox follow this so unchecking Draft on the first
-  post is what puts the section in the UI.
+  post is what puts the section in the UI. Uses the section page's own
+  RegularPages so the header does not scan .Site.RegularPages while Hugo is
+  still collecting them.
 */}}
-{{- return gt (len (where .Site.RegularPages "Section" "da-breakdown-w-tad")) 0 -}}
+{{- $section := .Site.GetPage "/da-breakdown-w-tad" -}}
+{{- return and $section (gt (len $section.RegularPages) 0) -}}

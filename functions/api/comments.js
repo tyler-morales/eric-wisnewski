@@ -6,7 +6,7 @@
  * helpers come from lib/, outside the functions/ router.
  */
 
-import { jsonResponse, verifyTurnstile } from '../../lib/api.js';
+import { jsonResponse, publicOrigin, sendResendEmail, verifyTurnstile } from '../../lib/api.js';
 
 const MAX_AUTHOR = 200;
 const MAX_TEXT = 5000;
@@ -78,6 +78,52 @@ export function commentUrlLookupVariants(url) {
   }
 
   return [...variants];
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function escapeAttr(s) {
+  return escapeHtml(s).replace(/'/g, '&#39;');
+}
+
+/** Address to notify when someone replies; empty means skip. */
+export function parentReplyNotifyTo(parentEmail, replyEmail) {
+  const to = typeof parentEmail === 'string' ? parentEmail.trim() : '';
+  if (!to || to.length > 320 || /[\r\n]/.test(to)) return '';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) return '';
+  const from = typeof replyEmail === 'string' ? replyEmail.trim() : '';
+  if (from && to.toLowerCase() === from.toLowerCase()) return '';
+  return to;
+}
+
+export function replyNotifyEmail({ parentAuthor, replyAuthor, replyText, postUrl }) {
+  const who = (typeof replyAuthor === 'string' && replyAuthor.trim()) || 'Someone';
+  const you = typeof parentAuthor === 'string' ? parentAuthor.trim() : '';
+  const snippet = String(replyText || '').trim().slice(0, 280);
+  const url = typeof postUrl === 'string' ? postUrl : '';
+  const greeting = you ? `${you}, ` : '';
+  const subject = `${who} replied to your comment`;
+  const text = `${greeting}${who} replied to your comment:\n\n${snippet}\n\n${url}`;
+  const html = `<p>${escapeHtml(greeting)}${escapeHtml(who)} replied to your comment:</p>
+<blockquote>${escapeHtml(snippet).replace(/\n/g, '<br>')}</blockquote>
+<p><a href="${escapeAttr(url)}">Read the comment</a></p>
+<p style="color:#666;font-size:12px;">You got this because you left a comment with this email.</p>`;
+  return { subject, html, text };
+}
+
+async function sendParentReplyEmail(env, to, mail) {
+  if (!env || !env.RESEND_API_KEY || !to || !mail) return;
+  try {
+    await sendResendEmail(env, { to, subject: mail.subject, html: mail.html, text: mail.text });
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 function isAdmin(secret, env) {
@@ -203,18 +249,19 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: `Comment must be at most ${MAX_TEXT} characters` }, 400);
   }
 
+  let parentRow = null;
   if (parentId != null) {
     if (!Number.isInteger(parentId) || parentId < 1) {
       return jsonResponse({ error: 'Invalid parent_id' }, 400);
     }
     const variants = commentUrlLookupVariants(url);
-    const parent = await db
+    parentRow = await db
       .prepare(
-        `SELECT id FROM comments WHERE id = ? AND url IN (${urlInPlaceholders(variants)})`
+        `SELECT id, author, email FROM comments WHERE id = ? AND url IN (${urlInPlaceholders(variants)})`
       )
       .bind(parentId, ...variants)
       .first();
-    if (!parent) {
+    if (!parentRow) {
       return jsonResponse({ error: 'Parent comment not found' }, 400);
     }
   }
@@ -257,6 +304,19 @@ export async function onRequestPost(context) {
       .first();
     if (!row) {
       return jsonResponse({ error: 'Failed to save comment' }, 500);
+    }
+    const notifyTo = parentReplyNotifyTo(parentRow && parentRow.email, email);
+    if (notifyTo && context.env.RESEND_API_KEY) {
+      const origin = publicOrigin(context.env, context.request);
+      const mail = replyNotifyEmail({
+        parentAuthor: parentRow.author,
+        replyAuthor: author,
+        replyText: text,
+        postUrl: `${origin}${url}#comments`,
+      });
+      if (typeof context.waitUntil === 'function') {
+        context.waitUntil(sendParentReplyEmail(context.env, notifyTo, mail));
+      }
     }
     return jsonResponse({ ...row, edit_token: editToken }, 201);
   } catch (e) {
@@ -360,14 +420,12 @@ export async function onRequestDelete(context) {
   try {
     await db
       .prepare(
-        `DELETE FROM comments WHERE id IN (
-           WITH RECURSIVE tree(id) AS (
-             SELECT id FROM comments WHERE id = ?
-             UNION ALL
-             SELECT c.id FROM comments c INNER JOIN tree t ON c.parent_id = t.id
-           )
-           SELECT id FROM tree
-         )`
+        `WITH RECURSIVE tree(id) AS (
+           SELECT id FROM comments WHERE id = ?
+           UNION ALL
+           SELECT c.id FROM comments c INNER JOIN tree t ON c.parent_id = t.id
+         )
+         DELETE FROM comments WHERE id IN (SELECT id FROM tree)`
       )
       .bind(id)
       .run();

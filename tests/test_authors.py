@@ -110,7 +110,7 @@ def published_article_titles() -> set[str]:
 
 def run_hugo(destination: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        ["hugo", "--destination", str(destination), "--quiet"],
+        ["hugo", "--destination", str(destination), "--quiet", "--noBuildLock"],
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,

@@ -44,7 +44,9 @@ Placeholder bios/images can be replaced anytime by editing the author files in t
 - **Where to put images:** Images under `/images/uploads/` are served from `static/images/uploads/`. The CMS writes to `assets/images/uploads/`; the build script `scripts/sync-uploaded-images.sh` copies them into `static/images/uploads/` before Hugo runs, so featured, gallery, and inline images work on the live site without manual copy.
 - **Gallery (several at once):** Posts have a `gallery` front matter list. In Pages CMS, **Gallery** is an image field with `options.multiple` so the author can pick several photos from Photos in one upload, then remove any they do not want. Hugo renders that list as a grid via `layouts/partials/post-gallery.html`. Do not set `multiple` on Featured Image (`image` must stay a single path).
 - **In post body (rich-text):** The post Body in Pages CMS is a rich-text (WYSIWYG) field. Use the editor toolbar or slash commands (`/`) to add **links** and **inline images**; “insert image” uses the same media library (`assets/images/uploads/`). Body content is stored as HTML and rendered by Hugo (Goldmark with raw HTML enabled). Inline body images are output as `<img>` tags; the responsive picture/WebP pipeline applies to images inserted via Markdown syntax in non-CMS workflows.
+- **Reading:** Post bodies use a serif (Iowan / Palatino / Georgia) at 18px with a ~65-character measure. An italic line immediately after a photo is treated as a caption (smaller, gray, sans). On viewports 768px and below, photos (featured, body, gallery) go edge to edge; captions stay in the padded column.
 - **Featured / share image:** Set the `image` field in the post’s front matter (e.g. in the CMS “Featured Image” or in the YAML as `image: /images/uploads/hero.jpg`). That URL is used for `og:image` and `twitter:image`; the file must exist in `static/images/uploads/`. Home, section lists, and posts without a featured image share `static/images/og-default.jpg` (JPEG, not the SVG favicon — Instagram and similar apps stretch SVG/emoji icons).
+
 ## Change the School Sheets or Map links
 
 Edit `config/_default/hugo.toml`. Under `[params]` you’ll see:
@@ -65,7 +67,7 @@ Content and media are edited via **Pages CMS**. Eric signs in with **email** (ma
 
 **If a new Grady’s Tour post is missing from `/gradys-tour/`:** Confirm it lives in `content/gradys-tour/` with `draft: false`. A publish date still in the future used to drop the post from the Hugo build; `buildFuture = true` keeps those posts in the output. Missing URLs on Cloudflare Pages fall through to the home page, which looks like the post “isn’t there.”
 
-**Images for og:image / build:** Featured, gallery, and body images under `/images/uploads/` are served from `static/images/uploads/`. Run `./scripts/sync-uploaded-images.sh` before `hugo` (or use the full build command above) so CMS uploads are available in the built site.
+**Images for og:image / build:** Posts with a Featured Image use that file for share previews. Home and other pages use `static/images/og-default.jpg`. Featured, gallery, and body images under `/images/uploads/` are served from `static/images/uploads/`. Run `./scripts/sync-uploaded-images.sh` before `hugo` (or use the full build command above) so CMS uploads are available on the live site.
 
 ## Analytics (Umami)
 
@@ -84,7 +86,7 @@ Self-hosted Umami: point `umami_script_url` at your instance’s `/script.js` an
 
 ## Comments
 
-Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (any depth) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/comments.html` and loads `static/js/comments.js`. **Reply** opens a form on that comment or any nested reply (name + reply text); **Leave a comment** at the bottom posts a new thread. Deleting a comment also deletes replies under it. The name and optional email are remembered in `localStorage` (`comment_author`, `comment_email`) and prefilled on every post. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
+Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (any depth) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/comments.html` and loads `static/js/comments.js`. **Reply** opens a form on that comment or any nested reply (name + reply text); **Leave a comment** at the bottom posts a new thread. Deleting a comment also deletes replies under it. The name and optional email are remembered in `localStorage` (`comment_author`, `comment_email`) and prefilled on every post. Email is optional; if someone leaves one, a reply to their comment is emailed to them via **Resend** (skipped when they reply to themselves, or when `RESEND_API_KEY` is unset). **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
 
 To enable comments:
 

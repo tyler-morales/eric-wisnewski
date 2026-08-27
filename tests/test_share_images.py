@@ -45,7 +45,6 @@ class ShareImageTemplateTests(unittest.TestCase):
         head = HEAD_PARTIAL.read_text(encoding="utf-8")
         share_block = head.split("og:type", 1)[-1]
         self.assertNotIn("favicon.svg", share_block)
-        self.assertNotIn('og:image" content="{{ "favicon.svg"', head)
 
 
 class ShareImageAssetTests(unittest.TestCase):
@@ -57,8 +56,7 @@ class ShareImageAssetTests(unittest.TestCase):
 
     def test_default_share_image_is_not_svg_failure(self) -> None:
         self.assertNotEqual(OG_DEFAULT.suffix.lower(), ".svg")
-        if OG_DEFAULT.is_file():
-            self.assertFalse(OG_DEFAULT.read_bytes().lstrip().startswith(b"<svg"))
+        self.assertFalse(OG_DEFAULT.read_bytes().lstrip().startswith(b"<svg"))
 
 
 def write_share_fixture(content_dir: Path) -> None:
@@ -100,6 +98,8 @@ class ShareImageBuildTests(unittest.TestCase):
         content_dir = root / "content"
         write_share_fixture(content_dir)
         dest = root / "public"
+        cache_dir = root / "cache"
+        cache_dir.mkdir()
         result = subprocess.run(
             [
                 "hugo",
@@ -107,6 +107,9 @@ class ShareImageBuildTests(unittest.TestCase):
                 str(dest),
                 "--contentDir",
                 str(content_dir),
+                "--cacheDir",
+                str(cache_dir),
+                "--noBuildLock",
                 "--quiet",
             ],
             cwd=REPO_ROOT,
@@ -134,8 +137,9 @@ class ShareImageBuildTests(unittest.TestCase):
 
     def test_section_without_featured_image_uses_default_success(self) -> None:
         html = (self.dest / "gradys-tour" / "index.html").read_text(encoding="utf-8")
-        og, _twitter = meta_images(html)
+        og, twitter = meta_images(html)
         self.assertIn("og-default.jpg", og)
+        self.assertIn("og-default.jpg", twitter)
         self.assertNotIn("favicon", og)
 
     def test_post_uses_featured_image_success(self) -> None:
@@ -152,8 +156,9 @@ class ShareImageBuildTests(unittest.TestCase):
         html = (self.dest / "posts" / "no-photo" / "index.html").read_text(
             encoding="utf-8"
         )
-        og, _twitter = meta_images(html)
+        og, twitter = meta_images(html)
         self.assertIn("og-default.jpg", og)
+        self.assertIn("og-default.jpg", twitter)
 
     def test_built_pages_never_share_svg_failure(self) -> None:
         for rel in (
@@ -164,6 +169,8 @@ class ShareImageBuildTests(unittest.TestCase):
         ):
             html = (self.dest / rel).read_text(encoding="utf-8")
             og, twitter = meta_images(html)
+            self.assertTrue(og, rel)
+            self.assertTrue(twitter, rel)
             self.assertFalse(og.lower().endswith(".svg"), rel)
             self.assertFalse(twitter.lower().endswith(".svg"), rel)
 

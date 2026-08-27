@@ -53,7 +53,7 @@ def call_js_fn(module: Path, fn_name: str, *args: object) -> object:
 
 def run_hugo(*, destination: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        ["hugo", "--destination", str(destination), "--quiet"],
+        ["hugo", "--destination", str(destination), "--quiet", "--noBuildLock"],
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
@@ -574,6 +574,7 @@ class NewsletterBuildTests(unittest.TestCase):
                     "--configDir",
                     str(cfg_root / "config"),
                     "--quiet",
+                    "--noBuildLock",
                 ],
                 cwd=REPO_ROOT,
                 capture_output=True,

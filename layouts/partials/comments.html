@@ -1,6 +1,7 @@
 <link rel="preconnect" href="https://challenges.cloudflare.com">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
-<section id="comments" class="comments-section" aria-label="Comments" data-turnstile-sitekey="{{ .Site.Params.turnstile_site_key }}" data-page-url="{{ .RelPermalink }}">
+<section id="comments" class="comments-section" aria-label="Comments"
+  data-turnstile-sitekey="{{ .Site.Params.turnstile_site_key }}" data-page-url="{{ .RelPermalink }}">
   <h2 class="comments-heading"><span class="comments-count" aria-live="polite">0</span> Comments</h2>
   <ol class="comments-list" role="list" tabindex="-1">
     <li class="comments-loading">Loading…</li>
@@ -8,16 +9,21 @@
   <p class="comments-error" role="alert" aria-live="polite" hidden></p>
   <form class="comments-form comments-form-main" aria-label="Leave a comment">
     <label for="comment-text">Leave a comment</label>
-    <textarea id="comment-text" name="text" required rows="3" maxlength="5000" placeholder="Write a comment…"></textarea>
+    <textarea id="comment-text" name="text" required rows="3" maxlength="5000"
+      placeholder="Write a comment…"></textarea>
     <p class="comments-identity-status" hidden>
       Commenting as <strong class="comments-identity-name"></strong>
-      <button type="button" class="comment-identity-change" aria-expanded="false" aria-controls="comments-identity-fields">Change</button>
+      <button type="button" class="comment-identity-change" aria-expanded="false"
+        aria-controls="comments-identity-fields">Change</button>
     </p>
     <div id="comments-identity-fields" class="comments-identity-fields">
       <label for="comment-author">Name</label>
-      <input id="comment-author" name="author" type="text" required autocomplete="name" maxlength="200" placeholder="Your name">
+      <input id="comment-author" name="author" type="text" required autocomplete="name" maxlength="200"
+        placeholder="Your name">
       <label for="comment-email">Email <span class="comments-optional">(optional)</span></label>
-      <input id="comment-email" name="email" type="email" autocomplete="email" placeholder="your@email.com">
+      <input id="comment-email" name="email" type="email" autocomplete="email" placeholder="you@example.com"
+        aria-describedby="comment-email-hint">
+      <p id="comment-email-hint" class="comments-email-hint">We'll email you if someone replies.</p>
     </div>
     <div id="comments-turnstile-container" class="comments-turnstile" role="group" aria-label="Verification"></div>
     <div class="comments-form-actions">
