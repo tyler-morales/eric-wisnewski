@@ -15,9 +15,9 @@ Posts have an `author` front matter field that references a slug under `content/
 
 **Grady’s Tour:** Travel posts live in `content/gradys-tour/` (CMS collection **Grady’s Tour**) and always publish at `/gradys-tour/<slug>/`. They also appear on the home page in chronological order with everyone else’s posts. Use **Posts** for Eric’s writing (`/posts/<slug>/`); do not put Grady’s travel posts there. `buildFuture = true` in `hugo.toml` so a CMS publish date that is a few minutes ahead of the Cloudflare build still goes live (otherwise Hugo omits the post and the URL falls through to the home page).
 
-In **Pages CMS**, use the **Authors** collection to edit bios/photos, and set **Author** on each post. Invite contributors by email in Pages CMS so they can sign in with a magic link and write posts (pick themselves as Author).
+In **Pages CMS**, use the **Authors** collection to edit bios/photos, and set **Author** on each post. Invite a new writer with the checklist and copy-paste email in [docs/invite-author.md](docs/invite-author.md): Collaborators invite, draft author stub, they write **draft** Posts. Nothing is public until you uncheck Draft.
 
-Placeholder bios/images can be replaced anytime by editing the author files in the CMS or in `content/authors/`.
+Placeholder bios/images can be replaced anytime by editing the author files in the CMS or in `content/authors/`. New Posts and new Authors default to `draft: true` in `.pages.yml` so Save does not publish.
 
 ## Add a new post (without the CMS)
 
