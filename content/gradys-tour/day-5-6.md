@@ -32,7 +32,11 @@ The fires 36 miles goes fast, our flattest of the trip. We sit for lunch and fue
 
 *Remnants of our lunch. We have begun gorging at lunch adding candy and soda to get extra fuel. It’s becoming disgusting.*
 
-The ride is tough. We’re taken off-road on bumpy hiking trail, having to lift our bikes over barriers. But as the miles creep into the 60s and 70s we agree to push to the ocean 93miles.
+The ride is tough. We’re taken off-road on bumpy hiking trail, having to lift our bikes over barriers. 
+
+![](/images/uploads/63dca1c2-3547-48a0-ba27-620268fa6c5f.jpeg)
+
+But as the miles creep into the 60s and 70s we agree to push to the ocean 93miles.
 
 ![](/images/uploads/64ff202a-6b5f-4447-91b9-00c9bbdc69f7.jpeg)
 
@@ -57,3 +61,7 @@ The next day we go for a 37 mile casual ride, stopping in a really bustling Fren
 ![](/images/uploads/IMG_1294.jpeg)
 
 Gilles the 80 year old manager, so excited to have Americans staying he runs out the next day to find us at a local coffee shop just to give us a great tip on a local island bridge you can only bike on at low tide. It’s full of locals harvesting, oysters and fishing.
+
+![](/images/uploads/7fc75d80-b576-4aeb-84e2-07a81f4b183a.jpeg)
+
+*Pornic, France. The route is starting to feel much more Mediterranean.*
