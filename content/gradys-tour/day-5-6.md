@@ -10,15 +10,13 @@ Aug 26, 26’
 
 Day 5 and 6: Mile 320
 
-Its dark and grey here, but we are motivated by the *hard, exhilarating pleasure of action.* 
+A jolly garbage man joins is as we run through T-Mos “mobility routine”. Its dark and grey here, but we are motivated by the *hard, exhilarating pleasure of action.* After a day off we go for our biggest day and it takes its toll. We leave Rennes at 9am headed to the coast.
 
 ![](/images/uploads/IMG_1245.jpeg)
 
-*T-mo recharging, the man is a machine*
+*Mile 50, T-mo feeling the heat.*
 
-
-
-After seeing how our €80 rooms each had a shower and balcony we quickly agreed to take a rest day in Renens. My tire was flat anyway and surpisingly everything  closes Sunday and most Monday even in a midsized city like this. The next morning rested and ready. We ran through T-Mos mobility routine, with a jolly local garbage man joining, then biked three hours straight along gravel Vilaine River trail. As we progressed Rennes suburban grey dissipated and opened into a spectacular byway. 
+We bike three hours straight along the gravel Vilaine River trail. As we pass Rennes suburban grey the trail opened into a spectacular byway. 
 
 ![](/images/uploads/4dc38324-a11a-4ed0-9121-ad4b12773a16.jpeg)
 
@@ -28,8 +26,34 @@ After seeing how our €80 rooms each had a shower and balcony we quickly agreed
 
 *The river is full of house boats, the look so relaxing*
 
+The fires 36 miles goes fast, our flattest of the trip. We sit for lunch and fueled and motivated.
 
+![](/images/uploads/c2b5e3c8-d805-4dbc-8238-d146f39d431f.jpeg)
 
-&nbsp;
+*Remnants of our lunch. We have begun gorging at lunch adding candy and soda to get extra fuel. It’s becoming disgusting.*
 
-&nbsp;
+The ride is tough. We’re taken off-road on bumpy hiking trail, having to lift our bikes over barriers. But as the miles creep into the 60s and 70s we agree to push to the ocean 93miles.
+
+![](/images/uploads/64ff202a-6b5f-4447-91b9-00c9bbdc69f7.jpeg)
+
+*A pitstop for a one v one with a young gentleman who challenged me after I asked to shoot around with his ball. Having found a worthy opponent, hes disappointed when I leave to continue the ride.*
+
+As we close into the coast are mile marker hits 90 this is by far the furthest stride I’ve done in my life. When we get to Saint Nazare, an industrial port city, we sit at 93 miles. Too close to 100 to stop.  After a lap up and down their oceanfront Trail, we are only at 98. We had to the industrial shipping yard where we are stopped at 99.865 as the drawbridge goes up, my knee feeling like it’s gonna explode and her body is at pure exhaustion. We have no choice but to laugh.
+
+![](/images/uploads/IMG_1256.jpeg)
+
+*We wait eagerly to finish the last .35 miles almost kealed over in pain.*
+
+![](/images/uploads/3bbeb652-8474-4c82-b406-5f0fe225f7e8.jpeg)
+
+*Saint Nazaire shipyard, with .35 to 100 miles.*
+
+When we finally make it, my stomach is too cramped to eat, and T-mo disappears into the ocean. 
+
+![](/images/uploads/IMG_1258.jpeg)
+
+The next day we go for a 37 mile casual ride, stopping in a really bustling French hill town by the sea. Our hotel manager is 80 years old and nothing has been renovated since 1960 in his amazing hotel. 
+
+![](/images/uploads/IMG_1294.jpeg)
+
+Gilles the 80 year old manager, so excited to have Americans staying he runs out the next day to find us at a local coffee shop just to give us a great tip on a local island bridge you can only bike on at low tide. It’s full of locals harvesting, oysters and fishing.
