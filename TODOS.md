@@ -4,6 +4,7 @@
 - [ ] Publish the Updates log when the site is ready: delete the `build:`/`cascade:` block in `content/updates/_index.md` and push. No other file holds the switch, and the suite passes in both states.
 
 ## Done
+- [x] Comment replies: Reply is a self-contained form on that comment (name + reply, not the bottom “Leave a comment” box). Name/email live in `localStorage` and prefill on every post; “Commenting as / Replying as … Change” when known. Deleted/consolidated: bounce-to-bottom-form for a missing name; clearing name after submit. Tests in `tests/test_comment_identity.py`.
 - [x] Updates log staged off the live site via one front matter block in `content/updates/_index.md`; the footer link now gates on `.Site.GetPage "/updates"` having a `.RelPermalink`, so it disappears and returns on its own. Rejected an environment config (`config/production/`) first: Hugo **replaces** the `[[cascade]]` array per environment rather than merging, which silently republished the `/authors/` index. `tests/test_updates.py` builds an unstaged copy of `content/` via `--contentDir` so the feature stays verified while hidden.
 - [x] Shared Pages Functions helpers in `lib/api.js` (`chore/dead-code-cleanup`). Deleted/consolidated: 4 copies of `jsonResponse`, 2 each of `newsletterFromHeader`, `sendResendEmail` and `LIST_LABELS`, the `publicOrigin`/`originFromRequest` pair, and the inline Turnstile fetch in `comments.js` — one definition each, net −53 lines. The module sits outside `functions/` because that directory is the router; verified with `npx wrangler pages functions build`. Guards in `tests/test_repo_hygiene.py` and `tests/test_comment_url_relocation.py`.
 - [x] `AGENTS.md` holds the [ponytail](https://github.com/DietrichGebert/ponytail) ruleset plus the project rules that used to sit in gitignored `.cursor/rules/`.
@@ -68,6 +69,7 @@
 - [x] Per-type newsletter: Eric’s blog and/or Grady’s Tour via D1 + Resend; double opt-in; `/api/subscribe` + `/api/newsletter`; migration `0004_newsletter.sql`; GitHub Action every 20m; `newsletter_enabled = true`. Tests in `tests/test_newsletter.py`.
 - [x] Newsletter signup UX: keep checked lists after Subscribe; tell people they are already subscribed; unsubscribe links open `/subscribe/manage/` to choose lists. Deleted/consolidated: subscribe intro copy; form reset that cleared Eric’s checkbox on Grady’s Tour.
 - [x] Newsletter hardening: invalid/expired confirm links no longer say “You’re confirmed”; tokens must be 48-hex; confirm emails are not faked when Resend is missing; spam hint on inbox copy.
+- [x] Author invite: [docs/invite-author.md](docs/invite-author.md) checklist + copy-paste email; Posts and Authors CMS `draft` default true so new writers stay unpublished until you undraft them. Live Eric/Grady author files set `draft: false`. Tests in `tests/test_author_invite.py`.
 
 ## Later
 - [x] Umami analytics: tracking script in `layouts/partials/head.html` (production only); `umami_script_url` + optional `umami_website_id` in hugo.toml; README setup steps. Fill in `umami_website_id` after creating the site in Umami Cloud.
@@ -77,6 +79,7 @@
 - [x] Grady’s Tour: nav tab next to Map (`/gradys-tour/`); lists tour posts; home lists every author’s posts newest first; starter guide `content/gradys-tour/how-to-use-this-blog.md`.
 - [x] Author pages: `/authors/<slug>/` shows photo, bio, then that author’s posts; author names on home, bylines, and bios link there. Home no longer excludes Grady. Deleted/consolidated: home `is-tour-post` filter; duplicated author GetPage lookups now `author-page.html` + `author-card.html`.
 - [x] Grady’s Tour missing post: CMS saved “Bike-less in Bayeux” (`content/gradys-tour/no-bikes.md`) with a publish date still in the future at deploy time, so Hugo omitted it and Cloudflare served the home page at `/gradys-tour/no-bikes/`. Enabled `buildFuture = true`; lowercased the slug; production-like tests now require every published tour markdown file on `/gradys-tour/`.
+- [ ] Per-author nav tabs (Grady’s Tour style) when a writer should not live only on the home-page Posts list. Until then, undraft their Posts and they show on home. Invite flow: [docs/invite-author.md](docs/invite-author.md).
 - [ ] Swap in real author bios and photos for Eric Wisnewski and Grady Davis (CMS Authors or `content/authors/`).
 - [ ] When shipping a reader-facing site change, add a short note under `content/updates/` (or Pages CMS **Site updates**) so `/updates/` stays current.
 - [x] Re-evaluate custom upload tool (e.g. upload-image.html + Cloudflare function) if CMS uploads are unreliable.

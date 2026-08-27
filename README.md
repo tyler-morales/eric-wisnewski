@@ -15,9 +15,9 @@ Posts have an `author` front matter field that references a slug under `content/
 
 **Grady’s Tour:** Travel posts live in `content/gradys-tour/` (CMS collection **Grady’s Tour**) and always publish at `/gradys-tour/<slug>/`. They also appear on the home page in chronological order with everyone else’s posts. Use **Posts** for Eric’s writing (`/posts/<slug>/`); do not put Grady’s travel posts there. `buildFuture = true` in `hugo.toml` so a CMS publish date that is a few minutes ahead of the Cloudflare build still goes live (otherwise Hugo omits the post and the URL falls through to the home page).
 
-In **Pages CMS**, use the **Authors** collection to edit bios/photos, and set **Author** on each post. Invite contributors by email in Pages CMS so they can sign in with a magic link and write posts (pick themselves as Author).
+In **Pages CMS**, use the **Authors** collection to edit bios/photos, and set **Author** on each post. Invite a new writer with the checklist and copy-paste email in [docs/invite-author.md](docs/invite-author.md): Collaborators invite, draft author stub, they write **draft** Posts. Nothing is public until you uncheck Draft.
 
-Placeholder bios/images can be replaced anytime by editing the author files in the CMS or in `content/authors/`.
+Placeholder bios/images can be replaced anytime by editing the author files in the CMS or in `content/authors/`. New Posts and new Authors default to `draft: true` in `.pages.yml` so Save does not publish.
 
 ## Add a new post (without the CMS)
 
@@ -81,7 +81,7 @@ Self-hosted Umami: point `umami_script_url` at your instance’s `/script.js` an
 
 ## Comments
 
-Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (one level) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/comments.html` and loads `static/js/comments.js`. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
+Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (one level) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/comments.html` and loads `static/js/comments.js`. **Reply** opens a form on that comment (name + reply text); **Leave a comment** at the bottom posts a new thread. The name and optional email are remembered in `localStorage` (`comment_author`, `comment_email`) and prefilled on every post. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
 
 To enable comments:
 

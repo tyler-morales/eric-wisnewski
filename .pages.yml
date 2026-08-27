@@ -17,7 +17,7 @@ content:
     exclude: [_index.md]
     view:
       primary: name
-      fields: [name, slug]
+      fields: [name, slug, draft]
       sort: [name]
       default:
         sort: name
@@ -32,6 +32,11 @@ content:
         type: string
         required: true
         description: URL-friendly id (e.g. eric-wisnewski). Must match the filename. Posts reference this value; the public page is /authors/<slug>/.
+      - name: draft
+        label: Draft
+        type: boolean
+        default: true
+        description: Leave on for new writers so /authors/<slug>/ stays off the live site. Uncheck when they should go public.
       - name: bio
         label: Bio
         type: text
@@ -96,7 +101,8 @@ content:
       - name: draft
         label: Draft
         type: boolean
-        default: false
+        default: true
+        description: New posts stay off the live site until you uncheck this. Leave on for new authors.
       - name: image
         label: Featured Image
         type: image

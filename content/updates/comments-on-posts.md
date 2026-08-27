@@ -8,4 +8,4 @@ summary: Every post now takes comments at the bottom, and you can reply to someo
 
 You can leave a comment at the bottom of any post, and reply underneath someone else’s.
 
-The name and email you type are used only for comments. If you change your mind, you can edit or delete what you wrote from the same browser.
+The name and email you type are used only for comments. Your browser remembers the name so you do not have to type it again to reply or comment on another post. If you change your mind, you can edit or delete what you wrote from the same browser.

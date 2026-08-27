@@ -1,4 +1,38 @@
-(function () {
+export var AUTHOR_KEY = 'comment_author';
+export var EMAIL_KEY = 'comment_email';
+
+export function readIdentity(storage) {
+  var author = '';
+  var email = '';
+  try {
+    if (storage) {
+      author = (storage.getItem(AUTHOR_KEY) || '').trim();
+      email = (storage.getItem(EMAIL_KEY) || '').trim();
+    }
+  } catch (_) {}
+  return { author: author, email: email };
+}
+
+export function writeIdentity(storage, author, email) {
+  try {
+    if (!storage) return;
+    var name = (author || '').trim();
+    if (name) storage.setItem(AUTHOR_KEY, name);
+    if (email != null) storage.setItem(EMAIL_KEY, String(email).trim());
+  } catch (_) {}
+}
+
+export function mergeIdentity(formAuthor, formEmail, stored) {
+  var fromStore = stored || { author: '', email: '' };
+  return {
+    author: (formAuthor || '').trim() || fromStore.author || '',
+    email: (formEmail || '').trim() || fromStore.email || ''
+  };
+}
+
+function initComments() {
+  if (typeof document === 'undefined') return;
+
   var section = document.getElementById('comments');
   if (!section) return;
 
@@ -9,10 +43,17 @@
 
   var siteKey = (section.dataset && section.dataset.turnstileSitekey) ? section.dataset.turnstileSitekey.trim() : '';
   var mainWidgetId = null;
+  var replyWidgetId = null;
 
   var STORAGE_KEY = 'comment_tokens';
-  var AUTHOR_KEY = 'comment_author';
-  var EMAIL_KEY = 'comment_email';
+
+  function identityStorage() {
+    try {
+      return localStorage;
+    } catch (_) {
+      return null;
+    }
+  }
 
   function normalizeUrl() {
     var fromPage = section.dataset && section.dataset.pageUrl;
@@ -103,23 +144,6 @@
     } catch (_) {}
   }
 
-  function saveAuthorEmail(author, email) {
-    try {
-      if (author) localStorage.setItem(AUTHOR_KEY, author);
-      if (email != null) localStorage.setItem(EMAIL_KEY, email);
-    } catch (_) {}
-  }
-
-  function getAuthorEmail() {
-    var author = null;
-    var email = null;
-    try {
-      author = localStorage.getItem(AUTHOR_KEY);
-      email = localStorage.getItem(EMAIL_KEY);
-    } catch (_) {}
-    return { author: author || '', email: email || '' };
-  }
-
   function getToken(id) {
     return getTokens()[String(id)];
   }
@@ -130,6 +154,57 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
     } catch (_) {}
+  }
+
+  function identityFromForm(form) {
+    var authorInput = form && form.querySelector('[name="author"]');
+    var emailInput = form && form.querySelector('[name="email"]');
+    return mergeIdentity(
+      authorInput && authorInput.value,
+      emailInput && emailInput.value,
+      readIdentity(identityStorage())
+    );
+  }
+
+  function fillIdentityFields(root, identity) {
+    if (!root || !identity) return;
+    var authorInputs = root.querySelectorAll('[name="author"]');
+    var emailInputs = root.querySelectorAll('[name="email"]');
+    var i;
+    for (i = 0; i < authorInputs.length; i++) {
+      if (identity.author) authorInputs[i].value = identity.author;
+    }
+    for (i = 0; i < emailInputs.length; i++) {
+      if (identity.email != null) emailInputs[i].value = identity.email;
+    }
+    var names = root.querySelectorAll('.comments-identity-name');
+    for (i = 0; i < names.length; i++) {
+      names[i].textContent = identity.author || '';
+    }
+  }
+
+  function setIdentityCollapsed(form, collapsed) {
+    if (!form) return;
+    var fields = form.querySelector('.comments-identity-fields');
+    var status = form.querySelector('.comments-identity-status');
+    var changeBtn = form.querySelector('.comment-identity-change');
+    var authorInput = form.querySelector('[name="author"]');
+    var identity = identityFromForm(form);
+    if (identity.author) fillIdentityFields(form, identity);
+    if (!fields) return;
+    var hideFields = !!(collapsed && identity.author);
+    fields.hidden = hideFields;
+    if (status) status.hidden = !identity.author;
+    if (authorInput) authorInput.required = !hideFields;
+    if (changeBtn) changeBtn.setAttribute('aria-expanded', hideFields ? 'false' : 'true');
+  }
+
+  function persistIdentityFromForm(form) {
+    var identity = identityFromForm(form);
+    if (!identity.author) return identity;
+    writeIdentity(identityStorage(), identity.author, identity.email);
+    fillIdentityFields(section, identity);
+    return identity;
   }
 
   function parseJson(r) {
@@ -163,9 +238,31 @@
     return { top: top, byParent: byParent };
   }
 
+  function destroyReplyTurnstile() {
+    if (replyWidgetId != null && typeof turnstile !== 'undefined') {
+      try {
+        turnstile.remove(replyWidgetId);
+      } catch (_) {}
+    }
+    replyWidgetId = null;
+  }
+
+  function mountReplyTurnstile(container) {
+    destroyReplyTurnstile();
+    if (!siteKey || typeof turnstile === 'undefined' || !container) return;
+    try {
+      replyWidgetId = turnstile.render(container, { sitekey: siteKey });
+    } catch (_) {}
+  }
+
   function closeOpenReplyForm() {
+    destroyReplyTurnstile();
     var open = section.querySelector('.comments-reply-form');
     if (open) open.remove();
+    var expanded = section.querySelectorAll('.comment-reply-btn[aria-expanded="true"]');
+    for (var i = 0; i < expanded.length; i++) {
+      expanded[i].setAttribute('aria-expanded', 'false');
+    }
   }
 
   function closeOpenEdit() {
@@ -182,18 +279,42 @@
     }
   }
 
+  function turnstileToken(widgetId) {
+    var hasWidget = siteKey && typeof turnstile !== 'undefined' && widgetId != null;
+    if (!hasWidget) return { hasWidget: false, token: '' };
+    var token = turnstile.getResponse(widgetId);
+    return { hasWidget: true, token: token || '' };
+  }
+
   function renderReplyForm(parentId, parentAuthor, onCancel) {
     closeOpenReplyForm();
     var form = document.createElement('form');
     form.className = 'comments-form comments-reply-form';
     form.setAttribute('aria-label', 'Reply to ' + parentAuthor);
     form.innerHTML =
+      '<p class="comments-reply-heading">Reply to ' + escapeHtml(parentAuthor) + '</p>' +
       '<label for="comment-reply-text">Reply</label>' +
       '<textarea id="comment-reply-text" name="text" required rows="2" maxlength="5000" placeholder="Write a reply…"></textarea>' +
+      '<p class="comments-identity-status" hidden>' +
+      'Replying as <strong class="comments-identity-name"></strong> ' +
+      '<button type="button" class="comment-identity-change" aria-expanded="false" aria-controls="comments-reply-identity-fields">Change</button>' +
+      '</p>' +
+      '<div id="comments-reply-identity-fields" class="comments-identity-fields">' +
+      '<label for="comment-reply-author">Name</label>' +
+      '<input id="comment-reply-author" name="author" type="text" required autocomplete="name" maxlength="200" placeholder="Your name">' +
+      '<label for="comment-reply-email">Email <span class="comments-optional">(optional)</span></label>' +
+      '<input id="comment-reply-email" name="email" type="email" autocomplete="email" placeholder="your@email.com">' +
+      '</div>' +
+      '<div class="comments-turnstile comments-reply-turnstile" role="group" aria-label="Verification"></div>' +
       '<div class="comments-form-actions">' +
       '<button type="button" class="comment-cancel">Cancel</button>' +
-      '<button type="submit">Post reply</button>' +
+      '<button type="submit">Reply</button>' +
       '</div>';
+
+    var known = identityFromForm(formEl);
+    fillIdentityFields(form, known);
+    setIdentityCollapsed(form, !!known.author);
+
     form.querySelector('.comment-cancel').addEventListener('click', function () {
       closeOpenReplyForm();
       if (onCancel) onCancel();
@@ -206,30 +327,27 @@
         showError('Please enter a reply.');
         return;
       }
-      var authorInput = formEl.querySelector('[name="author"]');
-      var emailInput = formEl.querySelector('[name="email"]');
-      var author = (authorInput && authorInput.value && authorInput.value.trim()) || '';
-      var email = (emailInput && emailInput.value && emailInput.value.trim()) || '';
-      if (!author) {
-        var stored = getAuthorEmail();
-        author = stored.author;
-        email = email || stored.email;
-      }
-      if (!author) {
-        showError('Enter your name in the form below, then reply.');
+      var identity = persistIdentityFromForm(form);
+      if (!identity.author) {
+        showError('Add your name to reply.');
+        setIdentityCollapsed(form, false);
+        var nameInput = form.querySelector('[name="author"]');
+        if (nameInput) nameInput.focus();
         return;
       }
-      var hasWidget = siteKey && typeof turnstile !== 'undefined' && mainWidgetId != null;
-      if (hasWidget) {
-        var token = turnstile.getResponse(mainWidgetId);
-        if (!token) {
-          showError('Please complete the verification in the form below.');
-          return;
-        }
+      var widget = turnstileToken(replyWidgetId != null ? replyWidgetId : mainWidgetId);
+      if (widget.hasWidget && !widget.token) {
+        showError('Please complete the verification.');
+        return;
       }
-      var payload = { url: normalizeUrl(), author: author.trim(), text: text.trim(), parent_id: parentId };
-      if (email) payload.email = email.trim();
-      if (hasWidget) payload.cf_turnstile_response = turnstile.getResponse(mainWidgetId);
+      var payload = {
+        url: normalizeUrl(),
+        author: identity.author,
+        text: text.trim(),
+        parent_id: parentId
+      };
+      if (identity.email) payload.email = identity.email;
+      if (widget.hasWidget) payload.cf_turnstile_response = widget.token;
       fetch('/api/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -243,8 +361,13 @@
         })
         .then(function (data) {
           if (data.edit_token) saveToken(data.id, data.edit_token);
-          saveAuthorEmail(author, email);
-          if (hasWidget && typeof turnstile !== 'undefined') turnstile.reset(mainWidgetId);
+          writeIdentity(identityStorage(), identity.author, identity.email);
+          fillIdentityFields(formEl, identity);
+          setIdentityCollapsed(formEl, true);
+          if (widget.hasWidget && typeof turnstile !== 'undefined') {
+            var resetId = replyWidgetId != null ? replyWidgetId : mainWidgetId;
+            turnstile.reset(resetId);
+          }
           closeOpenReplyForm();
           loadComments();
           listEl.focus();
@@ -306,18 +429,21 @@
       replyBtn.type = 'button';
       replyBtn.className = 'comment-action comment-reply-btn';
       replyBtn.textContent = 'Reply';
-      replyBtn.setAttribute('aria-label', 'Reply to ' + escapeHtml(c.author));
+      replyBtn.setAttribute('aria-label', 'Reply to ' + c.author);
+      replyBtn.setAttribute('aria-expanded', 'false');
       replyBtn.addEventListener('click', function () {
+        if (li.querySelector('.comments-reply-form')) {
+          closeOpenReplyForm();
+          return;
+        }
         closeOpenEdit();
-        var container = li.querySelector('.comment-replies') || (function () {
-          var div = document.createElement('div');
-          div.className = 'comment-replies';
-          li.appendChild(div);
-          return div;
-        })();
         var result = renderReplyForm(c.id, c.author, function () {});
-        container.insertBefore(result.form, container.firstChild);
-        var firstInput = result.form.querySelector('input, textarea');
+        content.appendChild(result.form);
+        mountReplyTurnstile(result.form.querySelector('.comments-reply-turnstile'));
+        replyBtn.setAttribute('aria-expanded', 'true');
+        var identity = identityFromForm(result.form);
+        var firstInput = (!identity.author && result.form.querySelector('[name="author"]'))
+          || result.form.querySelector('textarea');
         if (firstInput) firstInput.focus();
       });
       appendAction(replyBtn);
@@ -384,6 +510,12 @@
               });
             })
             .then(function () {
+              if (newAuthor) {
+                var stored = readIdentity(identityStorage());
+                writeIdentity(identityStorage(), newAuthor, stored.email);
+                fillIdentityFields(section, { author: newAuthor, email: stored.email });
+                setIdentityCollapsed(formEl, true);
+              }
               li.setAttribute('data-body', newText);
               bodyEl.textContent = newText;
               bodyEl.hidden = false;
@@ -486,29 +618,28 @@
   formEl.addEventListener('submit', function (e) {
     e.preventDefault();
     clearError();
-    var authorInput = formEl.querySelector('[name="author"]');
-    var emailInput = formEl.querySelector('[name="email"]');
     var textInput = formEl.querySelector('[name="text"]');
-    var author = authorInput && authorInput.value ? authorInput.value.trim() : '';
-    var email = emailInput && emailInput.value ? emailInput.value.trim() : '';
     var text = textInput && textInput.value ? textInput.value.trim() : '';
+    var identity = persistIdentityFromForm(formEl);
 
-    if (!author || !text) {
+    if (!identity.author || !text) {
       showError('Please fill in your name and comment.');
+      if (!identity.author) {
+        setIdentityCollapsed(formEl, false);
+        var nameInput = formEl.querySelector('[name="author"]');
+        if (nameInput) nameInput.focus();
+      }
       return;
     }
-    var hasWidget = siteKey && typeof turnstile !== 'undefined' && mainWidgetId != null;
-    if (hasWidget) {
-      var mainToken = turnstile.getResponse(mainWidgetId);
-      if (!mainToken) {
-        showError('Please complete the verification.');
-        return;
-      }
+    var widget = turnstileToken(mainWidgetId);
+    if (widget.hasWidget && !widget.token) {
+      showError('Please complete the verification.');
+      return;
     }
 
-    var payload = { url: normalizeUrl(), author: author, text: text };
-    if (email) payload.email = email;
-    if (hasWidget) payload.cf_turnstile_response = turnstile.getResponse(mainWidgetId);
+    var payload = { url: normalizeUrl(), author: identity.author, text: text };
+    if (identity.email) payload.email = identity.email;
+    if (widget.hasWidget) payload.cf_turnstile_response = widget.token;
 
     fetch('/api/comments', {
       method: 'POST',
@@ -523,11 +654,11 @@
       })
       .then(function (data) {
         if (data.edit_token) saveToken(data.id, data.edit_token);
-        saveAuthorEmail(author, email);
-        authorInput.value = '';
-        if (emailInput) emailInput.value = '';
+        writeIdentity(identityStorage(), identity.author, identity.email);
+        fillIdentityFields(formEl, identity);
+        setIdentityCollapsed(formEl, true);
         textInput.value = '';
-        if (hasWidget) turnstile.reset(mainWidgetId);
+        if (widget.hasWidget) turnstile.reset(mainWidgetId);
         loadComments();
         listEl.focus();
       })
@@ -535,6 +666,29 @@
         showError(err.message || 'Could not post comment.');
       });
   });
+
+  section.addEventListener('click', function (e) {
+    var btn = e.target.closest('.comment-identity-change');
+    if (!btn || !section.contains(btn)) return;
+    var form = btn.closest('form');
+    if (!form) return;
+    setIdentityCollapsed(form, false);
+    var nameInput = form.querySelector('[name="author"]');
+    if (nameInput) nameInput.focus();
+  });
+
+  section.addEventListener('change', function (e) {
+    var t = e.target;
+    if (!t || (t.name !== 'author' && t.name !== 'email')) return;
+    if (!section.contains(t)) return;
+    var form = t.closest('form');
+    if (!form) return;
+    persistIdentityFromForm(form);
+  });
+
+  var stored = readIdentity(identityStorage());
+  fillIdentityFields(formEl, stored);
+  setIdentityCollapsed(formEl, !!stored.author);
 
   try {
     if (siteKey && typeof turnstile !== 'undefined') {
@@ -548,4 +702,6 @@
   } catch (_) {}
 
   loadComments();
-})();
+}
+
+initComments();
