@@ -3,7 +3,7 @@ title: "Pushing to 100: Day 5-7"
 slug: Day-5-7
 author: grady-davis
 date: 2026-08-26T22:47:00Z
-draft: true
+draft: false
 image: /images/uploads/5838a5b4-eb9c-47a3-8b1f-24e7c83e35a6.jpeg
 ---
 Aug 26, 26’
@@ -28,9 +28,9 @@ The gravel Vilaine River trail from Rennes  opens into a spectacular byway.
 
 ![](/images/uploads/c2b5e3c8-d805-4dbc-8238-d146f39d431f.jpeg)
 
-*Remnants of our lunch. We’ve begun gorging at lunch adding candy and soda to get extra fuel. It’s getting disgusting.*
+*Remnants of our lunch. We’ve begun gorging, even adding candy and soda to get extra fuel. It’s getting disgusting.*
 
-The ride is tough at mile 50 its the longest I've done in my life. We’re taken off-road on bumpy hiking trail, having to lift our bikes over barriers. 
+The ride is tough and mile 50 makes it the longest I've done in my life. We’re taken off-road on bumpy hiking trail, having to lift our bikes over barriers. 
 
 ![](/images/uploads/63dca1c2-3547-48a0-ba27-620268fa6c5f.jpeg)
 
@@ -38,13 +38,13 @@ The ride is tough at mile 50 its the longest I've done in my life. We’re taken
 
 *Mile 50, T-mo feeling the heat.*
 
-As the miles creep into the 60s and 70s we agree to push to the ocean at 93miles.
+As the miles creep into the 60s and 70s we agree to push to the ocean (93miles).
 
 ![](/images/uploads/64ff202a-6b5f-4447-91b9-00c9bbdc69f7.jpeg)
 
-*A pitstop for a one v one with a young gentleman who challenged me after I asked to shoot around with his ball. Having found a worthy opponent, hes disappointed when I leave to continue the ride.*
+*A pitstop for a one v one with a young gentleman who challenged me after I asked to shoot around with his ball. Having found a worthy opponent, he’s disappointed when I leave to continue the ride.*
 
-Closing on our destination of Saint Nazare, an industrial port city, we sit at 93 miles. Too close to 100 to stop. We decide to bike in painful circles as our bodies ache. Our times slow and even as we lap the oceanfront trail, we are only at 98. We head to the shipyard to get to 100 but are stopped at 99.65 as the drawbridge goes up. My knee ready to explode and bodies exhausted, we have no choice but to laugh.
+Closing on our destination of Saint Nazare, an industrial port city, we sit at 93 miles. Too close to 100 to stop, we decide to bike in painful circles until we get to 100 even as our bodies ache. Our times slow and after we lap the oceanfront trail, we are only at 98 miles. We head to the shipyard to get to 100 but are stopped at 99.65 as the drawbridge goes up. My knee ready to explode and exhausted, we have no choice but to laugh.
 
 ![](/images/uploads/IMG_1256.jpeg)
 
@@ -74,12 +74,14 @@ Gilles is so excited to have us Americans staying he runs out the next day to fi
 
 ![](/images/uploads/3981bb51-5d49-4408-bddf-9647da90f264.jpeg)
 
+*We pass picture local fishing and oyster villages.*
+
 ![](/images/uploads/8ed7ec29-9b24-474c-abc3-909d09810a74.jpeg)
 
 *Eric, i’m working on getting you that spotted cow sponsorship.*
 
 ![](/images/uploads/b2bf6c66-af4c-4708-a026-058a2cc30981.jpeg)
 
-The next couple days we push another 87 miles and meet an American friend for dinner that we met in Rennes. This trip is turning into a blur but not in the bad way. A lot of time to think and keep moving, especially since you’re not allowed to wear headphones biking in France. No distractions. I thought we did three or four days of biking, but we are already at eight? Anyways my knee is starting to kill me, so maybe we will take tomorrow easy then relax in Rochelle for a day or two. 
+The next couple days we make it another 87 miles and meet an American friend for dinner that we met in Rennes. This trip is turning into a blur but not in the bad way. A lot of time to think and keep moving, especially since you’re not allowed to wear headphones biking in France. No distractions. I thought we did three or four days of biking, but are we really at eight? Anyways my knee is starting to kill me, so time to go to bed.
 
 -GD
