@@ -12,7 +12,7 @@ import {
   verifyTurnstile,
 } from '../../lib/api.js';
 
-const VALID_LISTS = ['posts', 'gradys-tour'];
+const VALID_LISTS = ['posts', 'gradys-tour', 'da-breakdown-w-tad'];
 const MAX_EMAIL = 320;
 const GENERIC_OK =
   "Check your inbox to confirm your subscription. If you don't see it, look in spam.";

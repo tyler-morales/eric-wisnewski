@@ -24,6 +24,12 @@
               <input type="checkbox" name="lists" value="gradys-tour">
               Grady’s Tour
             </label>
+            {{ if partial "has-da-breakdown-posts.html" . }}
+            <label class="subscribe-list-option">
+              <input type="checkbox" name="lists" value="da-breakdown-w-tad">
+              Da Breakdown w Tad
+            </label>
+            {{ end }}
           </fieldset>
           <div class="subscribe-form-actions">
             <button type="submit">Save preferences</button>

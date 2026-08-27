@@ -9,7 +9,7 @@ They write in Pages CMS right away. Nothing they create is public until you unch
 3. **Authors** → New: Name, Slug (`firstname-lastname`), a one-line placeholder bio, **Draft on**. Leave the slug alone after this. The stub is so they can pick themselves as Author on posts; `/authors/<slug>/` stays unpublished.
 4. Send the email below. Fill in `[NAME]` and the `/add-photos/` password. Do not send a live author URL yet — it 404s until you undraft them.
 
-They can edit every collection (Posts, Grady’s Tour, Authors, Site updates). That is trust, not a permission system. The email tells them to write in **Posts** only.
+They can edit every collection (Posts, Grady’s Tour, Da Breakdown w Tad, Authors, Site updates). That is trust, not a permission system. The email tells them to write in **Posts** only — unless they are Tad, who writes in **Da Breakdown w Tad**.
 
 ## Go live (later)
 
@@ -19,7 +19,7 @@ When you want them public (after any tab/UI work, or just on the main Posts list
 2. **Authors** → their profile → uncheck **Draft** → Save. Do this before any post, or bylines will not resolve.
 3. Uncheck **Draft** on the posts that should go live and Save — or tell them to do that.
 
-A dedicated nav tab per author (like Grady’s Tour) is separate work. Until then, undrafted Posts show on the home page.
+A dedicated nav tab per author (like Grady’s Tour) is separate work unless one already exists. Tad writes in **Da Breakdown w Tad**; the nav tab appears when his first post is undrafted and saved.
 
 ## Email (copy and paste)
 

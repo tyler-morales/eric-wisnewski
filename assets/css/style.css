@@ -179,7 +179,7 @@ main {
   list-style: none;
 }
 
-.updates-entry + .updates-entry {
+.updates-entry+.updates-entry {
   margin-top: 2rem;
 }
 
@@ -261,6 +261,7 @@ main {
 }
 
 .gradys-tour-empty,
+.section-empty,
 .author-empty {
   margin: 1.5rem 0;
   color: #333;
@@ -732,11 +733,23 @@ article.post-content hr {
 }
 
 #comments .comment-replies {
+  list-style: none;
   grid-column: 2;
   grid-row: 2;
   margin-top: 1rem;
+  margin-bottom: 0;
   border-left: 2px solid var(--border, #e5e5e5);
   padding-left: 0.75rem;
+}
+
+#comments .comment-replies .comment-item {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+
+/* ponytail: indent caps at four thread lines so a 70ch column stays readable; deeper replies keep → name instead of more inset. */
+#comments .comment-replies .comment-replies .comment-replies .comment-replies {
+  padding-left: 0.5rem;
 }
 
 #comments .comment-meta {

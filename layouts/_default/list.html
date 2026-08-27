@@ -6,7 +6,7 @@
     <ul class="post-list">
       {{ $sections := slice "posts" }}
       {{ if .IsHome }}
-        {{ $sections = slice "posts" "gradys-tour" }}
+        {{ $sections = slice "posts" "gradys-tour" "da-breakdown-w-tad" }}
       {{ end }}
       {{ range where .Site.RegularPages "Section" "in" $sections }}
         {{ partial "post-list-item.html" . }}

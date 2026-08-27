@@ -19,7 +19,7 @@ SUBSCRIBE_MANAGE_LAYOUT = REPO_ROOT / "layouts" / "_default" / "subscribe-manage
 SUBSCRIBE_MANAGE_CONTENT = REPO_ROOT / "content" / "subscribe" / "manage.md"
 SUBSCRIBE_INVALID_CONTENT = REPO_ROOT / "content" / "subscribe" / "invalid.md"
 LIST_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "list.html"
-TOUR_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "gradys-tour.html"
+TOUR_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "section-list.html"
 SINGLE_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "single.html"
 MAP_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "map.html"
 HUGO_TOML = REPO_ROOT / "config" / "_default" / "hugo.toml"
@@ -98,6 +98,20 @@ class NewsletterHelperTests(unittest.TestCase):
             call_js_fn(SUBSCRIBE_API, "normalizeLists", ["posts", "gradys-tour", "posts"]),
             ["posts", "gradys-tour"],
         )
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_API, "normalizeLists", ["da-breakdown-w-tad", "spam"]
+            ),
+            ["da-breakdown-w-tad"],
+        )
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "normalizeLists",
+                ["da-breakdown-w-tad", "posts"],
+            ),
+            ["da-breakdown-w-tad", "posts"],
+        )
 
     def test_normalize_lists_rejects_invalid_failure(self) -> None:
         self.assertEqual(call_js_fn(SUBSCRIBE_API, "normalizeLists", ["spam"]), [])
@@ -108,6 +122,10 @@ class NewsletterHelperTests(unittest.TestCase):
         self.assertEqual(call_js_fn(SUBSCRIBE_API, "listLabel", "posts"), "Eric's blog")
         self.assertEqual(
             call_js_fn(SUBSCRIBE_API, "listLabel", "gradys-tour"), "Grady's Tour"
+        )
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_API, "listLabel", "da-breakdown-w-tad"),
+            "Da Breakdown w Tad",
         )
 
     def test_list_label_unknown_failure(self) -> None:
@@ -169,7 +187,9 @@ class NewsletterHelperTests(unittest.TestCase):
 
     def test_valid_newsletter_lists_constant(self) -> None:
         lists = call_js_fn(SUBSCRIBE_API, "getValidLists")
-        self.assertEqual(sorted(lists), ["gradys-tour", "posts"])
+        self.assertEqual(
+            sorted(lists), ["da-breakdown-w-tad", "gradys-tour", "posts"]
+        )
 
     def test_already_subscribed_message_success(self) -> None:
         self.assertEqual(
@@ -432,6 +452,7 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn('type="email"', html)
         self.assertIn('value="posts"', html)
         self.assertIn('value="gradys-tour"', html)
+        self.assertIn('value="da-breakdown-w-tad"', html)
         self.assertIn("fieldset", html)
         self.assertIn("aria-live", html)
         self.assertIn("/js/subscribe.js", html)
@@ -456,6 +477,7 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn('id="subscribe-manage"', html)
         self.assertIn('value="posts"', html)
         self.assertIn('value="gradys-tour"', html)
+        self.assertIn('value="da-breakdown-w-tad"', html)
         self.assertIn("fieldset", html)
         self.assertIn("aria-live", html)
         self.assertIn("/js/subscribe.js", html)

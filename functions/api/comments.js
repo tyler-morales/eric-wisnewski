@@ -210,15 +210,12 @@ export async function onRequestPost(context) {
     const variants = commentUrlLookupVariants(url);
     const parent = await db
       .prepare(
-        `SELECT id, parent_id FROM comments WHERE id = ? AND url IN (${urlInPlaceholders(variants)})`
+        `SELECT id FROM comments WHERE id = ? AND url IN (${urlInPlaceholders(variants)})`
       )
       .bind(parentId, ...variants)
       .first();
     if (!parent) {
       return jsonResponse({ error: 'Parent comment not found' }, 400);
-    }
-    if (parent.parent_id != null) {
-      return jsonResponse({ error: 'Replies can only be to top-level comments' }, 400);
     }
   }
 
@@ -352,7 +349,7 @@ export async function onRequestDelete(context) {
   }
 
   const row = await db
-    .prepare('SELECT id, edit_token, parent_id FROM comments WHERE id = ?')
+    .prepare('SELECT id, edit_token FROM comments WHERE id = ?')
     .bind(id)
     .first();
   if (!row) return jsonResponse({ error: 'Comment not found' }, 404);
@@ -361,11 +358,19 @@ export async function onRequestDelete(context) {
   }
 
   try {
-    if (row.parent_id == null) {
-      await db.prepare('DELETE FROM comments WHERE id = ? OR parent_id = ?').bind(id, id).run();
-    } else {
-      await db.prepare('DELETE FROM comments WHERE id = ?').bind(id).run();
-    }
+    await db
+      .prepare(
+        `DELETE FROM comments WHERE id IN (
+           WITH RECURSIVE tree(id) AS (
+             SELECT id FROM comments WHERE id = ?
+             UNION ALL
+             SELECT c.id FROM comments c INNER JOIN tree t ON c.parent_id = t.id
+           )
+           SELECT id FROM tree
+         )`
+      )
+      .bind(id)
+      .run();
     return new Response(null, { status: 204 });
   } catch (e) {
     return jsonResponse({ error: 'Failed to delete comment' }, 500);

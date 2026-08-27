@@ -133,10 +133,11 @@ class GradyTourFolderConventionTests(unittest.TestCase):
         self.assertIn('"gradys-tour"', list_template)
 
     def test_tour_template_lists_section_pages_only(self) -> None:
-        tour_template = (REPO_ROOT / "layouts" / "_default" / "gradys-tour.html").read_text(
+        tour_template = (REPO_ROOT / "layouts" / "_default" / "section-list.html").read_text(
             encoding="utf-8"
         )
         self.assertIn(".RegularPages", tour_template)
+        self.assertIn("section-empty", tour_template)
         self.assertNotIn('Section" "posts"', tour_template)
 
     def test_hugo_publishes_future_dated_content(self) -> None:

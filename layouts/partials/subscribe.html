@@ -2,6 +2,8 @@
 {{ $default := "posts" }}
 {{ if or (eq .Section "gradys-tour") (eq .Layout "gradys-tour") (partial "is-tour-post.html" .) }}
   {{ $default = "gradys-tour" }}
+{{ else if eq .Section "da-breakdown-w-tad" }}
+  {{ $default = "da-breakdown-w-tad" }}
 {{ end }}
 <link rel="preconnect" href="https://challenges.cloudflare.com">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
@@ -44,6 +46,17 @@
         >
         Grady’s Tour
       </label>
+      {{ if partial "has-da-breakdown-posts.html" . }}
+      <label class="subscribe-list-option">
+        <input
+          type="checkbox"
+          name="lists"
+          value="da-breakdown-w-tad"
+          {{ if eq $default "da-breakdown-w-tad" }}checked{{ end }}
+        >
+        Da Breakdown w Tad
+      </label>
+      {{ end }}
     </fieldset>
     <div id="subscribe-turnstile-container" class="subscribe-turnstile" role="group" aria-label="Verification"></div>
     <div class="subscribe-form-actions">

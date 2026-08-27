@@ -1,0 +1,6 @@
+{{/*
+  True when Da Breakdown w Tad has at least one published post.
+  Nav tab and newsletter checkbox follow this so unchecking Draft on the first
+  post is what puts the section in the UI.
+*/}}
+{{- return gt (len (where .Site.RegularPages "Section" "da-breakdown-w-tad")) 0 -}}

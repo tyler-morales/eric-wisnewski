@@ -137,5 +137,58 @@ class CommentReplyUxTests(unittest.TestCase):
         self.assertEqual(result.stdout.strip(), "ok")
 
 
+class CommentNestedThreadTests(unittest.TestCase):
+    def test_build_thread_nests_reply_to_reply_success(self) -> None:
+        payload = call_identity(
+            "buildThread",
+            """
+const thread = buildThread([
+  { id: 1, parent_id: null, created_at: '2026-01-01T00:00:00Z', author: 'Brian' },
+  { id: 2, parent_id: 1, created_at: '2026-01-01T01:00:00Z', author: 'Grady' },
+  { id: 3, parent_id: 2, created_at: '2026-01-01T02:00:00Z', author: 'Jack' }
+]);
+console.log(JSON.stringify({
+  top: thread.top.map((c) => c.id),
+  under1: (thread.byParent[1] || []).map((c) => c.id),
+  under2: (thread.byParent[2] || []).map((c) => c.id)
+}));
+""",
+        )
+        self.assertEqual(payload["top"], [1])
+        self.assertEqual(payload["under1"], [2])
+        self.assertEqual(payload["under2"], [3])
+
+    def test_build_thread_keeps_orphans_out_of_top_failure(self) -> None:
+        payload = call_identity(
+            "buildThread",
+            """
+const thread = buildThread([
+  { id: 9, parent_id: 404, created_at: '2026-01-01T00:00:00Z', author: 'Lost' }
+]);
+console.log(JSON.stringify({
+  top: thread.top.map((c) => c.id),
+  under404: (thread.byParent[404] || []).map((c) => c.id)
+}));
+""",
+        )
+        self.assertEqual(payload["top"], [])
+        self.assertEqual(payload["under404"], [9])
+
+    def test_reply_is_offered_on_nested_comments_success(self) -> None:
+        js = COMMENTS_WIDGET.read_text(encoding="utf-8")
+        api = (REPO_ROOT / "functions" / "api" / "comments.js").read_text(encoding="utf-8")
+        self.assertIn("comment-reply-btn", js)
+        self.assertIn("renderComment(r, true, thread", js)
+        self.assertIn("WITH RECURSIVE tree(id)", api)
+        self.assertNotIn("if (!isReply)", js)
+        self.assertNotIn("Replies can only be to top-level comments", api)
+
+    def test_api_no_longer_blocks_reply_to_reply_failure(self) -> None:
+        api = (REPO_ROOT / "functions" / "api" / "comments.js").read_text(encoding="utf-8")
+        self.assertNotIn("Replies can only be to top-level comments", api)
+        self.assertNotIn("DELETE FROM comments WHERE id = ? OR parent_id = ?", api)
+        self.assertIn("Parent comment not found", api)
+
+
 if __name__ == "__main__":
     unittest.main()

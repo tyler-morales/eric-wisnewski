@@ -14,6 +14,11 @@ import {
 const LISTS = [
   { id: 'posts', feedPath: '/posts/index.xml', fromName: 'Eric Wisnewski' },
   { id: 'gradys-tour', feedPath: '/gradys-tour/index.xml', fromName: "Grady's Tour" },
+  {
+    id: 'da-breakdown-w-tad',
+    feedPath: '/da-breakdown-w-tad/index.xml',
+    fromName: 'Da Breakdown w Tad',
+  },
 ];
 
 export { newsletterFromHeader };
@@ -103,9 +108,8 @@ export function postEmailContent(listId, item, origin, unsubToken, postalAddress
 <hr>
 <p style="color:#666;font-size:12px;"><a href="${escapeAttr(links.manageUrl)}">Unsubscribe or manage email preferences</a></p>
 ${addressLine}`;
-  const text = `There's a new post on ${label}: ${item.title}\n\n${item.url}\n\nUnsubscribe or manage email preferences: ${links.manageUrl}${
-    postalAddress ? `\n\n${postalAddress}` : ''
-  }`;
+  const text = `There's a new post on ${label}: ${item.title}\n\n${item.url}\n\nUnsubscribe or manage email preferences: ${links.manageUrl}${postalAddress ? `\n\n${postalAddress}` : ''
+    }`;
   return { subject, html, text, unsubUrl: links.oneClickUrl };
 }
 

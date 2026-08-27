@@ -1,0 +1,19 @@
+{{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "header.html" . }}
+  <main id="main-content">
+    <h1 class="visually-hidden">{{ .Title }}</h1>
+    {{ $posts := .RegularPages }}
+    {{ if $posts }}
+    <ul class="post-list">
+    {{ range $posts }}
+      {{ partial "post-list-item.html" . }}
+    {{ end }}
+    </ul>
+    {{ else }}
+    <p class="section-empty">No posts yet. Check back soon.</p>
+    {{ end }}
+    {{ partial "subscribe.html" . }}
+  </main>
+{{ end }}

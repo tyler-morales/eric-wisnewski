@@ -11,9 +11,11 @@ This site is hosted on **Cloudflare Pages**. Set the build command to `./scripts
 
 ## Authors / contributors
 
-Posts have an `author` front matter field that references a slug under `content/authors/` (e.g. `eric-wisnewski`, `grady-davis`). Each author file has `name`, `slug`, `bio`, and optional `image`. The single-post page shows a byline and an author bio block under the post; the home list shows the author name. Clicking an author name goes to `/authors/<slug>/` (photo, bio, then that author’s posts). The home page lists **all** published posts from **Posts** and **Grady’s Tour**, newest first.
+Posts have an `author` front matter field that references a slug under `content/authors/` (e.g. `eric-wisnewski`, `grady-davis`, `tad`). Each author file has `name`, `slug`, `bio`, and optional `image`. The single-post page shows a byline and an author bio block under the post; the home list shows the author name. Clicking an author name goes to `/authors/<slug>/` (photo, bio, then that author’s posts). The home page lists **all** published posts from **Posts**, **Grady’s Tour**, and **Da Breakdown w Tad**, newest first.
 
 **Grady’s Tour:** Travel posts live in `content/gradys-tour/` (CMS collection **Grady’s Tour**) and always publish at `/gradys-tour/<slug>/`. They also appear on the home page in chronological order with everyone else’s posts. Use **Posts** for Eric’s writing (`/posts/<slug>/`); do not put Grady’s travel posts there. `buildFuture = true` in `hugo.toml` so a CMS publish date that is a few minutes ahead of the Cloudflare build still goes live (otherwise Hugo omits the post and the URL falls through to the home page).
+
+**Da Breakdown w Tad:** Tad’s posts live in `content/da-breakdown-w-tad/` (CMS collection **Da Breakdown w Tad**) at `/da-breakdown-w-tad/<slug>/`. The nav tab (next to Grady’s Tour) and the newsletter checkbox stay off until the first post in that folder is published (`draft: false`). Unchecking Draft in the CMS and saving rebuilds the site and puts the tab in the UI. New posts in this collection default to draft. The collection only appears in Pages CMS after `.pages.yml` is on the branch the CMS uses.
 
 In **Pages CMS**, use the **Authors** collection to edit bios/photos, and set **Author** on each post. Invite a new writer with the checklist and copy-paste email in [docs/invite-author.md](docs/invite-author.md): Collaborators invite, draft author stub, they write **draft** Posts. Nothing is public until you uncheck Draft.
 
@@ -21,7 +23,7 @@ Placeholder bios/images can be replaced anytime by editing the author files in t
 
 ## Add a new post (without the CMS)
 
-1. Create a new file under `content/posts/` (Eric / home page) or `content/gradys-tour/` (Grady’s travel posts), e.g. `content/posts/my-new-post.md`.
+1. Create a new file under `content/posts/` (Eric / home page), `content/gradys-tour/` (Grady’s travel posts), or `content/da-breakdown-w-tad/` (Tad’s posts), e.g. `content/posts/my-new-post.md`.
 2. Add front matter at the top (include `slug` to match the filename and `author`):
 
    ```yaml
@@ -42,7 +44,7 @@ Placeholder bios/images can be replaced anytime by editing the author files in t
 - **Where to put images:** Images under `/images/uploads/` are served from `static/images/uploads/`. The CMS writes to `assets/images/uploads/`; the build script `scripts/sync-uploaded-images.sh` copies them into `static/images/uploads/` before Hugo runs, so featured, gallery, and inline images work on the live site without manual copy.
 - **Gallery (several at once):** Posts have a `gallery` front matter list. In Pages CMS, **Gallery** is an image field with `options.multiple` so the author can pick several photos from Photos in one upload, then remove any they do not want. Hugo renders that list as a grid via `layouts/partials/post-gallery.html`. Do not set `multiple` on Featured Image (`image` must stay a single path).
 - **In post body (rich-text):** The post Body in Pages CMS is a rich-text (WYSIWYG) field. Use the editor toolbar or slash commands (`/`) to add **links** and **inline images**; “insert image” uses the same media library (`assets/images/uploads/`). Body content is stored as HTML and rendered by Hugo (Goldmark with raw HTML enabled). Inline body images are output as `<img>` tags; the responsive picture/WebP pipeline applies to images inserted via Markdown syntax in non-CMS workflows.
-- **Featured / share image:** Set the `image` field in the post’s front matter (e.g. in the CMS “Featured Image” or in the YAML as `image: /images/uploads/hero.jpg`). That URL is used for `og:image` and `twitter:image`; the file must exist in `static/images/uploads/`.
+- **Featured / share image:** Set the `image` field in the post’s front matter (e.g. in the CMS “Featured Image” or in the YAML as `image: /images/uploads/hero.jpg`). That URL is used for `og:image` and `twitter:image`; the file must exist in `static/images/uploads/`. Home, section lists, and posts without a featured image share `static/images/og-default.jpg` (JPEG, not the SVG favicon — Instagram and similar apps stretch SVG/emoji icons).
 ## Change the School Sheets or Map links
 
 Edit `config/_default/hugo.toml`. Under `[params]` you’ll see:
@@ -51,12 +53,13 @@ Edit `config/_default/hugo.toml`. Under `[params]` you’ll see:
 - `nav_school_sheets` — URL for the "School Sheets" / "List of College Stadiums" link in the main nav (default: `/school-sheets/`).
 - `nav_map` — URL for the "Map" link in the main nav (default: `/map/`)
 - `nav_gradys_tour` — URL for the "Grady's Tour" link in the main nav (default: `/gradys-tour/`)
+- `nav_da_breakdown_w_tad` — URL for the "Da Breakdown w Tad" link (default: `/da-breakdown-w-tad/`). The link is omitted until that section has a published post.
 
 Update these values and rebuild. Nav links are used in the site header; the CSV URL is read by Hugo's `resources.GetRemote` when building the School Sheets page.
 
 ## Editing content (Pages CMS)
 
-Content and media are edited via **Pages CMS**. Eric signs in with **email** (magic link sent to his inbox; invite him by email in the CMS if needed). Maintainers can use GitHub at [https://app.pagescms.org/](https://app.pagescms.org/); open this repository and branch, and use the configured collections (**Posts** for the home page, **Grady’s Tour** for travel posts, **Site updates** for the footer Updates log) and media (uploads). The post **Gallery** field accepts several photos at once; **Body** is a rich-text editor (format text, links, slash commands). Configuration lives in `.pages.yml` at the repo root.
+Content and media are edited via **Pages CMS**. Eric signs in with **email** (magic link sent to his inbox; invite him by email in the CMS if needed). Maintainers can use GitHub at [https://app.pagescms.org/](https://app.pagescms.org/); open this repository and branch, and use the configured collections (**Posts** for the home page, **Grady’s Tour** for travel posts, **Da Breakdown w Tad** for Tad’s posts, **Site updates** for the footer Updates log) and media (uploads). The post **Gallery** field accepts several photos at once; **Body** is a rich-text editor (format text, links, slash commands). Configuration lives in `.pages.yml` at the repo root.
 
 **If the Cloudflare build fails** with *"date front matter field is not a parsable date"*: Hugo requires a full RFC3339 date (with seconds and timezone). In the CMS, set **Publish Date** again and save so it writes e.g. `2026-02-26T10:25:00Z`. The `.pages.yml` date format is set to `yyyy-MM-dd'T'HH:mm:ss'Z'` for this.
 
@@ -81,7 +84,7 @@ Self-hosted Umami: point `umami_script_url` at your instance’s `/script.js` an
 
 ## Comments
 
-Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (one level) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/comments.html` and loads `static/js/comments.js`. **Reply** opens a form on that comment (name + reply text); **Leave a comment** at the bottom posts a new thread. The name and optional email are remembered in `localStorage` (`comment_author`, `comment_email`) and prefilled on every post. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
+Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (any depth) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/comments.html` and loads `static/js/comments.js`. **Reply** opens a form on that comment or any nested reply (name + reply text); **Leave a comment** at the bottom posts a new thread. Deleting a comment also deletes replies under it. The name and optional email are remembered in `localStorage` (`comment_author`, `comment_email`) and prefilled on every post. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
 
 To enable comments:
 
@@ -99,7 +102,7 @@ To enable comments:
 
 ## Newsletter (per-type email alerts)
 
-Subscribers can opt into **Eric’s blog** (`posts`), **Grady’s Tour** (`gradys-tour`), or both. Signups live in the same **Cloudflare D1** database as comments. Double opt-in and new-post emails go through **[Resend](https://resend.com)** via `/api/subscribe` and `/api/newsletter`. The form appears on the home page, Grady’s Tour list, and post pages when `newsletter_enabled = true` in `config/_default/hugo.toml`.
+Subscribers can opt into **Eric’s blog** (`posts`), **Grady’s Tour** (`gradys-tour`), **Da Breakdown w Tad** (`da-breakdown-w-tad`), or any mix. Signups live in the same **Cloudflare D1** database as comments. Double opt-in and new-post emails go through **[Resend](https://resend.com)** via `/api/subscribe` and `/api/newsletter`. The form appears on the home page, section lists, and post pages when `newsletter_enabled = true` in `config/_default/hugo.toml`. Tad’s checkbox stays hidden until the first Da Breakdown post is published.
 
 If someone submits an address that is already confirmed for the lists they checked, the form stays as they left it and tells them they are already subscribed (no extra confirmation email). Broken or expired confirm links go to `/subscribe/invalid/` instead of saying the person is confirmed. New-post emails include an **Unsubscribe or manage email preferences** link to `/subscribe/manage/?token=…`, where they can turn Eric’s blog and Grady’s Tour on or off. Mail-client one-click unsubscribe (`List-Unsubscribe`) still drops that list immediately.
 
@@ -116,7 +119,7 @@ If someone submits an address that is already confirmed for the lists they check
 
 **GitHub:** repo → Settings → Secrets → Actions → `NEWSLETTER_DISPATCH_SECRET` (same value as Cloudflare). The workflow `.github/workflows/newsletter-dispatch.yml` POSTs `/api/newsletter` every 20 minutes.
 
-**Go-live:** verify `ericwisnewski.com` in Resend, run migration `0004` on D1, set secrets above (including postal address), deploy. First dispatch run **seeds** existing RSS items without emailing; only new posts email after that. Feeds: `/posts/index.xml` and `/gradys-tour/index.xml` (not home `/index.xml`).
+**Go-live:** verify `ericwisnewski.com` in Resend, run migration `0004` on D1, set secrets above (including postal address), deploy. First dispatch run **seeds** existing RSS items without emailing; only new posts email after that. Feeds: `/posts/index.xml`, `/gradys-tour/index.xml`, and `/da-breakdown-w-tad/index.xml` (not home `/index.xml`).
 
 ## Add photos (`/add-photos/`)
 

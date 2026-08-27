@@ -5,7 +5,7 @@ title = 'Eric Wisnewski'
 # Pages CMS stores publish dates with a literal Z (UTC). Contributors often save a
 # local "now" that is still a few minutes in the future at deploy time; without this,
 # Hugo omits the post and Cloudflare serves the home page at its URL. Applies to all
-# sections (Eric's Posts and Grady's Tour) — intended for this CMS-edited site.
+# sections (Eric's Posts, Grady's Tour, Da Breakdown w Tad) — intended for this CMS-edited site.
 buildFuture = true
 
 [imaging]
@@ -22,6 +22,7 @@ buildFuture = true
 [permalinks]
   posts = '/posts/:slug/'
   gradys-tour = '/gradys-tour/:slug/'
+  da-breakdown-w-tad = '/da-breakdown-w-tad/:slug/'
   authors = '/authors/:slug/'
   updates = '/updates/:slug/'
 
@@ -34,6 +35,7 @@ buildFuture = true
   nav_school_sheets = '/school-sheets/'
   nav_map = '/map/'
   nav_gradys_tour = '/gradys-tour/'
+  nav_da_breakdown_w_tad = '/da-breakdown-w-tad/'
   # Link to open the map in Google Maps (optional; used for "View original" on /map/)
   map_viewer_url = 'https://www.google.com/maps/d/viewer?mid=1iRNx3DgEm5TJJmN1A4xM0uienUMFfqc'
   # Cloudflare Turnstile site key for comments (from Cloudflare Dashboard → Turnstile)
@@ -76,3 +78,10 @@ buildFuture = true
     author = 'grady-davis'
   [cascade.target]
     path = '{/gradys-tour,/gradys-tour/**}'
+
+# Da Breakdown posts always attribute to Tad even if CMS author is missing.
+[[cascade]]
+  [cascade.params]
+    author = 'tad'
+  [cascade.target]
+    path = '{/da-breakdown-w-tad,/da-breakdown-w-tad/**}'

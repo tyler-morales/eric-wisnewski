@@ -9,7 +9,7 @@ export function readIdentity(storage) {
       author = (storage.getItem(AUTHOR_KEY) || '').trim();
       email = (storage.getItem(EMAIL_KEY) || '').trim();
     }
-  } catch (_) {}
+  } catch (_) { }
   return { author: author, email: email };
 }
 
@@ -19,7 +19,7 @@ export function writeIdentity(storage, author, email) {
     var name = (author || '').trim();
     if (name) storage.setItem(AUTHOR_KEY, name);
     if (email != null) storage.setItem(EMAIL_KEY, String(email).trim());
-  } catch (_) {}
+  } catch (_) { }
 }
 
 export function mergeIdentity(formAuthor, formEmail, stored) {
@@ -28,6 +28,29 @@ export function mergeIdentity(formAuthor, formEmail, stored) {
     author: (formAuthor || '').trim() || fromStore.author || '',
     email: (formEmail || '').trim() || fromStore.email || ''
   };
+}
+
+export function buildThread(comments) {
+  var top = [];
+  var byParent = {};
+  (comments || []).forEach(function (c) {
+    var pid = c.parent_id;
+    if (pid == null) {
+      top.push(c);
+    } else {
+      if (!byParent[pid]) byParent[pid] = [];
+      byParent[pid].push(c);
+    }
+  });
+  top.sort(function (a, b) {
+    return new Date(a.created_at) - new Date(b.created_at);
+  });
+  Object.keys(byParent).forEach(function (pid) {
+    byParent[pid].sort(function (a, b) {
+      return new Date(a.created_at) - new Date(b.created_at);
+    });
+  });
+  return { top: top, byParent: byParent };
 }
 
 function initComments() {
@@ -141,7 +164,7 @@ function initComments() {
     tokens[String(id)] = token;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
-    } catch (_) {}
+    } catch (_) { }
   }
 
   function getToken(id) {
@@ -153,7 +176,7 @@ function initComments() {
     delete tokens[String(id)];
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
-    } catch (_) {}
+    } catch (_) { }
   }
 
   function identityFromForm(form) {
@@ -215,34 +238,11 @@ function initComments() {
     return r.json();
   }
 
-  function buildThread(comments) {
-    var top = [];
-    var byParent = {};
-    (comments || []).forEach(function (c) {
-      var pid = c.parent_id;
-      if (pid == null) {
-        top.push(c);
-      } else {
-        if (!byParent[pid]) byParent[pid] = [];
-        byParent[pid].push(c);
-      }
-    });
-    top.sort(function (a, b) {
-      return new Date(a.created_at) - new Date(b.created_at);
-    });
-    Object.keys(byParent).forEach(function (pid) {
-      byParent[pid].sort(function (a, b) {
-        return new Date(a.created_at) - new Date(b.created_at);
-      });
-    });
-    return { top: top, byParent: byParent };
-  }
-
   function destroyReplyTurnstile() {
     if (replyWidgetId != null && typeof turnstile !== 'undefined') {
       try {
         turnstile.remove(replyWidgetId);
-      } catch (_) {}
+      } catch (_) { }
     }
     replyWidgetId = null;
   }
@@ -252,7 +252,7 @@ function initComments() {
     if (!siteKey || typeof turnstile === 'undefined' || !container) return;
     try {
       replyWidgetId = turnstile.render(container, { sitekey: siteKey });
-    } catch (_) {}
+    } catch (_) { }
   }
 
   function closeOpenReplyForm() {
@@ -424,30 +424,29 @@ function initComments() {
       actions.appendChild(btn);
     }
 
-    if (!isReply) {
-      var replyBtn = document.createElement('button');
-      replyBtn.type = 'button';
-      replyBtn.className = 'comment-action comment-reply-btn';
-      replyBtn.textContent = 'Reply';
-      replyBtn.setAttribute('aria-label', 'Reply to ' + c.author);
-      replyBtn.setAttribute('aria-expanded', 'false');
-      replyBtn.addEventListener('click', function () {
-        if (li.querySelector('.comments-reply-form')) {
-          closeOpenReplyForm();
-          return;
-        }
-        closeOpenEdit();
-        var result = renderReplyForm(c.id, c.author, function () {});
-        content.appendChild(result.form);
-        mountReplyTurnstile(result.form.querySelector('.comments-reply-turnstile'));
-        replyBtn.setAttribute('aria-expanded', 'true');
-        var identity = identityFromForm(result.form);
-        var firstInput = (!identity.author && result.form.querySelector('[name="author"]'))
-          || result.form.querySelector('textarea');
-        if (firstInput) firstInput.focus();
-      });
-      appendAction(replyBtn);
-    }
+    var replyBtn = document.createElement('button');
+    replyBtn.type = 'button';
+    replyBtn.className = 'comment-action comment-reply-btn';
+    replyBtn.textContent = 'Reply';
+    replyBtn.setAttribute('aria-label', 'Reply to ' + c.author);
+    replyBtn.setAttribute('aria-expanded', 'false');
+    replyBtn.addEventListener('click', function () {
+      var openOnThis = content.querySelector(':scope > .comments-reply-form');
+      if (openOnThis) {
+        closeOpenReplyForm();
+        return;
+      }
+      closeOpenEdit();
+      var result = renderReplyForm(c.id, c.author, function () { });
+      content.appendChild(result.form);
+      mountReplyTurnstile(result.form.querySelector('.comments-reply-turnstile'));
+      replyBtn.setAttribute('aria-expanded', 'true');
+      var identity = identityFromForm(result.form);
+      var firstInput = (!identity.author && result.form.querySelector('[name="author"]'))
+        || result.form.querySelector('textarea');
+      if (firstInput) firstInput.focus();
+    });
+    appendAction(replyBtn);
     if (canEdit) {
       var editBtn = document.createElement('button');
       editBtn.type = 'button';
@@ -568,13 +567,14 @@ function initComments() {
     content.appendChild(actions);
     li.appendChild(content);
 
-    if (!isReply && thread && thread.byParent[c.id] && thread.byParent[c.id].length) {
-      var repliesDiv = document.createElement('div');
-      repliesDiv.className = 'comment-replies';
+    if (thread && thread.byParent[c.id] && thread.byParent[c.id].length) {
+      var repliesList = document.createElement('ul');
+      repliesList.className = 'comment-replies';
+      repliesList.setAttribute('aria-label', 'Replies to ' + c.author);
       thread.byParent[c.id].forEach(function (r) {
-        repliesDiv.appendChild(renderComment(r, true, null, c.author));
+        repliesList.appendChild(renderComment(r, true, thread, c.author));
       });
-      li.appendChild(repliesDiv);
+      li.appendChild(repliesList);
     }
 
     return li;
@@ -699,7 +699,7 @@ function initComments() {
         });
       }
     }
-  } catch (_) {}
+  } catch (_) { }
 
   loadComments();
 }

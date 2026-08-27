@@ -13,7 +13,7 @@ content:
     type: collection
     path: content/authors
     format: yaml-frontmatter
-    filename: "{{slug}}.md"
+    filename: "{fields.slug}.md"
     exclude: [_index.md]
     view:
       primary: name
@@ -84,7 +84,7 @@ content:
         label: Author
         type: reference
         required: true
-        description: Who wrote this post. Add people under Authors first. Grady's travel posts belong in the Grady's Tour collection, not here.
+        description: Who wrote this post. Add people under Authors first. Grady's travel posts belong in Grady's Tour; Tad's posts belong in Da Breakdown w Tad, not here.
         options:
           collection: authors
           search: "name,slug"
@@ -172,6 +172,76 @@ content:
         label: Draft
         type: boolean
         default: false
+      - name: image
+        label: Featured Image
+        type: image
+        required: false
+        description: Pick from the media library or upload via the CMS.
+        options:
+          extensions: [jpg, jpeg, png, webp, gif]
+      - name: gallery
+        label: Gallery
+        type: image
+        required: false
+        description: Upload several photos at once (Photos app or files), then remove any you do not want. They appear as a grid on the post. Prefer JPEG/PNG; huge originals can fail to save.
+        options:
+          multiple:
+            max: 12
+          unique: true
+          extensions: [jpg, jpeg, png, webp, gif]
+      - name: body
+        label: Body
+        type: rich-text
+
+  - name: da-breakdown-w-tad
+    label: Da Breakdown w Tad
+    type: collection
+    path: content/da-breakdown-w-tad
+    format: yaml-frontmatter
+    filename: "{fields.slug}.md"
+    exclude: [_index.md]
+    subfolders: false
+    view:
+      primary: title
+      fields: [title, author, date, draft]
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: slug
+        label: Slug
+        type: string
+        required: true
+        description: URL-friendly identifier (e.g. first-breakdown). Lowercase letters and hyphens only; this becomes the filename and /da-breakdown-w-tad/<slug>/ URL.
+      - name: author
+        label: Author
+        type: reference
+        required: true
+        default: tad
+        description: Who wrote this post. Posts in this folder also appear on the home page (latest first) and on this author's /authors/<slug>/ page.
+        options:
+          collection: authors
+          search: "name,slug"
+          value: "{fields.slug}"
+          label: "{fields.name}"
+      - name: date
+        label: Publish Date
+        type: date
+        required: true
+        description: Use a date/time that saves as ISO 8601 with seconds (e.g. 2026-02-26T10:25:00Z). Hugo requires RFC3339; missing seconds can cause "date front matter field is not a parsable date". The value is stored as UTC.
+        options:
+          time: true
+          format: "yyyy-MM-dd'T'HH:mm:ss'Z'"
+      - name: draft
+        label: Draft
+        type: boolean
+        default: true
+        description: New posts stay off the live site until you uncheck this.
       - name: image
         label: Featured Image
         type: image

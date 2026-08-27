@@ -18,14 +18,12 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ $headTitle }}">
 <meta name="twitter:description" content="{{ $headDescription }}">
-{{ with .Params.image }}
-  {{/* Use URL only to avoid "Failed to publish Resource: open public: is a directory" (asset resource can have empty publish path in some Hugo/env). Image must exist under static/images/uploads/ to be served. */}}
-  <meta property="og:image" content="{{ . | absURL }}">
-  <meta name="twitter:image" content="{{ . | absURL }}">
-{{ else }}
-  <meta property="og:image" content="{{ "favicon.svg" | absURL }}">
-  <meta name="twitter:image" content="{{ "favicon.svg" | absURL }}">
-{{ end }}
+{{ $ogImage := "images/og-default.jpg" }}
+{{ with .Params.image }}{{ $ogImage = . }}{{ end }}
+{{/* URL only — do not run the image through resources.Get (Cloudflare: "open public: is a directory"). */}}
+<meta property="og:image" content="{{ $ogImage | absURL }}">
+<meta property="og:image:alt" content="{{ $headTitle }}">
+<meta name="twitter:image" content="{{ $ogImage | absURL }}">
 {{ if eq .Params.robots "noindex" }}
 <meta name="robots" content="noindex, nofollow">
 {{ end }}
