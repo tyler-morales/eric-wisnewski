@@ -81,7 +81,7 @@ Self-hosted Umami: point `umami_script_url` at your instance’s `/script.js` an
 
 ## Comments
 
-Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (one level) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/comments.html` and loads `static/js/comments.js`. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
+Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). Threaded replies (one level) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/comments.html` and loads `static/js/comments.js`. **Reply** opens a form on that comment (name + reply text); **Leave a comment** at the bottom posts a new thread. The name and optional email are remembered in `localStorage` (`comment_author`, `comment_email`) and prefilled on every post. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
 
 To enable comments:
 

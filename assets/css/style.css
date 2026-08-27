@@ -953,9 +953,51 @@ article.post-content hr {
   outline-offset: 2px;
 }
 
+#comments .comments-identity-status {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+#comments .comments-identity-name {
+  font-weight: 600;
+}
+
+#comments .comment-identity-change {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin-left: 0.375rem;
+  font: inherit;
+  font-size: inherit;
+  color: var(--link, #2563eb);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+#comments .comment-identity-change:hover,
+#comments .comment-identity-change:focus-visible {
+  text-decoration: none;
+}
+
+#comments .comment-identity-change:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+#comments .comments-reply-heading {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
 /* Reply form */
 #comments .comments-reply-form {
   margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border, #e5e5e5);
+  border-radius: 0.375rem;
+  background: var(--bg);
 }
 
 #comments .comments-reply-form label {
