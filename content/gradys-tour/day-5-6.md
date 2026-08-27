@@ -4,7 +4,7 @@ slug: Day-5-7
 author: grady-davis
 date: 2026-08-26T22:47:00Z
 draft: false
-image: /images/uploads/5838a5b4-eb9c-47a3-8b1f-24e7c83e35a6.jpeg
+image: /images/uploads/IMG_1451-1.jpeg
 ---
 Aug 26, 26’
 
