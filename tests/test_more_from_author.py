@@ -1,7 +1,8 @@
-"""More from this author: chronological older/newer under the post."""
+"""More from this author: horizontal row of that writer's other posts."""
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import tempfile
@@ -13,6 +14,7 @@ SINGLE_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "single.html"
 AUTHOR_LAYOUT = REPO_ROOT / "layouts" / "authors" / "single.html"
 MORE_FROM_PARTIAL = REPO_ROOT / "layouts" / "partials" / "more-from-author.html"
 AUTHOR_POSTS_PARTIAL = REPO_ROOT / "layouts" / "partials" / "author-posts.html"
+MORE_FROM_JS = REPO_ROOT / "static" / "js" / "more-from.js"
 UPDATES_ENTRY_LAYOUT = REPO_ROOT / "layouts" / "updates" / "single.html"
 STYLE_CSS = REPO_ROOT / "assets" / "css" / "style.css"
 README = REPO_ROOT / "README.md"
@@ -22,27 +24,49 @@ MORE_FROM_RE = re.compile(
     r'<nav\b[^>]*class="[^"]*\bmore-from-author\b[^"]*"[^>]*>(.*?)</nav>',
     re.DOTALL | re.IGNORECASE,
 )
-OLDER_RE = re.compile(
-    r'<a\b(?=[^>]*\brel="prev")(?=[^>]*\bhref="([^"]+)")[^>]*>(.*?)</a>',
+CARD_RE = re.compile(
+    r'<a\b(?=[^>]*\bclass="[^"]*\bmore-from-card\b")([^>]*)>(.*?)</a>',
     re.DOTALL | re.IGNORECASE,
 )
-NEWER_RE = re.compile(
-    r'<a\b(?=[^>]*\brel="next")(?=[^>]*\bhref="([^"]+)")[^>]*>(.*?)</a>',
-    re.DOTALL | re.IGNORECASE,
-)
+TITLE_RE = re.compile(r'class="more-from-title"[^>]*>([^<]+)')
 HEADING_LINK_RE = re.compile(
     r'<h2\b[^>]*id="more-from-heading"[^>]*>.*?href="([^"]+)"[^>]*>([^<]+)</a>',
     re.DOTALL | re.IGNORECASE,
-)
-LIST_TITLE_RE = re.compile(
-    r'<ul[^>]*\bmore-from-list\b[^>]*>(.*?)</ul>',
-    re.DOTALL,
 )
 
 
 def more_from_html(html: str) -> str:
     match = MORE_FROM_RE.search(html)
     return match.group(1) if match else ""
+
+
+def card_href(attrs: str) -> str:
+    match = re.search(r'\bhref="([^"]+)"', attrs)
+    return match.group(1) if match else ""
+
+
+def card_rel(attrs: str) -> str:
+    match = re.search(r'\brel="([^"]+)"', attrs)
+    return match.group(1) if match else ""
+
+
+def call_more_from(fn_name: str, script_body: str) -> object:
+    if not MORE_FROM_JS.is_file():
+        raise FileNotFoundError(MORE_FROM_JS)
+    script = (
+        f"import {{ {fn_name} }} from {json.dumps(MORE_FROM_JS.as_uri())};\n"
+        + script_body
+    )
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr or result.stdout or "node failed")
+    return json.loads(result.stdout)
 
 
 def layout_files() -> list[Path]:
@@ -62,13 +86,22 @@ def write_author(path: Path, slug: str, name: str) -> None:
     )
 
 
-def write_post(path: Path, title: str, slug: str, author: str, date: str) -> None:
+def write_post(
+    path: Path,
+    title: str,
+    slug: str,
+    author: str,
+    date: str,
+    image: str = "",
+) -> None:
+    image_line = f"image: {image}\n" if image else ""
     path.write_text(
         "---\n"
         f"title: {title}\n"
         f"slug: {slug}\n"
         f"author: {author}\n"
         f"date: {date}\n"
+        f"{image_line}"
         "draft: false\n"
         "---\n"
         "Body\n",
@@ -90,22 +123,28 @@ class MoreFromTemplateTests(unittest.TestCase):
         self.assertGreater(comments_at, more_at)
         article_end = template.find("</article>")
         self.assertGreater(more_at, article_end)
+        self.assertIn('"/js/more-from.js"', template)
+        self.assertNotIn('" /js/more-from.js"', template)
 
     def test_more_from_partial_is_author_scoped_pager_success(self) -> None:
         self.assertTrue(MORE_FROM_PARTIAL.is_file())
         self.assertTrue(AUTHOR_POSTS_PARTIAL.is_file())
+        self.assertTrue(MORE_FROM_JS.is_file())
         partial = MORE_FROM_PARTIAL.read_text(encoding="utf-8")
         posts = AUTHOR_POSTS_PARTIAL.read_text(encoding="utf-8")
         self.assertIn("author-posts.html", partial)
         self.assertIn("author-page.html", partial)
-        self.assertIn("rel=\"prev\"", partial)
         self.assertIn("rel=\"next\"", partial)
-        self.assertIn("Older", partial)
-        self.assertIn("Newer", partial)
+        self.assertIn("Next", partial)
+        self.assertNotIn("Older", partial)
+        self.assertNotIn("Newer", partial)
         self.assertIn("More from", partial)
         self.assertIn("aria-labelledby", partial)
         self.assertIn("more-from-heading", partial)
+        self.assertIn("more-from-scroller", partial)
         self.assertIn("role=\"list\"", partial)
+        self.assertIn("Params.image", partial)
+        self.assertIn(".Date.Format", partial)
         self.assertIn('"posts"', posts)
         self.assertIn('"gradys-tour"', posts)
         self.assertIn('"da-breakdown-w-tad"', posts)
@@ -135,21 +174,31 @@ class MoreFromCssTests(unittest.TestCase):
     def test_more_from_is_sans_chrome_success(self) -> None:
         css = STYLE_CSS.read_text(encoding="utf-8")
         self.assertIn(".more-from-author", css)
-        self.assertIn(".more-from-older:focus-visible", css)
-        self.assertIn(".more-from-newer:focus-visible", css)
+        self.assertIn(".more-from-card:focus-visible", css)
         self.assertIn(".more-from-heading a:focus-visible", css)
+        self.assertIn(".more-from-image", css)
         block = first_block(css, ".more-from-author")
         self.assertIn("var(--font-sans)", block)
         self.assertIn("65ch", block)
+        scroller = first_block(css, ".more-from-scroller")
+        self.assertIn("overflow-x: auto", scroller)
+        self.assertIn("display: flex", scroller)
+        self.assertNotIn("1fr 1fr", scroller)
+        image = first_block(css, ".more-from-image")
+        self.assertIn("16 / 9", image)
 
-    def test_more_from_is_not_a_sidebar_failure(self) -> None:
+    def test_more_from_is_not_a_sidebar_or_vertical_list_failure(self) -> None:
         css = STYLE_CSS.read_text(encoding="utf-8")
         start = css.find(".more-from-author")
         self.assertGreater(start, -1)
-        chunk = css[start : start + 1800]
+        chunk = css[start : start + 2200]
         self.assertNotIn("position: fixed", chunk)
         self.assertNotIn("position: sticky", chunk)
         self.assertNotIn("position:fixed", chunk)
+        self.assertNotIn(".more-from-list", css)
+        self.assertNotIn(".more-from-older", css)
+        self.assertNotIn(".more-from-newer", css)
+        self.assertNotIn(".more-from-pager", css)
 
 
 class MoreFromBuildTests(unittest.TestCase):
@@ -172,6 +221,7 @@ class MoreFromBuildTests(unittest.TestCase):
             "first",
             "writer-a",
             "2026-01-01T00:00:00Z",
+            image="/images/uploads/first.jpg",
         )
         write_post(
             content_dir / "posts" / "middle.md",
@@ -186,6 +236,7 @@ class MoreFromBuildTests(unittest.TestCase):
             "last",
             "writer-a",
             "2026-01-03T00:00:00Z",
+            image="/images/uploads/last.jpg",
         )
         write_post(
             content_dir / "posts" / "extra.md",
@@ -193,6 +244,7 @@ class MoreFromBuildTests(unittest.TestCase):
             "extra",
             "writer-a",
             "2026-01-04T00:00:00Z",
+            image="/images/uploads/extra.jpg",
         )
         write_post(
             content_dir / "posts" / "other.md",
@@ -238,56 +290,61 @@ class MoreFromBuildTests(unittest.TestCase):
     def tearDownClass(cls) -> None:
         cls._tmp.cleanup()
 
-    def test_middle_post_pagers_to_immediate_neighbors_success(self) -> None:
+    def test_middle_post_lists_others_in_date_order_success(self) -> None:
         nav = more_from_html(self.middle)
         self.assertTrue(nav, "Middle post is missing the more-from nav")
-        older = OLDER_RE.search(nav)
-        newer = NEWER_RE.search(nav)
-        self.assertIsNotNone(older)
-        self.assertIsNotNone(newer)
-        assert older is not None
-        assert newer is not None
-        self.assertIn("/posts/first/", older.group(1))
-        self.assertIn("First Post", older.group(2))
-        self.assertIn("Older", older.group(2))
-        self.assertIn("/posts/last/", newer.group(1))
-        self.assertIn("Last Post", newer.group(2))
-        self.assertIn("Newer", newer.group(2))
+        self.assertIn("more-from-scroller", nav)
+        cards = CARD_RE.findall(nav)
+        titles = [TITLE_RE.search(body).group(1) for _attrs, body in cards]
+        self.assertEqual(titles, ["First Post", "Last Post", "Extra Post"])
+        hrefs = [card_href(attrs) for attrs, _body in cards]
+        rels = [card_rel(attrs) for attrs, _body in cards]
+        self.assertIn("/posts/first/", hrefs[0])
+        self.assertEqual(rels[0], "prev")
+        self.assertIn("January 1, 2026", cards[0][1])
+        self.assertIn("/images/uploads/first.jpg", cards[0][1])
+        self.assertIn('alt=""', cards[0][1])
+        self.assertIn("/posts/last/", hrefs[1])
+        self.assertEqual(rels[1], "next")
+        self.assertIn("Next", cards[1][1])
+        self.assertNotIn("January 3, 2026", cards[1][1])
+        self.assertIn("/images/uploads/last.jpg", cards[1][1])
+        self.assertIn("/posts/extra/", hrefs[2])
+        self.assertEqual(rels[2], "")
+        self.assertIn("January 4, 2026", cards[2][1])
+        self.assertNotIn("Older", nav)
+        self.assertNotIn("Newer", nav)
         heading = HEADING_LINK_RE.search(self.middle)
         self.assertIsNotNone(heading)
         assert heading is not None
         self.assertIn("/authors/writer-a/", heading.group(1))
         self.assertEqual(heading.group(2).strip(), "Writer A")
 
-    def test_first_post_has_newer_only_success(self) -> None:
+    def test_first_post_marks_the_following_post_next_success(self) -> None:
         nav = more_from_html(self.first)
         self.assertTrue(nav)
-        self.assertIsNone(OLDER_RE.search(nav))
-        newer = NEWER_RE.search(nav)
-        self.assertIsNotNone(newer)
-        assert newer is not None
-        self.assertIn("/posts/middle/", newer.group(1))
-        self.assertIn("Middle Post", newer.group(2))
+        cards = CARD_RE.findall(nav)
+        titles = [TITLE_RE.search(body).group(1) for _attrs, body in cards]
+        self.assertEqual(titles, ["Middle Post", "Last Post", "Extra Post"])
+        self.assertEqual(card_rel(cards[0][0]), "next")
+        self.assertIn("Next", cards[0][1])
+        self.assertNotIn("Older", nav)
 
-    def test_newest_post_has_older_only_success(self) -> None:
+    def test_newest_post_has_no_next_card_success(self) -> None:
         nav = more_from_html(self.extra)
         self.assertTrue(nav)
-        self.assertIsNone(NEWER_RE.search(nav))
-        older = OLDER_RE.search(nav)
-        self.assertIsNotNone(older)
-        assert older is not None
-        self.assertIn("/posts/last/", older.group(1))
-        self.assertIn("Last Post", older.group(2))
+        cards = CARD_RE.findall(nav)
+        titles = [TITLE_RE.search(body).group(1) for _attrs, body in cards]
+        self.assertEqual(titles, ["First Post", "Middle Post", "Last Post"])
+        self.assertNotIn("rel=\"next\"", nav)
+        self.assertNotIn(">Next<", nav)
+        self.assertEqual(card_rel(cards[-1][0]), "prev")
+        self.assertIn("Last Post", cards[-1][1])
 
-    def test_leftover_posts_are_listed_newest_first_success(self) -> None:
-        nav = more_from_html(self.first)
-        list_match = LIST_TITLE_RE.search(nav)
-        self.assertIsNotNone(list_match, "First post should list leftover posts")
-        assert list_match is not None
-        titles = re.findall(r'<a href="[^"]+">([^<]+)</a>', list_match.group(1))
-        self.assertEqual(titles, ["Extra Post", "Last Post"])
-        self.assertNotIn("First Post", list_match.group(1))
-        self.assertNotIn("Middle Post", list_match.group(1))
+    def test_current_post_is_omitted_failure(self) -> None:
+        nav = more_from_html(self.middle)
+        self.assertNotIn("Middle Post", nav)
+        self.assertNotIn("Older", nav)
 
     def test_other_authors_posts_are_excluded_failure(self) -> None:
         for html in (self.first, self.middle, self.last, self.extra):
@@ -302,13 +359,30 @@ class MoreFromBuildTests(unittest.TestCase):
         self.assertNotIn("First Post", self.other)
 
 
+class MoreFromScrollTests(unittest.TestCase):
+    def test_scroll_starts_at_next_card_success(self) -> None:
+        left = call_more_from(
+            "moreFromTargetScrollLeft",
+            "console.log(JSON.stringify(moreFromTargetScrollLeft(240, 40, 0, 500)));",
+        )
+        self.assertEqual(left, 200)
+
+    def test_last_post_scrolls_to_the_end_failure(self) -> None:
+        left = call_more_from(
+            "moreFromTargetScrollLeft",
+            "console.log(JSON.stringify(moreFromTargetScrollLeft(null, 0, 0, 480)));",
+        )
+        self.assertEqual(left, 480)
+
+
 class MoreFromDocsTests(unittest.TestCase):
     def test_readme_documents_more_from_author_success(self) -> None:
         readme = README.read_text(encoding="utf-8")
         lowered = readme.lower()
         self.assertIn("more from", lowered)
-        self.assertIn("older", lowered)
-        self.assertIn("newer", lowered)
+        self.assertIn("scroll", lowered)
+        self.assertIn("featured", lowered)
+        self.assertNotIn("older", lowered.split("more from", 1)[-1][:400])
 
 
 if __name__ == "__main__":

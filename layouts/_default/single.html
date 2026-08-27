@@ -26,5 +26,6 @@
     {{ partial "subscribe.html" . }}
     {{ partial "comments.html" . }}
     <script type="module" src="{{ "/js/share.js" | relURL }}?v={{ md5 (readFile "static/js/share.js") }}"></script>
+    <script type="module" src="{{ "/js/more-from.js" | relURL }}?v={{ md5 (readFile "static/js/more-from.js") }}"></script>
   </main>
 {{ end }}
