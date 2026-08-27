@@ -65,3 +65,15 @@ Gilles the 80 year old manager, so excited to have Americans staying he runs out
 ![](/images/uploads/7fc75d80-b576-4aeb-84e2-07a81f4b183a.jpeg)
 
 *Pornic, France. The route is starting to feel much more Mediterranean.*
+
+![](/images/uploads/IMG_1418.jpeg)
+
+![](/images/uploads/3981bb51-5d49-4408-bddf-9647da90f264.jpeg)
+
+![](/images/uploads/8ed7ec29-9b24-474c-abc3-909d09810a74.jpeg)
+
+![](/images/uploads/b2bf6c66-af4c-4708-a026-058a2cc30981.jpeg)
+
+The next couple days you push another 87 miles we meet an American friend for dinner that we met in Rennes. This trip is honestly turning into a blur but not in the bad way back I thought we did three or four days of biking, but we are already at eight? I left me starting to kill so maybe we will take tomorrow easy then relax in Rochelle for a day or two. One or two updates to come.
+
+-GD
