@@ -8,11 +8,11 @@ image: /images/uploads/5838a5b4-eb9c-47a3-8b1f-24e7c83e35a6.jpeg
 ---
 Aug 26, 26’
 
-Day 5 and 7: Mile 320
+Day 5 and 7: Mile 381
 
 ![](/images/uploads/IMG_1450.jpeg)
 
-A jolly garbage man joins is as we run through T-Mos “mobility routine”. Its dark and grey here, but we are motivated by the *hard, exhilarating pleasure of action.* After a day off we go for our biggest day and it takes its toll. We leave Rennes at 9am headed to the coast.
+A jolly garbage man joins us as we run through T-Mos “mobility routine”. Its dark and grey here, but we are motivated by the *hard, exhilarating pleasure of action.* After a day off we go for our biggest day and it takes its toll. We leave Rennes at 9am headed to the coast.
 
 ![](/images/uploads/IMG_1245.jpeg)
 
