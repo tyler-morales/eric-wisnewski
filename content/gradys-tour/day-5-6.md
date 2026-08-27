@@ -64,7 +64,7 @@ The next day we go for a 37 mile casual ride, stopping in a bustling French hill
 
 *Gilles the 80 year old manager.*
 
-Gilles is so excited to have us Americans staying he runs out the next day to find us at a local coffee shop just to give us a great tip on a local island bridge you can only bike on at low tide. It’s full of locals harvesting, oysters and fishing.
+Gilles is so excited to have us Americans staying he runs out the next day to find us at a local coffee shop just to give us a great tip on a local island bridge you can only bike on at low tide. It’s full of locals harvesting oysters and fishing.
 
 ![](/images/uploads/7fc75d80-b576-4aeb-84e2-07a81f4b183a.jpeg)
 
