@@ -216,6 +216,32 @@ console.log(JSON.stringify({
         self.assertNotIn("DELETE FROM comments WHERE id = ? OR parent_id = ?", api)
         self.assertIn("Parent comment not found", api)
 
+    def test_nested_replies_share_parent_width_success(self) -> None:
+        css = COMMENTS_CSS.read_text(encoding="utf-8")
+        start = css.find("#comments .comment-replies {")
+        self.assertNotEqual(start, -1)
+        first_list = css[start : css.find("}", start)]
+        self.assertIn("grid-column: 2", first_list)
+        self.assertIn(
+            "#comments .comment-replies .comment-replies {\n  grid-column: 1 / -1;\n}",
+            css,
+        )
+        mobile = css.split("@media (max-width: 768px)", 1)[-1]
+        flatten = mobile.split("#comments .comment-replies .comment-replies", 1)[1][:180]
+        self.assertIn("padding-left: 0", flatten)
+        self.assertIn("border-left: 0", flatten)
+
+    def test_replies_do_not_compound_avatar_columns_failure(self) -> None:
+        css = COMMENTS_CSS.read_text(encoding="utf-8")
+        reply_item = css[
+            css.find("#comments .comment-reply {") : css.find("}", css.find("#comments .comment-reply {"))
+        ]
+        self.assertNotIn("margin-left:", reply_item)
+        self.assertNotIn(
+            "#comments .comment-replies .comment-replies .comment-replies .comment-replies",
+            css,
+        )
+
 
 class CommentReplyEmailHintTests(unittest.TestCase):
     def test_email_field_explains_reply_notice_success(self) -> None:

@@ -706,6 +706,12 @@ article.post-content hr {
   #comments .comments-form-actions .comment-cancel {
     padding: 0.6rem 1rem;
   }
+
+  /* ponytail: phones keep one thread gutter; → name shows who a nested reply is to. */
+  #comments .comment-replies .comment-replies {
+    padding-left: 0;
+    border-left: 0;
+  }
 }
 
 /* Comments: same reading width as post content */
@@ -796,9 +802,15 @@ article.post-content hr {
   margin-bottom: 0;
 }
 
-/* ponytail: indent caps at four thread lines so a 70ch column stays readable; deeper replies keep → name instead of more inset. */
-#comments .comment-replies .comment-replies .comment-replies .comment-replies {
-  padding-left: 0.5rem;
+/* Nested lists stay the width of the parent reply; → name shows who they answer. */
+#comments .comment-replies .comment-replies {
+  grid-column: 1 / -1;
+}
+
+/* ponytail: desktop indent caps after two nested lists; deeper replies keep → name. */
+#comments .comment-replies .comment-replies .comment-replies {
+  padding-left: 0;
+  border-left: 0;
 }
 
 #comments .comment-meta {
@@ -862,9 +874,8 @@ article.post-content hr {
   outline-offset: 2px;
 }
 
-/* Reply items inside .comment-replies – indent to show sub-level */
+/* Reply items inside .comment-replies */
 #comments .comment-reply {
-  margin-left: 0.5rem;
   padding-bottom: 0.75rem;
   margin-bottom: 0.75rem;
 }
