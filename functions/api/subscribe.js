@@ -16,7 +16,7 @@ import {
 const VALID_LISTS = ['posts', 'gradys-tour', 'da-breakdown-w-tad'];
 const MAX_EMAIL = 320;
 const GENERIC_OK =
-  "Check your inbox to confirm your subscription. If you don't see it, look in spam.";
+  "Check your inbox for a confirmation link. You won't get posts until you click it. If you don't see it, look in spam.";
 const TOKEN_RE = /^[a-f0-9]{48}$/i;
 
 export { VALID_LISTS, listLabel, newsletterFromHeader, publicOrigin };
@@ -70,9 +70,13 @@ export function subscriptionStatusMessage(alreadyConfirmed, needingConfirm) {
     return `You're already subscribed to ${joinListLabels(confirmed)}.`;
   }
   if (confirmed.length && pending.length) {
-    return `You're already subscribed to ${joinListLabels(confirmed)}. Check your inbox to confirm ${joinListLabels(pending)}.`;
+    return `You're already subscribed to ${joinListLabels(confirmed)}. Check your inbox to confirm ${joinListLabels(pending)} — you won't get those emails until you click the link.`;
   }
   return GENERIC_OK;
+}
+
+export function signupNeedsConfirm(needingConfirm) {
+  return normalizeLists(needingConfirm).length > 0;
 }
 
 export function preferenceUpdatePlan(currentRows, requestedLists) {
@@ -174,11 +178,12 @@ function randomToken() {
   return [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-function confirmEmailBody(origin, token, lists) {
+export function confirmEmailBody(origin, token, lists) {
   const labels = lists.map(listLabel).filter(Boolean).join(' and ');
   const link = `${origin}/api/subscribe?confirm=${encodeURIComponent(token)}`;
-  const text = `Confirm your subscription to ${labels} on Eric Wisnewski.\n\n${link}\n\nIf you did not request this, ignore this email.`;
+  const text = `Confirm your subscription to ${labels} on Eric Wisnewski.\n\nYou won't get new-post emails until you click this link:\n\n${link}\n\nIf you did not request this, ignore this email.`;
   const html = `<p>Confirm your subscription to <strong>${labels}</strong> on Eric Wisnewski.</p>
+<p>You won't get new-post emails until you click this link:</p>
 <p><a href="${link}">Confirm subscription</a></p>
 <p>If you did not request this, ignore this email.</p>`;
   return { subject: `Confirm your subscription — ${labels}`, html, text };
@@ -371,6 +376,7 @@ export async function onRequestPost(context) {
 
     return jsonResponse({
       ok: true,
+      needsConfirm: signupNeedsConfirm(listsNeedingConfirm),
       message: subscriptionStatusMessage(alreadyConfirmed, listsNeedingConfirm),
     });
   } catch (e) {

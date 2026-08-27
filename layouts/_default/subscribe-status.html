@@ -1,13 +1,16 @@
 {{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
 
 {{ define "main" }}
-  {{ partial "header.html" . }}
-  <main>
-    <article class="post-content subscribe-status-page">
-      <header>
-        <h1>{{ .Title }}</h1>
-      </header>
-      {{ .Content }}
-    </article>
-  </main>
+{{ partial "header.html" . }}
+<main>
+  <article class="post-content subscribe-status-page">
+    <header>
+      <h1>{{ .Title }}</h1>
+    </header>
+    {{ .Content }}
+  </article>
+</main>
+{{ if in .RelPermalink "/subscribe/confirmed/" }}
+<script type="module" src="/js/subscribe.js"></script>
+{{ end }}
 {{ end }}

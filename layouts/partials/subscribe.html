@@ -1,59 +1,37 @@
 {{ if .Site.Params.newsletter_enabled }}
 {{ $default := "posts" }}
 {{ if or (eq .Section "gradys-tour") (eq .Layout "gradys-tour") (partial "is-tour-post.html" .) }}
-  {{ $default = "gradys-tour" }}
+{{ $default = "gradys-tour" }}
 {{ else if eq .Section "da-breakdown-w-tad" }}
-  {{ $default = "da-breakdown-w-tad" }}
+{{ $default = "da-breakdown-w-tad" }}
 {{ end }}
 <link rel="preconnect" href="https://challenges.cloudflare.com">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
-<section
-  id="subscribe"
-  class="subscribe-section"
-  aria-label="Email subscription"
-  data-turnstile-sitekey="{{ .Site.Params.turnstile_site_key }}"
-  data-default-list="{{ $default }}"
->
+<section id="subscribe" class="subscribe-section" aria-label="Email subscription"
+  data-turnstile-sitekey="{{ .Site.Params.turnstile_site_key }}" data-default-list="{{ $default }}">
   <h2 class="subscribe-heading">Get email when new posts go up</h2>
+  <ol class="subscribe-progress" aria-label="Subscription progress">
+    <li data-step="email" class="subscribe-progress-current" aria-current="step">Email</li>
+    <li data-step="confirm">Confirm</li>
+  </ol>
   <form class="subscribe-form" aria-label="Subscribe to email updates">
     <label for="subscribe-email">Email</label>
-    <input
-      id="subscribe-email"
-      name="email"
-      type="email"
-      required
-      autocomplete="email"
-      maxlength="320"
-      placeholder="you@example.com"
-    >
+    <input id="subscribe-email" name="email" type="email" required autocomplete="email" maxlength="320"
+      placeholder="you@example.com">
     <fieldset class="subscribe-lists">
       <legend>Notify me about</legend>
       <label class="subscribe-list-option">
-        <input
-          type="checkbox"
-          name="lists"
-          value="posts"
-          {{ if eq $default "posts" }}checked{{ end }}
-        >
+        <input type="checkbox" name="lists" value="posts" {{ if eq $default "posts" }}checked{{ end }}>
         Eric’s blog
       </label>
       <label class="subscribe-list-option">
-        <input
-          type="checkbox"
-          name="lists"
-          value="gradys-tour"
-          {{ if eq $default "gradys-tour" }}checked{{ end }}
-        >
+        <input type="checkbox" name="lists" value="gradys-tour" {{ if eq $default "gradys-tour" }}checked{{ end }}>
         Grady’s Tour
       </label>
       {{ if partial "has-da-breakdown-posts.html" . }}
       <label class="subscribe-list-option">
-        <input
-          type="checkbox"
-          name="lists"
-          value="da-breakdown-w-tad"
-          {{ if eq $default "da-breakdown-w-tad" }}checked{{ end }}
-        >
+        <input type="checkbox" name="lists" value="da-breakdown-w-tad" {{ if eq $default "da-breakdown-w-tad"
+          }}checked{{ end }}>
         Da Breakdown w Tad
       </label>
       {{ end }}
@@ -65,7 +43,11 @@
     <p class="subscribe-status" role="status" aria-live="polite" hidden></p>
     <p class="subscribe-error" role="alert" aria-live="polite" hidden></p>
   </form>
+  <div id="subscribe-confirm-next" class="subscribe-confirm-next" hidden tabindex="-1">
+    <p id="subscribe-confirm-copy" role="status" aria-live="polite"></p>
+    <button type="button" id="subscribe-confirm-back">Use a different email</button>
+  </div>
   <noscript>Please enable JavaScript to subscribe by email.</noscript>
 </section>
-<script src="{{ "/js/subscribe.js" | relURL }}" defer></script>
+<script type="module" src="/js/subscribe.js"></script>
 {{ end }}

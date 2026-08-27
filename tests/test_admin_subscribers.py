@@ -141,10 +141,10 @@ class AdminSubscriberSourceTests(unittest.TestCase):
         comments = COMMENTS_LAYOUT.read_text(encoding="utf-8")
         self.assertIn('partial "admin-nav.html"', comments)
         nav = ADMIN_NAV.read_text(encoding="utf-8")
-        self.assertIn('"admin/subscribers/"', nav)
-        self.assertIn('"admin/comments/"', nav)
-        self.assertNotIn('" admin/subscribers/"', nav)
-        self.assertNotIn('" admin/comments/"', nav)
+        self.assertIn('href="/admin/subscribers/"', nav)
+        self.assertIn('href="/admin/comments/"', nav)
+        self.assertNotIn("%20admin/", nav)
+        self.assertNotIn('" admin/', nav)
 
     def test_hidden_unlock_form_beats_flex_success(self) -> None:
         css = (REPO_ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")

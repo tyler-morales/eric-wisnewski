@@ -1,290 +1,413 @@
-(function () {
-  function selectedLists(formEl) {
-    var boxes = formEl.querySelectorAll('input[name="lists"]:checked');
-    var lists = [];
-    for (var i = 0; i < boxes.length; i++) {
-      lists.push(boxes[i].value);
-    }
-    return lists;
-  }
+export const PENDING_EMAIL_KEY = 'subscribe_pending_email';
 
-  function showStatus(statusEl, errorEl, msg) {
-    if (!statusEl) return;
-    statusEl.textContent = msg;
-    statusEl.hidden = false;
-    if (errorEl) {
-      errorEl.textContent = '';
-      errorEl.hidden = true;
-    }
-  }
+export function normalizePendingEmail(value) {
+  if (typeof value !== 'string') return '';
+  if (/[\r\n]/.test(value)) return '';
+  var email = value.trim().toLowerCase();
+  if (!email || email.length > 320 || email.indexOf('@') < 0) return '';
+  return email;
+}
 
-  function showError(statusEl, errorEl, msg) {
-    if (!errorEl) return;
-    errorEl.textContent = msg;
-    errorEl.hidden = false;
-    if (statusEl) {
-      statusEl.textContent = '';
-      statusEl.hidden = true;
-    }
+function browserStorage() {
+  try {
+    return window.localStorage;
+  } catch (_) {
+    return null;
   }
+}
 
-  function clearMessages(statusEl, errorEl) {
-    if (statusEl) {
-      statusEl.textContent = '';
-      statusEl.hidden = true;
-    }
-    if (errorEl) {
-      errorEl.textContent = '';
-      errorEl.hidden = true;
-    }
+export function readPendingEmail(store) {
+  if (!store || typeof store.getItem !== 'function') return '';
+  try {
+    return normalizePendingEmail(store.getItem(PENDING_EMAIL_KEY) || '');
+  } catch (_) {
+    return '';
   }
+}
 
-  function applyLists(formEl, lists) {
-    var wanted = {};
-    var i;
-    for (i = 0; i < (lists || []).length; i++) {
-      wanted[lists[i]] = true;
-    }
-    var boxes = formEl.querySelectorAll('input[name="lists"]');
-    for (i = 0; i < boxes.length; i++) {
-      boxes[i].checked = !!wanted[boxes[i].value];
-    }
+export function writePendingEmail(store, email) {
+  var value = normalizePendingEmail(email);
+  if (!store || typeof store.setItem !== 'function' || !value) return;
+  try {
+    store.setItem(PENDING_EMAIL_KEY, value);
+  } catch (_) { }
+}
+
+export function clearPendingEmail(store) {
+  if (!store || typeof store.removeItem !== 'function') return;
+  try {
+    store.removeItem(PENDING_EMAIL_KEY);
+  } catch (_) { }
+}
+
+function selectedLists(formEl) {
+  var boxes = formEl.querySelectorAll('input[name="lists"]:checked');
+  var lists = [];
+  for (var i = 0; i < boxes.length; i++) {
+    lists.push(boxes[i].value);
   }
+  return lists;
+}
 
-  function parseJsonResponse(res) {
-    return res.text().then(function (text) {
-      var data = {};
-      if (text) {
-        try {
-          data = JSON.parse(text);
-        } catch (_) {
-          data = {};
-        }
+function showStatus(statusEl, errorEl, msg) {
+  if (!statusEl) return;
+  statusEl.textContent = msg;
+  statusEl.hidden = false;
+  if (errorEl) {
+    errorEl.textContent = '';
+    errorEl.hidden = true;
+  }
+}
+
+function showError(statusEl, errorEl, msg) {
+  if (!errorEl) return;
+  errorEl.textContent = msg;
+  errorEl.hidden = false;
+  if (statusEl) {
+    statusEl.textContent = '';
+    statusEl.hidden = true;
+  }
+}
+
+function clearMessages(statusEl, errorEl) {
+  if (statusEl) {
+    statusEl.textContent = '';
+    statusEl.hidden = true;
+  }
+  if (errorEl) {
+    errorEl.textContent = '';
+    errorEl.hidden = true;
+  }
+}
+
+function applyLists(formEl, lists) {
+  var wanted = {};
+  var i;
+  for (i = 0; i < (lists || []).length; i++) {
+    wanted[lists[i]] = true;
+  }
+  var boxes = formEl.querySelectorAll('input[name="lists"]');
+  for (i = 0; i < boxes.length; i++) {
+    boxes[i].checked = !!wanted[boxes[i].value];
+  }
+}
+
+function parseJsonResponse(res) {
+  return res.text().then(function (text) {
+    var data = {};
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch (_) {
+        data = {};
       }
-      return { ok: res.ok, status: res.status, data: data };
+    }
+    return { ok: res.ok, status: res.status, data: data };
+  });
+}
+
+function initSignup() {
+  var section = document.getElementById('subscribe');
+  if (!section) return;
+
+  var formEl = section.querySelector('.subscribe-form');
+  var statusEl = section.querySelector('.subscribe-status');
+  var errorEl = section.querySelector('.subscribe-error');
+  var headingEl = section.querySelector('.subscribe-heading');
+  var nextEl = document.getElementById('subscribe-confirm-next');
+  var nextCopyEl = document.getElementById('subscribe-confirm-copy');
+  var nextBackEl = document.getElementById('subscribe-confirm-back');
+  if (!formEl) return;
+
+  var defaultHeading = headingEl ? headingEl.textContent : '';
+
+  var siteKey = (section.dataset && section.dataset.turnstileSitekey)
+    ? section.dataset.turnstileSitekey.trim()
+    : '';
+  var widgetId = null;
+
+  function renderTurnstile() {
+    var container = document.getElementById('subscribe-turnstile-container');
+    if (!container || !siteKey || typeof turnstile === 'undefined') return;
+    try {
+      if (widgetId != null) {
+        turnstile.remove(widgetId);
+      }
+      widgetId = turnstile.render(container, {
+        sitekey: siteKey,
+        theme: 'light'
+      });
+    } catch (_) {
+      widgetId = null;
+    }
+  }
+
+  function getTurnstileToken() {
+    if (widgetId == null || typeof turnstile === 'undefined') return '';
+    try {
+      return turnstile.getResponse(widgetId) || '';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  function resetTurnstile() {
+    if (widgetId == null || typeof turnstile === 'undefined') return;
+    try {
+      turnstile.reset(widgetId);
+    } catch (_) { }
+  }
+
+  function setProgress(step) {
+    var items = section.querySelectorAll('.subscribe-progress [data-step]');
+    var i;
+    for (i = 0; i < items.length; i++) {
+      var el = items[i];
+      var name = el.getAttribute('data-step');
+      el.classList.remove('subscribe-progress-done', 'subscribe-progress-current');
+      el.removeAttribute('aria-current');
+      if (step === 'confirm') {
+        if (name === 'email') el.classList.add('subscribe-progress-done');
+        if (name === 'confirm') {
+          el.classList.add('subscribe-progress-current');
+          el.setAttribute('aria-current', 'step');
+        }
+      } else if (name === 'email') {
+        el.classList.add('subscribe-progress-current');
+        el.setAttribute('aria-current', 'step');
+      }
+    }
+  }
+
+  function confirmNextCopy(email) {
+    return (
+      'We sent a link to ' +
+      email +
+      '. Open that email and click Confirm. You will not get posts until you do. If you don\'t see it, check spam.'
+    );
+  }
+
+  function showConfirmNext(email, silent) {
+    if (!nextEl || !nextCopyEl) {
+      showStatus(statusEl, errorEl, confirmNextCopy(email));
+      return;
+    }
+    formEl.hidden = true;
+    nextCopyEl.textContent = confirmNextCopy(email);
+    nextEl.hidden = false;
+    setProgress('confirm');
+    if (headingEl) headingEl.textContent = 'Check your email';
+    if (!silent) nextEl.focus();
+  }
+
+  function showSignupForm() {
+    clearPendingEmail(browserStorage());
+    if (nextEl) nextEl.hidden = true;
+    formEl.hidden = false;
+    setProgress('email');
+    if (headingEl && defaultHeading) headingEl.textContent = defaultHeading;
+    var emailInput = formEl.querySelector('#subscribe-email');
+    if (emailInput) emailInput.focus();
+  }
+
+  if (nextBackEl) {
+    nextBackEl.addEventListener('click', function () {
+      showSignupForm();
+      resetTurnstile();
     });
   }
 
-  function initSignup() {
-    var section = document.getElementById('subscribe');
-    if (!section) return;
+  try {
+    if (typeof turnstile !== 'undefined' && turnstile.ready) {
+      turnstile.ready(renderTurnstile);
+    } else {
+      window.addEventListener('load', function () {
+        setTimeout(renderTurnstile, 100);
+      });
+    }
+  } catch (_) { }
 
-    var formEl = section.querySelector('.subscribe-form');
-    var statusEl = section.querySelector('.subscribe-status');
-    var errorEl = section.querySelector('.subscribe-error');
-    if (!formEl) return;
+  formEl.addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearMessages(statusEl, errorEl);
 
-    var siteKey = (section.dataset && section.dataset.turnstileSitekey)
-      ? section.dataset.turnstileSitekey.trim()
-      : '';
-    var widgetId = null;
+    var emailInput = formEl.querySelector('#subscribe-email');
+    var email = emailInput ? emailInput.value.trim() : '';
+    var lists = selectedLists(formEl);
 
-    function renderTurnstile() {
-      var container = document.getElementById('subscribe-turnstile-container');
-      if (!container || !siteKey || typeof turnstile === 'undefined') return;
-      try {
-        if (widgetId != null) {
-          turnstile.remove(widgetId);
-        }
-        widgetId = turnstile.render(container, {
-          sitekey: siteKey,
-          theme: 'light'
-        });
-      } catch (_) {
-        widgetId = null;
-      }
+    if (!email) {
+      showError(statusEl, errorEl, 'Enter your email address.');
+      if (emailInput) emailInput.focus();
+      return;
+    }
+    if (!lists.length) {
+      showError(statusEl, errorEl, 'Select at least one list.');
+      return;
     }
 
-    function getTurnstileToken() {
-      if (widgetId == null || typeof turnstile === 'undefined') return '';
-      try {
-        return turnstile.getResponse(widgetId) || '';
-      } catch (_) {
-        return '';
-      }
+    var token = getTurnstileToken();
+    var turnstilePresent = !!document.getElementById('subscribe-turnstile-container') &&
+      !!siteKey &&
+      typeof turnstile !== 'undefined' &&
+      widgetId != null;
+    if (turnstilePresent && !token) {
+      showError(statusEl, errorEl, 'Complete the verification checkbox.');
+      return;
     }
 
-    function resetTurnstile() {
-      if (widgetId == null || typeof turnstile === 'undefined') return;
-      try {
-        turnstile.reset(widgetId);
-      } catch (_) {}
-    }
+    var submitBtn = formEl.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
 
-    try {
-      if (typeof turnstile !== 'undefined' && turnstile.ready) {
-        turnstile.ready(renderTurnstile);
-      } else {
-        window.addEventListener('load', function () {
-          setTimeout(renderTurnstile, 100);
-        });
-      }
-    } catch (_) {}
-
-    formEl.addEventListener('submit', function (e) {
-      e.preventDefault();
-      clearMessages(statusEl, errorEl);
-
-      var emailInput = formEl.querySelector('#subscribe-email');
-      var email = emailInput ? emailInput.value.trim() : '';
-      var lists = selectedLists(formEl);
-
-      if (!email) {
-        showError(statusEl, errorEl, 'Enter your email address.');
-        if (emailInput) emailInput.focus();
-        return;
-      }
-      if (!lists.length) {
-        showError(statusEl, errorEl, 'Select at least one list.');
-        return;
-      }
-
-      var token = getTurnstileToken();
-      var turnstilePresent = !!document.getElementById('subscribe-turnstile-container') &&
-        !!siteKey &&
-        typeof turnstile !== 'undefined' &&
-        widgetId != null;
-      if (turnstilePresent && !token) {
-        showError(statusEl, errorEl, 'Complete the verification checkbox.');
-        return;
-      }
-
-      var submitBtn = formEl.querySelector('button[type="submit"]');
-      if (submitBtn) submitBtn.disabled = true;
-
-      fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email,
-          lists: lists,
-          cf_turnstile_response: token
-        })
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        lists: lists,
+        cf_turnstile_response: token
       })
-        .then(parseJsonResponse)
-        .then(function (result) {
-          if (!result.ok) {
-            showError(statusEl, errorEl, (result.data && result.data.error) || 'Could not subscribe. Try again.');
-            resetTurnstile();
-            return;
-          }
+    })
+      .then(parseJsonResponse)
+      .then(function (result) {
+        if (!result.ok) {
+          showError(statusEl, errorEl, (result.data && result.data.error) || 'Could not subscribe. Try again.');
+          resetTurnstile();
+          return;
+        }
+        if (result.data && result.data.needsConfirm) {
+          writePendingEmail(browserStorage(), email);
+          showConfirmNext(email);
+        } else {
+          clearPendingEmail(browserStorage());
           showStatus(
             statusEl,
             errorEl,
             (result.data && result.data.message) || 'Check your inbox to confirm.'
           );
-          resetTurnstile();
-        })
-        .catch(function () {
-          showError(statusEl, errorEl, 'Could not reach the server. Try again.');
-          resetTurnstile();
-        })
-        .finally(function () {
-          if (submitBtn) submitBtn.disabled = false;
-        });
-    });
+        }
+        resetTurnstile();
+      })
+      .catch(function () {
+        showError(statusEl, errorEl, 'Could not reach the server. Try again.');
+        resetTurnstile();
+      })
+      .finally(function () {
+        if (submitBtn) submitBtn.disabled = false;
+      });
+  });
+
+  var pending = readPendingEmail(browserStorage());
+  if (pending) showConfirmNext(pending, true);
+}
+
+function initConfirmed() {
+  if (typeof location === 'undefined') return;
+  if (!/\/subscribe\/confirmed\/?$/.test(location.pathname || '')) return;
+  clearPendingEmail(browserStorage());
+}
+
+function initManage() {
+  var section = document.getElementById('subscribe-manage');
+  if (!section) return;
+
+  var formEl = section.querySelector('.subscribe-form');
+  var statusEl = section.querySelector('.subscribe-status');
+  var errorEl = section.querySelector('.subscribe-error');
+  var emailEl = document.getElementById('subscribe-manage-email');
+  if (!formEl) return;
+
+  var params = new URLSearchParams(window.location.search);
+  var token = (params.get('token') || '').trim();
+  if (!token) {
+    formEl.hidden = true;
+    showError(
+      statusEl,
+      errorEl,
+      'This preferences link is missing or invalid. Use the unsubscribe link from your email.'
+    );
+    if (errorEl) errorEl.focus();
+    return;
   }
 
-  function initManage() {
-    var section = document.getElementById('subscribe-manage');
-    if (!section) return;
+  showStatus(statusEl, errorEl, 'Loading your preferences…');
+  var controls = formEl.querySelectorAll('input, button');
+  var i;
+  for (i = 0; i < controls.length; i++) {
+    controls[i].disabled = true;
+  }
 
-    var formEl = section.querySelector('.subscribe-form');
-    var statusEl = section.querySelector('.subscribe-status');
-    var errorEl = section.querySelector('.subscribe-error');
-    var emailEl = document.getElementById('subscribe-manage-email');
-    if (!formEl) return;
-
-    var params = new URLSearchParams(window.location.search);
-    var token = (params.get('token') || '').trim();
-    if (!token) {
+  fetch('/api/subscribe?preferences=' + encodeURIComponent(token))
+    .then(parseJsonResponse)
+    .then(function (result) {
+      if (!result.ok) {
+        formEl.hidden = true;
+        showError(
+          statusEl,
+          errorEl,
+          (result.data && result.data.error) || 'Invalid or expired link.'
+        );
+        if (errorEl) errorEl.focus();
+        return;
+      }
+      applyLists(formEl, result.data && result.data.lists);
+      if (emailEl && result.data && result.data.email) {
+        emailEl.textContent = 'Updating preferences for ' + result.data.email;
+        emailEl.hidden = false;
+      }
+      clearMessages(statusEl, errorEl);
+      for (i = 0; i < controls.length; i++) {
+        controls[i].disabled = false;
+      }
+    })
+    .catch(function () {
       formEl.hidden = true;
-      showError(
-        statusEl,
-        errorEl,
-        'This preferences link is missing or invalid. Use the unsubscribe link from your email.'
-      );
+      showError(statusEl, errorEl, 'Could not reach the server. Try again.');
       if (errorEl) errorEl.focus();
-      return;
-    }
+    });
 
-    showStatus(statusEl, errorEl, 'Loading your preferences…');
-    var controls = formEl.querySelectorAll('input, button');
-    var i;
-    for (i = 0; i < controls.length; i++) {
-      controls[i].disabled = true;
-    }
+  formEl.addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearMessages(statusEl, errorEl);
 
-    fetch('/api/subscribe?preferences=' + encodeURIComponent(token))
+    var lists = selectedLists(formEl);
+    var submitBtn = formEl.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
+
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token, lists: lists })
+    })
       .then(parseJsonResponse)
       .then(function (result) {
         if (!result.ok) {
-          formEl.hidden = true;
           showError(
             statusEl,
             errorEl,
-            (result.data && result.data.error) || 'Invalid or expired link.'
+            (result.data && result.data.error) || 'Could not save preferences. Try again.'
           );
-          if (errorEl) errorEl.focus();
           return;
         }
-        applyLists(formEl, result.data && result.data.lists);
-        if (emailEl && result.data && result.data.email) {
-          emailEl.textContent = 'Updating preferences for ' + result.data.email;
-          emailEl.hidden = false;
+        if (result.data && result.data.lists) {
+          applyLists(formEl, result.data.lists);
         }
-        clearMessages(statusEl, errorEl);
-        for (i = 0; i < controls.length; i++) {
-          controls[i].disabled = false;
-        }
+        showStatus(
+          statusEl,
+          errorEl,
+          (result.data && result.data.message) || 'Preferences saved.'
+        );
       })
       .catch(function () {
-        formEl.hidden = true;
         showError(statusEl, errorEl, 'Could not reach the server. Try again.');
-        if (errorEl) errorEl.focus();
-      });
-
-    formEl.addEventListener('submit', function (e) {
-      e.preventDefault();
-      clearMessages(statusEl, errorEl);
-
-      var lists = selectedLists(formEl);
-      var submitBtn = formEl.querySelector('button[type="submit"]');
-      if (submitBtn) submitBtn.disabled = true;
-
-      fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: token, lists: lists })
       })
-        .then(parseJsonResponse)
-        .then(function (result) {
-          if (!result.ok) {
-            showError(
-              statusEl,
-              errorEl,
-              (result.data && result.data.error) || 'Could not save preferences. Try again.'
-            );
-            return;
-          }
-          if (result.data && result.data.lists) {
-            applyLists(formEl, result.data.lists);
-          }
-          showStatus(
-            statusEl,
-            errorEl,
-            (result.data && result.data.message) || 'Preferences saved.'
-          );
-        })
-        .catch(function () {
-          showError(statusEl, errorEl, 'Could not reach the server. Try again.');
-        })
-        .finally(function () {
-          if (submitBtn) submitBtn.disabled = false;
-        });
-    });
-  }
+      .finally(function () {
+        if (submitBtn) submitBtn.disabled = false;
+      });
+  });
+}
 
+if (typeof document !== 'undefined') {
   initSignup();
   initManage();
-})();
+  initConfirmed();
+}
