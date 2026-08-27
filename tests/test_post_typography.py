@@ -48,6 +48,10 @@ class PostTypographyCssTests(unittest.TestCase):
             "p:has(> img:only-child)+p:has(> em:only-child)",
             self.css,
         )
+        self.assertIn(
+            "p:has(> img:only-child)+p:has(> i:only-child)",
+            self.css,
+        )
 
     def test_captions_are_not_body_copy_failure(self) -> None:
         grouped = first_block(self.css, "article.post-content figcaption")
@@ -64,7 +68,7 @@ class PostTypographyCssTests(unittest.TestCase):
         self.assertIn(".post-gallery", mobile)
 
     def test_mobile_does_not_stack_image_gaps_failure(self) -> None:
-        self.assertNotIn("article.post-content img {\n    margin: 1.25rem 0;", self.css)
+        self.assertNotIn("article.post-content img {", self.css)
         mobile = self.css.split("@media (max-width: 768px)", 1)[-1]
         self.assertNotIn("font-size: 112.5%", mobile)
         self.assertNotIn("margin-bottom: 1.35em", mobile)

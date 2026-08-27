@@ -568,7 +568,8 @@ article.post-content p:has(> img:only-child) img {
 
 /* Captions: CMS italic line after a photo, or <figcaption> */
 article.post-content figcaption,
-article.post-content p:has(> img:only-child)+p:has(> em:only-child) {
+article.post-content p:has(> img:only-child)+p:has(> em:only-child),
+article.post-content p:has(> img:only-child)+p:has(> i:only-child) {
   font-family: var(--font-sans);
   font-size: 0.8125rem;
   line-height: 1.45;
@@ -580,7 +581,8 @@ article.post-content figcaption {
   margin-bottom: 0;
 }
 
-article.post-content p:has(> img:only-child)+p:has(> em:only-child) {
+article.post-content p:has(> img:only-child)+p:has(> em:only-child),
+article.post-content p:has(> img:only-child)+p:has(> i:only-child) {
   margin-top: 0.4em;
   margin-bottom: 1.1em;
 }
@@ -591,8 +593,6 @@ article.post-content pre {
   padding: 0.75em 1em;
   background: #f5f5f5;
   border-radius: 0.25rem;
-  font-family: var(--font-sans);
-  font-size: 0.9em;
 }
 
 article.post-content hr {
