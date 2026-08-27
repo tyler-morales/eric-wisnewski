@@ -1,0 +1,204 @@
+{{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<header class="site-header site-header-minimal" role="banner">
+  <h1 class="brand-name"><a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a></h1>
+  <nav class="site-nav" aria-label="Back to home">
+    <a href="{{ .Site.BaseURL }}">Home</a>
+  </nav>
+</header>
+<main class="admin-comments-main">
+  <h2 class="admin-comments-title">{{ .Title }}</h2>
+  {{ partial "admin-nav.html" . }}
+  <div class="admin-comments-guide">
+    {{ .Content }}
+  </div>
+
+  <div id="admin-secret-form" class="admin-secret-form" aria-label="Unlock subscriber list">
+    <label for="admin-secret-input">Password</label>
+    <input id="admin-secret-input" type="password" autocomplete="off" placeholder="Password Tyler gave you">
+    <button type="button" id="admin-secret-submit">Unlock</button>
+    <p id="admin-secret-error" class="admin-error" role="alert" aria-live="polite" hidden></p>
+  </div>
+
+  <div id="admin-content" class="admin-content" hidden>
+    <p id="admin-loading" class="admin-loading" aria-live="polite">Loading subscribers…</p>
+    <p id="admin-summary" class="admin-subscriber-summary" hidden></p>
+    <div id="admin-list" class="admin-list" role="region" aria-label="Subscribers by email"></div>
+    <p id="admin-list-error" class="admin-error" role="alert" aria-live="polite" hidden></p>
+  </div>
+
+  <script>
+    (function () {
+      var STORAGE_KEY = 'comments_admin_secret';
+      var secretForm = document.getElementById('admin-secret-form');
+      var secretInput = document.getElementById('admin-secret-input');
+      var secretSubmit = document.getElementById('admin-secret-submit');
+      var secretError = document.getElementById('admin-secret-error');
+      var adminContent = document.getElementById('admin-content');
+      var adminLoading = document.getElementById('admin-loading');
+      var adminSummary = document.getElementById('admin-summary');
+      var adminList = document.getElementById('admin-list');
+      var adminListError = document.getElementById('admin-list-error');
+
+      function getSecret() { return sessionStorage.getItem(STORAGE_KEY); }
+      function setSecret(s) { sessionStorage.setItem(STORAGE_KEY, s); }
+      function clearSecret() { sessionStorage.removeItem(STORAGE_KEY); }
+
+      function showSecretForm(msg) {
+        clearSecret();
+        secretForm.hidden = false;
+        adminContent.hidden = true;
+        secretError.textContent = msg || '';
+        secretError.hidden = !msg;
+      }
+
+      function showContent() {
+        secretForm.hidden = true;
+        adminContent.hidden = false;
+        secretError.hidden = true;
+      }
+
+      function escapeHtml(s) {
+        if (!s) return '';
+        var div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+
+      function statusClass(status) {
+        if (status === 'confirmed') return 'admin-comment-status-confirmed';
+        if (status === 'pending') return 'admin-comment-status-pending';
+        if (status === 'unsubscribed') return 'admin-comment-status-unsubscribed';
+        return '';
+      }
+
+      function summarize(people) {
+        var confirmed = {};
+        var i;
+        var j;
+        var row;
+        var parts = [];
+        for (i = 0; i < people.length; i++) {
+          for (j = 0; j < people[i].lists.length; j++) {
+            row = people[i].lists[j];
+            if (row.status !== 'confirmed') continue;
+            confirmed[row.label] = (confirmed[row.label] || 0) + 1;
+          }
+        }
+        for (var label in confirmed) {
+          if (Object.prototype.hasOwnProperty.call(confirmed, label)) {
+            parts.push(label + ' ' + confirmed[label]);
+          }
+        }
+        var who = people.length === 1 ? '1 person' : people.length + ' people';
+        return parts.length ? who + '. Confirmed: ' + parts.join(', ') + '.' : who + '.';
+      }
+
+      function renderSubscribers(people) {
+        adminList.innerHTML = '';
+        adminListError.hidden = true;
+        adminSummary.hidden = true;
+        if (!people || people.length === 0) {
+          adminList.textContent = 'No subscribers yet.';
+          return;
+        }
+        adminSummary.textContent = summarize(people);
+        adminSummary.hidden = false;
+        var table = document.createElement('table');
+        table.className = 'admin-subscriber-table';
+        var caption = document.createElement('caption');
+        caption.className = 'visually-hidden';
+        caption.textContent = 'Newsletter subscribers';
+        table.appendChild(caption);
+        var thead = document.createElement('thead');
+        thead.innerHTML = '<tr><th scope="col">Email</th><th scope="col">Lists</th></tr>';
+        table.appendChild(thead);
+        var tbody = document.createElement('tbody');
+        for (var i = 0; i < people.length; i++) {
+          var person = people[i];
+          var tr = document.createElement('tr');
+          var emailTd = document.createElement('td');
+          emailTd.className = 'admin-subscriber-email';
+          var mail = document.createElement('a');
+          mail.href = 'mailto:' + person.email;
+          mail.textContent = person.email;
+          emailTd.appendChild(mail);
+          var listsTd = document.createElement('td');
+          var ul = document.createElement('ul');
+          ul.className = 'admin-subscriber-lists';
+          for (var j = 0; j < person.lists.length; j++) {
+            var item = person.lists[j];
+            var li = document.createElement('li');
+            li.innerHTML = escapeHtml(item.label) +
+              ' <span class="admin-comment-status ' + statusClass(item.status) + '">' +
+              escapeHtml(item.status) + '</span>';
+            ul.appendChild(li);
+          }
+          listsTd.appendChild(ul);
+          tr.appendChild(emailTd);
+          tr.appendChild(listsTd);
+          tbody.appendChild(tr);
+        }
+        table.appendChild(tbody);
+        adminList.appendChild(table);
+      }
+
+      function loadSubscribers() {
+        var secret = getSecret();
+        if (!secret) { showSecretForm('Session expired.'); return; }
+        adminLoading.hidden = false;
+        adminList.innerHTML = '';
+        adminListError.hidden = true;
+        adminSummary.hidden = true;
+        fetch('/api/subscribe?admin_secret=' + encodeURIComponent(secret))
+          .then(function (res) {
+            if (!res.ok) {
+              if (res.status === 403 || res.status === 401) {
+                return res.json().then(function (b) {
+                  showSecretForm(b.error || 'Invalid or expired secret.');
+                  return null;
+                }).catch(function () {
+                  showSecretForm('Invalid or expired secret.');
+                  return null;
+                });
+              }
+              return res.json().then(function (b) { throw new Error(b.error || res.statusText); });
+            }
+            return res.json();
+          })
+          .then(function (data) {
+            adminLoading.hidden = true;
+            if (data) renderSubscribers(data.subscribers || []);
+          })
+          .catch(function (err) {
+            adminLoading.hidden = true;
+            adminListError.textContent = err.message || 'Failed to load subscribers.';
+            adminListError.hidden = false;
+          });
+      }
+
+      secretSubmit.addEventListener('click', function () {
+        var s = (secretInput.value || '').trim();
+        if (!s) {
+          secretError.textContent = 'Enter the password.';
+          secretError.hidden = false;
+          return;
+        }
+        setSecret(s);
+        showContent();
+        loadSubscribers();
+      });
+
+      secretInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') secretSubmit.click();
+      });
+
+      if (getSecret()) {
+        showContent();
+        loadSubscribers();
+      }
+    })();
+  </script>
+</main>
+{{ end }}

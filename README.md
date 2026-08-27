@@ -60,6 +60,8 @@ Edit `config/_default/hugo.toml`. Under `[params]` you’ll see:
 
 Update these values and rebuild. Nav links are used in the site header; the CSV URL is read by Hugo's `resources.GetRemote` when building the School Sheets page.
 
+The main nav stays on one row. When the labels don’t fit (typical on a phone, and later if more sections are added), the row scrolls horizontally. A white fade on the left and/or right shows there is more to scroll in that direction; if everything fits, there is no fade and no scroll.
+
 ## Editing content (Pages CMS)
 
 Content and media are edited via **Pages CMS**. Eric signs in with **email** (magic link sent to his inbox; invite him by email in the CMS if needed). Maintainers can use GitHub at [https://app.pagescms.org/](https://app.pagescms.org/); open this repository and branch, and use the configured collections (**Posts** for the home page, **Grady’s Tour** for travel posts, **Da Breakdown w Tad** for Tad’s posts, **Site updates** for the footer Updates log) and media (uploads). The post **Gallery** field accepts several photos at once; **Body** is a rich-text editor (format text, links, slash commands). Configuration lives in `.pages.yml` at the repo root.
@@ -95,7 +97,7 @@ To enable comments:
 2. Run the schema and migrations: `npx wrangler d1 execute blog-comments --remote --file=./migrations/0000_initial_comments.sql`, then `0001_comments_v2.sql`, then `0002_comments_allow.sql`, then `0003_relocate_gradys_tour_comment_urls.sql`, then `0004_newsletter.sql` (or run the SQL in the D1 dashboard).
 3. Bind the database to your Pages project: in the dashboard go to your Pages project → Settings → Functions → Bindings → D1, add binding name `COMMENTS_DB` and select the database. Or add the binding to `wrangler.toml` (replace `<DATABASE_ID>` in `wrangler.toml` with your database id) and deploy with the config file as source of truth.
 4. **Turnstile (captcha):** In [Cloudflare Dashboard → Turnstile](https://dash.cloudflare.com/?to=/:account/turnstile) create a widget and get the **site key** and **secret key**. Set the site key in `config/_default/hugo.toml` under `[params]` as `turnstile_site_key = "your-site-key"`. Add the **secret key** as a Cloudflare Pages secret: Settings → Environment variables → **TURNSTILE_SECRET_KEY** (encrypted). If `TURNSTILE_SECRET_KEY` is not set, the API skips verification (useful for local dev without a widget).
-5. **Remove comments:** There is no public Flag button. Open **`/admin/comments/`**, enter `COMMENTS_ADMIN_SECRET`, click **Unlock**, then **Delete** (or **Edit**). Set that secret in Cloudflare Pages → Environment variables (e.g. `openssl rand -hex 32`) and share it with Eric/Grady; never commit it. The how-to on that page is the site-facing guide.
+5. **Remove comments:** There is no public Flag button. Open **`/admin/comments/`**, enter `COMMENTS_ADMIN_SECRET`, click **Unlock**, then **Delete** (or **Edit**). Set that secret in Cloudflare Pages → Environment variables (e.g. `openssl rand -hex 32`) and share it with Eric/Grady; never commit it. The how-to on that page is the site-facing guide. **Newsletter subscribers** are on **`/admin/subscribers/`** with the same password (Comments / Subscribers links on both pages).
 
 **If comments return 500:** Verify all five migrations have been run against the production D1 database and that the Pages D1 binding uses that database (see step 2 and 3 above). Check Functions logs in the Cloudflare dashboard for the underlying error.
 
@@ -106,6 +108,8 @@ To enable comments:
 ## Newsletter (per-type email alerts)
 
 Subscribers can opt into **Eric’s blog** (`posts`), **Grady’s Tour** (`gradys-tour`), **Da Breakdown w Tad** (`da-breakdown-w-tad`), or any mix. Signups live in the same **Cloudflare D1** database as comments. Double opt-in and new-post emails go through **[Resend](https://resend.com)** via `/api/subscribe` and `/api/newsletter`. The form appears on the home page, section lists, and post pages when `newsletter_enabled = true` in `config/_default/hugo.toml`. Tad’s checkbox stays hidden until the first Da Breakdown post is published.
+
+**Who subscribed:** Open **`/admin/subscribers/`** and enter the same `COMMENTS_ADMIN_SECRET` used to remove comments. Each row is one email; the lists column shows every newsletter they are on (confirmed, pending confirmation, or unsubscribed). Tokens stay off this page. There is no public link — bookmark the URL.
 
 If someone submits an address that is already confirmed for the lists they checked, the form stays as they left it and tells them they are already subscribed (no extra confirmation email). Broken or expired confirm links go to `/subscribe/invalid/` instead of saying the person is confirmed. New-post emails include an **Unsubscribe or manage email preferences** link to `/subscribe/manage/?token=…`, where they can turn Eric’s blog and Grady’s Tour on or off. Mail-client one-click unsubscribe (`List-Unsubscribe`) still drops that list immediately.
 

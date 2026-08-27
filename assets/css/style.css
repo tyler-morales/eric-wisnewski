@@ -74,24 +74,77 @@ article {
   line-height: 1.6;
 }
 
-/* Nav: horizontal */
+/* Nav: one row; sideways scroll + edge fades when labels overflow */
 .site-nav {
-  padding: 0.5rem 1rem 1.5rem;
+  position: relative;
+  min-width: 0;
+  padding: 0.5rem 0 1.5rem;
 }
 
 .site-nav ul {
   margin: 0;
-  padding: 0;
+  padding: 0.5rem 1rem;
   list-style: none;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 1.5rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  scroll-padding-inline: 3rem;
+}
+
+.site-nav ul::-webkit-scrollbar {
+  height: 0;
+}
+
+.site-nav li {
+  flex: 0 0 auto;
 }
 
 .site-nav a {
   color: var(--text);
   text-decoration: none;
   font-weight: 500;
+  white-space: nowrap;
+}
+
+.site-nav::before,
+.site-nav::after {
+  content: "";
+  position: absolute;
+  top: 0.5rem;
+  bottom: 1.5rem;
+  width: 3rem;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 2;
+  transition: opacity 0.15s ease;
+}
+
+.site-nav::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg) 0%, var(--bg) 30%, transparent);
+}
+
+.site-nav::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg) 0%, var(--bg) 30%, transparent);
+}
+
+.site-nav.site-nav--fade-start::before,
+.site-nav.site-nav--fade-end::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .site-nav::before,
+  .site-nav::after {
+    transition: none;
+  }
 }
 
 .site-nav a:hover {
@@ -1597,6 +1650,27 @@ article.post-content hr {
   margin: 0 0 1rem;
 }
 
+.admin-section-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 0 0 1.25rem;
+}
+
+.admin-section-nav a {
+  color: var(--text);
+}
+
+.admin-section-nav a[aria-current="page"] {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-section-nav a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
 .admin-comments-guide {
   margin: 0 0 1.5rem;
 }
@@ -1627,6 +1701,10 @@ article.post-content hr {
   align-items: center;
   gap: 0.5rem 1rem;
   margin-bottom: 1.5rem;
+}
+
+.admin-secret-form[hidden] {
+  display: none;
 }
 
 .admin-secret-form label {
@@ -1750,6 +1828,65 @@ article.post-content hr {
 .admin-comment-status-pending {
   background: #fff3cd;
   color: #856404;
+}
+
+.admin-comment-status-confirmed {
+  background: #e0f2e0;
+  color: #0a0;
+}
+
+.admin-comment-status-unsubscribed {
+  background: #eee;
+  color: #555;
+}
+
+.admin-subscriber-summary {
+  margin: 0 0 0.75rem;
+  color: #555;
+}
+
+.admin-subscriber-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.admin-subscriber-table th,
+.admin-subscriber-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  border-bottom: 1px solid var(--border, #eee);
+}
+
+.admin-subscriber-table th {
+  font-weight: 600;
+}
+
+.admin-subscriber-email {
+  word-break: break-word;
+}
+
+.admin-subscriber-email a {
+  color: var(--text);
+}
+
+.admin-subscriber-email a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.admin-subscriber-lists {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.85rem;
+}
+
+.admin-subscriber-lists .admin-comment-status {
+  margin-left: 0.25rem;
 }
 
 .admin-comment-edit {

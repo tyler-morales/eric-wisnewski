@@ -1,0 +1,4 @@
+<nav class="admin-section-nav" aria-label="Admin pages">
+  <a href="{{ "admin/comments/" | relURL }}"{{ if in .RelPermalink "/admin/comments/" }} aria-current="page"{{ end }}>Comments</a>
+  <a href="{{ "admin/subscribers/" | relURL }}"{{ if in .RelPermalink "/admin/subscribers/" }} aria-current="page"{{ end }}>Subscribers</a>
+</nav>

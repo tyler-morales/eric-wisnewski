@@ -86,7 +86,7 @@ class DeadApiTests(unittest.TestCase):
 
     def test_shared_helpers_are_defined_once_failure(self) -> None:
         """Both mail paths must read the same helper, or they drift apart."""
-        for helper in ("newsletterFromHeader", "sendResendEmail", "jsonResponse"):
+        for helper in ("newsletterFromHeader", "sendResendEmail", "jsonResponse", "isAdmin"):
             defined_in = [
                 api.name
                 for api in (SUBSCRIBE_API, NEWSLETTER_API, COMMENTS_API, PHOTOS_API)

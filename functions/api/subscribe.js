@@ -4,6 +4,7 @@
  */
 
 import {
+  isAdmin,
   jsonResponse,
   listLabel,
   newsletterFromHeader,
@@ -94,6 +95,34 @@ export function preferenceUpdatePlan(currentRows, requestedLists) {
     }
   }
   return { subscribe, unsubscribe };
+}
+
+export function groupSubscribersByEmail(rows) {
+  const byEmail = new Map();
+  const listOrder = new Map(VALID_LISTS.map((id, i) => [id, i]));
+  for (const row of Array.isArray(rows) ? rows : []) {
+    if (!row || typeof row.email !== 'string' || !row.email) continue;
+    let person = byEmail.get(row.email);
+    if (!person) {
+      person = { email: row.email, lists: [] };
+      byEmail.set(row.email, person);
+    }
+    person.lists.push({
+      list: row.list,
+      label: listLabel(row.list) || String(row.list || ''),
+      status: row.status,
+      created_at: row.created_at || '',
+      confirmed_at: row.confirmed_at || null,
+    });
+  }
+  const people = [...byEmail.values()];
+  people.sort((a, b) => a.email.localeCompare(b.email, undefined, { sensitivity: 'base' }));
+  for (const person of people) {
+    person.lists.sort(
+      (a, b) => (listOrder.get(a.list) ?? 99) - (listOrder.get(b.list) ?? 99)
+    );
+  }
+  return people;
 }
 
 export function preferencesPayload(email, rows) {
@@ -391,6 +420,35 @@ export async function onRequestGet(context) {
       return redirect(`${origin}/subscribe/manage/`);
     }
     return redirect(managePageUrl(origin, token));
+  }
+
+  const adminSecret = String(searchParams.get('admin_secret') || '').trim();
+  if (adminSecret) {
+    if (!isAdmin(adminSecret, context.env)) {
+      const configuredSet =
+        typeof context.env.COMMENTS_ADMIN_SECRET === 'string' &&
+        context.env.COMMENTS_ADMIN_SECRET.length > 0;
+      return jsonResponse(
+        { error: configuredSet ? 'Invalid admin secret.' : 'Admin secret not configured on server.' },
+        401
+      );
+    }
+    try {
+      const found = await db
+        .prepare(
+          `SELECT email, list, status, created_at, confirmed_at, unsubscribed_at
+           FROM subscribers
+           ORDER BY email COLLATE NOCASE, list`
+        )
+        .all();
+      return jsonResponse({
+        ok: true,
+        subscribers: groupSubscribersByEmail(found.results || []),
+      });
+    } catch (e) {
+      console.error('subscribe admin list', e);
+      return jsonResponse({ error: 'Failed to load subscribers' }, 500);
+    }
   }
 
   if (searchParams.has('preferences')) {

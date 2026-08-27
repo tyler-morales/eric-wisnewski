@@ -6,7 +6,7 @@
  * helpers come from lib/, outside the functions/ router.
  */
 
-import { jsonResponse, publicOrigin, sendResendEmail, verifyTurnstile } from '../../lib/api.js';
+import { isAdmin, jsonResponse, publicOrigin, sendResendEmail, verifyTurnstile } from '../../lib/api.js';
 
 const MAX_AUTHOR = 200;
 const MAX_TEXT = 5000;
@@ -124,11 +124,6 @@ async function sendParentReplyEmail(env, to, mail) {
   } catch (e) {
     console.error(e);
   }
-}
-
-function isAdmin(secret, env) {
-  const configured = env.COMMENTS_ADMIN_SECRET;
-  return typeof configured === 'string' && configured.length > 0 && secret === configured;
 }
 
 export async function onRequestGet(context) {

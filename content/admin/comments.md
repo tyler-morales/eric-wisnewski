@@ -1,6 +1,9 @@
 ---
 title: Remove comments
 type: admin
+robots: noindex
+build:
+  list: never
 ---
 
 1. Type the password Tyler gave you, then click **Unlock**.
