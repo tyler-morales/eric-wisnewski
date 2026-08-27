@@ -18,6 +18,7 @@ LIST_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "list.html"
 SECTION_LAYOUT = REPO_ROOT / "layouts" / "_default" / "section-list.html"
 HAS_POSTS_PARTIAL = REPO_ROOT / "layouts" / "partials" / "has-da-breakdown-posts.html"
 AUTHOR_LAYOUT = REPO_ROOT / "layouts" / "authors" / "single.html"
+AUTHOR_POSTS_PARTIAL = REPO_ROOT / "layouts" / "partials" / "author-posts.html"
 SUBSCRIBE_PARTIAL = REPO_ROOT / "layouts" / "partials" / "subscribe.html"
 SUBSCRIBE_MANAGE = REPO_ROOT / "layouts" / "_default" / "subscribe-manage.html"
 PAGES_YML = REPO_ROOT / ".pages.yml"
@@ -112,9 +113,11 @@ class DaBreakdownContractTests(unittest.TestCase):
 
     def test_home_and_author_templates_include_section_success(self) -> None:
         home = LIST_TEMPLATE.read_text(encoding="utf-8")
+        author_posts = AUTHOR_POSTS_PARTIAL.read_text(encoding="utf-8")
         author = AUTHOR_LAYOUT.read_text(encoding="utf-8")
         self.assertIn('"da-breakdown-w-tad"', home)
-        self.assertIn('"da-breakdown-w-tad"', author)
+        self.assertIn('"da-breakdown-w-tad"', author_posts)
+        self.assertIn("author-posts.html", author)
 
     def test_home_without_tad_section_fails_contract(self) -> None:
         home = LIST_TEMPLATE.read_text(encoding="utf-8")

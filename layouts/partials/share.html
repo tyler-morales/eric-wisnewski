@@ -1,0 +1,37 @@
+{{ $page := .page }}
+{{ $id := .id | default "share" }}
+{{ $url := $page.Permalink }}
+{{ $title := $page.Title }}
+{{ $text := printf "%s %s" $title $url }}
+<div class="post-share post-share--{{ $id }}" data-share-url="{{ $url }}" data-share-title="{{ $title }}">
+  <button type="button" class="post-share-toggle" aria-expanded="false" aria-controls="post-share-menu-{{ $id }}">
+    <svg class="post-share-icon" viewBox="0 0 16 16" width="1em" height="1em" aria-hidden="true" focusable="false">
+      <path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+        d="M8 9.5V2.5m0 0L5.5 5M8 2.5 10.5 5M3.5 6.5v6.5h9V6.5" />
+    </svg>
+    Share
+  </button>
+  <ul id="post-share-menu-{{ $id }}" class="post-share-menu" hidden>
+    <li>
+      <button type="button" class="post-share-copy">Copy link</button>
+    </li>
+    <li>
+      <a href="sms:?&amp;body={{ $text | urlquery }}">Messages</a>
+    </li>
+    <li>
+      <a href="mailto:?subject={{ $title | urlquery }}&amp;body={{ $url | urlquery }}">Email</a>
+    </li>
+    <li>
+      <a href="https://wa.me/?text={{ $text | urlquery }}" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+    </li>
+    <li>
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{ $url | urlquery }}" target="_blank"
+        rel="noopener noreferrer">Facebook</a>
+    </li>
+    <li>
+      <a href="https://twitter.com/intent/tweet?text={{ $title | urlquery }}&amp;url={{ $url | urlquery }}"
+        target="_blank" rel="noopener noreferrer">X</a>
+    </li>
+  </ul>
+  <p class="post-share-status visually-hidden" aria-live="polite"></p>
+</div>

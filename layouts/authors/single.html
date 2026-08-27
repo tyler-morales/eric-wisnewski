@@ -4,11 +4,7 @@
 {{ partial "header.html" . }}
 <main>
   {{ partial "author-card.html" (dict "author" . "profile" true "element" "header") }}
-  {{ $keys := slice .File.ContentBaseName }}
-  {{ with .Params.slug }}
-  {{ if not (in $keys .) }}{{ $keys = $keys | append . }}{{ end }}
-  {{ end }}
-  {{ $posts := where (where .Site.RegularPages "Section" "in" (slice "posts" "gradys-tour" "da-breakdown-w-tad")) "Params.author" "in" $keys }}
+  {{ $posts := partial "author-posts.html" . }}
   {{ if $posts }}
   <ul class="post-list">
     {{ range $posts }}

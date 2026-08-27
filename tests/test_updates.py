@@ -139,6 +139,7 @@ class UpdatesTemplateTests(unittest.TestCase):
         layout = UPDATES_LIST_LAYOUT.read_text(encoding="utf-8")
         self.assertNotIn("comments.html", layout)
         self.assertNotIn("subscribe.html", layout)
+        self.assertNotIn("share.html", layout)
 
     def test_entry_layout_exists_and_links_back_success(self) -> None:
         self.assertTrue(UPDATES_ENTRY_LAYOUT.is_file())
@@ -146,6 +147,7 @@ class UpdatesTemplateTests(unittest.TestCase):
         self.assertIn("updates/", layout)
         self.assertNotIn("comments.html", layout)
         self.assertNotIn("subscribe.html", layout)
+        self.assertNotIn("share.html", layout)
 
     def test_updates_index_exists_success(self) -> None:
         self.assertTrue(UPDATES_INDEX.is_file())

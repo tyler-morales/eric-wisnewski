@@ -1,0 +1,59 @@
+{{/*
+  After the article: Older/Newer in date order, then other posts by this author.
+  Hidden when the author has fewer than two published posts.
+*/}}
+{{ with (partial "author-page.html" .) }}
+{{ $author := . }}
+{{ $name := $author.Params.name | default $author.Title }}
+{{ $posts := partial "author-posts.html" $author }}
+{{ if ge (len $posts) 2 }}
+{{ $older := false }}
+{{ $newer := false }}
+{{ $seen := false }}
+{{ range sort $posts "Date" "asc" }}
+  {{ if eq .RelPermalink $.RelPermalink }}
+    {{ $seen = true }}
+  {{ else if $seen }}
+    {{ if not $newer }}{{ $newer = . }}{{ end }}
+  {{ else }}
+    {{ $older = . }}
+  {{ end }}
+{{ end }}
+{{ $skip := slice $.RelPermalink }}
+{{ with $older }}{{ $skip = $skip | append .RelPermalink }}{{ end }}
+{{ with $newer }}{{ $skip = $skip | append .RelPermalink }}{{ end }}
+{{ $more := slice }}
+{{ range sort $posts "Date" "desc" }}
+  {{ if and (not (in $skip .RelPermalink)) (lt (len $more) 3) }}
+    {{ $more = $more | append . }}
+  {{ end }}
+{{ end }}
+<nav class="more-from-author" aria-labelledby="more-from-heading">
+  <h2 id="more-from-heading" class="more-from-heading">More from <a href="{{ $author.RelPermalink }}">{{ $name }}</a></h2>
+  <div class="more-from-pager">
+    {{ with $older }}
+    <a href="{{ .RelPermalink }}" rel="prev" class="more-from-older">
+      <span class="more-from-label">Older</span>
+      <span class="more-from-title">{{ .Title }}</span>
+    </a>
+    {{ end }}
+    {{ with $newer }}
+    <a href="{{ .RelPermalink }}" rel="next" class="more-from-newer">
+      <span class="more-from-label">Newer</span>
+      <span class="more-from-title">{{ .Title }}</span>
+    </a>
+    {{ end }}
+  </div>
+  {{ if $more }}
+  <ul class="more-from-list" role="list">
+    {{ range $more }}
+    <li>
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+    </li>
+    {{ end }}
+  </ul>
+  {{ end }}
+</nav>
+{{ end }}
+{{ end }}

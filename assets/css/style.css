@@ -350,7 +350,8 @@ article.post-content>header h1 {
 }
 
 article.post-content>header .post-byline,
-article.post-content>header time {
+article.post-content>header time,
+article.post-content>header .post-share {
   font-family: var(--font-sans);
 }
 
@@ -360,12 +361,109 @@ article.post-content>header .post-byline {
   color: #333;
 }
 
+article.post-content>header .post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-top: 0.25rem;
+  margin-bottom: 1.25rem;
+}
+
 article.post-content>header time {
   display: block;
   font-size: 0.875rem;
   color: #333;
-  margin-top: 0.25rem;
-  margin-bottom: 1.25rem;
+  margin: 0;
+}
+
+/* Share: in-flow disclosure next to the date and after the article. No rail. */
+.post-share {
+  position: relative;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+}
+
+.post-share-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.25rem 0;
+  border: 0;
+  background: none;
+  color: #333;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.post-share-toggle:hover {
+  text-decoration-thickness: 2px;
+}
+
+.post-share-toggle:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+.post-share-icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.post-share-menu {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  min-width: 12.5rem;
+  margin: 0;
+  padding: 0.25rem 0;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid #ccc;
+}
+
+.post-share--header .post-share-menu {
+  left: auto;
+  right: 0;
+}
+
+.post-share--footer {
+  margin: 1.75rem 0 0;
+}
+
+.post-share-menu a,
+.post-share-menu button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.85rem;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.post-share-menu a:hover,
+.post-share-menu button:hover {
+  background: #f3f3f3;
+}
+
+.post-share-menu a:focus-visible,
+.post-share-menu button:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+  background: #f3f3f3;
 }
 
 /* Author bio under post */
@@ -436,6 +534,122 @@ article.post-content>header time {
   margin: 0;
   font-size: 0.9375rem;
   line-height: 1.55;
+  color: #333;
+}
+
+/* More from this author: after the article, before subscribe. */
+.more-from-author {
+  max-width: 65ch;
+  margin: 2.5rem auto 0;
+  padding: 1.25rem 0 0;
+  border-top: 1px solid #ccc;
+  font-family: var(--font-sans);
+}
+
+.more-from-heading {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.more-from-heading a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.more-from-heading a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.more-from-heading a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+.more-from-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.more-from-older,
+.more-from-newer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.more-from-older {
+  justify-self: start;
+  text-align: left;
+}
+
+.more-from-newer {
+  grid-column: 2;
+  justify-self: end;
+  text-align: right;
+}
+
+.more-from-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #333;
+}
+
+.more-from-title {
+  font-weight: 500;
+}
+
+.more-from-older:hover .more-from-title,
+.more-from-newer:hover .more-from-title {
+  text-decoration: underline;
+}
+
+.more-from-older:focus-visible,
+.more-from-newer:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+.more-from-list {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.more-from-list li {
+  padding: 0.65rem 0;
+  border-top: 1px solid #eee;
+}
+
+.more-from-list a {
+  color: var(--text);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.more-from-list a:hover {
+  text-decoration: underline;
+}
+
+.more-from-list a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+.more-from-list time {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.875rem;
   color: #333;
 }
 

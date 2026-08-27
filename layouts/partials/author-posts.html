@@ -1,0 +1,9 @@
+{{/*
+  Published posts by this author page (filename or slug).
+  Same sections as the home list and /authors/<slug>/.
+*/}}
+{{- $keys := slice .File.ContentBaseName -}}
+{{- with .Params.slug -}}
+{{- if not (in $keys .) }}{{ $keys = $keys | append . }}{{ end -}}
+{{- end -}}
+{{- return where (where .Site.RegularPages "Section" "in" (slice "posts" "gradys-tour" "da-breakdown-w-tad")) "Params.author" "in" $keys -}}

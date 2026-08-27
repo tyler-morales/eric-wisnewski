@@ -37,6 +37,8 @@ class PostTypographyCssTests(unittest.TestCase):
         self.assertNotIn("Georgia", body)
         bio = first_block(self.css, ".author-bio")
         self.assertIn("var(--font-sans)", bio)
+        share = first_block(self.css, ".post-share")
+        self.assertIn("var(--font-sans)", share)
 
     def test_captions_are_small_and_gray_success(self) -> None:
         self.assertIn("--text-muted", self.css)

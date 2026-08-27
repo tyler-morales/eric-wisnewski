@@ -7,7 +7,10 @@
       <header>
         <h1>{{ .Title }}</h1>
         {{ partial "post-byline.html" . }}
-        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        <div class="post-meta">
+          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+          {{ partial "share.html" (dict "page" . "id" "header") }}
+        </div>
       </header>
       {{ with .Params.image }}
       <figure class="post-featured-image" aria-label="Featured image for {{ $.Title }}">
@@ -16,9 +19,12 @@
       {{ end }}
       {{ .Content }}
       {{ partial "post-gallery.html" . }}
+      {{ partial "share.html" (dict "page" . "id" "footer") }}
       {{ partial "author-bio.html" . }}
     </article>
+    {{ partial "more-from-author.html" . }}
     {{ partial "subscribe.html" . }}
     {{ partial "comments.html" . }}
+    <script type="module" src="{{ "/js/share.js" | relURL }}?v={{ md5 (readFile "static/js/share.js") }}"></script>
   </main>
 {{ end }}
