@@ -109,17 +109,43 @@ class AdminSecretTests(unittest.TestCase):
         self.assertFalse(
             call_js_fn(SHARED_API, "isAdmin", "", {"COMMENTS_ADMIN_SECRET": "hunter2"})
         )
-        self.assertFalse(call_js_fn(SHARED_API, "isAdmin", "hunter2", {"COMMENTS_ADMIN_SECRET": ""}))
+        self.assertFalse(
+            call_js_fn(SHARED_API, "isAdmin", "hunter2", {"COMMENTS_ADMIN_SECRET": ""})
+        )
+
+    def test_admin_secret_from_bearer_header_success(self) -> None:
+        self.assertEqual(
+            call_js_fn(SHARED_API, "adminSecretFromHeader", "Bearer hunter2", None),
+            "hunter2",
+        )
+        self.assertEqual(
+            call_js_fn(
+                SHARED_API,
+                "adminSecretFromHeader",
+                "",
+                {"admin_secret": "from-body"},
+            ),
+            "from-body",
+        )
+
+    def test_admin_secret_ignores_empty_header_failure(self) -> None:
+        self.assertEqual(call_js_fn(SHARED_API, "adminSecretFromHeader", "", None), "")
+        self.assertEqual(call_js_fn(SHARED_API, "adminSecretFromHeader", "Bearer ", None), "")
+        self.assertEqual(
+            call_js_fn(SHARED_API, "adminSecretFromHeader", "Basic hunter2", None),
+            "",
+        )
 
 
 class AdminSubscriberSourceTests(unittest.TestCase):
     def test_subscribe_get_lists_behind_admin_secret_success(self) -> None:
         source = SUBSCRIBE_API.read_text(encoding="utf-8")
         self.assertIn("groupSubscribersByEmail", source)
-        self.assertIn("admin_secret", source)
+        self.assertIn("adminSecretFromRequest", source)
         self.assertIn("isAdmin", source)
         self.assertIn("FROM subscribers", source)
         self.assertIn("SELECT email, list, status, created_at, confirmed_at, unsubscribed_at", source)
+        self.assertNotIn("searchParams.get('admin_secret')", source)
 
     def test_comments_uses_shared_is_admin_failure_if_local(self) -> None:
         source = COMMENTS_API.read_text(encoding="utf-8")
@@ -130,16 +156,19 @@ class AdminSubscriberSourceTests(unittest.TestCase):
 
     def test_layout_fetches_subscribe_admin_success(self) -> None:
         layout = SUBSCRIBERS_LAYOUT.read_text(encoding="utf-8")
-        self.assertIn("/api/subscribe?admin_secret=", layout)
+        self.assertIn("Authorization: 'Bearer '", layout)
         self.assertIn("comments_admin_secret", layout)
         self.assertIn("admin-subscriber-table", layout)
         self.assertIn('partial "admin-nav.html"', layout)
+        self.assertNotIn("admin_secret=", layout)
         self.assertNotIn("confirm_token", layout)
         self.assertNotIn("unsub_token", layout)
 
     def test_comments_layout_links_subscribers_success(self) -> None:
         comments = COMMENTS_LAYOUT.read_text(encoding="utf-8")
         self.assertIn('partial "admin-nav.html"', comments)
+        self.assertIn("Authorization: 'Bearer '", comments)
+        self.assertNotIn("admin_secret=", comments)
         nav = ADMIN_NAV.read_text(encoding="utf-8")
         self.assertIn('href="/admin/subscribers/"', nav)
         self.assertIn('href="/admin/comments/"', nav)
@@ -200,7 +229,8 @@ class AdminSubscriberBuildTests(unittest.TestCase):
         html = self.subscribers_html.lower()
         self.assertIn("unlock", html)
         self.assertIn('name="robots" content="noindex, nofollow"', self.subscribers_html)
-        self.assertIn("/api/subscribe?admin_secret=", self.subscribers_html)
+        self.assertIn("Authorization: 'Bearer '", self.subscribers_html)
+        self.assertNotIn("admin_secret=", self.subscribers_html)
         self.assertIn("admin-subscriber-table", self.subscribers_html)
         self.assertIn("/admin/comments/", self.subscribers_html)
         self.assertNotIn("confirm_token", self.subscribers_html)
@@ -209,6 +239,8 @@ class AdminSubscriberBuildTests(unittest.TestCase):
     def test_comments_page_links_subscribers_success(self) -> None:
         self.assertIn("/admin/subscribers/", self.comments_html)
         self.assertIn('name="robots" content="noindex, nofollow"', self.comments_html)
+        self.assertIn("Authorization: 'Bearer '", self.comments_html)
+        self.assertNotIn("admin_secret=", self.comments_html)
 
     def test_home_does_not_list_admin_pages_failure(self) -> None:
         home = (self._output_dir / "index.html").read_text(encoding="utf-8")

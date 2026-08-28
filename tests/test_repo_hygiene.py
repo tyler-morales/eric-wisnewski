@@ -86,7 +86,15 @@ class DeadApiTests(unittest.TestCase):
 
     def test_shared_helpers_are_defined_once_failure(self) -> None:
         """Both mail paths must read the same helper, or they drift apart."""
-        for helper in ("newsletterFromHeader", "sendResendEmail", "jsonResponse", "isAdmin"):
+        for helper in (
+            "newsletterFromHeader",
+            "sendResendEmail",
+            "jsonResponse",
+            "isAdmin",
+            "secretsMatch",
+            "adminSecretFromHeader",
+            "confirmMailAllowed",
+        ):
             defined_in = [
                 api.name
                 for api in (SUBSCRIBE_API, NEWSLETTER_API, COMMENTS_API, PHOTOS_API)
@@ -123,6 +131,16 @@ class DocsHygieneTests(unittest.TestCase):
         text = DEV_VARS_EXAMPLE.read_text(encoding="utf-8")
         self.assertIn("NEWSLETTER_FROM_EMAIL", text)
         self.assertIn("GITHUB_BRANCH", text)
+
+    def test_headers_file_sets_referrer_policy_success(self) -> None:
+        headers = (REPO_ROOT / "static" / "_headers").read_text(encoding="utf-8")
+        self.assertIn("Referrer-Policy: strict-origin-when-cross-origin", headers)
+        self.assertIn("/subscribe/manage/*", headers)
+        self.assertIn("Referrer-Policy: no-referrer", headers)
+        self.assertIn("X-Frame-Options: DENY", headers)
+
+    def test_headers_file_is_not_empty_failure(self) -> None:
+        self.assertTrue((REPO_ROOT / "static" / "_headers").is_file())
 
 
 if __name__ == "__main__":

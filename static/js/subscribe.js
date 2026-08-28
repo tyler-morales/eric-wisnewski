@@ -1,4 +1,7 @@
 export const PENDING_EMAIL_KEY = 'subscribe_pending_email';
+export const SAVED_LISTS_KEY = 'subscribe_lists';
+
+const VALID_LIST_IDS = ['posts', 'gradys-tour', 'da-breakdown-w-tad'];
 
 export function normalizePendingEmail(value) {
   if (typeof value !== 'string') return '';
@@ -38,6 +41,48 @@ export function clearPendingEmail(store) {
   try {
     store.removeItem(PENDING_EMAIL_KEY);
   } catch (_) { }
+}
+
+export function normalizeSavedLists(value) {
+  var raw = value;
+  if (typeof raw === 'string') {
+    try {
+      raw = JSON.parse(raw);
+    } catch (_) {
+      return [];
+    }
+  }
+  if (!Array.isArray(raw)) return [];
+  var out = [];
+  var seen = {};
+  var i;
+  for (i = 0; i < raw.length; i++) {
+    var list = typeof raw[i] === 'string' ? raw[i].trim() : '';
+    if (VALID_LIST_IDS.indexOf(list) < 0 || seen[list]) continue;
+    seen[list] = true;
+    out.push(list);
+  }
+  return out;
+}
+
+export function readSavedLists(store) {
+  if (!store || typeof store.getItem !== 'function') return [];
+  try {
+    return normalizeSavedLists(store.getItem(SAVED_LISTS_KEY) || '');
+  } catch (_) {
+    return [];
+  }
+}
+
+export function writeSavedLists(store, lists) {
+  if (!store || typeof store.setItem !== 'function') return;
+  try {
+    store.setItem(SAVED_LISTS_KEY, JSON.stringify(normalizeSavedLists(lists)));
+  } catch (_) { }
+}
+
+export function mergeSavedLists(current, added) {
+  return normalizeSavedLists([].concat(current || [], added || []));
 }
 
 function selectedLists(formEl) {
@@ -80,7 +125,7 @@ function clearMessages(statusEl, errorEl) {
   }
 }
 
-function applyLists(formEl, lists) {
+export function applyLists(formEl, lists) {
   var wanted = {};
   var i;
   for (i = 0; i < (lists || []).length; i++) {
@@ -274,6 +319,8 @@ function initSignup() {
           resetTurnstile();
           return;
         }
+        var store = browserStorage();
+        writeSavedLists(store, mergeSavedLists(readSavedLists(store), lists));
         if (result.data && result.data.needsConfirm) {
           writePendingEmail(browserStorage(), email);
           showConfirmNext(email);
@@ -295,6 +342,9 @@ function initSignup() {
         if (submitBtn) submitBtn.disabled = false;
       });
   });
+
+  var saved = readSavedLists(browserStorage());
+  if (saved.length) applyLists(formEl, saved);
 
   var pending = readPendingEmail(browserStorage());
   if (pending) showConfirmNext(pending, true);
@@ -350,6 +400,9 @@ function initManage() {
         return;
       }
       applyLists(formEl, result.data && result.data.lists);
+      if (result.data && Array.isArray(result.data.lists)) {
+        writeSavedLists(browserStorage(), result.data.lists);
+      }
       if (emailEl && result.data && result.data.email) {
         emailEl.textContent = 'Updating preferences for ' + result.data.email;
         emailEl.hidden = false;
@@ -390,6 +443,7 @@ function initManage() {
         }
         if (result.data && result.data.lists) {
           applyLists(formEl, result.data.lists);
+          writeSavedLists(browserStorage(), result.data.lists);
         }
         showStatus(
           statusEl,

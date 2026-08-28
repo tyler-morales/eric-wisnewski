@@ -4,7 +4,7 @@
  * Helpers are exported for tests.
  */
 
-import { jsonResponse } from '../../lib/api.js';
+import { jsonResponse, secretsMatch } from '../../lib/api.js';
 
 const MAX_BYTES = 8 * 1024 * 1024;
 const UPLOAD_DIR = 'assets/images/uploads';
@@ -12,21 +12,7 @@ const GOOGLE_SCOPE = 'https://www.googleapis.com/auth/photospicker.mediaitems.re
 const PICKER_SESSIONS = 'https://photospicker.googleapis.com/v1/sessions';
 const PICKER_ITEMS = 'https://photospicker.googleapis.com/v1/mediaItems';
 
-export function secretsMatch(a, b) {
-  if (Array.isArray(a)) {
-    b = a[1];
-    a = a[0];
-  }
-  if (typeof a !== 'string' || typeof b !== 'string' || !a.length || !b.length) {
-    return false;
-  }
-  if (a.length !== b.length) return false;
-  let mismatch = 0;
-  for (let i = 0; i < a.length; i += 1) {
-    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return mismatch === 0;
-}
+export { secretsMatch };
 
 export function sanitizeUploadFilename(name) {
   if (typeof name !== 'string' || !name) return '';

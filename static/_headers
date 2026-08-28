@@ -1,0 +1,7 @@
+/*
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+
+/subscribe/manage/*
+  Referrer-Policy: no-referrer

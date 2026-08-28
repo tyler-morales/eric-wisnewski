@@ -12,7 +12,7 @@ COMMENTS_WIDGET = REPO_ROOT / "static" / "js" / "comments.js"
 COMMENTS_PARTIAL = REPO_ROOT / "layouts" / "partials" / "comments.html"
 COMMENTS_API = REPO_ROOT / "functions" / "api" / "comments.js"
 COMMENTS_CSS = REPO_ROOT / "assets" / "css" / "style.css"
-REPLY_EMAIL_HINT = "We'll email you if someone replies."
+REPLY_EMAIL_HINT = "We'll email you if someone replies — after you confirm that address."
 
 
 def call_identity(fn_name: str, script_body: str) -> object:
@@ -138,6 +138,8 @@ class CommentReplyUxTests(unittest.TestCase):
         self.assertIn("writeIdentity", js)
         self.assertNotIn("authorInput.value = ''", js)
         self.assertNotIn("Enter your name in the form below", js)
+        self.assertIn("JSON.stringify({ id: c.id, edit_token: token })", js)
+        self.assertNotIn("&edit_token=", js)
 
     def test_reply_does_not_reuse_main_submit_label_failure(self) -> None:
         js = COMMENTS_WIDGET.read_text(encoding="utf-8")
@@ -268,15 +270,23 @@ class CommentReplyEmailHintTests(unittest.TestCase):
 class CommentReplyNotifyHelperTests(unittest.TestCase):
     def test_parent_reply_notify_to_success(self) -> None:
         self.assertEqual(
-            call_comments_api("parentReplyNotifyTo", " Pat@Example.com ", "other@example.com"),
+            call_comments_api("parentReplyNotifyTo", " Pat@Example.com ", "other@example.com", True),
             "Pat@Example.com",
         )
 
     def test_parent_reply_notify_to_skips_self_and_junk_failure(self) -> None:
-        self.assertEqual(call_comments_api("parentReplyNotifyTo", "a@b.co", "A@B.co"), "")
-        self.assertEqual(call_comments_api("parentReplyNotifyTo", "not-an-email", "b@c.co"), "")
-        self.assertEqual(call_comments_api("parentReplyNotifyTo", "", "b@c.co"), "")
-        self.assertEqual(call_comments_api("parentReplyNotifyTo", "a@b.co\nbad@c.co", "d@e.co"), "")
+        self.assertEqual(call_comments_api("parentReplyNotifyTo", "a@b.co", "A@B.co", True), "")
+        self.assertEqual(call_comments_api("parentReplyNotifyTo", "not-an-email", "b@c.co", True), "")
+        self.assertEqual(call_comments_api("parentReplyNotifyTo", "", "b@c.co", True), "")
+        self.assertEqual(call_comments_api("parentReplyNotifyTo", "a@b.co\nbad@c.co", "d@e.co", True), "")
+        self.assertEqual(
+            call_comments_api("parentReplyNotifyTo", "a@b.co", "other@example.com", False),
+            "",
+        )
+        self.assertEqual(
+            call_comments_api("parentReplyNotifyTo", "a@b.co", "other@example.com"),
+            "",
+        )
 
     def test_reply_notify_email_includes_reply_and_link_success(self) -> None:
         mail = call_comments_api(
@@ -305,14 +315,35 @@ class CommentReplyNotifyHelperTests(unittest.TestCase):
         )
         self.assertNotIn("<script>", mail["html"])
         self.assertNotIn("<b>there</b>", mail["html"])
-        self.assertIn("&lt;script&gt;", mail["html"])
+    def test_confirm_comment_email_requires_click_success(self) -> None:
+        mail = call_comments_api(
+            "confirmCommentEmailBody",
+            "https://ericwisnewski.com",
+            "ab" * 24,
+        )
+        self.assertIn("/api/comments?confirm=", mail["text"])
+        self.assertIn("We won't send reply emails until you click", mail["html"])
+
+    def test_confirm_comment_email_omits_tokens_in_copy_failure(self) -> None:
+        mail = call_comments_api(
+            "confirmCommentEmailBody",
+            "https://ericwisnewski.com",
+            "ab" * 24,
+        )
+        self.assertNotIn("edit_token", mail["html"])
+        self.assertNotIn("You're already", mail["text"])
 
     def test_api_sends_reply_notice_in_background_success(self) -> None:
         api = COMMENTS_API.read_text(encoding="utf-8")
         self.assertIn("parentReplyNotifyTo", api)
         self.assertIn("sendResendEmail", api)
         self.assertIn("context.waitUntil", api)
-        self.assertIn("SELECT id, author, email FROM comments WHERE id = ?", api)
+        self.assertIn("email_confirmed_at", api)
+        self.assertIn("UPDATE comments SET author = ? WHERE id = ?", api)
+        self.assertNotIn("UPDATE comments SET author = ? WHERE email = ?", api)
+        self.assertIn("confirmCommentEmailBody", api)
+        self.assertNotIn("searchParams.get('admin_secret')", api)
+        self.assertNotIn("searchParams.get('edit_token')", api)
 
 
 if __name__ == "__main__":

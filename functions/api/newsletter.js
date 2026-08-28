@@ -8,6 +8,7 @@ import {
   jsonResponse,
   newsletterFromHeader,
   publicOrigin,
+  secretsMatch,
   sendResendEmail,
 } from '../../lib/api.js';
 
@@ -79,13 +80,9 @@ function decodeXml(s) {
 }
 
 function isAuthorized(request, env) {
-  const configured = env.NEWSLETTER_DISPATCH_SECRET;
-  if (typeof configured !== 'string' || !configured) return false;
   const header = request.headers.get('authorization') || '';
   const bearer = header.startsWith('Bearer ') ? header.slice(7).trim() : '';
-  const url = new URL(request.url);
-  const querySecret = url.searchParams.get('secret') || '';
-  return bearer === configured || querySecret === configured;
+  return secretsMatch(env.NEWSLETTER_DISPATCH_SECRET, bearer);
 }
 
 export function newsletterLinks(origin, unsubToken) {
@@ -227,7 +224,7 @@ export async function onRequestPost(context) {
     return jsonResponse({ ok: true, results });
   } catch (e) {
     console.error('newsletter dispatch', e);
-    return jsonResponse({ error: 'Dispatch failed', detail: String(e?.message || e) }, 500);
+    return jsonResponse({ error: 'Dispatch failed' }, 500);
   }
 }
 

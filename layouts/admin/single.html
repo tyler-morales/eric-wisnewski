@@ -208,7 +208,7 @@
         adminLoading.hidden = false;
         adminList.innerHTML = '';
         adminListError.hidden = true;
-        fetch('/api/comments?admin_secret=' + encodeURIComponent(secret))
+        fetch('/api/comments', { headers: { Authorization: 'Bearer ' + secret } })
           .then(function (res) {
             if (!res.ok) {
               if (res.status === 403 || res.status === 401) {
@@ -268,8 +268,8 @@
         }
         fetch('/api/comments', {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: parseInt(id, 10), author: author, text: text, admin_secret: secret })
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + secret },
+          body: JSON.stringify({ id: parseInt(id, 10), author: author, text: text })
         })
           .then(function (res) {
             if (res.status === 403 || res.status === 401) {
@@ -291,7 +291,11 @@
         var secret = getSecret();
         if (!secret) { showSecretForm('Session expired.'); return; }
         if (!confirm('Delete this comment? Replies (if any) will also be deleted.')) return;
-        fetch('/api/comments?id=' + encodeURIComponent(id) + '&admin_secret=' + encodeURIComponent(secret), { method: 'DELETE' })
+        fetch('/api/comments', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + secret },
+          body: JSON.stringify({ id: parseInt(id, 10) })
+        })
           .then(function (res) {
             if (res.status === 403 || res.status === 401) {
               showSecretForm('Invalid or expired secret.');

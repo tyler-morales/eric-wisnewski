@@ -151,7 +151,7 @@
         adminList.innerHTML = '';
         adminListError.hidden = true;
         adminSummary.hidden = true;
-        fetch('/api/subscribe?admin_secret=' + encodeURIComponent(secret))
+        fetch('/api/subscribe', { headers: { Authorization: 'Bearer ' + secret } })
           .then(function (res) {
             if (!res.ok) {
               if (res.status === 403 || res.status === 401) {

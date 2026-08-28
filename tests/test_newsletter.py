@@ -195,7 +195,7 @@ class NewsletterHelperTests(unittest.TestCase):
     def test_already_subscribed_message_success(self) -> None:
         self.assertEqual(
             call_js_fn(SUBSCRIBE_API, "subscriptionStatusMessage", ["posts"], []),
-            "You're already subscribed to Eric's blog.",
+            "Check your inbox for a confirmation link. You won't get posts until you click it. If you don't see it, look in spam.",
         )
         self.assertEqual(
             call_js_fn(
@@ -204,7 +204,7 @@ class NewsletterHelperTests(unittest.TestCase):
                 ["posts", "gradys-tour"],
                 [],
             ),
-            "You're already subscribed to Eric's blog and Grady's Tour.",
+            "Check your inbox for a confirmation link. You won't get posts until you click it. If you don't see it, look in spam.",
         )
 
     def test_already_subscribed_message_mixed_success(self) -> None:
@@ -215,7 +215,7 @@ class NewsletterHelperTests(unittest.TestCase):
                 ["posts"],
                 ["gradys-tour"],
             ),
-            "You're already subscribed to Eric's blog. Check your inbox to confirm Grady's Tour — you won't get those emails until you click the link.",
+            "Check your inbox for a confirmation link. You won't get posts until you click it. If you don't see it, look in spam.",
         )
 
     def test_already_subscribed_message_new_signup_failure(self) -> None:
@@ -272,6 +272,8 @@ class NewsletterHelperTests(unittest.TestCase):
         source = NEWSLETTER_API.read_text(encoding="utf-8")
         self.assertNotIn("status = 'pending'", source)
         self.assertNotIn("status != 'unsubscribed'", source)
+        self.assertNotIn("searchParams.get('secret')", source)
+        self.assertNotIn("querySecret", source)
 
     def test_is_valid_token_success(self) -> None:
         self.assertTrue(call_js_fn(SUBSCRIBE_API, "isValidToken", "ab" * 24))
@@ -374,11 +376,40 @@ class NewsletterHelperTests(unittest.TestCase):
     def test_is_valid_email_rejects_header_injection_failure(self) -> None:
         self.assertFalse(call_js_fn(SUBSCRIBE_API, "isValidEmail", "a@b.com\nCc:x@y.z"))
 
-    def test_preference_update_plan_pending_confirms_success(self) -> None:
+    def test_preference_update_plan_pending_stays_subscribe_success(self) -> None:
         current = [{"list": "posts", "status": "pending"}]
         plan = call_js_fn(SUBSCRIBE_API, "preferenceUpdatePlan", current, ["posts"])
         self.assertEqual(plan["subscribe"], ["posts"])
         self.assertEqual(plan["unsubscribe"], [])
+
+    def test_manage_save_does_not_confirm_pending_success(self) -> None:
+        source = SUBSCRIBE_API.read_text(encoding="utf-8")
+        self.assertIn("VALUES (?, ?, 'pending', ?, ?)", source)
+        self.assertNotIn("VALUES (?, ?, 'confirmed'", source)
+        self.assertIn("WHERE confirm_token = ? AND status = 'pending'", source)
+        self.assertIn("confirmMailAllowed", source)
+
+    def test_manage_save_does_not_write_confirmed_status_failure(self) -> None:
+        source = SUBSCRIBE_API.read_text(encoding="utf-8")
+        self.assertNotIn(
+            "SET status = 'confirmed', confirmed_at = datetime('now'), unsubscribed_at = NULL",
+            source,
+        )
+
+    def test_confirm_mail_allowed_success(self) -> None:
+        now = 1_700_000_000_000
+        self.assertTrue(call_js_fn(SUBSCRIBE_API, "confirmMailAllowed", None, now))
+        self.assertTrue(call_js_fn(SUBSCRIBE_API, "confirmMailAllowed", "", now))
+
+    def test_confirm_mail_cooldown_failure(self) -> None:
+        now = 1_700_000_000_000
+        recent = "2023-11-14T22:13:00.000Z"
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "confirmMailAllowed", recent, now))
+        sqlite_recent = "2023-11-14 22:13:00"
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "confirmMailAllowed", sqlite_recent, now))
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "confirmMailAllowed", "not-a-date", now))
+        old = "2020-01-01T00:00:00.000Z"
+        self.assertTrue(call_js_fn(SUBSCRIBE_API, "confirmMailAllowed", old, now))
 
     def test_preference_update_plan_subscribe_success(self) -> None:
         current = [{"list": "posts", "status": "confirmed"}]
@@ -524,6 +555,8 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn("PENDING_EMAIL_KEY", js)
         self.assertIn("writePendingEmail", js)
         self.assertIn("readPendingEmail", js)
+        self.assertIn("writeSavedLists", js)
+        self.assertIn("mergeSavedLists", js)
         self.assertIn("setProgress", js)
 
     def test_subscribe_js_skips_confirm_panel_when_already_subscribed_failure(
@@ -607,6 +640,138 @@ class NewsletterTemplateTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(result.stdout), "")
+
+    def test_normalize_saved_lists_success(self) -> None:
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_JS, "normalizeSavedLists", ["posts", "gradys-tour", "posts"]
+            ),
+            ["posts", "gradys-tour"],
+        )
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_JS, "normalizeSavedLists", '["gradys-tour","posts"]'),
+            ["gradys-tour", "posts"],
+        )
+
+    def test_normalize_saved_lists_rejects_junk_failure(self) -> None:
+        self.assertEqual(call_js_fn(SUBSCRIBE_JS, "normalizeSavedLists", ["spam"]), [])
+        self.assertEqual(call_js_fn(SUBSCRIBE_JS, "normalizeSavedLists", None), [])
+        self.assertEqual(call_js_fn(SUBSCRIBE_JS, "normalizeSavedLists", "{"), [])
+        self.assertEqual(call_js_fn(SUBSCRIBE_JS, "normalizeSavedLists", "not-json"), [])
+
+    def test_merge_saved_lists_keeps_prior_success(self) -> None:
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_JS, "mergeSavedLists", ["posts"], ["gradys-tour"]),
+            ["posts", "gradys-tour"],
+        )
+
+    def test_merge_saved_lists_empty_failure(self) -> None:
+        self.assertEqual(call_js_fn(SUBSCRIBE_JS, "mergeSavedLists", None, None), [])
+
+    def test_apply_lists_checks_every_saved_list_success(self) -> None:
+        script = (
+            f"import {{ applyLists }} from {json.dumps(SUBSCRIBE_JS.as_uri())};\n"
+            "const formEl = {\n"
+            "  boxes: [\n"
+            "    { value: 'posts', checked: true },\n"
+            "    { value: 'gradys-tour', checked: false },\n"
+            "    { value: 'da-breakdown-w-tad', checked: false }\n"
+            "  ],\n"
+            "  querySelectorAll() { return this.boxes; }\n"
+            "};\n"
+            "applyLists(formEl, ['posts', 'gradys-tour']);\n"
+            "console.log(JSON.stringify(formEl.boxes.map((b) => [b.value, b.checked])));\n"
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            json.loads(result.stdout),
+            [["posts", True], ["gradys-tour", True], ["da-breakdown-w-tad", False]],
+        )
+
+    def test_apply_lists_empty_unchecks_failure(self) -> None:
+        script = (
+            f"import {{ applyLists }} from {json.dumps(SUBSCRIBE_JS.as_uri())};\n"
+            "const formEl = {\n"
+            "  boxes: [\n"
+            "    { value: 'posts', checked: true },\n"
+            "    { value: 'gradys-tour', checked: true }\n"
+            "  ],\n"
+            "  querySelectorAll() { return this.boxes; }\n"
+            "};\n"
+            "applyLists(formEl, []);\n"
+            "console.log(JSON.stringify(formEl.boxes.map((b) => b.checked)));\n"
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout), [False, False])
+
+    def test_saved_lists_storage_roundtrip_success(self) -> None:
+        script = (
+            f"import {{ writeSavedLists, readSavedLists, SAVED_LISTS_KEY }} from {json.dumps(SUBSCRIBE_JS.as_uri())};\n"
+            "const store = {\n"
+            "  d: {},\n"
+            "  getItem(k) { return Object.prototype.hasOwnProperty.call(this.d, k) ? this.d[k] : null; },\n"
+            "  setItem(k, v) { this.d[k] = String(v); },\n"
+            "  removeItem(k) { delete this.d[k]; }\n"
+            "};\n"
+            "writeSavedLists(store, ['posts', 'gradys-tour', 'spam']);\n"
+            "console.log(JSON.stringify({ lists: readSavedLists(store), key: SAVED_LISTS_KEY }));\n"
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        data = json.loads(result.stdout)
+        self.assertEqual(data["lists"], ["posts", "gradys-tour"])
+        self.assertEqual(data["key"], "subscribe_lists")
+
+    def test_saved_lists_storage_rejects_junk_failure(self) -> None:
+        script = (
+            f"import {{ writeSavedLists, readSavedLists }} from {json.dumps(SUBSCRIBE_JS.as_uri())};\n"
+            "const store = {\n"
+            "  d: {},\n"
+            "  getItem(k) { return Object.prototype.hasOwnProperty.call(this.d, k) ? this.d[k] : null; },\n"
+            "  setItem(k, v) { this.d[k] = String(v); },\n"
+            "  removeItem(k) { delete this.d[k]; }\n"
+            "};\n"
+            "writeSavedLists(store, ['spam']);\n"
+            "writeSavedLists(null, ['posts']);\n"
+            "store.setItem('subscribe_lists', 'not-json');\n"
+            "console.log(JSON.stringify(readSavedLists(store)));\n"
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout), [])
+
+    def test_subscribe_js_restores_saved_lists_on_every_page_success(self) -> None:
+        js = SUBSCRIBE_JS.read_text(encoding="utf-8")
+        self.assertIn("readSavedLists(browserStorage())", js)
+        self.assertIn("applyLists(formEl, saved)", js)
+        self.assertIn("mergeSavedLists", js)
+        self.assertIn("writeSavedLists", js)
 
     def test_manage_page_has_list_checkboxes_success(self) -> None:
         self.assertTrue(SUBSCRIBE_MANAGE_LAYOUT.is_file())

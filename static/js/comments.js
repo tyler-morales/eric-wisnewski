@@ -1,6 +1,6 @@
 export var AUTHOR_KEY = 'comment_author';
 export var EMAIL_KEY = 'comment_email';
-export var EMAIL_REPLY_HINT = "We'll email you if someone replies.";
+export var EMAIL_REPLY_HINT = "We'll email you if someone replies — after you confirm that address.";
 
 export function readIdentity(storage) {
   var author = '';
@@ -550,8 +550,10 @@ function initComments() {
           showError('Session expired. Refresh the page.');
           return;
         }
-        fetch('/api/comments?id=' + encodeURIComponent(c.id) + '&edit_token=' + encodeURIComponent(token), {
-          method: 'DELETE'
+        fetch('/api/comments', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: c.id, edit_token: token })
         })
           .then(function (r) {
             if (!r.ok) return r.json().then(function (data) { throw new Error(data.error || 'Delete failed'); });

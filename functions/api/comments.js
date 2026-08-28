@@ -6,10 +6,23 @@
  * helpers come from lib/, outside the functions/ router.
  */
 
-import { isAdmin, jsonResponse, publicOrigin, sendResendEmail, verifyTurnstile } from '../../lib/api.js';
+import {
+  adminSecretFromRequest,
+  confirmMailAllowed,
+  isAdmin,
+  isValidEmail,
+  isValidToken,
+  jsonResponse,
+  normalizeEmail,
+  publicOrigin,
+  randomToken,
+  sendResendEmail,
+  verifyTurnstile,
+} from '../../lib/api.js';
 
 const MAX_AUTHOR = 200;
 const MAX_TEXT = 5000;
+const MAX_EMAIL = 320;
 
 const LEGACY_TOUR_PREFIX = '/posts/gradys-tour/';
 const LIVE_TOUR_PREFIX = '/gradys-tour/';
@@ -92,14 +105,25 @@ function escapeAttr(s) {
   return escapeHtml(s).replace(/'/g, '&#39;');
 }
 
-/** Address to notify when someone replies; empty means skip. */
-export function parentReplyNotifyTo(parentEmail, replyEmail) {
+/** Address to notify when someone replies; empty means skip. confirmed must be true. */
+export function parentReplyNotifyTo(parentEmail, replyEmail, confirmed) {
+  if (!confirmed) return '';
   const to = typeof parentEmail === 'string' ? parentEmail.trim() : '';
-  if (!to || to.length > 320 || /[\r\n]/.test(to)) return '';
+  if (!to || to.length > MAX_EMAIL || /[\r\n]/.test(to)) return '';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) return '';
   const from = typeof replyEmail === 'string' ? replyEmail.trim() : '';
   if (from && to.toLowerCase() === from.toLowerCase()) return '';
   return to;
+}
+
+export function confirmCommentEmailBody(origin, token) {
+  const link = `${origin}/api/comments?confirm=${encodeURIComponent(token)}`;
+  const text = `Confirm this email to get a message when someone replies to your comment on Eric Wisnewski.\n\nWe won't send reply emails until you click this link:\n\n${link}\n\nIf you did not leave a comment, ignore this.`;
+  const html = `<p>Confirm this email to get a message when someone replies to your comment on Eric Wisnewski.</p>
+<p>We won't send reply emails until you click this link:</p>
+<p><a href="${link}">Confirm email</a></p>
+<p>If you did not leave a comment, ignore this.</p>`;
+  return { subject: 'Confirm your comment email', html, text };
 }
 
 export function replyNotifyEmail({ parentAuthor, replyAuthor, replyText, postUrl }) {
@@ -131,13 +155,43 @@ export async function onRequestGet(context) {
   if (!db) return jsonResponse({ error: 'Comments not configured' }, 503);
 
   const { searchParams } = new URL(context.request.url);
+  const origin = publicOrigin(context.env, context.request);
+
+  if (searchParams.has('confirm')) {
+    const token = String(searchParams.get('confirm') || '').trim();
+    if (!isValidToken(token)) {
+      return Response.redirect(`${origin}/`, 302);
+    }
+    try {
+      const found = await db
+        .prepare('SELECT email, url FROM comments WHERE email_confirm_token = ?')
+        .bind(token)
+        .first();
+      if (!found || !found.email) {
+        return Response.redirect(`${origin}/`, 302);
+      }
+      await db
+        .prepare(
+          `UPDATE comments SET email_confirmed_at = datetime('now')
+           WHERE lower(email) = lower(?) AND email_confirmed_at IS NULL`
+        )
+        .bind(found.email)
+        .run();
+      const path = relocateCommentUrl(found.url) || '/';
+      return Response.redirect(`${origin}${path}#comments`, 302);
+    } catch (e) {
+      console.error('comment email confirm', e);
+      return Response.redirect(`${origin}/`, 302);
+    }
+  }
+
   const url = searchParams.get('url');
-  const adminSecret = searchParams.get('admin_secret') ?? '';
+  const adminSecret = adminSecretFromRequest(context.request);
 
   if (adminSecret && isAdmin(adminSecret, context.env)) {
     try {
       const stmt = db.prepare(
-        `SELECT id, url, author, email, body, created_at, parent_id, edit_token, status FROM comments
+        `SELECT id, url, author, email, body, created_at, parent_id, status FROM comments
          ORDER BY created_at DESC`
       );
       const { results } = await stmt.all();
@@ -146,7 +200,7 @@ export async function onRequestGet(context) {
       const msg = e?.message != null ? String(e.message) : '';
       if (/no such column: status/i.test(msg)) {
         const stmt = db.prepare(
-          'SELECT id, url, author, email, body, created_at, parent_id, edit_token FROM comments ORDER BY created_at DESC'
+          'SELECT id, url, author, email, body, created_at, parent_id FROM comments ORDER BY created_at DESC'
         );
         const { results } = await stmt.all();
         return jsonResponse((results ?? []).map((row) => ({ ...row, status: 'approved' })));
@@ -229,7 +283,14 @@ export async function onRequestPost(context) {
   const url = relocateCommentUrl(rawUrl);
   const author = body.author != null ? String(body.author).trim() : '';
   const text = body.text != null ? String(body.text).trim() : '';
-  const email = body.email != null ? String(body.email).trim() : null;
+  const rawEmail = body.email != null ? String(body.email).trim() : '';
+  let email = null;
+  if (rawEmail) {
+    email = normalizeEmail(rawEmail);
+    if (!isValidEmail(email)) {
+      return jsonResponse({ error: 'Invalid email' }, 400);
+    }
+  }
   const parentId = body.parent_id != null ? Number(body.parent_id) : null;
 
   if (!url || !isValidUrlParam(rawUrl)) {
@@ -250,39 +311,115 @@ export async function onRequestPost(context) {
       return jsonResponse({ error: 'Invalid parent_id' }, 400);
     }
     const variants = commentUrlLookupVariants(url);
-    parentRow = await db
-      .prepare(
-        `SELECT id, author, email FROM comments WHERE id = ? AND url IN (${urlInPlaceholders(variants)})`
-      )
-      .bind(parentId, ...variants)
-      .first();
+    try {
+      parentRow = await db
+        .prepare(
+          `SELECT id, author, email, email_confirmed_at FROM comments WHERE id = ? AND url IN (${urlInPlaceholders(variants)})`
+        )
+        .bind(parentId, ...variants)
+        .first();
+    } catch (e) {
+      const msg = e?.message != null ? String(e.message) : '';
+      if (/no such column: email_confirmed_at/i.test(msg)) {
+        parentRow = await db
+          .prepare(
+            `SELECT id, author, email FROM comments WHERE id = ? AND url IN (${urlInPlaceholders(variants)})`
+          )
+          .bind(parentId, ...variants)
+          .first();
+      } else {
+        throw e;
+      }
+    }
     if (!parentRow) {
       return jsonResponse({ error: 'Parent comment not found' }, 400);
     }
   }
 
   const editToken = crypto.randomUUID();
+  let emailConfirmToken = null;
+  let emailConfirmedAt = null;
+  let sendConfirm = false;
+
+  if (email) {
+    try {
+      const prior = await db
+        .prepare(
+          `SELECT email_confirmed_at FROM comments
+           WHERE lower(email) = ? AND email_confirmed_at IS NOT NULL LIMIT 1`
+        )
+        .bind(email)
+        .first();
+      if (prior && prior.email_confirmed_at) {
+        // ponytail: email-level confirm (like newsletter). A later comment with
+        // this address skips a second click; replies still go only to this inbox.
+        emailConfirmedAt = prior.email_confirmed_at;
+      } else {
+        emailConfirmToken = randomToken();
+        const lastSent = await db
+          .prepare(
+            `SELECT created_at FROM comments
+             WHERE lower(email) = ? AND email_confirm_token IS NOT NULL
+             ORDER BY created_at DESC LIMIT 1`
+          )
+          .bind(email)
+          .first();
+        sendConfirm = confirmMailAllowed(lastSent && lastSent.created_at);
+      }
+    } catch (e) {
+      const msg = e?.message != null ? String(e.message) : '';
+      if (!/no such column/i.test(msg)) throw e;
+    }
+  }
 
   try {
     let meta;
     try {
       const stmt = db.prepare(
-        'INSERT INTO comments (url, author, email, body, parent_id, edit_token, status) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        `INSERT INTO comments
+         (url, author, email, body, parent_id, edit_token, status, email_confirm_token, email_confirmed_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
       );
       const result = await stmt
-        .bind(url, author, email || null, text, parentId, editToken, 'approved')
+        .bind(
+          url,
+          author,
+          email || null,
+          text,
+          parentId,
+          editToken,
+          'approved',
+          emailConfirmToken,
+          emailConfirmedAt
+        )
         .run();
       meta = result.meta;
     } catch (insertErr) {
       const msg = insertErr?.message != null ? String(insertErr.message) : '';
-      if (/no such column: status/i.test(msg)) {
-        const stmt = db.prepare(
-          'INSERT INTO comments (url, author, email, body, parent_id, edit_token) VALUES (?, ?, ?, ?, ?, ?)'
-        );
-        const result = await stmt
-          .bind(url, author, email || null, text, parentId, editToken)
-          .run();
-        meta = result.meta;
+      if (/no such column: email_confirm_token/i.test(msg) || /no such column: status/i.test(msg)) {
+        try {
+          const stmt = db.prepare(
+            'INSERT INTO comments (url, author, email, body, parent_id, edit_token, status) VALUES (?, ?, ?, ?, ?, ?, ?)'
+          );
+          const result = await stmt
+            .bind(url, author, email || null, text, parentId, editToken, 'approved')
+            .run();
+          meta = result.meta;
+        } catch (statusErr) {
+          const statusMsg = statusErr?.message != null ? String(statusErr.message) : '';
+          if (/no such column: status/i.test(statusMsg)) {
+            const stmt = db.prepare(
+              'INSERT INTO comments (url, author, email, body, parent_id, edit_token) VALUES (?, ?, ?, ?, ?, ?)'
+            );
+            const result = await stmt
+              .bind(url, author, email || null, text, parentId, editToken)
+              .run();
+            meta = result.meta;
+          } else {
+            throw statusErr;
+          }
+        }
+        sendConfirm = false;
       } else {
         throw insertErr;
       }
@@ -300,7 +437,11 @@ export async function onRequestPost(context) {
     if (!row) {
       return jsonResponse({ error: 'Failed to save comment' }, 500);
     }
-    const notifyTo = parentReplyNotifyTo(parentRow && parentRow.email, email);
+    const notifyTo = parentReplyNotifyTo(
+      parentRow && parentRow.email,
+      email,
+      Boolean(parentRow && parentRow.email_confirmed_at)
+    );
     if (notifyTo && context.env.RESEND_API_KEY) {
       const origin = publicOrigin(context.env, context.request);
       const mail = replyNotifyEmail({
@@ -311,6 +452,15 @@ export async function onRequestPost(context) {
       });
       if (typeof context.waitUntil === 'function') {
         context.waitUntil(sendParentReplyEmail(context.env, notifyTo, mail));
+      }
+    }
+    if (sendConfirm && emailConfirmToken && context.env.RESEND_API_KEY) {
+      const origin = publicOrigin(context.env, context.request);
+      const mail = confirmCommentEmailBody(origin, emailConfirmToken);
+      if (typeof context.waitUntil === 'function') {
+        context.waitUntil(sendParentReplyEmail(context.env, email, mail));
+      } else {
+        await sendParentReplyEmail(context.env, email, mail);
       }
     }
     return jsonResponse({ ...row, edit_token: editToken }, 201);
@@ -331,11 +481,10 @@ export async function onRequestPut(context) {
     return jsonResponse({ error: 'Invalid JSON body' }, 400);
   }
 
-  const { searchParams } = new URL(context.request.url);
   const id = body.id != null ? Number(body.id) : null;
   const text = body.text != null ? String(body.text).trim() : '';
   const editToken = body.edit_token != null ? String(body.edit_token).trim() : '';
-  const adminSecret = body.admin_secret != null ? String(body.admin_secret).trim() : (searchParams.get('admin_secret') ?? '');
+  const adminSecret = adminSecretFromRequest(context.request, body);
   const author = body.author != null ? String(body.author).trim() : null;
   const asAdmin = adminSecret && isAdmin(adminSecret, context.env);
 
@@ -357,7 +506,7 @@ export async function onRequestPut(context) {
   }
 
   const row = await db
-    .prepare('SELECT id, edit_token, email FROM comments WHERE id = ?')
+    .prepare('SELECT id, edit_token FROM comments WHERE id = ?')
     .bind(id)
     .first();
   if (!row) return jsonResponse({ error: 'Comment not found' }, 404);
@@ -367,11 +516,7 @@ export async function onRequestPut(context) {
 
   try {
     if (author !== null) {
-      if (row.email) {
-        await db.prepare('UPDATE comments SET author = ? WHERE email = ?').bind(author, row.email).run();
-      } else {
-        await db.prepare('UPDATE comments SET author = ? WHERE id = ?').bind(author, id).run();
-      }
+      await db.prepare('UPDATE comments SET author = ? WHERE id = ?').bind(author, id).run();
     }
     await db.prepare('UPDATE comments SET body = ? WHERE id = ?').bind(text, id).run();
     const updated = await db
@@ -390,10 +535,17 @@ export async function onRequestDelete(context) {
   const db = context.env.COMMENTS_DB;
   if (!db) return jsonResponse({ error: 'Comments not configured' }, 503);
 
-  const { searchParams } = new URL(context.request.url);
-  const id = searchParams.get('id') != null ? Number(searchParams.get('id')) : null;
-  const editToken = searchParams.get('edit_token') ?? '';
-  const adminSecret = searchParams.get('admin_secret') ?? '';
+  let body = {};
+  try {
+    const raw = await context.request.text();
+    if (raw) body = JSON.parse(raw);
+  } catch {
+    return jsonResponse({ error: 'Invalid JSON body' }, 400);
+  }
+
+  const id = body.id != null ? Number(body.id) : null;
+  const editToken = body.edit_token != null ? String(body.edit_token).trim() : '';
+  const adminSecret = adminSecretFromRequest(context.request, body);
   const asAdmin = adminSecret && isAdmin(adminSecret, context.env);
 
   if (!Number.isInteger(id) || id < 1) {

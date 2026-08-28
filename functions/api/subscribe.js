@@ -4,42 +4,38 @@
  */
 
 import {
+  adminSecretFromRequest,
+  confirmMailAllowed,
   isAdmin,
+  isValidEmail,
+  isValidToken,
   jsonResponse,
   listLabel,
   newsletterFromHeader,
+  normalizeEmail,
   publicOrigin,
+  randomToken,
   sendResendEmail,
   verifyTurnstile,
 } from '../../lib/api.js';
 
 const VALID_LISTS = ['posts', 'gradys-tour', 'da-breakdown-w-tad'];
-const MAX_EMAIL = 320;
 const GENERIC_OK =
   "Check your inbox for a confirmation link. You won't get posts until you click it. If you don't see it, look in spam.";
-const TOKEN_RE = /^[a-f0-9]{48}$/i;
 
-export { VALID_LISTS, listLabel, newsletterFromHeader, publicOrigin };
+export {
+  VALID_LISTS,
+  confirmMailAllowed,
+  isValidEmail,
+  isValidToken,
+  listLabel,
+  newsletterFromHeader,
+  normalizeEmail,
+  publicOrigin,
+};
 
 export function getValidLists() {
   return [...VALID_LISTS];
-}
-
-export function normalizeEmail(email) {
-  if (typeof email !== 'string') return '';
-  return email.trim().toLowerCase();
-}
-
-export function isValidEmail(email) {
-  if (typeof email !== 'string' || !email) return false;
-  if (email.length > MAX_EMAIL) return false;
-  if (/[\r\n]/.test(email)) return false;
-  // Practical RFC5322-ish check; reject spaces and missing domain.
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-export function isValidToken(token) {
-  return typeof token === 'string' && TOKEN_RE.test(token);
 }
 
 export function normalizeLists(lists) {
@@ -63,15 +59,7 @@ export function joinListLabels(lists) {
   return `${labels.slice(0, -1).join(', ')} and ${labels[labels.length - 1]}`;
 }
 
-export function subscriptionStatusMessage(alreadyConfirmed, needingConfirm) {
-  const confirmed = normalizeLists(alreadyConfirmed);
-  const pending = normalizeLists(needingConfirm);
-  if (!pending.length && confirmed.length) {
-    return `You're already subscribed to ${joinListLabels(confirmed)}.`;
-  }
-  if (confirmed.length && pending.length) {
-    return `You're already subscribed to ${joinListLabels(confirmed)}. Check your inbox to confirm ${joinListLabels(pending)} — you won't get those emails until you click the link.`;
-  }
+export function subscriptionStatusMessage(_alreadyConfirmed, _needingConfirm) {
   return GENERIC_OK;
 }
 
@@ -172,12 +160,6 @@ function redirect(path) {
   return Response.redirect(path, 302);
 }
 
-function randomToken() {
-  const bytes = new Uint8Array(24);
-  crypto.getRandomValues(bytes);
-  return [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
-}
-
 export function confirmEmailBody(origin, token, lists) {
   const labels = lists.map(listLabel).filter(Boolean).join(' and ');
   const link = `${origin}/api/subscribe?confirm=${encodeURIComponent(token)}`;
@@ -227,33 +209,39 @@ async function savePreferences(context, body) {
     }
 
     const existing = await db
-      .prepare('SELECT id, list, status FROM subscribers WHERE email = ?')
+      .prepare('SELECT id, list, status, unsub_token FROM subscribers WHERE email = ?')
       .bind(owner.email)
       .all();
     const currentRows = existing.results || [];
     const byList = new Map(currentRows.map((row) => [row.list, row]));
     const plan = preferenceUpdatePlan(currentRows, lists);
+    const needingConfirm = [];
+    const confirmToken = randomToken();
 
     for (const list of plan.subscribe) {
       const row = byList.get(list);
+      if (row && row.status === 'pending') continue;
+      const unsub = (row && row.unsub_token) || randomToken();
       if (row) {
         await db
           .prepare(
             `UPDATE subscribers
-             SET status = 'confirmed', confirmed_at = datetime('now'), unsubscribed_at = NULL
+             SET status = 'pending', confirm_token = ?, unsub_token = ?,
+                 confirmed_at = NULL, unsubscribed_at = NULL
              WHERE id = ?`
           )
-          .bind(row.id)
+          .bind(confirmToken, unsub, row.id)
           .run();
       } else {
         await db
           .prepare(
-            `INSERT INTO subscribers (email, list, status, confirm_token, unsub_token, confirmed_at)
-             VALUES (?, ?, 'confirmed', ?, ?, datetime('now'))`
+            `INSERT INTO subscribers (email, list, status, confirm_token, unsub_token)
+             VALUES (?, ?, 'pending', ?, ?)`
           )
-          .bind(owner.email, list, randomToken(), randomToken())
+          .bind(owner.email, list, confirmToken, unsub)
           .run();
       }
+      needingConfirm.push(list);
     }
 
     for (const list of plan.unsubscribe) {
@@ -269,9 +257,35 @@ async function savePreferences(context, body) {
         .run();
     }
 
-    const message = lists.length
-      ? `Preferences saved. You'll get email for ${joinListLabels(lists)}.`
-      : "You're unsubscribed from all emails.";
+    if (needingConfirm.length && context.env.RESEND_API_KEY) {
+      const lastSent = await db
+        .prepare('SELECT MAX(confirm_sent_at) AS sent FROM subscribers WHERE email = ?')
+        .bind(owner.email)
+        .first();
+      if (confirmMailAllowed(lastSent && lastSent.sent)) {
+        const origin = publicOrigin(context.env, context.request);
+        const mail = confirmEmailBody(origin, confirmToken, needingConfirm);
+        await sendResendEmail(context.env, {
+          to: owner.email,
+          subject: mail.subject,
+          html: mail.html,
+          text: mail.text,
+        });
+        await db
+          .prepare(
+            `UPDATE subscribers SET confirm_sent_at = datetime('now')
+             WHERE email = ? AND list IN (${needingConfirm.map(() => '?').join(', ')})`
+          )
+          .bind(owner.email, ...needingConfirm)
+          .run();
+      }
+    }
+
+    const message = needingConfirm.length
+      ? `Check your inbox to confirm ${joinListLabels(needingConfirm)}. You won't get those emails until you click the link.`
+      : lists.length
+        ? `Preferences saved. You'll get email for ${joinListLabels(lists)}.`
+        : "You're unsubscribed from all emails.";
     return jsonResponse({ ok: true, message, lists });
   } catch (e) {
     console.error('subscribe preferences POST', e);
@@ -325,8 +339,19 @@ export async function onRequestPost(context) {
   const origin = publicOrigin(context.env, context.request);
   const alreadyConfirmed = [];
   const listsNeedingConfirm = [];
+  let rotateAndSend = true;
 
   try {
+    try {
+      const lastSent = await db
+        .prepare('SELECT MAX(confirm_sent_at) AS sent FROM subscribers WHERE email = ?')
+        .bind(email)
+        .first();
+      rotateAndSend = confirmMailAllowed(lastSent && lastSent.sent);
+    } catch {
+      rotateAndSend = true;
+    }
+
     for (const list of lists) {
       const existing = await db
         .prepare('SELECT id, status, confirm_token, unsub_token FROM subscribers WHERE email = ? AND list = ?')
@@ -338,7 +363,13 @@ export async function onRequestPost(context) {
         continue;
       }
 
+      if (existing && existing.status === 'pending' && !rotateAndSend) {
+        listsNeedingConfirm.push(list);
+        continue;
+      }
+
       const unsubToken = existing?.unsub_token || randomToken();
+      const rowToken = rotateAndSend ? confirmToken : existing?.confirm_token || confirmToken;
 
       if (existing) {
         await db
@@ -347,7 +378,7 @@ export async function onRequestPost(context) {
              SET status = 'pending', confirm_token = ?, unsub_token = ?, confirmed_at = NULL, unsubscribed_at = NULL
              WHERE id = ?`
           )
-          .bind(confirmToken, unsubToken, existing.id)
+          .bind(rowToken, unsubToken, existing.id)
           .run();
       } else {
         await db
@@ -355,13 +386,13 @@ export async function onRequestPost(context) {
             `INSERT INTO subscribers (email, list, status, confirm_token, unsub_token)
              VALUES (?, ?, 'pending', ?, ?)`
           )
-          .bind(email, list, confirmToken, unsubToken)
+          .bind(email, list, rowToken, unsubToken)
           .run();
       }
       listsNeedingConfirm.push(list);
     }
 
-    if (listsNeedingConfirm.length) {
+    if (listsNeedingConfirm.length && rotateAndSend) {
       if (!context.env.RESEND_API_KEY) {
         return jsonResponse({ error: 'Could not send confirmation email. Try again later.' }, 503);
       }
@@ -372,6 +403,13 @@ export async function onRequestPost(context) {
         html: mail.html,
         text: mail.text,
       });
+      await db
+        .prepare(
+          `UPDATE subscribers SET confirm_sent_at = datetime('now')
+           WHERE email = ? AND list IN (${listsNeedingConfirm.map(() => '?').join(', ')})`
+        )
+        .bind(email, ...listsNeedingConfirm)
+        .run();
     }
 
     return jsonResponse({
@@ -428,7 +466,31 @@ export async function onRequestGet(context) {
     return redirect(managePageUrl(origin, token));
   }
 
-  const adminSecret = String(searchParams.get('admin_secret') || '').trim();
+  if (searchParams.has('preferences')) {
+    const token = String(searchParams.get('preferences') || '').trim();
+    if (!isValidToken(token)) {
+      return jsonResponse({ error: 'Invalid or expired link' }, 404);
+    }
+    try {
+      const owner = await db
+        .prepare('SELECT email FROM subscribers WHERE unsub_token = ?')
+        .bind(token)
+        .first();
+      if (!owner || !owner.email) {
+        return jsonResponse({ error: 'Invalid or expired link' }, 404);
+      }
+      const rows = await db
+        .prepare('SELECT list, status FROM subscribers WHERE email = ?')
+        .bind(owner.email)
+        .all();
+      return jsonResponse(preferencesPayload(owner.email, rows.results || []));
+    } catch (e) {
+      console.error('subscribe preferences GET', e);
+      return jsonResponse({ error: 'Failed to load preferences' }, 500);
+    }
+  }
+
+  const adminSecret = adminSecretFromRequest(context.request);
   if (adminSecret) {
     if (!isAdmin(adminSecret, context.env)) {
       const configuredSet =
@@ -454,30 +516,6 @@ export async function onRequestGet(context) {
     } catch (e) {
       console.error('subscribe admin list', e);
       return jsonResponse({ error: 'Failed to load subscribers' }, 500);
-    }
-  }
-
-  if (searchParams.has('preferences')) {
-    const token = String(searchParams.get('preferences') || '').trim();
-    if (!isValidToken(token)) {
-      return jsonResponse({ error: 'Invalid or expired link' }, 404);
-    }
-    try {
-      const owner = await db
-        .prepare('SELECT email FROM subscribers WHERE unsub_token = ?')
-        .bind(token)
-        .first();
-      if (!owner || !owner.email) {
-        return jsonResponse({ error: 'Invalid or expired link' }, 404);
-      }
-      const rows = await db
-        .prepare('SELECT list, status FROM subscribers WHERE email = ?')
-        .bind(owner.email)
-        .all();
-      return jsonResponse(preferencesPayload(owner.email, rows.results || []));
-    } catch (e) {
-      console.error('subscribe preferences GET', e);
-      return jsonResponse({ error: 'Failed to load preferences' }, 500);
     }
   }
 
