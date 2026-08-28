@@ -5,4 +5,6 @@ author: tad
 date: 2026-08-28T11:39:00Z
 draft: true
 ---
-Note for Tad. The slug is the url. Usually it's the title with hyphens. For example, if your title is Bears Opener 2027, your slug would be bears-opener-2027, but it can be whatever you want
+Note for Tad. The slug is the url. Usually it's the title with hyphens. For example, if your title is Bears Opener 2027, your slug would be bears-opener-2027, but it can be whatever you want  
+  
+Replace the contents on this page for your first post. 
