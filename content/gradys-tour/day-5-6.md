@@ -6,7 +6,7 @@ date: 2026-08-26T22:47:00Z
 draft: false
 image: /images/uploads/IMG_1451-1.jpeg
 ---
-Aug 26, 26’
+Aug 27, 26’
 
 Day 5 and 7: Mile 381
 
