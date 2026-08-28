@@ -14,6 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 FUNCTIONS_DIR = REPO_ROOT / "functions"
 COMMENTS_API = REPO_ROOT / "functions" / "api" / "comments.js"
 ADMIN_LAYOUT = REPO_ROOT / "layouts" / "admin" / "single.html"
+ADMIN_COMMENTS_JS = REPO_ROOT / "static" / "js" / "admin-comments.js"
 COMMENTS_PARTIAL = REPO_ROOT / "layouts" / "partials" / "comments.html"
 COMMENTS_WIDGET = REPO_ROOT / "static" / "js" / "comments.js"
 REDIRECTS = REPO_ROOT / "static" / "_redirects"
@@ -116,8 +117,10 @@ class CommentUrlWiringTests(unittest.TestCase):
 
     def test_admin_links_use_live_post_url(self) -> None:
         template = ADMIN_LAYOUT.read_text(encoding="utf-8")
-        self.assertIn("relocateCommentUrl", template)
-        self.assertIn("link.href = relocateCommentUrl", template)
+        script = ADMIN_COMMENTS_JS.read_text(encoding="utf-8")
+        self.assertIn("/js/admin-comments.js", template)
+        self.assertIn("relocateCommentUrl", script)
+        self.assertIn("link.href = relocateCommentUrl", script)
 
 
 class TourRedirectAndPermalinkTests(unittest.TestCase):

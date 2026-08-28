@@ -11,6 +11,6 @@
   </article>
 </main>
 {{ if in .RelPermalink "/subscribe/confirmed/" }}
-<script type="module" src="/js/subscribe.js"></script>
+<script type="module" src="{{ "/js/subscribe.js" | relURL }}?v={{ md5 (readFile "static/js/subscribe.js") }}"></script>
 {{ end }}
 {{ end }}

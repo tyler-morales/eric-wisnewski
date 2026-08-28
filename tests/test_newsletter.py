@@ -540,6 +540,7 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn('data-step="confirm"', html)
         self.assertIn('type="module"', html)
         self.assertNotIn('" /js/subscribe.js"', html)
+        self.assertIn('md5 (readFile "static/js/subscribe.js")', html)
         self.assertNotIn("Choose Eric", html)
         self.assertNotIn("confirmation link", html)
         self.assertNotIn("subscribe-intro", html)
@@ -557,6 +558,7 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn("readPendingEmail", js)
         self.assertIn("writeSavedLists", js)
         self.assertIn("mergeSavedLists", js)
+        self.assertIn("hasSavedLists", js)
         self.assertIn("setProgress", js)
 
     def test_subscribe_js_skips_confirm_panel_when_already_subscribed_failure(
@@ -766,12 +768,60 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(result.stdout), [])
 
+    def test_has_saved_lists_success(self) -> None:
+        script = (
+            f"import {{ writeSavedLists, hasSavedLists }} from {json.dumps(SUBSCRIBE_JS.as_uri())};\n"
+            "const store = {\n"
+            "  d: {},\n"
+            "  getItem(k) { return Object.prototype.hasOwnProperty.call(this.d, k) ? this.d[k] : null; },\n"
+            "  setItem(k, v) { this.d[k] = String(v); },\n"
+            "  removeItem(k) { delete this.d[k]; }\n"
+            "};\n"
+            "writeSavedLists(store, []);\n"
+            "console.log(JSON.stringify(hasSavedLists(store)));\n"
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(json.loads(result.stdout))
+
+    def test_has_saved_lists_missing_failure(self) -> None:
+        script = (
+            f"import {{ hasSavedLists }} from {json.dumps(SUBSCRIBE_JS.as_uri())};\n"
+            "const store = {\n"
+            "  d: {},\n"
+            "  getItem(k) { return Object.prototype.hasOwnProperty.call(this.d, k) ? this.d[k] : null; },\n"
+            "  setItem(k, v) { this.d[k] = String(v); }\n"
+            "};\n"
+            "console.log(JSON.stringify([hasSavedLists(store), hasSavedLists(null)]));\n"
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout), [False, False])
+
     def test_subscribe_js_restores_saved_lists_on_every_page_success(self) -> None:
         js = SUBSCRIBE_JS.read_text(encoding="utf-8")
-        self.assertIn("readSavedLists(browserStorage())", js)
-        self.assertIn("applyLists(formEl, saved)", js)
+        self.assertIn("hasSavedLists(browserStorage())", js)
+        self.assertIn("applyLists(formEl, readSavedLists(browserStorage()))", js)
+        self.assertIn("target.name !== 'lists'", js)
+        self.assertIn("writeSavedLists(browserStorage(), selectedLists(formEl))", js)
         self.assertIn("mergeSavedLists", js)
-        self.assertIn("writeSavedLists", js)
+
+    def test_subscribe_js_skips_persist_for_email_field_failure(self) -> None:
+        js = SUBSCRIBE_JS.read_text(encoding="utf-8")
+        self.assertIn("target.name !== 'lists'", js)
+        self.assertNotIn("target.name !== 'email'", js)
 
     def test_manage_page_has_list_checkboxes_success(self) -> None:
         self.assertTrue(SUBSCRIBE_MANAGE_LAYOUT.is_file())

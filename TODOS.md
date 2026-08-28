@@ -2,9 +2,11 @@
 
 ## Next
 - [ ] Publish the Updates log when the site is ready: delete the `build:`/`cascade:` block in `content/updates/_index.md` and push. No other file holds the switch, and the suite passes in both states.
-- [ ] Run D1 migration `0005_email_confirm_guard.sql` on production (comment email confirm columns + subscriber `confirm_sent_at`). Until that runs, new comment confirm/reply-mail guards fall back to “don’t notify”.
+- [x] Run D1 migration `0005_email_confirm_guard.sql` on production (comment email confirm columns + subscriber `confirm_sent_at`). Applied remotely 28 Aug 2026 (`5` queries, `49` rows written).
 
 ## Done
+- [x] Subscribe checkboxes persist on toggle, not only after a successful POST: checking Eric on a Grady post still shows Eric after refresh. Restore whenever `subscribe_lists` exists; cache-bust `/js/subscribe.js`. Tests in `tests/test_newsletter.py`.
+- [x] Admin comments grouped by post author with an All / Eric / Grady / Tad filter; writers, posts, and comments are newest-first. Post titles replace raw URLs. Inline admin script moved to `static/js/admin-comments.js`. Tests in `tests/test_admin_comments.py`. Deleted/consolidated: alphabetical `groupByUrl` list in `layouts/admin/single.html`.
 - [x] Subscribe checkboxes remember every list this browser already chose (`subscribe_lists` in localStorage), so Eric and Grady both stay checked on Grady’s pages (and the reverse). Signup unions new checks with the saved set; manage preferences replaces it. Tests in `tests/test_newsletter.py`.
 - [x] Impersonation guards: comment reply mail requires a confirm click on that inbox; PUT renames one comment id (not every row with the email); manage-token saves stay pending until `?confirm=`; admin secret is `Authorization: Bearer` (not the query string) and comment admin JSON omits `edit_token`; subscribe copy is generic; 24h confirm-mail cooldown; `Referrer-Policy` on `/subscribe/manage/`. Shared `secretsMatch` / `isValidEmail` / `confirmMailAllowed` in `lib/api.js`. Dispatch no longer accepts `?secret=`. Tests in `tests/test_comment_identity.py`, `tests/test_newsletter.py`, `tests/test_admin_subscribers.py`. Deleted/consolidated: email-wide author UPDATE; `admin_secret` query auth; list-specific “already subscribed” API copy; query-string dispatch secret.
 

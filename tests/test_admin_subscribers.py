@@ -15,6 +15,7 @@ COMMENTS_API = REPO_ROOT / "functions" / "api" / "comments.js"
 SHARED_API = REPO_ROOT / "lib" / "api.js"
 SUBSCRIBERS_LAYOUT = REPO_ROOT / "layouts" / "admin" / "subscribers.html"
 COMMENTS_LAYOUT = REPO_ROOT / "layouts" / "admin" / "single.html"
+ADMIN_COMMENTS_JS = REPO_ROOT / "static" / "js" / "admin-comments.js"
 SUBSCRIBERS_CONTENT = REPO_ROOT / "content" / "admin" / "subscribers.md"
 COMMENTS_CONTENT = REPO_ROOT / "content" / "admin" / "comments.md"
 ADMIN_NAV = REPO_ROOT / "layouts" / "partials" / "admin-nav.html"
@@ -166,9 +167,11 @@ class AdminSubscriberSourceTests(unittest.TestCase):
 
     def test_comments_layout_links_subscribers_success(self) -> None:
         comments = COMMENTS_LAYOUT.read_text(encoding="utf-8")
+        script = ADMIN_COMMENTS_JS.read_text(encoding="utf-8")
         self.assertIn('partial "admin-nav.html"', comments)
-        self.assertIn("Authorization: 'Bearer '", comments)
+        self.assertIn("Authorization: 'Bearer '", script)
         self.assertNotIn("admin_secret=", comments)
+        self.assertNotIn("admin_secret=", script)
         nav = ADMIN_NAV.read_text(encoding="utf-8")
         self.assertIn('href="/admin/subscribers/"', nav)
         self.assertIn('href="/admin/comments/"', nav)
@@ -239,8 +242,12 @@ class AdminSubscriberBuildTests(unittest.TestCase):
     def test_comments_page_links_subscribers_success(self) -> None:
         self.assertIn("/admin/subscribers/", self.comments_html)
         self.assertIn('name="robots" content="noindex, nofollow"', self.comments_html)
-        self.assertIn("Authorization: 'Bearer '", self.comments_html)
         self.assertNotIn("admin_secret=", self.comments_html)
+        comments_js = (self._output_dir / "js" / "admin-comments.js").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Authorization: 'Bearer '", comments_js)
+        self.assertNotIn("admin_secret=", comments_js)
 
     def test_home_does_not_list_admin_pages_failure(self) -> None:
         home = (self._output_dir / "index.html").read_text(encoding="utf-8")

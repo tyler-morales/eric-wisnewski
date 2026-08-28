@@ -81,6 +81,15 @@ export function writeSavedLists(store, lists) {
   } catch (_) { }
 }
 
+export function hasSavedLists(store) {
+  if (!store || typeof store.getItem !== 'function') return false;
+  try {
+    return store.getItem(SAVED_LISTS_KEY) != null;
+  } catch (_) {
+    return false;
+  }
+}
+
 export function mergeSavedLists(current, added) {
   return normalizeSavedLists([].concat(current || [], added || []));
 }
@@ -272,6 +281,12 @@ function initSignup() {
     }
   } catch (_) { }
 
+  formEl.addEventListener('change', function (e) {
+    var target = e.target;
+    if (!target || target.name !== 'lists') return;
+    writeSavedLists(browserStorage(), selectedLists(formEl));
+  });
+
   formEl.addEventListener('submit', function (e) {
     e.preventDefault();
     clearMessages(statusEl, errorEl);
@@ -343,8 +358,9 @@ function initSignup() {
       });
   });
 
-  var saved = readSavedLists(browserStorage());
-  if (saved.length) applyLists(formEl, saved);
+  if (hasSavedLists(browserStorage())) {
+    applyLists(formEl, readSavedLists(browserStorage()));
+  }
 
   var pending = readPendingEmail(browserStorage());
   if (pending) showConfirmNext(pending, true);

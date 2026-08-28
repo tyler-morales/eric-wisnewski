@@ -49,5 +49,5 @@
   </div>
   <noscript>Please enable JavaScript to subscribe by email.</noscript>
 </section>
-<script type="module" src="/js/subscribe.js"></script>
+<script type="module" src="{{ "/js/subscribe.js" | relURL }}?v={{ md5 (readFile "static/js/subscribe.js") }}"></script>
 {{ end }}
