@@ -66,6 +66,14 @@ The next day we go for a 37 mile casual ride, stopping in a bustling French hill
 
 Gilles is so excited to have us Americans staying he runs out the next day to find us at a local coffee shop just to give us a great tip on a local island bridge you can only bike on at low tide. It’s full of locals harvesting oysters and fishing.
 
+![](/images/uploads/IMG_1476.jpeg)
+
+*The Passage du Gois at low tide, the road is open today 9:30-1pm*
+
+![](/images/uploads/IMG_1475.jpeg)
+
+*The Passage du Gois. Taking advantage of low tide locals harvest oysters and clams*
+
 ![](/images/uploads/7fc75d80-b576-4aeb-84e2-07a81f4b183a.jpeg)
 
 *Pornic, France. The route is starting to feel much more Mediterranean.*
