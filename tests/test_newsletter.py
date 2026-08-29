@@ -239,6 +239,59 @@ class NewsletterHelperTests(unittest.TestCase):
         self.assertFalse(call_js_fn(SUBSCRIBE_API, "signupNeedsConfirm", None))
         self.assertFalse(call_js_fn(SUBSCRIBE_API, "signupNeedsConfirm", ["nope"]))
 
+    def test_signup_already_subscribed_success(self) -> None:
+        self.assertTrue(
+            call_js_fn(SUBSCRIBE_API, "signupAlreadySubscribed", ["posts"], [])
+        )
+        self.assertTrue(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "signupAlreadySubscribed",
+                ["posts", "gradys-tour"],
+                [],
+            )
+        )
+
+    def test_signup_already_subscribed_failure(self) -> None:
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "signupAlreadySubscribed", [], []))
+        self.assertFalse(
+            call_js_fn(SUBSCRIBE_API, "signupAlreadySubscribed", [], ["posts"])
+        )
+        self.assertFalse(
+            call_js_fn(
+                SUBSCRIBE_API, "signupAlreadySubscribed", ["posts"], ["gradys-tour"]
+            )
+        )
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "signupAlreadySubscribed", None, None))
+
+    def test_manage_email_body_success(self) -> None:
+        mail = call_js_fn(
+            SUBSCRIBE_API,
+            "manageEmailBody",
+            "https://ericwisnewski.com",
+            "ab" * 24,
+        )
+        self.assertEqual(mail["subject"], "Manage your subscriptions — Eric Wisnewski")
+        self.assertIn(
+            "https://ericwisnewski.com/subscribe/manage/?token=", mail["text"]
+        )
+        self.assertIn(
+            "https://ericwisnewski.com/subscribe/manage/?token=", mail["html"]
+        )
+        self.assertIn("Manage subscriptions", mail["html"])
+
+    def test_manage_email_is_not_a_confirm_mail_failure(self) -> None:
+        mail = call_js_fn(
+            SUBSCRIBE_API,
+            "manageEmailBody",
+            "https://ericwisnewski.com",
+            "ab" * 24,
+        )
+        self.assertNotIn("confirm=", mail["text"])
+        self.assertNotIn("confirm=", mail["html"])
+        self.assertNotIn("Confirm subscription", mail["html"])
+        self.assertNotIn("click this link", mail["text"])
+
     def test_confirm_email_requires_click_success(self) -> None:
         mail = call_js_fn(
             SUBSCRIBE_API,
@@ -535,9 +588,13 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn("/js/subscribe.js", html)
         self.assertIn('id="subscribe-confirm-next"', html)
         self.assertIn('id="subscribe-confirm-back"', html)
-        self.assertIn("subscribe-progress", html)
-        self.assertIn('data-step="email"', html)
-        self.assertIn('data-step="confirm"', html)
+        self.assertIn('id="subscribe-status-badge"', html)
+        self.assertIn("subscribe-status-icon--pending", html)
+        self.assertIn("subscribe-status-icon--confirmed", html)
+        self.assertIn("subscribe-status-label--pending", html)
+        self.assertIn("subscribe-status-label--confirmed", html)
+        self.assertIn("Pending", html)
+        self.assertIn("Confirmed", html)
         self.assertIn('type="module"', html)
         self.assertNotIn('" /js/subscribe.js"', html)
         self.assertIn('md5 (readFile "static/js/subscribe.js")', html)
@@ -559,15 +616,32 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn("writeSavedLists", js)
         self.assertIn("mergeSavedLists", js)
         self.assertIn("hasSavedLists", js)
-        self.assertIn("setProgress", js)
+        self.assertIn("setStatus", js)
+        self.assertIn("CONFIRMED_KEY", js)
+        self.assertIn("writeConfirmed", js)
+        self.assertIn("readConfirmed", js)
+        self.assertIn("clearConfirmed", js)
+        self.assertIn("alreadySubscribed", js)
+        self.assertIn("showAlreadySubscribed", js)
+        self.assertIn("Manage your subscriptions", js)
 
-    def test_subscribe_js_skips_confirm_panel_when_already_subscribed_failure(
-        self,
-    ) -> None:
+    def test_already_subscribed_swaps_subscribe_for_manage_success(self) -> None:
         js = SUBSCRIBE_JS.read_text(encoding="utf-8")
-        self.assertIn("showStatus", js)
-        self.assertIn("needsConfirm", js)
+        self.assertIn("result.data.alreadySubscribed", js)
+        self.assertIn("showAlreadySubscribed", js)
+        self.assertIn("You're already subscribed", js)
+        self.assertIn("check spam", js)
+
+    def test_already_subscribed_does_not_keep_subscribe_cta_failure(self) -> None:
+        js = SUBSCRIBE_JS.read_text(encoding="utf-8")
         self.assertNotIn("showConfirmNext(email); else", js)
+        self.assertNotIn(
+            "alreadySubscribed) {\n          clearPendingEmail(store);\n          showStatus",
+            js,
+        )
+        api = SUBSCRIBE_API.read_text(encoding="utf-8")
+        self.assertIn("alreadySubscribed: signupAlreadySubscribed", api)
+        self.assertIn("manageEmailBody", api)
 
     def test_subscribe_js_reset_form_failure(self) -> None:
         js = SUBSCRIBE_JS.read_text(encoding="utf-8")
@@ -580,6 +654,22 @@ class NewsletterTemplateTests(unittest.TestCase):
         js = SUBSCRIBE_JS.read_text(encoding="utf-8")
         self.assertIn("initConfirmed", js)
         self.assertIn("clearPendingEmail", js)
+        self.assertIn("writeConfirmed", js)
+
+    def test_status_badge_replaces_stepper_failure(self) -> None:
+        html = SUBSCRIBE_PARTIAL.read_text(encoding="utf-8")
+        self.assertNotIn("subscribe-progress", html)
+        self.assertNotIn('data-step="email"', html)
+        self.assertNotIn('data-step="confirm"', html)
+        js = SUBSCRIBE_JS.read_text(encoding="utf-8")
+        self.assertNotIn("setProgress", js)
+        self.assertNotIn("subscribe-progress-current", js)
+        css = (REPO_ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
+        self.assertIn(".subscribe-status-badge", css)
+        self.assertIn('[data-state="pending"]', css)
+        self.assertIn('[data-state="confirmed"]', css)
+        self.assertNotIn(".subscribe-progress", css)
+        self.assertNotIn('[data-step="confirm"]::before', css)
 
     def test_normalize_pending_email_success(self) -> None:
         self.assertEqual(
@@ -619,6 +709,54 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertEqual(data["saved"], "tyler@example.com")
         self.assertEqual(data["after"], "")
         self.assertEqual(data["key"], "subscribe_pending_email")
+
+    def test_confirmed_storage_roundtrip_success(self) -> None:
+        script = (
+            f"import {{ writeConfirmed, readConfirmed, clearConfirmed, CONFIRMED_KEY }} from {json.dumps(SUBSCRIBE_JS.as_uri())};\n"
+            "const store = {\n"
+            "  d: {},\n"
+            "  getItem(k) { return Object.prototype.hasOwnProperty.call(this.d, k) ? this.d[k] : null; },\n"
+            "  setItem(k, v) { this.d[k] = String(v); },\n"
+            "  removeItem(k) { delete this.d[k]; }\n"
+            "};\n"
+            "writeConfirmed(store);\n"
+            "const saved = readConfirmed(store);\n"
+            "clearConfirmed(store);\n"
+            "console.log(JSON.stringify({ saved, after: readConfirmed(store), key: CONFIRMED_KEY }));\n"
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        data = json.loads(result.stdout)
+        self.assertEqual(data["saved"], True)
+        self.assertEqual(data["after"], False)
+        self.assertEqual(data["key"], "subscribe_confirmed")
+
+    def test_confirmed_storage_rejects_junk_failure(self) -> None:
+        script = (
+            f"import {{ writeConfirmed, readConfirmed }} from {json.dumps(SUBSCRIBE_JS.as_uri())};\n"
+            "const store = {\n"
+            "  d: { subscribe_confirmed: 'yes' },\n"
+            "  getItem(k) { return Object.prototype.hasOwnProperty.call(this.d, k) ? this.d[k] : null; },\n"
+            "  setItem(k, v) { this.d[k] = String(v); }\n"
+            "};\n"
+            "writeConfirmed(null);\n"
+            "console.log(JSON.stringify(readConfirmed(store)));\n"
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(json.loads(result.stdout))
 
     def test_pending_email_storage_rejects_junk_failure(self) -> None:
         script = (
@@ -980,6 +1118,10 @@ class NewsletterBuildTests(unittest.TestCase):
         self.assertIn('id="subscribe"', self.home_enabled)
         self.assertIn('data-default-list="posts"', self.home_enabled)
         self.assertIn('value="posts"', self.home_enabled)
+        self.assertIn('id="subscribe-status-badge"', self.home_enabled)
+        self.assertIn("Pending", self.home_enabled)
+        self.assertIn("Confirmed", self.home_enabled)
+        self.assertNotIn("subscribe-progress", self.home_enabled)
         self.assertRegex(
             self.home_enabled,
             r'value="posts"[^>]*checked|checked[^>]*value="posts"',

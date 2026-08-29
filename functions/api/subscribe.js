@@ -67,6 +67,13 @@ export function signupNeedsConfirm(needingConfirm) {
   return normalizeLists(needingConfirm).length > 0;
 }
 
+export function signupAlreadySubscribed(alreadyConfirmed, needingConfirm) {
+  return (
+    normalizeLists(alreadyConfirmed).length > 0 &&
+    normalizeLists(needingConfirm).length === 0
+  );
+}
+
 export function preferenceUpdatePlan(currentRows, requestedLists) {
   const requested = new Set(normalizeLists(requestedLists));
   const byList = new Map();
@@ -169,6 +176,15 @@ export function confirmEmailBody(origin, token, lists) {
 <p><a href="${link}">Confirm subscription</a></p>
 <p>If you did not request this, ignore this email.</p>`;
   return { subject: `Confirm your subscription — ${labels}`, html, text };
+}
+
+export function manageEmailBody(origin, token) {
+  const link = managePageUrl(origin, token);
+  const text = `Manage your subscriptions on Eric Wisnewski.\n\nUse this link to choose which lists you get, or unsubscribe:\n\n${link}\n\nIf you did not request this, ignore this email.`;
+  const html = `<p>Manage your subscriptions on Eric Wisnewski.</p>
+<p><a href="${link}">Manage subscriptions</a></p>
+<p>If you did not request this, ignore this email.</p>`;
+  return { subject: 'Manage your subscriptions — Eric Wisnewski', html, text };
 }
 
 async function handleOneClickUnsubscribe(context, rawToken) {
@@ -410,11 +426,42 @@ export async function onRequestPost(context) {
         )
         .bind(email, ...listsNeedingConfirm)
         .run();
+    } else if (
+      signupAlreadySubscribed(alreadyConfirmed, listsNeedingConfirm) &&
+      rotateAndSend &&
+      context.env.RESEND_API_KEY
+    ) {
+      try {
+        const row = await db
+          .prepare(
+            `SELECT unsub_token FROM subscribers
+             WHERE email = ? AND status = 'confirmed'
+             LIMIT 1`
+          )
+          .bind(email)
+          .first();
+        if (row && isValidToken(row.unsub_token)) {
+          const mail = manageEmailBody(origin, row.unsub_token);
+          await sendResendEmail(context.env, {
+            to: email,
+            subject: mail.subject,
+            html: mail.html,
+            text: mail.text,
+          });
+          await db
+            .prepare(`UPDATE subscribers SET confirm_sent_at = datetime('now') WHERE email = ?`)
+            .bind(email)
+            .run();
+        }
+      } catch (e) {
+        console.error('subscribe manage mail', e);
+      }
     }
 
     return jsonResponse({
       ok: true,
       needsConfirm: signupNeedsConfirm(listsNeedingConfirm),
+      alreadySubscribed: signupAlreadySubscribed(alreadyConfirmed, listsNeedingConfirm),
       message: subscriptionStatusMessage(alreadyConfirmed, listsNeedingConfirm),
     });
   } catch (e) {

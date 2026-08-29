@@ -10,10 +10,21 @@
 <section id="subscribe" class="subscribe-section" aria-label="Email subscription"
   data-turnstile-sitekey="{{ .Site.Params.turnstile_site_key }}" data-default-list="{{ $default }}">
   <h2 class="subscribe-heading">Get email when new posts go up</h2>
-  <ol class="subscribe-progress" aria-label="Subscription progress">
-    <li data-step="email" class="subscribe-progress-current" aria-current="step">Email</li>
-    <li data-step="confirm">Confirm</li>
-  </ol>
+  <p id="subscribe-status-badge" class="subscribe-status-badge" hidden role="status" aria-live="polite">
+    <svg class="subscribe-status-icon subscribe-status-icon--pending" viewBox="0 0 24 24" aria-hidden="true"
+      focusable="false">
+      <polygon points="12,3 22.5,21 1.5,21" fill="currentColor"></polygon>
+      <rect x="11" y="9" width="2" height="6.5" fill="#fff"></rect>
+      <rect x="11" y="17.2" width="2" height="2" fill="#fff"></rect>
+    </svg>
+    <svg class="subscribe-status-icon subscribe-status-icon--confirmed" viewBox="0 0 24 24" aria-hidden="true"
+      focusable="false">
+      <circle cx="12" cy="12" r="10" fill="currentColor"></circle>
+      <path fill="#fff" d="M10.1 16.3 6.4 12.6l1.4-1.4 2.3 2.3 6-6 1.4 1.4z"></path>
+    </svg>
+    <span class="subscribe-status-label subscribe-status-label--pending">Pending</span>
+    <span class="subscribe-status-label subscribe-status-label--confirmed">Confirmed</span>
+  </p>
   <form class="subscribe-form" aria-label="Subscribe to email updates">
     <label for="subscribe-email">Email</label>
     <input id="subscribe-email" name="email" type="email" required autocomplete="email" maxlength="320"
@@ -49,5 +60,6 @@
   </div>
   <noscript>Please enable JavaScript to subscribe by email.</noscript>
 </section>
-<script type="module" src="{{ "/js/subscribe.js" | relURL }}?v={{ md5 (readFile "static/js/subscribe.js") }}"></script>
+<script type="module" src="{{ " /js/subscribe.js" | relURL }}?v={{ md5 (readFile "static/js/subscribe.js" )
+  }}"></script>
 {{ end }}

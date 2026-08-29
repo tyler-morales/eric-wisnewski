@@ -2046,32 +2046,49 @@ article.post-content hr {
   font-weight: 700;
 }
 
-.subscribe-progress {
+.subscribe-status-badge {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.35rem 0;
-  list-style: none;
+  align-items: center;
+  gap: 0.45rem;
   margin: 0 0 1rem;
-  padding: 0;
-  font-size: 0.8125rem;
-  color: #666;
-}
-
-.subscribe-progress [data-step="confirm"]::before {
-  content: "→";
-  margin: 0 0.75rem;
-  font-weight: 400;
-  color: #888;
-}
-
-.subscribe-progress-current {
+  font-size: 0.9375rem;
   font-weight: 700;
-  color: #000;
+  line-height: 1.2;
 }
 
-.subscribe-progress-done {
-  color: #000;
+.subscribe-status-badge[hidden] {
+  display: none;
+}
+
+.subscribe-status-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.subscribe-status-icon--pending,
+.subscribe-status-icon--confirmed,
+.subscribe-status-label--pending,
+.subscribe-status-label--confirmed {
+  display: none;
+}
+
+.subscribe-status-badge[data-state="pending"] {
+  color: #b04f00;
+}
+
+.subscribe-status-badge[data-state="confirmed"] {
+  color: #15803d;
+}
+
+.subscribe-status-badge[data-state="pending"] .subscribe-status-icon--pending,
+.subscribe-status-badge[data-state="confirmed"] .subscribe-status-icon--confirmed {
+  display: block;
+}
+
+.subscribe-status-badge[data-state="pending"] .subscribe-status-label--pending,
+.subscribe-status-badge[data-state="confirmed"] .subscribe-status-label--confirmed {
+  display: inline;
 }
 
 .subscribe-form label {

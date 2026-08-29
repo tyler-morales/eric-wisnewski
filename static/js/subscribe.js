@@ -1,4 +1,5 @@
 export const PENDING_EMAIL_KEY = 'subscribe_pending_email';
+export const CONFIRMED_KEY = 'subscribe_confirmed';
 export const SAVED_LISTS_KEY = 'subscribe_lists';
 
 const VALID_LIST_IDS = ['posts', 'gradys-tour', 'da-breakdown-w-tad'];
@@ -40,6 +41,29 @@ export function clearPendingEmail(store) {
   if (!store || typeof store.removeItem !== 'function') return;
   try {
     store.removeItem(PENDING_EMAIL_KEY);
+  } catch (_) { }
+}
+
+export function readConfirmed(store) {
+  if (!store || typeof store.getItem !== 'function') return false;
+  try {
+    return store.getItem(CONFIRMED_KEY) === '1';
+  } catch (_) {
+    return false;
+  }
+}
+
+export function writeConfirmed(store) {
+  if (!store || typeof store.setItem !== 'function') return;
+  try {
+    store.setItem(CONFIRMED_KEY, '1');
+  } catch (_) { }
+}
+
+export function clearConfirmed(store) {
+  if (!store || typeof store.removeItem !== 'function') return;
+  try {
+    store.removeItem(CONFIRMED_KEY);
   } catch (_) { }
 }
 
@@ -165,15 +189,17 @@ function initSignup() {
   if (!section) return;
 
   var formEl = section.querySelector('.subscribe-form');
+  if (!formEl) return;
   var statusEl = section.querySelector('.subscribe-status');
   var errorEl = section.querySelector('.subscribe-error');
   var headingEl = section.querySelector('.subscribe-heading');
   var nextEl = document.getElementById('subscribe-confirm-next');
   var nextCopyEl = document.getElementById('subscribe-confirm-copy');
   var nextBackEl = document.getElementById('subscribe-confirm-back');
-  if (!formEl) return;
+  var submitBtn = formEl.querySelector('button[type="submit"]');
 
   var defaultHeading = headingEl ? headingEl.textContent : '';
+  var defaultSubmitLabel = submitBtn ? submitBtn.textContent : 'Subscribe';
 
   var siteKey = (section.dataset && section.dataset.turnstileSitekey)
     ? section.dataset.turnstileSitekey.trim()
@@ -212,24 +238,15 @@ function initSignup() {
     } catch (_) { }
   }
 
-  function setProgress(step) {
-    var items = section.querySelectorAll('.subscribe-progress [data-step]');
-    var i;
-    for (i = 0; i < items.length; i++) {
-      var el = items[i];
-      var name = el.getAttribute('data-step');
-      el.classList.remove('subscribe-progress-done', 'subscribe-progress-current');
-      el.removeAttribute('aria-current');
-      if (step === 'confirm') {
-        if (name === 'email') el.classList.add('subscribe-progress-done');
-        if (name === 'confirm') {
-          el.classList.add('subscribe-progress-current');
-          el.setAttribute('aria-current', 'step');
-        }
-      } else if (name === 'email') {
-        el.classList.add('subscribe-progress-current');
-        el.setAttribute('aria-current', 'step');
-      }
+  function setStatus(state) {
+    var badge = document.getElementById('subscribe-status-badge');
+    if (!badge) return;
+    if (state === 'pending' || state === 'confirmed') {
+      badge.hidden = false;
+      badge.setAttribute('data-state', state);
+    } else {
+      badge.hidden = true;
+      badge.removeAttribute('data-state');
     }
   }
 
@@ -241,6 +258,18 @@ function initSignup() {
     );
   }
 
+  function alreadySubscribedCopy() {
+    return (
+      "You're already subscribed. Check your inbox for a link to manage your lists. If you don't see it, check spam — or use Manage preferences in any newsletter we've sent."
+    );
+  }
+
+  function setManageButton() {
+    setStatus('confirmed');
+    if (headingEl) headingEl.textContent = "You're subscribed";
+    if (submitBtn) submitBtn.textContent = 'Manage your subscriptions';
+  }
+
   function showConfirmNext(email, silent) {
     if (!nextEl || !nextCopyEl) {
       showStatus(statusEl, errorEl, confirmNextCopy(email));
@@ -249,17 +278,33 @@ function initSignup() {
     formEl.hidden = true;
     nextCopyEl.textContent = confirmNextCopy(email);
     nextEl.hidden = false;
-    setProgress('confirm');
+    setStatus('pending');
+    if (submitBtn) submitBtn.textContent = defaultSubmitLabel;
     if (headingEl) headingEl.textContent = 'Check your email';
     if (!silent) nextEl.focus();
   }
 
-  function showSignupForm() {
-    clearPendingEmail(browserStorage());
+  function showAlreadySubscribed(silent) {
+    var store = browserStorage();
+    writeConfirmed(store);
+    clearPendingEmail(store);
     if (nextEl) nextEl.hidden = true;
     formEl.hidden = false;
-    setProgress('email');
+    setManageButton();
+    showStatus(statusEl, errorEl, alreadySubscribedCopy());
+    if (!silent && submitBtn) submitBtn.focus();
+  }
+
+  function showSignupForm() {
+    var store = browserStorage();
+    clearPendingEmail(store);
+    clearConfirmed(store);
+    if (nextEl) nextEl.hidden = true;
+    formEl.hidden = false;
+    setStatus('');
+    clearMessages(statusEl, errorEl);
     if (headingEl && defaultHeading) headingEl.textContent = defaultHeading;
+    if (submitBtn) submitBtn.textContent = defaultSubmitLabel;
     var emailInput = formEl.querySelector('#subscribe-email');
     if (emailInput) emailInput.focus();
   }
@@ -315,7 +360,6 @@ function initSignup() {
       return;
     }
 
-    var submitBtn = formEl.querySelector('button[type="submit"]');
     if (submitBtn) submitBtn.disabled = true;
 
     fetch('/api/subscribe', {
@@ -337,10 +381,13 @@ function initSignup() {
         var store = browserStorage();
         writeSavedLists(store, mergeSavedLists(readSavedLists(store), lists));
         if (result.data && result.data.needsConfirm) {
-          writePendingEmail(browserStorage(), email);
+          clearConfirmed(store);
+          writePendingEmail(store, email);
           showConfirmNext(email);
+        } else if (result.data && result.data.alreadySubscribed) {
+          showAlreadySubscribed();
         } else {
-          clearPendingEmail(browserStorage());
+          clearPendingEmail(store);
           showStatus(
             statusEl,
             errorEl,
@@ -362,14 +409,18 @@ function initSignup() {
     applyLists(formEl, readSavedLists(browserStorage()));
   }
 
-  var pending = readPendingEmail(browserStorage());
+  var store = browserStorage();
+  var pending = readPendingEmail(store);
   if (pending) showConfirmNext(pending, true);
+  else if (readConfirmed(store)) setManageButton();
 }
 
 function initConfirmed() {
   if (typeof location === 'undefined') return;
   if (!/\/subscribe\/confirmed\/?$/.test(location.pathname || '')) return;
-  clearPendingEmail(browserStorage());
+  var store = browserStorage();
+  clearPendingEmail(store);
+  writeConfirmed(store);
 }
 
 function initManage() {

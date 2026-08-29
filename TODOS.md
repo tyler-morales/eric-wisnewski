@@ -5,6 +5,8 @@
 - [x] Run D1 migration `0005_email_confirm_guard.sql` on production (comment email confirm columns + subscriber `confirm_sent_at`). Applied remotely 28 Aug 2026 (`5` queries, `49` rows written).
 
 ## Done
+- [x] Confirmed subscribers get **Manage your subscriptions** instead of Subscribe after they submit (or on later visits in that browser). API returns `alreadySubscribed`; same 24h cooldown emails a `/subscribe/manage/` link. Tests in `tests/test_newsletter.py`. Deleted/consolidated: keeping Subscribe plus the generic “check your inbox to confirm” line when they were already confirmed.
+- [x] Subscribe block shows a status badge instead of Email → Confirm: orange triangle (Pending) until they confirm, green check (Confirmed) after `/subscribe/confirmed/`. Idle form hides the badge. Tests in `tests/test_newsletter.py`. Deleted/consolidated: two-step progress tracker markup/CSS/`setProgress`.
 - [x] Image captions bumped from 13px (`0.8125rem`) to 15px (`0.9375rem`) on mobile and desktop so they stay readable on phones without matching body copy. Tests in `tests/test_post_typography.py`.
 - [x] Subscribe checkboxes persist on toggle, not only after a successful POST: checking Eric on a Grady post still shows Eric after refresh. Restore whenever `subscribe_lists` exists; cache-bust `/js/subscribe.js`. Tests in `tests/test_newsletter.py`.
 - [x] Admin comments grouped by post author with an All / Eric / Grady / Tad filter; writers, posts, and comments are newest-first. Post titles replace raw URLs. Inline admin script moved to `static/js/admin-comments.js`. Tests in `tests/test_admin_comments.py`. Deleted/consolidated: alphabetical `groupByUrl` list in `layouts/admin/single.html`.
