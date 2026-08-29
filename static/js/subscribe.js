@@ -1,6 +1,7 @@
 export const PENDING_EMAIL_KEY = 'subscribe_pending_email';
 export const CONFIRMED_KEY = 'subscribe_confirmed';
 export const SAVED_LISTS_KEY = 'subscribe_lists';
+export const DRAFT_EMAIL_KEY = 'subscribe_email';
 
 const VALID_LIST_IDS = ['posts', 'gradys-tour', 'da-breakdown-w-tad'];
 
@@ -116,6 +117,48 @@ export function hasSavedLists(store) {
 
 export function mergeSavedLists(current, added) {
   return normalizeSavedLists([].concat(current || [], added || []));
+}
+
+export function readDraftEmail(store) {
+  if (!store || typeof store.getItem !== 'function') return '';
+  try {
+    return normalizePendingEmail(store.getItem(DRAFT_EMAIL_KEY) || '');
+  } catch (_) {
+    return '';
+  }
+}
+
+export function writeDraftEmail(store, email) {
+  if (!store) return;
+  var value = normalizePendingEmail(email);
+  try {
+    if (!value) {
+      if (typeof store.removeItem === 'function') store.removeItem(DRAFT_EMAIL_KEY);
+      return;
+    }
+    if (typeof store.setItem === 'function') store.setItem(DRAFT_EMAIL_KEY, value);
+  } catch (_) { }
+}
+
+export function signupQueryFromSearch(search) {
+  var raw = typeof search === 'string' ? search : '';
+  if (raw.charAt(0) === '?') raw = raw.slice(1);
+  var params = new URLSearchParams(raw);
+  return {
+    email: normalizePendingEmail(params.get('email') || ''),
+    lists: normalizeSavedLists(params.getAll('lists'))
+  };
+}
+
+export function stripSignupSearch(search) {
+  if (typeof search !== 'string') return null;
+  var raw = search.charAt(0) === '?' ? search.slice(1) : search;
+  var params = new URLSearchParams(raw);
+  if (!params.has('email') && !params.has('lists')) return null;
+  params.delete('email');
+  params.delete('lists');
+  var q = params.toString();
+  return q ? '?' + q : '';
 }
 
 function selectedLists(formEl) {
@@ -306,6 +349,8 @@ function initSignup() {
     if (headingEl && defaultHeading) headingEl.textContent = defaultHeading;
     if (submitBtn) submitBtn.textContent = defaultSubmitLabel;
     var emailInput = formEl.querySelector('#subscribe-email');
+    var draft = readDraftEmail(store);
+    if (emailInput && draft && !emailInput.value) emailInput.value = draft;
     if (emailInput) emailInput.focus();
   }
 
@@ -330,6 +375,12 @@ function initSignup() {
     var target = e.target;
     if (!target || target.name !== 'lists') return;
     writeSavedLists(browserStorage(), selectedLists(formEl));
+  });
+
+  formEl.addEventListener('input', function (e) {
+    var target = e.target;
+    if (!target || target.name !== 'email') return;
+    writeDraftEmail(browserStorage(), target.value);
   });
 
   formEl.addEventListener('submit', function (e) {
@@ -380,6 +431,7 @@ function initSignup() {
         }
         var store = browserStorage();
         writeSavedLists(store, mergeSavedLists(readSavedLists(store), lists));
+        writeDraftEmail(store, email);
         if (result.data && result.data.needsConfirm) {
           clearConfirmed(store);
           writePendingEmail(store, email);
@@ -405,14 +457,36 @@ function initSignup() {
       });
   });
 
-  if (hasSavedLists(browserStorage())) {
-    applyLists(formEl, readSavedLists(browserStorage()));
-  }
+  restoreSignupState(formEl);
 
   var store = browserStorage();
   var pending = readPendingEmail(store);
   if (pending) showConfirmNext(pending, true);
   else if (readConfirmed(store)) setManageButton();
+}
+
+function restoreSignupState(formEl) {
+  var store = browserStorage();
+  var search = typeof location !== 'undefined' ? location.search : '';
+  var query = signupQueryFromSearch(search);
+  if (query.email) writeDraftEmail(store, query.email);
+  if (query.lists.length) {
+    writeSavedLists(store, mergeSavedLists(readSavedLists(store), query.lists));
+  }
+  if (hasSavedLists(store)) {
+    applyLists(formEl, readSavedLists(store));
+  }
+  var emailInput = formEl.querySelector('#subscribe-email');
+  var draft = readDraftEmail(store);
+  if (emailInput && draft && !emailInput.value) emailInput.value = draft;
+  var stripped = stripSignupSearch(search);
+  if (stripped !== null && typeof history !== 'undefined' && history.replaceState) {
+    history.replaceState(
+      null,
+      '',
+      (location.pathname || '') + stripped + (location.hash || '')
+    );
+  }
 }
 
 function initConfirmed() {

@@ -598,11 +598,39 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn('type="module"', html)
         self.assertIn('"/js/subscribe.js" | relURL', html)
         self.assertIn("$subscribeJS", html)
+        self.assertIn("$subscribeHash", html)
         self.assertNotIn('" /js/subscribe.js"', html)
         self.assertIn('md5 (readFile "static/js/subscribe.js")', html)
         self.assertNotIn("Choose Eric", html)
         self.assertNotIn("confirmation link", html)
         self.assertNotIn("subscribe-intro", html)
+
+    def test_signup_form_stays_on_page_success(self) -> None:
+        html = SUBSCRIBE_PARTIAL.read_text(encoding="utf-8")
+        self.assertIn('onsubmit="event.preventDefault()"', html)
+        self.assertIn('id="subscribe"', html)
+        js = SUBSCRIBE_JS.read_text(encoding="utf-8")
+        self.assertIn("e.preventDefault()", js)
+        self.assertIn("showConfirmNext", js)
+        self.assertIn("history.replaceState", js)
+        self.assertIn("writeDraftEmail", js)
+        self.assertIn("readDraftEmail", js)
+        self.assertIn("DRAFT_EMAIL_KEY", js)
+        self.assertIn("signupQueryFromSearch", js)
+        self.assertIn("stripSignupSearch", js)
+
+    def test_signup_form_does_not_get_navigate_failure(self) -> None:
+        html = SUBSCRIBE_PARTIAL.read_text(encoding="utf-8")
+        self.assertNotIn('method="get"', html.lower())
+        self.assertNotIn("method='get'", html.lower())
+        self.assertNotIn('action="/api/subscribe"', html)
+        script_src = [
+            line for line in html.splitlines() if "<script" in line and "$subscribeJS" in line
+        ]
+        self.assertTrue(script_src)
+        self.assertNotIn("readFile", script_src[0])
+        self.assertNotIn('" /js/', script_src[0])
+        self.assertNotIn("/js/subscribe.js", script_src[0])
 
     def test_subscribe_js_keeps_checkboxes_after_submit_success(self) -> None:
         js = SUBSCRIBE_JS.read_text(encoding="utf-8")
@@ -672,6 +700,103 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn('[data-state="confirmed"]', css)
         self.assertNotIn(".subscribe-progress", css)
         self.assertNotIn('[data-step="confirm"]::before', css)
+
+    def test_signup_query_from_search_success(self) -> None:
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_JS,
+                "signupQueryFromSearch",
+                "?email=Tyler%40Example.COM&lists=posts&lists=gradys-tour",
+            ),
+            {"email": "tyler@example.com", "lists": ["posts", "gradys-tour"]},
+        )
+
+    def test_signup_query_from_search_failure(self) -> None:
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_JS, "signupQueryFromSearch", ""),
+            {"email": "", "lists": []},
+        )
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_JS, "signupQueryFromSearch", "?utm_source=x"),
+            {"email": "", "lists": []},
+        )
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_JS, "signupQueryFromSearch", "?email=not-an-email"),
+            {"email": "", "lists": []},
+        )
+
+    def test_strip_signup_search_success(self) -> None:
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_JS,
+                "stripSignupSearch",
+                "?email=a@b.co&lists=posts&lists=gradys-tour",
+            ),
+            "",
+        )
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_JS,
+                "stripSignupSearch",
+                "?utm_source=x&email=a@b.co&lists=posts",
+            ),
+            "?utm_source=x",
+        )
+
+    def test_strip_signup_search_untouched_failure(self) -> None:
+        self.assertIsNone(call_js_fn(SUBSCRIBE_JS, "stripSignupSearch", ""))
+        self.assertIsNone(call_js_fn(SUBSCRIBE_JS, "stripSignupSearch", "?utm_source=x"))
+        self.assertIsNone(call_js_fn(SUBSCRIBE_JS, "stripSignupSearch", None))
+
+    def test_draft_email_storage_roundtrip_success(self) -> None:
+        script = (
+            f"import {{ writeDraftEmail, readDraftEmail, DRAFT_EMAIL_KEY }} from {json.dumps(SUBSCRIBE_JS.as_uri())};\n"
+            "const store = {\n"
+            "  d: {},\n"
+            "  getItem(k) { return Object.prototype.hasOwnProperty.call(this.d, k) ? this.d[k] : null; },\n"
+            "  setItem(k, v) { this.d[k] = String(v); },\n"
+            "  removeItem(k) { delete this.d[k]; }\n"
+            "};\n"
+            "writeDraftEmail(store, '  Tyler@Example.COM ');\n"
+            "const saved = readDraftEmail(store);\n"
+            "writeDraftEmail(store, '');\n"
+            "console.log(JSON.stringify({ saved, after: readDraftEmail(store), key: DRAFT_EMAIL_KEY }));\n"
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        data = json.loads(result.stdout)
+        self.assertEqual(data["saved"], "tyler@example.com")
+        self.assertEqual(data["after"], "")
+        self.assertEqual(data["key"], "subscribe_email")
+
+    def test_draft_email_storage_rejects_junk_failure(self) -> None:
+        script = (
+            f"import {{ writeDraftEmail, readDraftEmail }} from {json.dumps(SUBSCRIBE_JS.as_uri())};\n"
+            "const store = {\n"
+            "  d: {},\n"
+            "  getItem(k) { return Object.prototype.hasOwnProperty.call(this.d, k) ? this.d[k] : null; },\n"
+            "  setItem(k, v) { this.d[k] = String(v); },\n"
+            "  removeItem(k) { delete this.d[k]; }\n"
+            "};\n"
+            "writeDraftEmail(store, 'not-an-email');\n"
+            "writeDraftEmail(null, 'a@b.co');\n"
+            "console.log(JSON.stringify(readDraftEmail(store)));\n"
+        )
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout), "")
 
     def test_normalize_pending_email_success(self) -> None:
         self.assertEqual(
@@ -952,16 +1077,23 @@ class NewsletterTemplateTests(unittest.TestCase):
 
     def test_subscribe_js_restores_saved_lists_on_every_page_success(self) -> None:
         js = SUBSCRIBE_JS.read_text(encoding="utf-8")
-        self.assertIn("hasSavedLists(browserStorage())", js)
-        self.assertIn("applyLists(formEl, readSavedLists(browserStorage()))", js)
+        self.assertIn("hasSavedLists(store)", js)
+        self.assertIn("applyLists(formEl, readSavedLists(store))", js)
         self.assertIn("target.name !== 'lists'", js)
         self.assertIn("writeSavedLists(browserStorage(), selectedLists(formEl))", js)
         self.assertIn("mergeSavedLists", js)
+        self.assertIn("restoreSignupState", js)
+
+    def test_subscribe_js_persists_typed_email_success(self) -> None:
+        js = SUBSCRIBE_JS.read_text(encoding="utf-8")
+        self.assertIn("target.name !== 'email'", js)
+        self.assertIn("writeDraftEmail(browserStorage(), target.value)", js)
+        self.assertIn("emailInput.value = draft", js)
 
     def test_subscribe_js_skips_persist_for_email_field_failure(self) -> None:
         js = SUBSCRIBE_JS.read_text(encoding="utf-8")
         self.assertIn("target.name !== 'lists'", js)
-        self.assertNotIn("target.name !== 'email'", js)
+        self.assertNotIn("target.name !== 'email' && target.name !== 'lists'", js)
 
     def test_manage_page_has_list_checkboxes_success(self) -> None:
         self.assertTrue(SUBSCRIBE_MANAGE_LAYOUT.is_file())
@@ -974,7 +1106,10 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn("fieldset", html)
         self.assertIn("aria-live", html)
         self.assertIn("/js/subscribe.js", html)
+        self.assertIn("$subscribeJS", html)
+        self.assertNotIn('" /js/subscribe.js"', html)
         self.assertIn('type="submit"', html)
+        self.assertIn('onsubmit="event.preventDefault()"', html)
 
     def test_manage_page_missing_token_copy_failure(self) -> None:
         html = SUBSCRIBE_MANAGE_LAYOUT.read_text(encoding="utf-8")
@@ -1128,6 +1263,13 @@ class NewsletterBuildTests(unittest.TestCase):
             self.home_enabled,
             r'value="posts"[^>]*checked|checked[^>]*value="posts"',
         )
+        self.assertIn("event.preventDefault()", self.home_enabled)
+
+    def test_home_form_get_submit_does_not_appear_failure(self) -> None:
+        if not self.home_enabled:
+            self.skipTest("enabled-newsletter hugo build failed")
+        self.assertNotIn("?email=", self.home_enabled)
+        self.assertNotRegex(self.home_enabled, r'<form[^>]*method=["\']?get')
 
     def test_tour_form_defaults_to_gradys_tour_when_enabled(self) -> None:
         if not self.tour_enabled:

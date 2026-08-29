@@ -25,7 +25,7 @@
     <span class="subscribe-status-label subscribe-status-label--pending">Pending</span>
     <span class="subscribe-status-label subscribe-status-label--confirmed">Confirmed</span>
   </p>
-  <form class="subscribe-form" aria-label="Subscribe to email updates">
+  <form class="subscribe-form" aria-label="Subscribe to email updates" onsubmit="event.preventDefault()">
     <label for="subscribe-email">Email</label>
     <input id="subscribe-email" name="email" type="email" required autocomplete="email" maxlength="320"
       placeholder="you@example.com">
@@ -61,5 +61,6 @@
   <noscript>Please enable JavaScript to subscribe by email.</noscript>
 </section>
 {{ $subscribeJS := "/js/subscribe.js" | relURL }}
-<script type="module" src="{{ $subscribeJS }}?v={{ md5 (readFile "static/js/subscribe.js") }}"></script>
+{{ $subscribeHash := md5 (readFile "static/js/subscribe.js") }}
+<script type="module" src="{{ $subscribeJS }}?v={{ $subscribeHash }}"></script>
 {{ end }}
