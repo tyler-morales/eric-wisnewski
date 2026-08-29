@@ -15,6 +15,7 @@ SINGLE_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "single.html"
 COMMENTS_PARTIAL = REPO_ROOT / "layouts" / "partials" / "comments.html"
 ISSO_PARTIAL = REPO_ROOT / "layouts" / "partials" / "isso.html"
 COMMENTS_API = REPO_ROOT / "functions" / "api" / "comments.js"
+COMMENT_LIKES_API = REPO_ROOT / "functions" / "api" / "comment-likes.js"
 PHOTOS_API = REPO_ROOT / "functions" / "api" / "photos.js"
 SUBSCRIBE_API = REPO_ROOT / "functions" / "api" / "subscribe.js"
 NEWSLETTER_API = REPO_ROOT / "functions" / "api" / "newsletter.js"
@@ -97,7 +98,7 @@ class DeadApiTests(unittest.TestCase):
         ):
             defined_in = [
                 api.name
-                for api in (SUBSCRIBE_API, NEWSLETTER_API, COMMENTS_API, PHOTOS_API)
+                for api in (SUBSCRIBE_API, NEWSLETTER_API, COMMENTS_API, COMMENT_LIKES_API, PHOTOS_API)
                 if f"function {helper}(" in api.read_text(encoding="utf-8")
             ]
             self.assertEqual([], defined_in, f"{helper} redefined in {defined_in}")

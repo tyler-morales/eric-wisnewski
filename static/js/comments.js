@@ -31,6 +31,40 @@ export function mergeIdentity(formAuthor, formEmail, stored) {
   };
 }
 
+export var VISITOR_KEY = 'comment_visitor_id';
+
+export function readVisitorId(storage) {
+  try {
+    if (!storage) return '';
+    return (storage.getItem(VISITOR_KEY) || '').trim();
+  } catch (_) {
+    return '';
+  }
+}
+
+export function ensureVisitorId(storage, makeId) {
+  var existing = readVisitorId(storage);
+  if (existing) return existing;
+  var id = typeof makeId === 'function' ? makeId() : '';
+  if (!id) return '';
+  try {
+    if (storage) storage.setItem(VISITOR_KEY, id);
+  } catch (_) { }
+  return id;
+}
+
+export function normalizeLikeCount(value) {
+  var n = Number(value);
+  if (!Number.isFinite(n) || n < 0) return 0;
+  return Math.floor(n);
+}
+
+export function likeAriaLabel(liked, count) {
+  var n = normalizeLikeCount(count);
+  var likes = n === 1 ? '1 like' : n + ' likes';
+  return (liked ? 'Unlike this comment. ' : 'Like this comment. ') + likes;
+}
+
 export function buildThread(comments) {
   var top = [];
   var byParent = {};
@@ -426,6 +460,80 @@ function initComments() {
       actions.appendChild(btn);
     }
 
+    function heartSvg() {
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'comment-like-heart');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('focusable', 'false');
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute(
+        'd',
+        'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'
+      );
+      svg.appendChild(path);
+      return svg;
+    }
+
+    function applyLikeState(btn, countEl, liked, count) {
+      var n = normalizeLikeCount(count);
+      var isLiked = !!liked;
+      btn.setAttribute('aria-pressed', isLiked ? 'true' : 'false');
+      btn.setAttribute('aria-label', likeAriaLabel(isLiked, n));
+      countEl.textContent = String(n);
+    }
+
+    var likeBtn = document.createElement('button');
+    likeBtn.type = 'button';
+    likeBtn.className = 'comment-action comment-like-btn';
+    likeBtn.appendChild(heartSvg());
+    var likeCountEl = document.createElement('span');
+    likeCountEl.className = 'comment-like-count';
+    likeBtn.appendChild(likeCountEl);
+    var likeState = { liked: !!c.liked, count: normalizeLikeCount(c.like_count) };
+    applyLikeState(likeBtn, likeCountEl, likeState.liked, likeState.count);
+    likeBtn.addEventListener('click', function () {
+      if (likeBtn.disabled) return;
+      var visitorId = ensureVisitorId(identityStorage(), function () {
+        try { return crypto.randomUUID(); } catch (_) { return ''; }
+      });
+      if (!visitorId) {
+        showError('Could not like this comment.');
+        return;
+      }
+      var prev = { liked: likeState.liked, count: likeState.count };
+      likeState.liked = !prev.liked;
+      likeState.count = prev.count + (likeState.liked ? 1 : -1);
+      likeBtn.disabled = true;
+      applyLikeState(likeBtn, likeCountEl, likeState.liked, likeState.count);
+      fetch('/api/comment-likes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ comment_id: c.id, visitor_id: visitorId })
+      })
+        .then(function (r) {
+          return parseJson(r).then(function (data) {
+            if (!r.ok) throw new Error(data.error || 'Could not like this comment.');
+            return data;
+          });
+        })
+        .then(function (data) {
+          likeState.liked = !!data.liked;
+          likeState.count = normalizeLikeCount(data.like_count);
+          applyLikeState(likeBtn, likeCountEl, likeState.liked, likeState.count);
+        })
+        .catch(function (err) {
+          likeState.liked = prev.liked;
+          likeState.count = prev.count;
+          applyLikeState(likeBtn, likeCountEl, likeState.liked, likeState.count);
+          showError(err.message || 'Could not like this comment.');
+        })
+        .then(function () {
+          likeBtn.disabled = false;
+        });
+    });
+    appendAction(likeBtn);
+
     var replyBtn = document.createElement('button');
     replyBtn.type = 'button';
     replyBtn.className = 'comment-action comment-reply-btn';
@@ -608,7 +716,11 @@ function initComments() {
 
   function loadComments() {
     var url = normalizeUrl();
+    var visitorId = ensureVisitorId(identityStorage(), function () {
+      try { return crypto.randomUUID(); } catch (_) { return ''; }
+    });
     var fetchUrl = '/api/comments?url=' + encodeURIComponent(url);
+    if (visitorId) fetchUrl += '&visitor_id=' + encodeURIComponent(visitorId);
     fetch(fetchUrl)
       .then(function (r) {
         if (!r.ok) throw new Error('Failed to load comments');

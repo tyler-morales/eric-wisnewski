@@ -11,6 +11,7 @@ import {
   isAdmin,
   isValidEmail,
   isValidToken,
+  isValidVisitorId,
   jsonResponse,
   normalizeEmail,
   publicOrigin,
@@ -56,6 +57,16 @@ export function relocateCommentUrl(url) {
     return canonicalCommentUrl(LIVE_TOUR_PREFIX + canonical.slice(LEGACY_TOUR_PREFIX.length));
   }
   return canonical;
+}
+
+export function withPublicLikeFields(row) {
+  const src = row && typeof row === 'object' ? row : {};
+  const likeCount = Number(src.like_count);
+  return {
+    ...src,
+    like_count: Number.isFinite(likeCount) && likeCount > 0 ? Math.floor(likeCount) : 0,
+    liked: Boolean(src.liked),
+  };
 }
 
 function withAndWithoutSlash(url) {
@@ -216,24 +227,51 @@ export async function onRequestGet(context) {
     return jsonResponse({ error: 'Missing or invalid url parameter' }, 400);
   }
   const placeholders = urlInPlaceholders(variants);
+  const visitorId = isValidVisitorId(searchParams.get('visitor_id'))
+    ? searchParams.get('visitor_id')
+    : '';
 
   try {
+    const likeSelect = visitorId
+      ? `(SELECT COUNT(*) FROM comment_likes WHERE comment_id = comments.id) AS like_count,
+         EXISTS(SELECT 1 FROM comment_likes WHERE comment_id = comments.id AND visitor_id = ?) AS liked`
+      : `(SELECT COUNT(*) FROM comment_likes WHERE comment_id = comments.id) AS like_count,
+         0 AS liked`;
     const stmt = db.prepare(
-      `SELECT id, url, author, body, created_at, parent_id FROM comments
+      `SELECT id, url, author, body, created_at, parent_id, ${likeSelect}
+       FROM comments
        WHERE url IN (${placeholders}) AND (status IS NULL OR status = 'approved') ORDER BY created_at ASC`
     );
-    const { results } = await stmt.bind(...variants).all();
-    return jsonResponse(results ?? []);
+    const { results } = visitorId
+      ? await stmt.bind(visitorId, ...variants).all()
+      : await stmt.bind(...variants).all();
+    return jsonResponse((results ?? []).map(withPublicLikeFields));
   } catch (e) {
     const msg = e?.message != null ? String(e.message) : '';
+    const missingLikes = /no such table: comment_likes/i.test(msg);
     const missingColumn = /no such column/i.test(msg);
-    if (missingColumn) {
+    if (missingLikes || missingColumn) {
+      try {
+        const stmtApproved = db.prepare(
+          `SELECT id, url, author, body, created_at, parent_id FROM comments
+           WHERE url IN (${placeholders}) AND (status IS NULL OR status = 'approved') ORDER BY created_at ASC`
+        );
+        const { results } = await stmtApproved.bind(...variants).all();
+        return jsonResponse((results ?? []).map(withPublicLikeFields));
+      } catch (approvedErr) {
+        const approvedMsg = approvedErr?.message != null ? String(approvedErr.message) : '';
+        if (!/no such column/i.test(approvedMsg)) {
+          return jsonResponse({ error: 'Failed to load comments' }, 500);
+        }
+      }
       try {
         const stmtLegacy = db.prepare(
           `SELECT id, url, author, body, created_at FROM comments WHERE url IN (${placeholders}) ORDER BY created_at ASC`
         );
         const { results: legacyResults } = await stmtLegacy.bind(...variants).all();
-        const withParentId = (legacyResults || []).map((row) => ({ ...row, parent_id: null }));
+        const withParentId = (legacyResults || []).map((row) =>
+          withPublicLikeFields({ ...row, parent_id: null })
+        );
         return jsonResponse(withParentId);
       } catch (e2) {
         return jsonResponse({ error: 'Failed to load comments' }, 500);
@@ -494,6 +532,22 @@ export async function onRequestDelete(context) {
   }
 
   try {
+    try {
+      await db
+        .prepare(
+          `WITH RECURSIVE tree(id) AS (
+             SELECT id FROM comments WHERE id = ?
+             UNION ALL
+             SELECT c.id FROM comments c INNER JOIN tree t ON c.parent_id = t.id
+           )
+           DELETE FROM comment_likes WHERE comment_id IN (SELECT id FROM tree)`
+        )
+        .bind(id)
+        .run();
+    } catch (likesErr) {
+      const likesMsg = likesErr?.message != null ? String(likesErr.message) : '';
+      if (!/no such table: comment_likes/i.test(likesMsg)) throw likesErr;
+    }
     await db
       .prepare(
         `WITH RECURSIVE tree(id) AS (

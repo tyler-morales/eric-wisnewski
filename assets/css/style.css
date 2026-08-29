@@ -1126,6 +1126,46 @@ article.post-content hr {
   outline-offset: 2px;
 }
 
+#comments .comment-like-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  vertical-align: middle;
+}
+
+#comments .comment-like-btn:hover,
+#comments .comment-like-btn:focus-visible {
+  text-decoration: none;
+  opacity: 1;
+}
+
+#comments .comment-like-btn:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+#comments .comment-like-heart {
+  width: 0.9em;
+  height: 0.9em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+#comments .comment-like-btn[aria-pressed="true"] {
+  color: #b91c1c;
+  opacity: 1;
+}
+
+#comments .comment-like-btn[aria-pressed="true"] .comment-like-heart {
+  fill: currentColor;
+}
+
+#comments .comment-like-count {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Reply items inside .comment-replies */
 #comments .comment-reply {
   padding-bottom: 0.75rem;
