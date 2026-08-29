@@ -8,14 +8,12 @@
 
 import {
   adminSecretFromRequest,
-  confirmMailAllowed,
   isAdmin,
   isValidEmail,
   isValidToken,
   jsonResponse,
   normalizeEmail,
   publicOrigin,
-  randomToken,
   sendResendEmail,
   verifyTurnstile,
 } from '../../lib/api.js';
@@ -105,25 +103,16 @@ function escapeAttr(s) {
   return escapeHtml(s).replace(/'/g, '&#39;');
 }
 
-/** Address to notify when someone replies; empty means skip. confirmed must be true. */
-export function parentReplyNotifyTo(parentEmail, replyEmail, confirmed) {
-  if (!confirmed) return '';
+/** Address to notify when someone replies; empty means skip. */
+export function parentReplyNotifyTo(parentEmail, replyEmail) {
+  // ponytail: no inbox confirm. Anyone can put another address on a comment;
+  // that inbox then gets reply notices. Upgrade: confirm click before notify.
   const to = typeof parentEmail === 'string' ? parentEmail.trim() : '';
   if (!to || to.length > MAX_EMAIL || /[\r\n]/.test(to)) return '';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) return '';
   const from = typeof replyEmail === 'string' ? replyEmail.trim() : '';
   if (from && to.toLowerCase() === from.toLowerCase()) return '';
   return to;
-}
-
-export function confirmCommentEmailBody(origin, token) {
-  const link = `${origin}/api/comments?confirm=${encodeURIComponent(token)}`;
-  const text = `Confirm this email to get a message when someone replies to your comment on Eric Wisnewski.\n\nWe won't send reply emails until you click this link:\n\n${link}\n\nIf you did not leave a comment, ignore this.`;
-  const html = `<p>Confirm this email to get a message when someone replies to your comment on Eric Wisnewski.</p>
-<p>We won't send reply emails until you click this link:</p>
-<p><a href="${link}">Confirm email</a></p>
-<p>If you did not leave a comment, ignore this.</p>`;
-  return { subject: 'Confirm your comment email', html, text };
 }
 
 export function replyNotifyEmail({ parentAuthor, replyAuthor, replyText, postUrl }) {
@@ -311,66 +300,18 @@ export async function onRequestPost(context) {
       return jsonResponse({ error: 'Invalid parent_id' }, 400);
     }
     const variants = commentUrlLookupVariants(url);
-    try {
-      parentRow = await db
-        .prepare(
-          `SELECT id, author, email, email_confirmed_at FROM comments WHERE id = ? AND url IN (${urlInPlaceholders(variants)})`
-        )
-        .bind(parentId, ...variants)
-        .first();
-    } catch (e) {
-      const msg = e?.message != null ? String(e.message) : '';
-      if (/no such column: email_confirmed_at/i.test(msg)) {
-        parentRow = await db
-          .prepare(
-            `SELECT id, author, email FROM comments WHERE id = ? AND url IN (${urlInPlaceholders(variants)})`
-          )
-          .bind(parentId, ...variants)
-          .first();
-      } else {
-        throw e;
-      }
-    }
+    parentRow = await db
+      .prepare(
+        `SELECT id, author, email FROM comments WHERE id = ? AND url IN (${urlInPlaceholders(variants)})`
+      )
+      .bind(parentId, ...variants)
+      .first();
     if (!parentRow) {
       return jsonResponse({ error: 'Parent comment not found' }, 400);
     }
   }
 
   const editToken = crypto.randomUUID();
-  let emailConfirmToken = null;
-  let emailConfirmedAt = null;
-  let sendConfirm = false;
-
-  if (email) {
-    try {
-      const prior = await db
-        .prepare(
-          `SELECT email_confirmed_at FROM comments
-           WHERE lower(email) = ? AND email_confirmed_at IS NOT NULL LIMIT 1`
-        )
-        .bind(email)
-        .first();
-      if (prior && prior.email_confirmed_at) {
-        // ponytail: email-level confirm (like newsletter). A later comment with
-        // this address skips a second click; replies still go only to this inbox.
-        emailConfirmedAt = prior.email_confirmed_at;
-      } else {
-        emailConfirmToken = randomToken();
-        const lastSent = await db
-          .prepare(
-            `SELECT created_at FROM comments
-             WHERE lower(email) = ? AND email_confirm_token IS NOT NULL
-             ORDER BY created_at DESC LIMIT 1`
-          )
-          .bind(email)
-          .first();
-        sendConfirm = confirmMailAllowed(lastSent && lastSent.created_at);
-      }
-    } catch (e) {
-      const msg = e?.message != null ? String(e.message) : '';
-      if (!/no such column/i.test(msg)) throw e;
-    }
-  }
 
   try {
     let meta;
@@ -389,8 +330,8 @@ export async function onRequestPost(context) {
           parentId,
           editToken,
           'approved',
-          emailConfirmToken,
-          emailConfirmedAt
+          null,
+          null
         )
         .run();
       meta = result.meta;
@@ -419,7 +360,6 @@ export async function onRequestPost(context) {
             throw statusErr;
           }
         }
-        sendConfirm = false;
       } else {
         throw insertErr;
       }
@@ -437,11 +377,7 @@ export async function onRequestPost(context) {
     if (!row) {
       return jsonResponse({ error: 'Failed to save comment' }, 500);
     }
-    const notifyTo = parentReplyNotifyTo(
-      parentRow && parentRow.email,
-      email,
-      Boolean(parentRow && parentRow.email_confirmed_at)
-    );
+    const notifyTo = parentReplyNotifyTo(parentRow && parentRow.email, email);
     if (notifyTo && context.env.RESEND_API_KEY) {
       const origin = publicOrigin(context.env, context.request);
       const mail = replyNotifyEmail({
@@ -452,15 +388,8 @@ export async function onRequestPost(context) {
       });
       if (typeof context.waitUntil === 'function') {
         context.waitUntil(sendParentReplyEmail(context.env, notifyTo, mail));
-      }
-    }
-    if (sendConfirm && emailConfirmToken && context.env.RESEND_API_KEY) {
-      const origin = publicOrigin(context.env, context.request);
-      const mail = confirmCommentEmailBody(origin, emailConfirmToken);
-      if (typeof context.waitUntil === 'function') {
-        context.waitUntil(sendParentReplyEmail(context.env, email, mail));
       } else {
-        await sendParentReplyEmail(context.env, email, mail);
+        await sendParentReplyEmail(context.env, notifyTo, mail);
       }
     }
     return jsonResponse({ ...row, edit_token: editToken }, 201);

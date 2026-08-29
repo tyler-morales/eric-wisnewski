@@ -23,7 +23,7 @@
       <label for="comment-email">Email <span class="comments-optional">(optional)</span></label>
       <input id="comment-email" name="email" type="email" autocomplete="email" placeholder="you@example.com"
         aria-describedby="comment-email-hint">
-      <p id="comment-email-hint" class="comments-email-hint">We'll email you if someone replies — after you confirm that address.</p>
+      <p id="comment-email-hint" class="comments-email-hint">Add your email to be notified when someone replies to your comment</p>
     </div>
     <div id="comments-turnstile-container" class="comments-turnstile" role="group" aria-label="Verification"></div>
     <div class="comments-form-actions">
@@ -32,4 +32,5 @@
   </form>
   <noscript>Please enable JavaScript to view and post comments.</noscript>
 </section>
-<script type="module" src="{{ "/js/comments.js" | relURL }}?v={{ md5 (readFile "static/js/comments.js") }}"></script>
+{{ $commentsJS := "/js/comments.js" | relURL }}
+<script type="module" src="{{ $commentsJS }}?v={{ md5 (readFile "static/js/comments.js") }}"></script>

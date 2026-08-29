@@ -1,6 +1,6 @@
 export var AUTHOR_KEY = 'comment_author';
 export var EMAIL_KEY = 'comment_email';
-export var EMAIL_REPLY_HINT = "We'll email you if someone replies — after you confirm that address.";
+export var EMAIL_REPLY_HINT = "Add your email to be notified when someone replies to your comment";
 
 export function readIdentity(storage) {
   var author = '';
