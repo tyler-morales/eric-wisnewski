@@ -596,6 +596,8 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn("Pending", html)
         self.assertIn("Confirmed", html)
         self.assertIn('type="module"', html)
+        self.assertIn('"/js/subscribe.js" | relURL', html)
+        self.assertIn("$subscribeJS", html)
         self.assertNotIn('" /js/subscribe.js"', html)
         self.assertIn('md5 (readFile "static/js/subscribe.js")', html)
         self.assertNotIn("Choose Eric", html)
@@ -1168,6 +1170,15 @@ class NewsletterBuildTests(unittest.TestCase):
             self.skipTest("enabled-newsletter hugo build failed")
         self.assertNotIn("Choose Eric", self.home_enabled)
         self.assertNotIn("confirmation link", self.home_enabled)
+
+    def test_subscribe_script_src_is_not_percent_encoded_space_success(self) -> None:
+        if not self.home_enabled:
+            self.skipTest("enabled-newsletter hugo build failed")
+        self.assertNotIn("%20/js/subscribe.js", self.home_enabled)
+        self.assertIn("/js/subscribe.js", self.home_enabled)
+        if self.tour_single_enabled:
+            self.assertNotIn("%20/js/subscribe.js", self.tour_single_enabled)
+            self.assertIn("/js/subscribe.js", self.tour_single_enabled)
 
     def test_invalid_link_page_builds_success(self) -> None:
         self.assertTrue(self.invalid_html, "/subscribe/invalid/ must build")

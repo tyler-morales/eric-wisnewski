@@ -5,6 +5,7 @@
 - [x] Run D1 migration `0005_email_confirm_guard.sql` on production (comment email confirm columns + subscriber `confirm_sent_at`). Applied remotely 28 Aug 2026 (`5` queries, `49` rows written).
 
 ## Done
+- [x] Subscribe form was GET-submitting to the current page (`?email=&lists=`) because a formatter put a space in `{{ "/js/subscribe.js" | relURL }}`, so the browser requested `/%20/js/subscribe.js` and never attached `preventDefault`. Path now lives in `$subscribeJS` so wrapping cannot insert that space. Tests in `tests/test_newsletter.py`. Deleted/consolidated: the inline `" /js/subscribe.js"` string that prettier kept re-breaking.
 - [x] Confirmed subscribers get **Manage your subscriptions** instead of Subscribe after they submit (or on later visits in that browser). API returns `alreadySubscribed`; same 24h cooldown emails a `/subscribe/manage/` link. Tests in `tests/test_newsletter.py`. Deleted/consolidated: keeping Subscribe plus the generic “check your inbox to confirm” line when they were already confirmed.
 - [x] Subscribe block shows a status badge instead of Email → Confirm: orange triangle (Pending) until they confirm, green check (Confirmed) after `/subscribe/confirmed/`. Idle form hides the badge. Tests in `tests/test_newsletter.py`. Deleted/consolidated: two-step progress tracker markup/CSS/`setProgress`.
 - [x] Image captions bumped from 13px (`0.8125rem`) to 15px (`0.9375rem`) on mobile and desktop so they stay readable on phones without matching body copy. Tests in `tests/test_post_typography.py`.

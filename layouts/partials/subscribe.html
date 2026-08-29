@@ -60,6 +60,6 @@
   </div>
   <noscript>Please enable JavaScript to subscribe by email.</noscript>
 </section>
-<script type="module" src="{{ " /js/subscribe.js" | relURL }}?v={{ md5 (readFile "static/js/subscribe.js" )
-  }}"></script>
+{{ $subscribeJS := "/js/subscribe.js" | relURL }}
+<script type="module" src="{{ $subscribeJS }}?v={{ md5 (readFile "static/js/subscribe.js") }}"></script>
 {{ end }}
