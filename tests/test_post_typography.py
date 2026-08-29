@@ -43,7 +43,7 @@ class PostTypographyCssTests(unittest.TestCase):
     def test_captions_are_small_and_gray_success(self) -> None:
         self.assertIn("--text-muted", self.css)
         grouped = first_block(self.css, "article.post-content figcaption")
-        self.assertIn("0.8125rem", grouped)
+        self.assertIn("0.9375rem", grouped)
         self.assertIn("var(--text-muted)", grouped)
         self.assertIn("var(--font-sans)", grouped)
         self.assertIn(

@@ -823,7 +823,7 @@ article.post-content figcaption,
 article.post-content p:has(> img:only-child)+p:has(> em:only-child),
 article.post-content p:has(> img:only-child)+p:has(> i:only-child) {
   font-family: var(--font-sans);
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   line-height: 1.45;
   color: var(--text-muted);
 }

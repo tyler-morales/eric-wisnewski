@@ -5,6 +5,7 @@
 - [x] Run D1 migration `0005_email_confirm_guard.sql` on production (comment email confirm columns + subscriber `confirm_sent_at`). Applied remotely 28 Aug 2026 (`5` queries, `49` rows written).
 
 ## Done
+- [x] Image captions bumped from 13px (`0.8125rem`) to 15px (`0.9375rem`) on mobile and desktop so they stay readable on phones without matching body copy. Tests in `tests/test_post_typography.py`.
 - [x] Subscribe checkboxes persist on toggle, not only after a successful POST: checking Eric on a Grady post still shows Eric after refresh. Restore whenever `subscribe_lists` exists; cache-bust `/js/subscribe.js`. Tests in `tests/test_newsletter.py`.
 - [x] Admin comments grouped by post author with an All / Eric / Grady / Tad filter; writers, posts, and comments are newest-first. Post titles replace raw URLs. Inline admin script moved to `static/js/admin-comments.js`. Tests in `tests/test_admin_comments.py`. Deleted/consolidated: alphabetical `groupByUrl` list in `layouts/admin/single.html`.
 - [x] Subscribe checkboxes remember every list this browser already chose (`subscribe_lists` in localStorage), so Eric and Grady both stay checked on Grady’s pages (and the reverse). Signup unions new checks with the saved set; manage preferences replaces it. Tests in `tests/test_newsletter.py`.
