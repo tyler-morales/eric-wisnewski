@@ -6,7 +6,7 @@ date: 2026-08-30T13:16:00Z
 draft: false
 image: /images/uploads/dexter.jpeg
 ---
-Gervon Dexter Sr. officially traded to Atlanta Falcons for CB Clark Phillips III and a 2027 5th-round pick. Good riddance. The writing was on the wall when Dexter did not travel with the team with a "hamstring" injury. Dexter with 6 sacks last year showed flashes of being a large presence in the middle but it came down to speed on the defensive side. He was so SLOW. What you learn about this move is how much Ben Johnson and Dennis Allen value speed over anything. Including how high they are on Shemar Turner, James Lynch, and Jordan Van Den Berg.
+Gervon Dexter Sr. officially traded to Atlanta Falcons for CB Clark Phillips III and a 2027 5th-round pick. Good riddance. The writing was on the wall when Dexter did not travel with the team with a "hamstring" injury. Dexter with 6 sacks last year showed flashes of being a large presence in the middle but it came down to speed on the defensive side. He was so SLOW. What you learn about this move is how much Ben Johnson and Dennis Allen value speed over anything. Including how high they are on Shemar Turner, Neville Gallimore, and Jordan Van Den Berg.
 
 
 
