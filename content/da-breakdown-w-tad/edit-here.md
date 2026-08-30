@@ -3,7 +3,7 @@ title: What is Ryan Poles better at, Buying a roster vs. Building a roster.
 slug: bears-roster-breakdown
 author: tad-davis
 date: 2026-08-30T13:13:00Z
-draft: true
+draft: false
 image: /images/uploads/poles-1.jpeg
 ---
 This is my first blog I have ever written. I love the bears. My favorites things are watching, listening, and talking about the bears. So when my friend Eric Wisnewski started a blog and I figured why don’t I try writing about the bears too. 
