@@ -133,6 +133,15 @@ class FooterTemplateTests(unittest.TestCase):
         self.assertIn(".site-footer", css)
         self.assertRegex(css, r"\.site-footer a:focus-visible")
 
+    def test_baseof_marks_the_page_top_success(self) -> None:
+        template = BASEOF.read_text(encoding="utf-8")
+        self.assertRegex(template, r"<html\b[^>]*\bid=\"top\"")
+
+    def test_baseof_omits_floating_back_to_top_failure(self) -> None:
+        template = BASEOF.read_text(encoding="utf-8")
+        self.assertNotIn("back-to-top", template)
+        self.assertNotIn('href="#top"', template)
+
 
 class FooterBuildTests(unittest.TestCase):
     @classmethod
@@ -202,6 +211,22 @@ class FooterBuildTests(unittest.TestCase):
         self.assertIsNotNone(list_html)
         assert list_html is not None
         self.assertNotIn("/privacy/", list_html.group(1))
+
+    def test_non_posts_omit_back_to_top_failure(self) -> None:
+        back_to_top = re.compile(
+            r'<a\b[^>]*href="#top"[^>]*>\s*Back to top\s*</a>',
+            re.IGNORECASE,
+        )
+        for name, html in (
+            ("home", self.home),
+            ("map", self.map_html),
+            ("privacy", self.privacy),
+            ("admin", self.admin),
+            ("gradys-tour", self.tour),
+        ):
+            with self.subTest(page=name):
+                self.assertTrue(html, f"{name} must be in the build")
+                self.assertNotRegex(html, back_to_top)
 
 
 if __name__ == "__main__":

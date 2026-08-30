@@ -57,6 +57,23 @@ class ShareTemplateTests(unittest.TestCase):
         self.assertGreater(footer_at, header_at)
         self.assertGreater(bio_at, footer_at)
 
+    def test_article_single_has_back_to_top_after_the_article_success(self) -> None:
+        template = SINGLE_TEMPLATE.read_text(encoding="utf-8")
+        content_at = template.find("{{ .Content }}")
+        gallery_at = template.find("post-gallery.html")
+        share_footer_at = template.find('id" "footer"')
+        link_at = template.find('href="#top"')
+        bio_at = template.find("author-bio.html")
+        self.assertGreater(content_at, 0)
+        self.assertGreater(link_at, gallery_at)
+        self.assertGreater(link_at, share_footer_at)
+        self.assertGreater(bio_at, link_at)
+        self.assertRegex(
+            template,
+            r'<a\b[^>]*href="#top"[^>]*class="[^"]*\bback-to-top\b[^"]*"[^>]*>\s*Back to top\s*</a>',
+        )
+        self.assertNotRegex(template, r"<button[^>]*back-to-top")
+
     def test_share_partial_has_common_targets_success(self) -> None:
         partial = SHARE_PARTIAL.read_text(encoding="utf-8")
         self.assertIn("Copy link", partial)
@@ -84,6 +101,25 @@ class ShareTemplateTests(unittest.TestCase):
         self.assertEqual(offenders, [])
         updates = UPDATES_ENTRY_LAYOUT.read_text(encoding="utf-8")
         self.assertNotIn("share.html", updates)
+
+
+class BackToTopCssTests(unittest.TestCase):
+    def test_back_to_top_is_in_flow_success(self) -> None:
+        css = STYLE_CSS.read_text(encoding="utf-8")
+        self.assertIn(".back-to-top", css)
+        self.assertRegex(css, r"\.back-to-top\s*\{[^}]*min-height:\s*2\.75rem")
+        self.assertRegex(css, r"\.back-to-top:focus-visible")
+        self.assertIn("scroll-behavior: smooth", css)
+        self.assertIn("scroll-behavior: auto", css)
+
+    def test_back_to_top_is_not_fixed_failure(self) -> None:
+        css = STYLE_CSS.read_text(encoding="utf-8")
+        start = css.find(".back-to-top")
+        self.assertGreater(start, 0)
+        block = css[start:].split(".updates-intro", 1)[0]
+        self.assertNotIn("position: fixed", block)
+        self.assertNotIn("position: sticky", block)
+        self.assertNotIn("padding-bottom: 4.5rem", css)
 
 
 class ShareCssTests(unittest.TestCase):
@@ -297,6 +333,17 @@ class ShareBuildTests(unittest.TestCase):
         self.assertIn("Hello Share", html)
         meta = html.split('class="post-meta"', 1)[-1].split("</div>", 1)[0]
         self.assertIn("<time", meta)
+        body_at = html.find("Body")
+        link_at = html.find('href="#top"')
+        bio_at = html.find("author-bio")
+        self.assertGreater(body_at, 0)
+        self.assertGreater(link_at, body_at)
+        self.assertRegex(
+            html,
+            r'<a\b[^>]*href="#top"[^>]*>\s*Back to top\s*</a>',
+        )
+        if bio_at > 0:
+            self.assertGreater(bio_at, link_at)
 
     def test_home_and_privacy_have_no_share_failure(self) -> None:
         home = (self.dest / "index.html").read_text(encoding="utf-8")
@@ -304,6 +351,8 @@ class ShareBuildTests(unittest.TestCase):
         self.assertNotIn("post-share", home)
         self.assertNotIn("post-share", privacy)
         self.assertNotIn("/js/share.js", home)
+        self.assertNotIn("back-to-top", home)
+        self.assertNotIn("back-to-top", privacy)
 
 
 class ShareDocsTests(unittest.TestCase):

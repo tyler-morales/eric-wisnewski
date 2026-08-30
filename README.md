@@ -62,6 +62,8 @@ Update these values and rebuild. Nav links are used in the site header; the CSV 
 
 The main nav stays on one row. When the labels don’t fit (typical on a phone, and later if more sections are added), the row scrolls horizontally. A white fade on the left and/or right shows there is more to scroll in that direction; if everything fits, there is no fade and no scroll.
 
+Every article page (Posts, Grady’s Tour, Da Breakdown) has a **Back to top** link after the last photo / gallery, next to the footer Share control. It is an in-flow `#top` link, not a floating corner button.
+
 ## Editing content (Pages CMS)
 
 Content and media are edited via **Pages CMS**. Eric signs in with **email** (magic link sent to his inbox; invite him by email in the CMS if needed). Maintainers can use GitHub at [https://app.pagescms.org/](https://app.pagescms.org/); open this repository and branch, and use the configured collections (**Posts** for the home page, **Grady’s Tour** for travel posts, **Da Breakdown w Tad** for Tad’s posts, **Site updates** for the footer Updates log) and media (uploads). The post **Gallery** field accepts several photos at once; **Body** is a rich-text editor (format text, links, slash commands). Configuration lives in `.pages.yml` at the repo root.

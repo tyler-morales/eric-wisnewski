@@ -20,6 +20,7 @@
       {{ .Content }}
       {{ partial "post-gallery.html" . }}
       {{ partial "share.html" (dict "page" . "id" "footer") }}
+      <a href="#top" class="back-to-top">Back to top</a>
       {{ partial "author-bio.html" . }}
     </article>
     {{ partial "more-from-author.html" . }}
