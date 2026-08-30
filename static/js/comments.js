@@ -65,6 +65,64 @@ export function likeAriaLabel(liked, count) {
   return (liked ? 'Unlike this comment. ' : 'Like this comment. ') + likes;
 }
 
+export function likeCountSlide(from, to) {
+  var a = normalizeLikeCount(from);
+  var b = normalizeLikeCount(to);
+  if (b > a) return 'up';
+  if (b < a) return 'down';
+  return '';
+}
+
+function prefersReducedMotion() {
+  try {
+    return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch (_) {
+    return false;
+  }
+}
+
+function paintLikeCount(countEl, nextCount) {
+  var n = normalizeLikeCount(nextCount);
+  var had = countEl.hasAttribute('data-count');
+  var prev = had ? normalizeLikeCount(countEl.getAttribute('data-count')) : n;
+  if (had && prev === n) return;
+  countEl.setAttribute('data-count', String(n));
+  var dir = had && !prefersReducedMotion() ? likeCountSlide(prev, n) : '';
+  countEl.classList.remove('comment-like-count--up', 'comment-like-count--down');
+  if (!dir) {
+    countEl.textContent = String(n);
+    return;
+  }
+  var track = document.createElement('span');
+  track.className = 'comment-like-count-track';
+  var outEl = document.createElement('span');
+  outEl.className = 'comment-like-count-num';
+  outEl.textContent = String(prev);
+  var inEl = document.createElement('span');
+  inEl.className = 'comment-like-count-num';
+  inEl.textContent = String(n);
+  if (dir === 'up') {
+    track.appendChild(outEl);
+    track.appendChild(inEl);
+  } else {
+    track.appendChild(inEl);
+    track.appendChild(outEl);
+  }
+  countEl.replaceChildren(track);
+  void countEl.offsetWidth;
+  countEl.classList.add('comment-like-count--' + dir);
+  var done = false;
+  function finish() {
+    if (done) return;
+    done = true;
+    if (countEl.getAttribute('data-count') !== String(n)) return;
+    countEl.classList.remove('comment-like-count--up', 'comment-like-count--down');
+    countEl.textContent = String(n);
+  }
+  track.addEventListener('animationend', finish);
+  setTimeout(finish, 320);
+}
+
 export function buildThread(comments) {
   var top = [];
   var byParent = {};
@@ -480,7 +538,7 @@ function initComments() {
       var isLiked = !!liked;
       btn.setAttribute('aria-pressed', isLiked ? 'true' : 'false');
       btn.setAttribute('aria-label', likeAriaLabel(isLiked, n));
-      countEl.textContent = String(n);
+      paintLikeCount(countEl, n);
     }
 
     var likeBtn = document.createElement('button');

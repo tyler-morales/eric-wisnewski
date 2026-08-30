@@ -1129,7 +1129,8 @@ article.post-content hr {
 #comments .comment-like-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.3rem;
+  font-size: 0.9375rem;
   vertical-align: middle;
 }
 
@@ -1145,8 +1146,8 @@ article.post-content hr {
 }
 
 #comments .comment-like-heart {
-  width: 0.9em;
-  height: 0.9em;
+  width: 1.125em;
+  height: 1.125em;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -1163,7 +1164,46 @@ article.post-content hr {
 }
 
 #comments .comment-like-count {
+  display: inline-block;
+  overflow: hidden;
+  height: 1.2em;
+  line-height: 1.2;
   font-variant-numeric: tabular-nums;
+  vertical-align: middle;
+}
+
+#comments .comment-like-count-track {
+  display: flex;
+  flex-direction: column;
+}
+
+#comments .comment-like-count-num {
+  display: block;
+  height: 1.2em;
+}
+
+#comments .comment-like-count--up .comment-like-count-track {
+  animation: comment-like-count-up 0.22s ease-out;
+}
+
+#comments .comment-like-count--down .comment-like-count-track {
+  animation: comment-like-count-down 0.22s ease-out;
+}
+
+@keyframes comment-like-count-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(-1.2em); }
+}
+
+@keyframes comment-like-count-down {
+  from { transform: translateY(-1.2em); }
+  to { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #comments .comment-like-count-track {
+    animation: none;
+  }
 }
 
 /* Reply items inside .comment-replies */

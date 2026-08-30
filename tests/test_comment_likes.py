@@ -112,6 +112,18 @@ class LikeLabelHelperTests(unittest.TestCase):
         )
 
 
+class LikeCountSlideTests(unittest.TestCase):
+    def test_like_count_slide_direction_success(self) -> None:
+        self.assertEqual(call_fn(COMMENTS_WIDGET, "likeCountSlide", 3, 4), "up")
+        self.assertEqual(call_fn(COMMENTS_WIDGET, "likeCountSlide", 4, 3), "down")
+        self.assertEqual(call_fn(COMMENTS_WIDGET, "likeCountSlide", "2", 3), "up")
+
+    def test_like_count_slide_unchanged_failure(self) -> None:
+        self.assertEqual(call_fn(COMMENTS_WIDGET, "likeCountSlide", 3, 3), "")
+        self.assertEqual(call_fn(COMMENTS_WIDGET, "likeCountSlide", 0, -2), "")
+        self.assertEqual(call_fn(COMMENTS_WIDGET, "likeCountSlide", "nope", 0), "")
+
+
 class LikeToggleParseTests(unittest.TestCase):
     def test_parse_like_toggle_body_success(self) -> None:
         parsed = call_fn(
@@ -170,6 +182,15 @@ class LikeWidgetSourceTests(unittest.TestCase):
         self.assertIn("#comments .comment-like-btn", css)
         self.assertIn("aria-pressed=\"true\"", css)
         self.assertIn(":focus-visible", css[css.find("#comments .comment-like-btn") :])
+        self.assertIn("likeCountSlide", js)
+        self.assertIn("comment-like-count--up", js)
+        self.assertIn("comment-like-count--down", js)
+        self.assertIn("prefers-reduced-motion", js)
+        self.assertIn("@keyframes comment-like-count-up", css)
+        self.assertIn("@keyframes comment-like-count-down", css)
+        self.assertIn("translateY(-1.2em)", css)
+        self.assertIn("width: 1.125em", css)
+        self.assertIn("font-size: 0.9375rem", css[css.find("#comments .comment-like-btn") :])
 
     def test_likes_are_hearts_not_votes_failure(self) -> None:
         js = COMMENTS_WIDGET.read_text(encoding="utf-8")

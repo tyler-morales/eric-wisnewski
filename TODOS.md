@@ -1,11 +1,14 @@
 # TODOS
 
 ## Next
+- [ ] Set `WRITER_EMAIL_POSTS` and `WRITER_EMAIL_GRADYS_TOUR` (and `WRITER_EMAIL_DA_BREAKDOWN_W_TAD` if Tad wants mail) in Cloudflare Pages env after deploy. Unset means no writer mail for that section.
 - [ ] Run D1 migration `0006_comment_likes.sql` on production after deploy (`npx wrangler d1 execute blog-comments --remote --file=./migrations/0006_comment_likes.sql`). Hearts stay at 0 until this runs.
 - [ ] Publish the Updates log when the site is ready: delete the `build:`/`cascade:` block in `content/updates/_index.md` and push. No other file holds the switch, and the suite passes in both states.
 - [x] Run D1 migration `0005_email_confirm_guard.sql` on production (comment email confirm columns + subscriber `confirm_sent_at`). Applied remotely 28 Aug 2026 (`5` queries, `49` rows written).
 
 ## Done
+- [x] Comment like count slides on the Y axis when the number changes (up on like, down on unlike); heart and count are a step larger (`0.9375rem` / `1.125em`). Skips the ticker when `prefers-reduced-motion`. Tests in `tests/test_comment_likes.py`.
+- [x] Email the writer on a new comment: same Resend path as reply mail; section URL → `WRITER_EMAIL_POSTS` / `WRITER_EMAIL_GRADYS_TOUR` / `WRITER_EMAIL_DA_BREAKDOWN_W_TAD`. Skips self-comments and a duplicate when the writer is already getting the reply notice. Shared `queueCommentEmail` (deleted `sendParentReplyEmail`). Tests in `tests/test_writer_comment_email.py`.
 - [x] Comment likes: heart + count on each comment (toggle, no downvotes). `comment_likes` table keyed by browser `visitor_id` (`comment_visitor_id` in localStorage); GET `/api/comments` returns `like_count` / `liked`; `POST /api/comment-likes` toggles. Deleting a comment deletes its likes. Tests in `tests/test_comment_likes.py`. Deleted/consolidated: no `like_count` column and no Turnstile on like.
 - [x] Subscribe stays on the page: inline `onsubmit="event.preventDefault()"` so a deferred `type="module"` script cannot GET-submit (`?email=&lists=`) or jump to the top. Typed email is remembered (`subscribe_email`); leftover GET query is copied into the field then stripped from the URL. Success still shows Check your email in place. Script cache-bust hash lives in `$subscribeHash` so wrapping cannot break `src`. Tests in `tests/test_newsletter.py`. Deleted/consolidated: native GET fallback on the signup form.
 - [x] Comment reply notice: hint is “Add your email to be notified when someone replies to your comment.” A reply emails the parent’s address (Resend, `waitUntil` or await) without an inbox confirm click. Still skips self-replies / missing key. Deleted/consolidated: comment confirm-mail send, `confirmCommentEmailBody`, and the `email_confirmed_at` gate on notify. GET `?confirm=` still works for old links. Tests in `tests/test_comment_identity.py`.
