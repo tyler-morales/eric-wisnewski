@@ -141,13 +141,57 @@ export function replyNotifyEmail({ parentAuthor, replyAuthor, replyText, postUrl
   return { subject, html, text };
 }
 
-async function sendParentReplyEmail(env, to, mail) {
+/** Section id for a comment URL (`posts` / `gradys-tour` / `da-breakdown-w-tad`); empty means skip. */
+export function commentListId(url) {
+  const live = relocateCommentUrl(url);
+  if (live.startsWith('/gradys-tour/')) return 'gradys-tour';
+  if (live.startsWith('/da-breakdown-w-tad/')) return 'da-breakdown-w-tad';
+  if (live.startsWith('/posts/')) return 'posts';
+  return '';
+}
+
+/** Address to email the post's writer; empty means skip. */
+export function writerNotifyTo(listId, env, commentEmail) {
+  if (!listId || !env) return '';
+  const key = `WRITER_EMAIL_${String(listId).replace(/-/g, '_').toUpperCase()}`;
+  const to = typeof env[key] === 'string' ? env[key].trim() : '';
+  if (!isValidEmail(to)) return '';
+  const from = typeof commentEmail === 'string' ? commentEmail.trim() : '';
+  if (from && to.toLowerCase() === from.toLowerCase()) return '';
+  return to;
+}
+
+export function writerNotifyEmail({ commentAuthor, commentText, postUrl }) {
+  const who = (typeof commentAuthor === 'string' && commentAuthor.trim()) || 'Someone';
+  const snippet = String(commentText || '').trim().slice(0, 280);
+  const url = typeof postUrl === 'string' ? postUrl : '';
+  const subject = `${who} commented on your post`;
+  const text = `${who} commented on your post:\n\n${snippet}\n\n${url}`;
+  const html = `<p>${escapeHtml(who)} commented on your post:</p>
+<blockquote>${escapeHtml(snippet).replace(/\n/g, '<br>')}</blockquote>
+<p><a href="${escapeAttr(url)}">Read the comment</a></p>
+<p style="color:#666;font-size:12px;">You got this because you wrote this post.</p>`;
+  return { subject, html, text };
+}
+
+async function sendCommentNotice(env, to, mail) {
+  // ponytail: From is always NEWSLETTER_FROM_EMAIL (Eric). Ceiling: Grady/Tad see Eric in From. Upgrade: newsletterFromHeader(env, sectionName).
   if (!env || !env.RESEND_API_KEY || !to || !mail) return;
   try {
     await sendResendEmail(env, { to, subject: mail.subject, html: mail.html, text: mail.text });
   } catch (e) {
     console.error(e);
   }
+}
+
+function queueCommentEmail(context, to, mail) {
+  if (!context || !to || !mail) return Promise.resolve();
+  const job = sendCommentNotice(context.env, to, mail);
+  if (typeof context.waitUntil === 'function') {
+    context.waitUntil(job);
+    return Promise.resolve();
+  }
+  return job;
 }
 
 export async function onRequestGet(context) {
@@ -415,20 +459,28 @@ export async function onRequestPost(context) {
     if (!row) {
       return jsonResponse({ error: 'Failed to save comment' }, 500);
     }
+    const origin = publicOrigin(context.env, context.request);
+    const postUrl = `${origin}${url}#comments`;
     const notifyTo = parentReplyNotifyTo(parentRow && parentRow.email, email);
-    if (notifyTo && context.env.RESEND_API_KEY) {
-      const origin = publicOrigin(context.env, context.request);
-      const mail = replyNotifyEmail({
-        parentAuthor: parentRow.author,
-        replyAuthor: author,
-        replyText: text,
-        postUrl: `${origin}${url}#comments`,
-      });
-      if (typeof context.waitUntil === 'function') {
-        context.waitUntil(sendParentReplyEmail(context.env, notifyTo, mail));
-      } else {
-        await sendParentReplyEmail(context.env, notifyTo, mail);
-      }
+    const writerTo = writerNotifyTo(commentListId(url), context.env, email);
+    if (notifyTo) {
+      await queueCommentEmail(
+        context,
+        notifyTo,
+        replyNotifyEmail({
+          parentAuthor: parentRow.author,
+          replyAuthor: author,
+          replyText: text,
+          postUrl,
+        })
+      );
+    }
+    if (writerTo && writerTo.toLowerCase() !== (notifyTo || '').toLowerCase()) {
+      await queueCommentEmail(
+        context,
+        writerTo,
+        writerNotifyEmail({ commentAuthor: author, commentText: text, postUrl })
+      );
     }
     return jsonResponse({ ...row, edit_token: editToken }, 201);
   } catch (e) {

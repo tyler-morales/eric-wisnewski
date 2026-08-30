@@ -317,7 +317,7 @@ class CommentReplyNotifyHelperTests(unittest.TestCase):
         self.assertIn("parentReplyNotifyTo", api)
         self.assertIn("sendResendEmail", api)
         self.assertIn("context.waitUntil", api)
-        self.assertIn("await sendParentReplyEmail", api)
+        self.assertIn("await queueCommentEmail", api)
         self.assertIn("UPDATE comments SET author = ? WHERE id = ?", api)
         self.assertNotIn("UPDATE comments SET author = ? WHERE email = ?", api)
         self.assertNotIn("confirmCommentEmailBody", api)

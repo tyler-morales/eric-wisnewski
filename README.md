@@ -89,7 +89,7 @@ Self-hosted Umami: point `umami_script_url` at your instance’s `/script.js` an
 
 ## Comments
 
-Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). A heart on each comment toggles a like (`POST /api/comment-likes`); the count is the number of browsers that liked it (`comment_visitor_id` in localStorage). Threaded replies (any depth) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/comments.html` and loads `static/js/comments.js`. **Reply** opens a form on that comment or any nested reply (name + reply text); **Leave a comment** at the bottom posts a new thread. Deleting a comment also deletes replies under it. The name and optional email are remembered in `localStorage` (`comment_author`, `comment_email`) and prefilled on every post. Email is optional; if someone leaves one, a reply to that comment emails them (same `RESEND_API_KEY` as the newsletter). Changing a display name edits that one comment, not every comment that used the same email. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
+Comments are stored in **Cloudflare D1** and served by a **Pages Function** at `/api/comments` (GET list, POST new, PUT edit, DELETE). A heart on each comment toggles a like (`POST /api/comment-likes`); the count is the number of browsers that liked it (`comment_visitor_id` in localStorage). Threaded replies (any depth) and author edit/delete (via localStorage token) are supported. The widget is in `layouts/partials/comments.html` and loads `static/js/comments.js`. **Reply** opens a form on that comment or any nested reply (name + reply text); **Leave a comment** at the bottom posts a new thread. Deleting a comment also deletes replies under it. The name and optional email are remembered in `localStorage` (`comment_author`, `comment_email`) and prefilled on every post. Email is optional; if someone leaves one, a reply to that comment emails them (same `RESEND_API_KEY` as the newsletter). A new comment also emails the post’s writer: `WRITER_EMAIL_POSTS` (Eric), `WRITER_EMAIL_GRADYS_TOUR` (Grady), `WRITER_EMAIL_DA_BREAKDOWN_W_TAD` (Tad). Mail is skipped when the writer comments from that same address, or when they are already getting the reply notice. Unset vars mean no writer mail for that section. Changing a display name edits that one comment, not every comment that used the same email. **Cloudflare Turnstile** protects comment and reply submissions; the site key is in Hugo config and the secret is a Cloudflare env var.
 
 To enable comments:
 
@@ -123,6 +123,9 @@ If someone submits an address, the form stays on the page (it does not reload or
 | `TURNSTILE_SECRET_KEY` | Same as comments (subscribe uses Turnstile) |
 | `NEWSLETTER_POSTAL_ADDRESS` | Physical mailing address in new-post footers (CAN-SPAM) |
 | `NEWSLETTER_SITE_ORIGIN` | Optional. Pin confirm/unsubscribe links to `https://ericwisnewski.com` |
+| `WRITER_EMAIL_POSTS` | Eric’s inbox for comments on `/posts/` |
+| `WRITER_EMAIL_GRADYS_TOUR` | Grady’s inbox for comments on `/gradys-tour/` |
+| `WRITER_EMAIL_DA_BREAKDOWN_W_TAD` | Tad’s inbox for comments on `/da-breakdown-w-tad/` |
 
 **GitHub:** repo → Settings → Secrets → Actions → `NEWSLETTER_DISPATCH_SECRET` (same value as Cloudflare). The workflow `.github/workflows/newsletter-dispatch.yml` POSTs `/api/newsletter` every 20 minutes.
 
