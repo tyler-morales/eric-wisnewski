@@ -3,8 +3,8 @@ title: Getting Ready to Ride
 slug: French-culture
 author: grady-davis
 date: 2026-08-29T21:55:00Z
-draft: true
-image: /images/uploads/image.jpg
+draft: false
+image: /images/uploads/image-1.jpg
 ---
 Aug 31st, Mile 440
 
@@ -20,8 +20,10 @@ This grudge against the French doesn’t include its rural people. They have bee
 
 *Small town food is surprisingly tasty, especially compared to the US. Each tiny village has an unbelievable bakery and baguettes are only $1.50, we are eating well.* *See above two tents turned seafood restaurant on the side of the river. The food was incredible. We ate whelks aka sea snails and they were delicious. The only thing we miss is spicy food.* 
 
-We’ve also bonded with French immigrants they understand our plight, even if it’s temporary. It’s the cities where people are so rude and demanding. The snippy waiter, the sassy Hotel check-in the French moms pushing their way past us. It’s almost as if they resent us for not being French. We are sick of it and barely understand them doesn't help. We’re gonna go to Spain for the weekend after we finish just to savor hearing Spanish. 
+We’ve also bonded with French immigrants they understand our plight, even if it’s temporary. It’s the cities where people are so rude and demanding. The snippy waiter, the sassy Hotel check-in the French moms pushing their way past us. **They resent us for not being French.** We are sick of it and barely understand them which doesn't help. We’re gonna go to Spain for the weekend after we finish just to savor hearing Spanish. 
 
-We have 127 miles left. Wow just a blink! Will we do it in a day? Two days? Three? Stay tuned to find out. Thanks to everyone that has tuned in and to Eric Wisnewski for the opportunity. 
+We have 127 miles left. Wow… a blink! Will we do it in a day? Two days? Three? Stay tuned to find out. 
+
+Sincerely, thank you to everyone that has tuned in and to Eric Wisnewski for the opportunity. This has been a good opportunity to reflect and share this experience.
 
 -GD
