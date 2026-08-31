@@ -30,4 +30,12 @@ Sincerely, thank you to everyone that has tuned in and to Eric Wisnewski for the
 
 *22 miles in at one of our fastest pace strong winds at out back. 105 miles to finish. Stopping at a bakery for as the French say “snacking”*
 
+![](/images/uploads/IMG_1550.jpeg)
+
+*Hard Body Nutrition*
+
+![](/images/uploads/IMG_1551.jpeg)
+
+![](/images/uploads/IMG_1549.jpeg)
+
 -GD
