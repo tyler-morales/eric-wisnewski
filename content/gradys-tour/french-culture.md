@@ -6,7 +6,7 @@ date: 2026-08-29T21:55:00Z
 draft: false
 image: /images/uploads/image-1.jpg
 ---
-Aug 31st, Mile 532
+Aug 31st, Mile 532: *Live updates* 
 
 We took the day off. Pretty much sat in bed all day. Quite sore (or at least I am, it feels better to say we, not sure if T-mo feels pain) and honestly ready to get out of France. We are sick of their silly language and ridiculous stripe shirts. They actually wear them all the time in all varieties and styles. The best rationale we got is because sailors wore them at one point. Wtf? They really look ridiculous. *Example below.*
 
