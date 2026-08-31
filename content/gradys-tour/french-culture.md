@@ -8,8 +8,20 @@ image: /images/uploads/image.jpg
 ---
 Aug 31st, Mile 440
 
-We took the day off. Pretty much sat in bed all day. We are pretty sore (or at least I am, it feels better to say we least I think T-mo may be part machine) and honestly ready to get out of France. I’m getting sick of their silly language and ridiculous stripe shirts. They actually wear them all the time. In all varieties and styles and the best rationale we got is because sailors wore them at one point. They really look ridiculous. Example below.
+We took the day off. Pretty much sat in bed all day. Quite sore (or at least I am, it feels better to say we, not sure if T-mo feels pain) and honestly ready to get out of France. We are sick of their silly language and ridiculous stripe shirts. They actually wear them all the time in all varieties and styles. The best rationale we got is because sailors wore them at one point. Wtf? They really look ridiculous. *Example below.*
 
 ![](/images/uploads/IMG_1542-1.jpeg)
 
-This grudge against the French doesn’t include its rural people. They have been unbelievably friendly, kind and curious even while speaking almost no English. We’ve been consistently welcomed with open arms especially when they found out we were American and not British. Plus every small town has an unbelievable bakery and baguettes are only $1.50, we are truly eating well. The only thing we miss is spicy food. And it’s not foreign French either what seems to be a popular narrative of immigrant invasion. They have been funny, kind and relatable as we have bonded because they were once outsider's. It’s the cities where people are so rude and demanding.  The snippy waiter, the sassy Hotel check-in desk, the uppity striped French moms pushing their way past us. We are sick of it and we can barely understand them, but they’re silly accents. We’re gonna go to Spain for the weekend after we finish and savor your hearing Spanish. We’re gearing up with 127 miles left to go, will we do it in a day? Two days? Three days? Stay tuned to find out.
+This grudge against the French doesn’t include its rural people. They have been unbelievably friendly, kind and curious even while speaking almost no English. We’ve been consistently welcomed with open arms especially when they found out we were American and **not British.** 
+
+![](/images/uploads/IMG_1494.jpeg)
+
+![](/images/uploads/IMG_1489.jpeg)
+
+*Small town food is surprisingly tasty, especially compared to the US. Each tiny village has an unbelievable bakery and baguettes are only $1.50, we are eating well.* *See above two tents turned seafood restaurant on the side of the river. The food was incredible. We ate whelks aka sea snails and they were delicious. The only thing we miss is spicy food.* 
+
+We’ve also bonded with French immigrants they understand our plight, even if it’s temporary. It’s the cities where people are so rude and demanding. The snippy waiter, the sassy Hotel check-in the French moms pushing their way past us. It’s almost as if they resent us for not being French. We are sick of it and barely understand them doesn't help. We’re gonna go to Spain for the weekend after we finish just to savor hearing Spanish. 
+
+We have 127 miles left. Wow just a blink! Will we do it in a day? Two days? Three? Stay tuned to find out. Thanks to everyone that has tuned in and to Eric Wisnewski for the opportunity. 
+
+-GD
