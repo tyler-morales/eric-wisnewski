@@ -44,6 +44,10 @@ Sincerely, thank you to everyone that has tuned in and to Eric Wisnewski for the
 
 *Someone figure out what’s going on here and let me know.*
 
+*16:45pm - we are on pace for 90 miles today. Blessing in disguise that we have to wait an hour for the ferry so we can eat something.  We stopped in a cognac distillery. The owner gave us a tasting, and convinced us to bike the long way through the Vineyards in Bordeaux.* 
 
+![](/images/uploads/IMG_1565-1.jpeg)
+
+*The owner, Jean-Mark gives us a tour. Some of the bronze equipment is from the 1700s.*
 
 -GD
