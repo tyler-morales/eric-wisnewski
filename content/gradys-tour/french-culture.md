@@ -6,7 +6,7 @@ date: 2026-08-29T21:55:00Z
 draft: false
 image: /images/uploads/image-1.jpg
 ---
-Aug 31st, Mile 440
+Aug 31st, Mile 532
 
 We took the day off. Pretty much sat in bed all day. Quite sore (or at least I am, it feels better to say we, not sure if T-mo feels pain) and honestly ready to get out of France. We are sick of their silly language and ridiculous stripe shirts. They actually wear them all the time in all varieties and styles. The best rationale we got is because sailors wore them at one point. Wtf? They really look ridiculous. *Example below.*
 
@@ -55,5 +55,11 @@ Sincerely, thank you to everyone that has tuned in and to Eric Wisnewski for the
 ![](/images/uploads/IMG_1565-1.jpeg)
 
 *The owner, Jean-Mark gives us a tour. Some of the bronze equipment is from the 1700s.*
+
+21:18 Made it 92 miles just outside Bordeux, averaged our fastest pace for last 14miles.
+
+![](/images/uploads/IMG_1573.jpeg)
+
+*Staying on a chateaux for last night, canned reserves for dinner. Room is only $90 with free breakfast and wine. Final ride tomorrow.*
 
 -GD
