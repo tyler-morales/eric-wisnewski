@@ -26,4 +26,8 @@ We have 127 miles left. Wow… a blink! Will we do it in a day? Two days? Three?
 
 Sincerely, thank you to everyone that has tuned in and to Eric Wisnewski for the opportunity. This has been a good opportunity to reflect and share this experience.
 
+*Live update 11:30am* 
+
+*22 miles in at one of our fastest pace strong winds at out back. 105 miles to finish. Stopping at a bakery for as the French say “snacking”*
+
 -GD
