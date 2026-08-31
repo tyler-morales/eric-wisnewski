@@ -15,10 +15,24 @@ export function relocateCommentUrl(url) {
 function commentTime(c) {
   var raw = c && c.created_at;
   if (!raw) return 0;
-  var t = Date.parse(raw);
-  if (!isNaN(t)) return t;
-  t = Date.parse(String(raw).replace(' ', 'T') + 'Z');
+  var s = String(raw).trim();
+  if (!s) return 0;
+  if (!(/Z$/i.test(s) || /[+-]\d{2}:\d{2}$/.test(s))) s = s.replace(' ', 'T') + 'Z';
+  else s = s.replace(' ', 'T');
+  var t = Date.parse(s);
   return isNaN(t) ? 0 : t;
+}
+
+function formatPostedAt(raw) {
+  var t = commentTime({ created_at: raw });
+  if (!t) return raw || '';
+  return new Date(t).toLocaleString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  });
 }
 
 function lookupPost(url, postIndex) {
@@ -110,7 +124,9 @@ function appendCommentItem(ol, c) {
   var meta = document.createElement('div');
   meta.className = 'admin-comment-meta';
   var statusLabel = (c.status === 'pending') ? 'pending' : 'approved';
-  meta.innerHTML = '<span class="admin-comment-author">' + escapeHtml(c.author) + '</span> <time datetime="' + escapeHtml(c.created_at) + '">' + escapeHtml(c.created_at) + '</time> <span class="admin-comment-status admin-comment-status-' + statusLabel + '" aria-label="Status">' + escapeHtml(statusLabel) + '</span>';
+  var postedMs = commentTime(c);
+  var createdIso = postedMs ? new Date(postedMs).toISOString() : (c.created_at || '');
+  meta.innerHTML = '<span class="admin-comment-author">' + escapeHtml(c.author) + '</span> <time datetime="' + escapeHtml(createdIso) + '">' + escapeHtml(formatPostedAt(c.created_at)) + '</time> <span class="admin-comment-status admin-comment-status-' + statusLabel + '" aria-label="Status">' + escapeHtml(statusLabel) + '</span>';
   view.appendChild(meta);
   var body = document.createElement('div');
   body.className = 'admin-comment-body';

@@ -123,6 +123,44 @@ function paintLikeCount(countEl, nextCount) {
   setTimeout(finish, 320);
 }
 
+/** SQLite datetime('now') is UTC with no zone; JS Date treats that as local. */
+export function asIsoUtc(value) {
+  if (value == null) return value;
+  var s = String(value).trim();
+  if (!s) return s;
+  if (/Z$/i.test(s) || /[+-]\d{2}:\d{2}$/.test(s)) return s.replace(' ', 'T');
+  return s.replace(' ', 'T') + 'Z';
+}
+
+export function parseCommentTime(value) {
+  var iso = asIsoUtc(value);
+  if (iso == null || iso === '') return NaN;
+  return Date.parse(iso);
+}
+
+export function timeAgo(value, nowMs) {
+  var t = parseCommentTime(value);
+  if (isNaN(t)) return value == null ? '' : String(value);
+  var now = nowMs == null ? Date.now() : nowMs;
+  var diff = Math.floor((now - t) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + ' minute' + (diff >= 120 ? 's' : '') + ' ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + ' hour' + (diff >= 7200 ? 's' : '') + ' ago';
+  if (diff < 604800) return Math.floor(diff / 86400) + ' day' + (diff >= 172800 ? 's' : '') + ' ago';
+  if (diff < 2592000) return Math.floor(diff / 604800) + ' week' + (diff >= 1209600 ? 's' : '') + ' ago';
+  return formatCommentDate(value);
+}
+
+function formatCommentDate(value) {
+  var t = parseCommentTime(value);
+  if (isNaN(t)) return value == null ? '' : String(value);
+  return new Date(t).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+
 export function buildThread(comments) {
   var top = [];
   var byParent = {};
@@ -136,11 +174,11 @@ export function buildThread(comments) {
     }
   });
   top.sort(function (a, b) {
-    return new Date(a.created_at) - new Date(b.created_at);
+    return parseCommentTime(a.created_at) - parseCommentTime(b.created_at);
   });
   Object.keys(byParent).forEach(function (pid) {
     byParent[pid].sort(function (a, b) {
-      return new Date(a.created_at) - new Date(b.created_at);
+      return parseCommentTime(a.created_at) - parseCommentTime(b.created_at);
     });
   });
   return { top: top, byParent: byParent };
@@ -185,19 +223,6 @@ function initComments() {
     return div.innerHTML;
   }
 
-  function formatDate(iso) {
-    try {
-      var d = new Date(iso);
-      return isNaN(d.getTime()) ? iso : d.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    } catch (_) {
-      return iso;
-    }
-  }
-
   function getInitial(author) {
     if (!author || typeof author !== 'string') return '?';
     var first = author.trim().charAt(0);
@@ -211,23 +236,6 @@ function initComments() {
     var c = (author && author.trim().charAt(0)) || '?';
     var i = c.charCodeAt(0) % AVATAR_COLORS.length;
     return AVATAR_COLORS[i];
-  }
-
-  function timeAgo(iso) {
-    try {
-      var d = new Date(iso);
-      if (isNaN(d.getTime())) return iso;
-      var now = Date.now();
-      var diff = Math.floor((now - d.getTime()) / 1000);
-      if (diff < 60) return 'just now';
-      if (diff < 3600) return Math.floor(diff / 60) + ' minute' + (diff >= 120 ? 's' : '') + ' ago';
-      if (diff < 86400) return Math.floor(diff / 3600) + ' hour' + (diff >= 7200 ? 's' : '') + ' ago';
-      if (diff < 604800) return Math.floor(diff / 86400) + ' day' + (diff >= 172800 ? 's' : '') + ' ago';
-      if (diff < 2592000) return Math.floor(diff / 604800) + ' week' + (diff >= 1209600 ? 's' : '') + ' ago';
-      return formatDate(iso);
-    } catch (_) {
-      return iso;
-    }
   }
 
   function showError(msg) {
@@ -497,7 +505,8 @@ function initComments() {
     if (isReply && parentAuthor) {
       metaParts.push(' <span class="comment-reply-to">→ ' + escapeHtml(parentAuthor) + '</span>');
     }
-    metaParts.push(' <time class="comment-date" datetime="' + escapeHtml(c.created_at) + '">' + timeAgo(c.created_at) + '</time>');
+    var createdIso = asIsoUtc(c.created_at) || '';
+    metaParts.push(' <time class="comment-date" datetime="' + escapeHtml(createdIso) + '">' + timeAgo(c.created_at) + '</time>');
     meta.innerHTML = metaParts.join('');
     content.appendChild(meta);
 

@@ -59,14 +59,28 @@ export function relocateCommentUrl(url) {
   return canonical;
 }
 
+/** SQLite datetime('now') is UTC with no zone; JS Date treats that as local. */
+export function asIsoUtc(value) {
+  if (value == null) return value;
+  const s = String(value).trim();
+  if (!s) return s;
+  if (/Z$/i.test(s) || /[+-]\d{2}:\d{2}$/.test(s)) return s.replace(' ', 'T');
+  return s.replace(' ', 'T') + 'Z';
+}
+
+export function withIsoCreatedAt(row) {
+  if (!row || typeof row !== 'object') return row;
+  return { ...row, created_at: asIsoUtc(row.created_at) };
+}
+
 export function withPublicLikeFields(row) {
   const src = row && typeof row === 'object' ? row : {};
   const likeCount = Number(src.like_count);
-  return {
+  return withIsoCreatedAt({
     ...src,
     like_count: Number.isFinite(likeCount) && likeCount > 0 ? Math.floor(likeCount) : 0,
     liked: Boolean(src.liked),
-  };
+  });
 }
 
 function withAndWithoutSlash(url) {
@@ -239,7 +253,7 @@ export async function onRequestGet(context) {
          ORDER BY created_at DESC`
       );
       const { results } = await stmt.all();
-      return jsonResponse(results ?? []);
+      return jsonResponse((results ?? []).map(withIsoCreatedAt));
     } catch (e) {
       const msg = e?.message != null ? String(e.message) : '';
       if (/no such column: status/i.test(msg)) {
@@ -247,7 +261,7 @@ export async function onRequestGet(context) {
           'SELECT id, url, author, email, body, created_at, parent_id FROM comments ORDER BY created_at DESC'
         );
         const { results } = await stmt.all();
-        return jsonResponse((results ?? []).map((row) => ({ ...row, status: 'approved' })));
+        return jsonResponse((results ?? []).map((row) => withIsoCreatedAt({ ...row, status: 'approved' })));
       }
       return jsonResponse({ error: 'Failed to load comments' }, 500);
     }
@@ -482,7 +496,7 @@ export async function onRequestPost(context) {
         writerNotifyEmail({ commentAuthor: author, commentText: text, postUrl })
       );
     }
-    return jsonResponse({ ...row, edit_token: editToken }, 201);
+    return jsonResponse(withIsoCreatedAt({ ...row, edit_token: editToken }), 201);
   } catch (e) {
     console.error(e);
     return jsonResponse({ error: 'Failed to save comment' }, 500);
@@ -544,7 +558,7 @@ export async function onRequestPut(context) {
       )
       .bind(id)
       .first();
-    return jsonResponse(updated);
+    return jsonResponse(withIsoCreatedAt(updated));
   } catch (e) {
     return jsonResponse({ error: 'Failed to update comment' }, 500);
   }
