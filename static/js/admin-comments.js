@@ -227,12 +227,14 @@ export function initAdminComments() {
     adminContent.hidden = true;
     secretError.textContent = msg || '';
     secretError.hidden = !msg;
+    secretInput.focus();
   }
 
   function showContent() {
     secretForm.hidden = true;
     adminContent.hidden = false;
     secretError.hidden = true;
+    adminContent.focus();
   }
 
   function renderComments(comments) {

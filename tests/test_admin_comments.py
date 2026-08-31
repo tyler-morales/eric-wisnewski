@@ -143,6 +143,10 @@ class AdminCommentsLayoutTests(unittest.TestCase):
         self.assertNotIn('" /js/admin-comments.js"', template)
         self.assertNotIn("groupByUrl", template)
         self.assertNotIn("Object.keys(byUrl).sort()", template)
+        self.assertIn('id="admin-content" class="admin-content" tabindex="-1"', template)
+        script = ADMIN_JS.read_text(encoding="utf-8")
+        self.assertIn("adminContent.focus()", script)
+        self.assertIn("secretInput.focus()", script)
 
 
 class AdminCommentsBuildTests(unittest.TestCase):

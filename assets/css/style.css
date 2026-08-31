@@ -1847,6 +1847,11 @@ article.post-content hr {
   margin-top: 1rem;
 }
 
+.admin-content:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
 .admin-author-filter {
   border: 0;
   margin: 0 0 1.25rem;
@@ -1978,6 +1983,11 @@ article.post-content hr {
   color: #555;
 }
 
+.admin-subscriber-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .admin-subscriber-table {
   width: 100%;
   border-collapse: collapse;
@@ -1987,17 +1997,19 @@ article.post-content hr {
 .admin-subscriber-table th,
 .admin-subscriber-table td {
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
   padding: 0.5rem 0.75rem 0.5rem 0;
   border-bottom: 1px solid var(--border, #eee);
 }
 
 .admin-subscriber-table th {
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .admin-subscriber-email {
   word-break: break-word;
+  min-width: 10rem;
 }
 
 .admin-subscriber-email a {
@@ -2009,17 +2021,12 @@ article.post-content hr {
   outline-offset: 2px;
 }
 
-.admin-subscriber-lists {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 0.85rem;
+.admin-subscriber-table .admin-comment-status {
+  margin-left: 0;
 }
 
-.admin-subscriber-lists .admin-comment-status {
-  margin-left: 0.25rem;
+.admin-subscriber-empty {
+  color: #999;
 }
 
 .admin-comment-edit {

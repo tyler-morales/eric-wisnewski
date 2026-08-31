@@ -19,6 +19,7 @@ ADMIN_COMMENTS_JS = REPO_ROOT / "static" / "js" / "admin-comments.js"
 SUBSCRIBERS_CONTENT = REPO_ROOT / "content" / "admin" / "subscribers.md"
 COMMENTS_CONTENT = REPO_ROOT / "content" / "admin" / "comments.md"
 ADMIN_NAV = REPO_ROOT / "layouts" / "partials" / "admin-nav.html"
+ADMIN_SUBSCRIBERS_JS = REPO_ROOT / "static" / "js" / "admin-subscribers.js"
 HUGO_TIMEOUT_SECONDS = 120
 
 
@@ -65,6 +66,13 @@ class GroupSubscribersTests(unittest.TestCase):
                 "unsub_token": "secret-d",
             },
             {
+                "email": "ada@example.com",
+                "list": "da-breakdown-w-tad",
+                "status": "confirmed",
+                "created_at": "2026-01-04",
+                "confirmed_at": "2026-01-04",
+            },
+            {
                 "email": "bob@example.com",
                 "list": "posts",
                 "status": "unsubscribed",
@@ -76,11 +84,13 @@ class GroupSubscribersTests(unittest.TestCase):
         self.assertEqual([p["email"] for p in people], ["ada@example.com", "bob@example.com"])
         self.assertEqual(
             [row["list"] for row in people[0]["lists"]],
-            ["posts", "gradys-tour"],
+            ["posts", "gradys-tour", "da-breakdown-w-tad"],
         )
         self.assertEqual(people[0]["lists"][0]["label"], "Eric's blog")
         self.assertEqual(people[0]["lists"][0]["status"], "confirmed")
         self.assertEqual(people[0]["lists"][1]["status"], "pending")
+        self.assertEqual(people[0]["lists"][2]["label"], "Da Breakdown w Tad")
+        self.assertEqual(people[0]["lists"][2]["status"], "confirmed")
         self.assertEqual(people[1]["lists"][0]["status"], "unsubscribed")
         blob = json.dumps(people)
         self.assertNotIn("secret-a", blob)
@@ -93,6 +103,79 @@ class GroupSubscribersTests(unittest.TestCase):
         self.assertEqual(
             call_js_fn(SUBSCRIBE_API, "groupSubscribersByEmail", [{"list": "posts"}]),
             [],
+        )
+
+
+class SubscriberTableTests(unittest.TestCase):
+    def test_rows_include_tad_column_success(self) -> None:
+        people = [
+            {
+                "email": "ada@example.com",
+                "lists": [
+                    {"list": "posts", "status": "confirmed"},
+                    {"list": "gradys-tour", "status": "pending"},
+                ],
+            }
+        ]
+        rows = call_js_fn(ADMIN_SUBSCRIBERS_JS, "subscriberTableRows", people)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["email"], "ada@example.com")
+        self.assertEqual(
+            [cell["id"] for cell in rows[0]["cells"]],
+            ["posts", "gradys-tour", "da-breakdown-w-tad"],
+        )
+        self.assertEqual(
+            [cell["label"] for cell in rows[0]["cells"]],
+            ["Eric's blog", "Grady's Tour", "Da Breakdown w Tad"],
+        )
+        self.assertEqual(
+            [cell["status"] for cell in rows[0]["cells"]],
+            ["confirmed", "pending", ""],
+        )
+        all_lists = [
+            {
+                "email": "ada@example.com",
+                "lists": [
+                    {"list": "posts", "status": "confirmed"},
+                    {"list": "gradys-tour", "status": "confirmed"},
+                    {"list": "da-breakdown-w-tad", "status": "confirmed"},
+                ],
+            }
+        ]
+        filled = call_js_fn(ADMIN_SUBSCRIBERS_JS, "subscriberTableRows", all_lists)
+        self.assertEqual(
+            [cell["status"] for cell in filled[0]["cells"]],
+            ["confirmed", "confirmed", "confirmed"],
+        )
+        self.assertEqual(
+            call_js_fn(ADMIN_SUBSCRIBERS_JS, "summarizeSubscribers", all_lists),
+            "1 person. Confirmed: Eric's blog 1, Grady's Tour 1, Da Breakdown w Tad 1.",
+        )
+        summary = call_js_fn(ADMIN_SUBSCRIBERS_JS, "summarizeSubscribers", people)
+        self.assertEqual(
+            summary,
+            "1 person. Confirmed: Eric's blog 1, Grady's Tour 0, Da Breakdown w Tad 0.",
+        )
+        self.assertEqual(
+            call_js_fn(
+                ADMIN_SUBSCRIBERS_JS,
+                "listStatusById",
+                [{"list": "da-breakdown-w-tad", "status": "confirmed"}],
+            ),
+            {"da-breakdown-w-tad": "confirmed"},
+        )
+
+    def test_empty_or_invalid_people_failure(self) -> None:
+        self.assertEqual(call_js_fn(ADMIN_SUBSCRIBERS_JS, "subscriberTableRows", []), [])
+        self.assertEqual(call_js_fn(ADMIN_SUBSCRIBERS_JS, "subscriberTableRows", None), [])
+        self.assertEqual(
+            call_js_fn(ADMIN_SUBSCRIBERS_JS, "subscriberTableRows", [{"lists": []}]),
+            [],
+        )
+        self.assertEqual(call_js_fn(ADMIN_SUBSCRIBERS_JS, "listStatusById", None), {})
+        self.assertEqual(
+            call_js_fn(ADMIN_SUBSCRIBERS_JS, "summarizeSubscribers", None),
+            "0 people. Confirmed: Eric's blog 0, Grady's Tour 0, Da Breakdown w Tad 0.",
         )
 
 
@@ -157,13 +240,26 @@ class AdminSubscriberSourceTests(unittest.TestCase):
 
     def test_layout_fetches_subscribe_admin_success(self) -> None:
         layout = SUBSCRIBERS_LAYOUT.read_text(encoding="utf-8")
-        self.assertIn("Authorization: 'Bearer '", layout)
-        self.assertIn("comments_admin_secret", layout)
-        self.assertIn("admin-subscriber-table", layout)
+        script = ADMIN_SUBSCRIBERS_JS.read_text(encoding="utf-8")
+        self.assertIn('"/js/admin-subscribers.js"', layout)
+        self.assertIn('type="module"', layout)
+        self.assertNotIn('" /js/admin-subscribers.js"', layout)
+        self.assertIn("Authorization: 'Bearer '", script)
+        self.assertIn("comments_admin_secret", script)
+        self.assertIn("admin-subscriber-table", script)
+        self.assertIn("da-breakdown-w-tad", script)
+        self.assertIn("Da Breakdown w Tad", script)
+        self.assertNotIn("admin-subscriber-lists", script)
         self.assertIn('partial "admin-nav.html"', layout)
         self.assertNotIn("admin_secret=", layout)
+        self.assertNotIn("admin_secret=", script)
         self.assertNotIn("confirm_token", layout)
         self.assertNotIn("unsub_token", layout)
+        self.assertNotIn("confirm_token", script)
+        self.assertNotIn("unsub_token", script)
+        self.assertIn('id="admin-content" class="admin-content" tabindex="-1"', layout)
+        self.assertIn("adminContent.focus()", script)
+        self.assertIn("secretInput.focus()", script)
 
     def test_comments_layout_links_subscribers_success(self) -> None:
         comments = COMMENTS_LAYOUT.read_text(encoding="utf-8")
@@ -232,12 +328,23 @@ class AdminSubscriberBuildTests(unittest.TestCase):
         html = self.subscribers_html.lower()
         self.assertIn("unlock", html)
         self.assertIn('name="robots" content="noindex, nofollow"', self.subscribers_html)
-        self.assertIn("Authorization: 'Bearer '", self.subscribers_html)
         self.assertNotIn("admin_secret=", self.subscribers_html)
-        self.assertIn("admin-subscriber-table", self.subscribers_html)
+        self.assertIn("/js/admin-subscribers.js", self.subscribers_html)
+        self.assertNotIn("%20/js/admin-subscribers.js", self.subscribers_html)
+        self.assertNotIn("/ /js/admin-subscribers.js", self.subscribers_html)
         self.assertIn("/admin/comments/", self.subscribers_html)
+        self.assertIn("Da Breakdown w Tad", self.subscribers_html)
         self.assertNotIn("confirm_token", self.subscribers_html)
         self.assertNotIn("unsub_token", self.subscribers_html)
+        script = (self._output_dir / "js" / "admin-subscribers.js").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Authorization: 'Bearer '", script)
+        self.assertIn("admin-subscriber-table", script)
+        self.assertIn("da-breakdown-w-tad", script)
+        self.assertIn("Da Breakdown w Tad", script)
+        self.assertNotIn("admin-subscriber-lists", script)
+        self.assertNotIn("admin_secret=", script)
 
     def test_comments_page_links_subscribers_success(self) -> None:
         self.assertIn("/admin/subscribers/", self.comments_html)
