@@ -8,7 +8,8 @@
 {{ with .Description }}{{ $headDescription = . }}{{ else }}{{ with .Params.bio }}{{ $headDescription = . }}{{ else }}{{ if .IsPage }}{{ $headDescription = .Summary }}{{ end }}{{ end }}{{ end }}
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="icon" href="{{ "favicon.svg" | absURL }}" type="image/svg+xml" />
+<link rel="icon" href="{{ "favicon.png" | absURL }}" type="image/png" />
+<link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | absURL }}" />
 <link rel="canonical" href="{{ .Permalink }}">
 <meta property="og:url" content="{{ .Permalink }}">
 <meta property="og:site_name" content="{{ .Site.Title }}">
