@@ -5,12 +5,15 @@ from __future__ import annotations
 import json
 import re
 import shutil
+import sqlite3
 import subprocess
 import tempfile
 import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+MIGRATIONS_DIR = REPO_ROOT / "migrations"
+TAD_LIST_MIGRATION = MIGRATIONS_DIR / "0007_tad_newsletter_list.sql"
 SUBSCRIBE_API = REPO_ROOT / "functions" / "api" / "subscribe.js"
 NEWSLETTER_API = REPO_ROOT / "functions" / "api" / "newsletter.js"
 SUBSCRIBE_JS = REPO_ROOT / "static" / "js" / "subscribe.js"
@@ -493,6 +496,104 @@ class NewsletterHelperTests(unittest.TestCase):
         self.assertEqual(plan["subscribe"], [])
         self.assertEqual(plan["unsubscribe"], ["posts"])
 
+    def test_preference_update_plan_adds_tad_for_existing_subscriber_success(self) -> None:
+        current = [
+            {"list": "posts", "status": "confirmed"},
+            {"list": "gradys-tour", "status": "confirmed"},
+        ]
+        plan = call_js_fn(
+            SUBSCRIBE_API,
+            "preferenceUpdatePlan",
+            current,
+            ["posts", "gradys-tour", "da-breakdown-w-tad"],
+        )
+        self.assertEqual(plan["subscribe"], ["da-breakdown-w-tad"])
+        self.assertEqual(plan["unsubscribe"], [])
+
+    def test_signup_list_plan_new_subscriber_success(self) -> None:
+        plan = call_js_fn(
+            SUBSCRIBE_API,
+            "signupListPlan",
+            [],
+            ["posts", "da-breakdown-w-tad"],
+            True,
+        )
+        self.assertEqual(plan["alreadyConfirmed"], [])
+        self.assertEqual(plan["newlyPending"], ["posts", "da-breakdown-w-tad"])
+        self.assertEqual(plan["pendingUnchanged"], [])
+        self.assertTrue(call_js_fn(SUBSCRIBE_API, "shouldSendSignupConfirm", plan))
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "shouldSendSignupManage", plan, True))
+
+    def test_signup_list_plan_existing_subscriber_adds_tad_during_cooldown_success(
+        self,
+    ) -> None:
+        current = [
+            {"list": "posts", "status": "confirmed"},
+            {"list": "gradys-tour", "status": "confirmed"},
+        ]
+        plan = call_js_fn(
+            SUBSCRIBE_API,
+            "signupListPlan",
+            current,
+            ["posts", "gradys-tour", "da-breakdown-w-tad"],
+            False,
+        )
+        self.assertEqual(plan["alreadyConfirmed"], ["posts", "gradys-tour"])
+        self.assertEqual(plan["newlyPending"], ["da-breakdown-w-tad"])
+        self.assertEqual(plan["pendingUnchanged"], [])
+        self.assertTrue(call_js_fn(SUBSCRIBE_API, "shouldSendSignupConfirm", plan))
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "shouldSendSignupManage", plan, False))
+
+    def test_signup_list_plan_unsubscribed_tad_resubscribes_success(self) -> None:
+        current = [{"list": "da-breakdown-w-tad", "status": "unsubscribed"}]
+        plan = call_js_fn(
+            SUBSCRIBE_API, "signupListPlan", current, ["da-breakdown-w-tad"], False
+        )
+        self.assertEqual(plan["newlyPending"], ["da-breakdown-w-tad"])
+        self.assertTrue(call_js_fn(SUBSCRIBE_API, "shouldSendSignupConfirm", plan))
+
+    def test_signup_list_plan_already_on_every_list_failure(self) -> None:
+        current = [
+            {"list": "posts", "status": "confirmed"},
+            {"list": "gradys-tour", "status": "confirmed"},
+            {"list": "da-breakdown-w-tad", "status": "confirmed"},
+        ]
+        plan = call_js_fn(
+            SUBSCRIBE_API,
+            "signupListPlan",
+            current,
+            ["posts", "gradys-tour", "da-breakdown-w-tad"],
+            False,
+        )
+        self.assertEqual(
+            plan["alreadyConfirmed"],
+            ["posts", "gradys-tour", "da-breakdown-w-tad"],
+        )
+        self.assertEqual(plan["newlyPending"], [])
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "shouldSendSignupConfirm", plan))
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "shouldSendSignupManage", plan, False))
+        self.assertTrue(call_js_fn(SUBSCRIBE_API, "shouldSendSignupManage", plan, True))
+
+    def test_signup_list_plan_cooldown_skips_pending_resend_failure(self) -> None:
+        current = [{"list": "da-breakdown-w-tad", "status": "pending"}]
+        plan = call_js_fn(
+            SUBSCRIBE_API, "signupListPlan", current, ["da-breakdown-w-tad"], False
+        )
+        self.assertEqual(plan["newlyPending"], [])
+        self.assertEqual(plan["pendingUnchanged"], ["da-breakdown-w-tad"])
+        self.assertFalse(call_js_fn(SUBSCRIBE_API, "shouldSendSignupConfirm", plan))
+
+    def test_signup_list_plan_ignores_unknown_rows_failure(self) -> None:
+        plan = call_js_fn(
+            SUBSCRIBE_API,
+            "signupListPlan",
+            [{"list": "spam", "status": "confirmed"}],
+            ["spam", "posts"],
+            True,
+        )
+        self.assertEqual(plan["alreadyConfirmed"], [])
+        self.assertEqual(plan["newlyPending"], ["posts"])
+
     def test_preferences_payload_success(self) -> None:
         payload = call_js_fn(
             SUBSCRIBE_API,
@@ -572,6 +673,116 @@ class NewsletterHelperTests(unittest.TestCase):
         self.assertNotIn("Read the post", mail["html"])
         self.assertNotIn("Read the post", mail["text"])
         self.assertIn("https://ericwisnewski.com/posts/hello/", mail["text"])
+
+
+def _apply_migrations_through(conn: sqlite3.Connection, last_name: str) -> None:
+    for path in sorted(MIGRATIONS_DIR.glob("*.sql")):
+        conn.executescript(path.read_text(encoding="utf-8"))
+        if path.name == last_name:
+            return
+    raise FileNotFoundError(last_name)
+
+
+class NewsletterSchemaTests(unittest.TestCase):
+    TOKEN = "a" * 48
+
+    def test_tad_insert_rejected_before_migration_failure(self) -> None:
+        conn = sqlite3.connect(":memory:")
+        _apply_migrations_through(conn, "0006_comment_likes.sql")
+        with self.assertRaises(sqlite3.IntegrityError):
+            conn.execute(
+                """INSERT INTO subscribers
+                   (email, list, status, confirm_token, unsub_token)
+                   VALUES (?, ?, 'pending', ?, ?)""",
+                ("new@x.co", "da-breakdown-w-tad", self.TOKEN, self.TOKEN),
+            )
+        with self.assertRaises(sqlite3.IntegrityError):
+            conn.execute(
+                """INSERT INTO newsletter_sends
+                   (list, post_guid, post_url, post_title)
+                   VALUES (?, ?, ?, ?)""",
+                (
+                    "da-breakdown-w-tad",
+                    "https://x.co/tad/",
+                    "https://x.co/tad/",
+                    "Tad",
+                ),
+            )
+        conn.close()
+
+    def test_tad_insert_works_after_migration_for_new_and_existing_success(self) -> None:
+        conn = sqlite3.connect(":memory:")
+        conn.row_factory = sqlite3.Row
+        _apply_migrations_through(conn, "0006_comment_likes.sql")
+        conn.execute(
+            """INSERT INTO subscribers
+               (email, list, status, confirm_token, unsub_token, confirm_sent_at)
+               VALUES (?, 'posts', 'confirmed', ?, ?, datetime('now'))""",
+            ("old@x.co", self.TOKEN, self.TOKEN),
+        )
+        conn.executescript(TAD_LIST_MIGRATION.read_text(encoding="utf-8"))
+        conn.execute(
+            """INSERT INTO subscribers
+               (email, list, status, confirm_token, unsub_token)
+               VALUES (?, 'da-breakdown-w-tad', 'pending', ?, ?)""",
+            ("old@x.co", self.TOKEN, self.TOKEN),
+        )
+        conn.execute(
+            """INSERT INTO subscribers
+               (email, list, status, confirm_token, unsub_token)
+               VALUES (?, 'da-breakdown-w-tad', 'pending', ?, ?)""",
+            ("new@x.co", self.TOKEN, self.TOKEN),
+        )
+        conn.execute(
+            """INSERT INTO newsletter_sends
+               (list, post_guid, post_url, post_title)
+               VALUES (?, ?, ?, ?)""",
+            (
+                "da-breakdown-w-tad",
+                "https://x.co/tad/",
+                "https://x.co/tad/",
+                "Tad",
+            ),
+        )
+        rows = {
+            (r["email"], r["list"], r["status"])
+            for r in conn.execute("SELECT email, list, status FROM subscribers")
+        }
+        self.assertEqual(
+            rows,
+            {
+                ("old@x.co", "posts", "confirmed"),
+                ("old@x.co", "da-breakdown-w-tad", "pending"),
+                ("new@x.co", "da-breakdown-w-tad", "pending"),
+            },
+        )
+        conn.close()
+
+    def test_unknown_list_still_rejected_after_migration_failure(self) -> None:
+        conn = sqlite3.connect(":memory:")
+        _apply_migrations_through(conn, TAD_LIST_MIGRATION.name)
+        with self.assertRaises(sqlite3.IntegrityError):
+            conn.execute(
+                """INSERT INTO subscribers
+                   (email, list, status, confirm_token, unsub_token)
+                   VALUES (?, 'spam', 'pending', ?, ?)""",
+                ("a@b.co", self.TOKEN, self.TOKEN),
+            )
+        conn.close()
+
+    def test_original_newsletter_migration_does_not_include_tad_failure(self) -> None:
+        sql = (MIGRATIONS_DIR / "0004_newsletter.sql").read_text(encoding="utf-8")
+        self.assertNotIn("da-breakdown-w-tad", sql)
+        self.assertIn("CHECK (list IN ('posts', 'gradys-tour'))", sql)
+
+    def test_tad_migration_and_docs_success(self) -> None:
+        sql = TAD_LIST_MIGRATION.read_text(encoding="utf-8")
+        readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertTrue(TAD_LIST_MIGRATION.is_file())
+        self.assertIn("da-breakdown-w-tad", sql)
+        self.assertIn("confirm_sent_at", sql)
+        self.assertIn("0007_tad_newsletter_list.sql", readme)
+        self.assertIn("eight", readme.lower())
 
 
 class NewsletterTemplateTests(unittest.TestCase):

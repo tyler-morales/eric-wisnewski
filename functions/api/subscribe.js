@@ -96,6 +96,43 @@ export function preferenceUpdatePlan(currentRows, requestedLists) {
   return { subscribe, unsubscribe };
 }
 
+export function signupListPlan(currentRows, requestedLists, rotateAndSend) {
+  const byList = new Map();
+  for (const row of Array.isArray(currentRows) ? currentRows : []) {
+    if (row && VALID_LISTS.includes(row.list)) byList.set(row.list, row);
+  }
+  const alreadyConfirmed = [];
+  const newlyPending = [];
+  const pendingUnchanged = [];
+  for (const list of normalizeLists(requestedLists)) {
+    const existing = byList.get(list);
+    const status = existing && existing.status;
+    if (status === 'confirmed') {
+      alreadyConfirmed.push(list);
+      continue;
+    }
+    if (status === 'pending' && !rotateAndSend) {
+      pendingUnchanged.push(list);
+      continue;
+    }
+    newlyPending.push(list);
+  }
+  return { alreadyConfirmed, newlyPending, pendingUnchanged };
+}
+
+export function shouldSendSignupConfirm(plan) {
+  return normalizeLists(plan && plan.newlyPending).length > 0;
+}
+
+export function shouldSendSignupManage(plan, rotateAndSend) {
+  if (!rotateAndSend || !plan) return false;
+  const needing = normalizeLists([
+    ...(plan.newlyPending || []),
+    ...(plan.pendingUnchanged || []),
+  ]);
+  return signupAlreadySubscribed(plan.alreadyConfirmed, needing);
+}
+
 export function groupSubscribersByEmail(rows) {
   const byEmail = new Map();
   const listOrder = new Map(VALID_LISTS.map((id, i) => [id, i]));
@@ -274,27 +311,21 @@ async function savePreferences(context, body) {
     }
 
     if (needingConfirm.length && context.env.RESEND_API_KEY) {
-      const lastSent = await db
-        .prepare('SELECT MAX(confirm_sent_at) AS sent FROM subscribers WHERE email = ?')
-        .bind(owner.email)
-        .first();
-      if (confirmMailAllowed(lastSent && lastSent.sent)) {
-        const origin = publicOrigin(context.env, context.request);
-        const mail = confirmEmailBody(origin, confirmToken, needingConfirm);
-        await sendResendEmail(context.env, {
-          to: owner.email,
-          subject: mail.subject,
-          html: mail.html,
-          text: mail.text,
-        });
-        await db
-          .prepare(
-            `UPDATE subscribers SET confirm_sent_at = datetime('now')
-             WHERE email = ? AND list IN (${needingConfirm.map(() => '?').join(', ')})`
-          )
-          .bind(owner.email, ...needingConfirm)
-          .run();
-      }
+      const origin = publicOrigin(context.env, context.request);
+      const mail = confirmEmailBody(origin, confirmToken, needingConfirm);
+      await sendResendEmail(context.env, {
+        to: owner.email,
+        subject: mail.subject,
+        html: mail.html,
+        text: mail.text,
+      });
+      await db
+        .prepare(
+          `UPDATE subscribers SET confirm_sent_at = datetime('now')
+           WHERE email = ? AND list IN (${needingConfirm.map(() => '?').join(', ')})`
+        )
+        .bind(owner.email, ...needingConfirm)
+        .run();
     }
 
     const message = needingConfirm.length
@@ -353,8 +384,6 @@ export async function onRequestPost(context) {
 
   const confirmToken = randomToken();
   const origin = publicOrigin(context.env, context.request);
-  const alreadyConfirmed = [];
-  const listsNeedingConfirm = [];
   let rotateAndSend = true;
 
   try {
@@ -368,25 +397,19 @@ export async function onRequestPost(context) {
       rotateAndSend = true;
     }
 
-    for (const list of lists) {
-      const existing = await db
-        .prepare('SELECT id, status, confirm_token, unsub_token FROM subscribers WHERE email = ? AND list = ?')
-        .bind(email, list)
-        .first();
+    const found = await db
+      .prepare(
+        'SELECT id, list, status, confirm_token, unsub_token FROM subscribers WHERE email = ?'
+      )
+      .bind(email)
+      .all();
+    const currentRows = found.results || [];
+    const byList = new Map(currentRows.map((row) => [row.list, row]));
+    const plan = signupListPlan(currentRows, lists, rotateAndSend);
 
-      if (existing && existing.status === 'confirmed') {
-        alreadyConfirmed.push(list);
-        continue;
-      }
-
-      if (existing && existing.status === 'pending' && !rotateAndSend) {
-        listsNeedingConfirm.push(list);
-        continue;
-      }
-
-      const unsubToken = existing?.unsub_token || randomToken();
-      const rowToken = rotateAndSend ? confirmToken : existing?.confirm_token || confirmToken;
-
+    for (const list of plan.newlyPending) {
+      const existing = byList.get(list);
+      const unsubToken = (existing && existing.unsub_token) || randomToken();
       if (existing) {
         await db
           .prepare(
@@ -394,7 +417,7 @@ export async function onRequestPost(context) {
              SET status = 'pending', confirm_token = ?, unsub_token = ?, confirmed_at = NULL, unsubscribed_at = NULL
              WHERE id = ?`
           )
-          .bind(rowToken, unsubToken, existing.id)
+          .bind(confirmToken, unsubToken, existing.id)
           .run();
       } else {
         await db
@@ -402,17 +425,18 @@ export async function onRequestPost(context) {
             `INSERT INTO subscribers (email, list, status, confirm_token, unsub_token)
              VALUES (?, ?, 'pending', ?, ?)`
           )
-          .bind(email, list, rowToken, unsubToken)
+          .bind(email, list, confirmToken, unsubToken)
           .run();
       }
-      listsNeedingConfirm.push(list);
     }
 
-    if (listsNeedingConfirm.length && rotateAndSend) {
+    const listsNeedingConfirm = [...plan.newlyPending, ...plan.pendingUnchanged];
+
+    if (shouldSendSignupConfirm(plan)) {
       if (!context.env.RESEND_API_KEY) {
         return jsonResponse({ error: 'Could not send confirmation email. Try again later.' }, 503);
       }
-      const mail = confirmEmailBody(origin, confirmToken, listsNeedingConfirm);
+      const mail = confirmEmailBody(origin, confirmToken, plan.newlyPending);
       await sendResendEmail(context.env, {
         to: email,
         subject: mail.subject,
@@ -422,13 +446,12 @@ export async function onRequestPost(context) {
       await db
         .prepare(
           `UPDATE subscribers SET confirm_sent_at = datetime('now')
-           WHERE email = ? AND list IN (${listsNeedingConfirm.map(() => '?').join(', ')})`
+           WHERE email = ? AND list IN (${plan.newlyPending.map(() => '?').join(', ')})`
         )
-        .bind(email, ...listsNeedingConfirm)
+        .bind(email, ...plan.newlyPending)
         .run();
     } else if (
-      signupAlreadySubscribed(alreadyConfirmed, listsNeedingConfirm) &&
-      rotateAndSend &&
+      shouldSendSignupManage(plan, rotateAndSend) &&
       context.env.RESEND_API_KEY
     ) {
       try {
@@ -461,8 +484,8 @@ export async function onRequestPost(context) {
     return jsonResponse({
       ok: true,
       needsConfirm: signupNeedsConfirm(listsNeedingConfirm),
-      alreadySubscribed: signupAlreadySubscribed(alreadyConfirmed, listsNeedingConfirm),
-      message: subscriptionStatusMessage(alreadyConfirmed, listsNeedingConfirm),
+      alreadySubscribed: signupAlreadySubscribed(plan.alreadyConfirmed, listsNeedingConfirm),
+      message: subscriptionStatusMessage(plan.alreadyConfirmed, listsNeedingConfirm),
     });
   } catch (e) {
     console.error('subscribe POST', e);
