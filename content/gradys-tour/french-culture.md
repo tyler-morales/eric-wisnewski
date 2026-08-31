@@ -38,4 +38,12 @@ Sincerely, thank you to everyone that has tuned in and to Eric Wisnewski for the
 
 ![](/images/uploads/IMG_1549.jpeg)
 
+*12:19pm - we’re supposed to cross this river, but the bridge is 100 feet in the sky.*
+
+*[https://maps.app.goo.gl/JaKcnKmsEmUSGYDZ6?g_st=ic](https://maps.app.goo.gl/JaKcnKmsEmUSGYDZ6?g_st=ic)*
+
+*Someone figure out what’s going on here and let me know.*
+
+
+
 -GD
