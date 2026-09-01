@@ -3,6 +3,9 @@
 {{ define "main" }}
 {{ partial "header.html" . }}
 <main>
+  {{ with .Site.GetPage "/authors" }}{{ with .RelPermalink }}
+  <p class="author-all"><a href="{{ . }}"><span aria-hidden="true">←</span> All contributors</a></p>
+  {{ end }}{{ end }}
   {{ partial "author-card.html" (dict "author" . "profile" true "element" "header") }}
   {{ $posts := partial "author-posts.html" . }}
   {{ if $posts }}
@@ -11,8 +14,6 @@
     {{ partial "post-list-item.html" . }}
     {{ end }}
   </ul>
-  {{ else }}
-  <p class="author-empty">No posts from {{ .Params.name | default .Title }} yet.</p>
   {{ end }}
 </main>
 {{ end }}

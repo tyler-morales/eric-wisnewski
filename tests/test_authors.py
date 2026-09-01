@@ -1,4 +1,4 @@
-"""Home lists every author's posts; /authors/<slug>/ lists one author."""
+"""Home lists every author's posts; /authors/ lists writers; /authors/<slug>/ lists one."""
 
 from __future__ import annotations
 
@@ -12,12 +12,15 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 AUTHORS_DIR = REPO_ROOT / "content" / "authors"
 LIST_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "list.html"
+AUTHOR_LIST_LAYOUT = REPO_ROOT / "layouts" / "authors" / "list.html"
 AUTHOR_LAYOUT = REPO_ROOT / "layouts" / "authors" / "single.html"
 AUTHOR_CARD = REPO_ROOT / "layouts" / "partials" / "author-card.html"
+HEADER_PARTIAL = REPO_ROOT / "layouts" / "partials" / "header.html"
 POST_LIST_ITEM = REPO_ROOT / "layouts" / "partials" / "post-list-item.html"
 POST_BYLINE = REPO_ROOT / "layouts" / "partials" / "post-byline.html"
 AUTHOR_BIO = REPO_ROOT / "layouts" / "partials" / "author-bio.html"
 HUGO_TOML = REPO_ROOT / "config" / "_default" / "hugo.toml"
+STYLE_CSS = REPO_ROOT / "assets" / "css" / "style.css"
 HUGO_TIMEOUT_SECONDS = 120
 
 FRONT_MATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
@@ -32,7 +35,11 @@ POST_LINK_BLOCK_RE = re.compile(
     r'<a\b[^>]*class="[^"]*post-list-(?:title|image-link)[^"]*"[^>]*>(.*?)</a>',
     re.DOTALL,
 )
-FRONT_MATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
+AUTHOR_LIST_RE = re.compile(r'<ul class="author-list"[^>]*>(.*?)</ul>', re.DOTALL)
+NAV_RE = re.compile(
+    r'<nav\b[^>]*aria-label="Main navigation"[^>]*>(.*?)</nav>',
+    re.DOTALL | re.IGNORECASE,
+)
 
 
 def post_list_html(html: str) -> str:
@@ -80,32 +87,18 @@ def published_article_titles() -> set[str]:
     return titles
 
 
-def parse_front_matter(path: Path) -> dict[str, str]:
-    match = FRONT_MATTER_RE.match(path.read_text(encoding="utf-8"))
-    if not match:
-        return {}
-    data: dict[str, str] = {}
-    for line in match.group(1).splitlines():
-        if ":" not in line or line.startswith(" ") or line.startswith("-"):
-            continue
-        key, value = line.split(":", 1)
-        data[key.strip()] = value.strip().strip("'\"")
-    return data
+def author_list_html(html: str) -> str:
+    match = AUTHOR_LIST_RE.search(html)
+    return match.group(1) if match else ""
 
 
-def published_article_titles() -> set[str]:
-    """Every non-draft post in Posts and Grady's Tour."""
-    titles: set[str] = set()
-    for section in ("posts", "gradys-tour", "da-breakdown-w-tad"):
-        for path in sorted((REPO_ROOT / "content" / section).glob("*.md")):
-            if path.name.startswith("_"):
-                continue
-            front_matter = parse_front_matter(path)
-            if front_matter.get("draft", "false").lower() == "true":
-                continue
-            if "title" in front_matter:
-                titles.add(front_matter["title"])
-    return titles
+def author_list_names(html: str) -> list[str]:
+    return [name.strip() for _href, name in AUTHOR_LINK_RE.findall(author_list_html(html))]
+
+
+def main_nav_html(html: str) -> str:
+    match = NAV_RE.search(html)
+    return match.group(1) if match else ""
 
 
 def run_hugo(destination: Path) -> subprocess.CompletedProcess[str]:
@@ -165,16 +158,84 @@ class AuthorTemplateContractTests(unittest.TestCase):
             "Author permalink must sit outside the post list link so names are clickable",
         )
 
-    def test_authors_index_stays_unpublished_success(self) -> None:
-        hugo_toml = HUGO_TOML.read_text(encoding="utf-8")
-        self.assertRegex(hugo_toml, r"path\s*=\s*['\"]/?authors['\"]")
-        self.assertIn("render", hugo_toml)
+    def test_authors_index_layout_lists_cards_not_posts_success(self) -> None:
+        self.assertTrue(AUTHOR_LIST_LAYOUT.is_file(), "layouts/authors/list.html is required")
+        layout = AUTHOR_LIST_LAYOUT.read_text(encoding="utf-8")
+        self.assertIn("author-card.html", layout)
+        self.assertIn("link_name", layout)
+        self.assertIn("author-list", layout)
+        self.assertIn("eric-wisnewski", layout)
+        self.assertIn("Params.name", layout)
+        self.assertNotIn("post-list", layout)
+        self.assertNotIn("subscribe.html", layout)
+        self.assertNotIn("comments.html", layout)
+
+    def test_authors_index_is_not_the_default_post_list_failure(self) -> None:
+        layout = AUTHOR_LIST_LAYOUT.read_text(encoding="utf-8")
+        home = LIST_TEMPLATE.read_text(encoding="utf-8")
+        self.assertNotIn("author-list", home)
+        self.assertNotIn("post-list-item.html", layout)
+
+    def test_header_omits_authors_index_failure(self) -> None:
+        header = HEADER_PARTIAL.read_text(encoding="utf-8")
+        self.assertNotIn("Authors", header)
+        self.assertNotIn("Contributors", header)
+        self.assertNotIn("/authors/", header)
+
+    def test_author_profile_links_up_to_the_index_success(self) -> None:
+        layout = AUTHOR_LAYOUT.read_text(encoding="utf-8")
+        self.assertIn('.Site.GetPage "/authors"', layout)
+        self.assertIn("All contributors", layout)
+
+    def test_authors_index_cascade_no_longer_unpublishes_success(self) -> None:
+        toml = HUGO_TOML.read_text(encoding="utf-8")
+        self.assertIsNone(re.search(r"path\s*=\s*['\"]/?authors['\"]", toml))
+        self.assertNotIn("render = 'never'", toml)
+
+    def test_author_list_css_has_focus_visible_success(self) -> None:
+        css = STYLE_CSS.read_text(encoding="utf-8")
+        self.assertIn(".author-list", css)
+        self.assertIn(".author-all", css)
+        self.assertIn("repeat(3, 1fr)", css)
+        self.assertIn("display: grid", css)
+        self.assertIn(".author-name-link:focus-visible", css)
+        self.assertIn(".author-all a:focus-visible", css)
+        self.assertRegex(css, r"\.author-all a\s*,|\.author-all a\s*\{")
+        list_at = css.find(".author-list {")
+        media_at = css.find("@media (min-width: 640px)", list_at)
+        self.assertGreater(list_at, -1)
+        self.assertGreater(media_at, list_at)
+        base = css[list_at:media_at]
+        self.assertIn("flex-direction: column", base)
+        self.assertIn("align-items: flex-start", base)
+        self.assertIn("10rem", base)
+
+    def test_author_list_does_not_keep_tiny_side_photos_on_mobile_failure(self) -> None:
+        css = STYLE_CSS.read_text(encoding="utf-8")
+        list_at = css.find(".author-list {")
+        media_at = css.find("@media (min-width: 640px)", list_at)
+        self.assertGreater(list_at, -1)
+        self.assertGreater(media_at, list_at)
+        base = css[list_at:media_at]
+        self.assertNotIn("4.5rem", base)
+        self.assertNotIn("flex-direction: row", base)
 
     def test_author_files_exist_failure_when_missing(self) -> None:
         self.assertTrue((AUTHORS_DIR / "eric-wisnewski.md").is_file())
         self.assertTrue((AUTHORS_DIR / "grady-davis.md").is_file())
+        self.assertTrue((AUTHORS_DIR / "tyler-morales.md").is_file())
         grady = (AUTHORS_DIR / "grady-davis.md").read_text(encoding="utf-8")
         self.assertIn("slug: grady-davis", grady)
+        tyler = (AUTHORS_DIR / "tyler-morales.md").read_text(encoding="utf-8")
+        self.assertIn("slug: tyler-morales", tyler)
+        self.assertIn("develops and maintains", tyler)
+        self.assertIn("image: /images/uploads/tyler-morales.jpg", tyler)
+        self.assertTrue(
+            (REPO_ROOT / "assets" / "images" / "uploads" / "tyler-morales.jpg").is_file()
+        )
+        index = (AUTHORS_DIR / "_index.md").read_text(encoding="utf-8")
+        self.assertIn("title: Contributors", index)
+        self.assertNotIn("The writers on this site", index)
 
     def test_published_article_titles_includes_quoted_tour_title_success(self) -> None:
         titles = published_article_titles()
@@ -207,6 +268,12 @@ class AuthorBuildTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         cls.eric_html = cls.eric.read_text(encoding="utf-8") if cls.eric.is_file() else ""
         cls.grady_html = cls.grady.read_text(encoding="utf-8") if cls.grady.is_file() else ""
+        cls.tyler = cls._output_dir / "authors" / "tyler-morales" / "index.html"
+        cls.tyler_html = cls.tyler.read_text(encoding="utf-8") if cls.tyler.is_file() else ""
+        cls.authors_index = cls._output_dir / "authors" / "index.html"
+        cls.authors_index_html = (
+            cls.authors_index.read_text(encoding="utf-8") if cls.authors_index.is_file() else ""
+        )
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -235,8 +302,36 @@ class AuthorBuildTests(unittest.TestCase):
     def test_author_pages_render_success(self) -> None:
         self.assertTrue(self.eric.is_file(), "Missing /authors/eric-wisnewski/")
         self.assertTrue(self.grady.is_file(), "Missing /authors/grady-davis/")
-        authors_index = self._output_dir / "authors" / "index.html"
-        self.assertFalse(authors_index.is_file(), "/authors/ index should not publish")
+        self.assertTrue(self.authors_index.is_file(), "Missing /authors/ index")
+        self.assertTrue(self.tyler.is_file(), "Missing /authors/tyler-morales/")
+
+    def test_authors_index_lists_eric_first_then_name_success(self) -> None:
+        names = author_list_names(self.authors_index_html)
+        self.assertGreaterEqual(len(names), 4, f"Expected a roster, got {names}")
+        self.assertEqual(names[0], "Eric Wisnewski")
+        self.assertEqual(names[1:], sorted(names[1:]))
+        self.assertIn("Grady Davis", names)
+        self.assertIn("Tad Davis", names)
+        self.assertIn("Tyler Morales", names)
+        self.assertIn("All contributors", self.eric_html)
+        self.assertIn("All contributors", self.grady_html)
+        self.assertIn("/authors/", self.eric_html)
+        self.assertIn("develops and maintains", self.authors_index_html)
+        self.assertIn("Contributors", self.authors_index_html)
+        self.assertIn("/images/uploads/tyler-morales.jpg", self.authors_index_html)
+        self.assertIn("/images/uploads/tyler-morales.jpg", self.tyler_html)
+
+    def test_authors_index_is_not_a_post_feed_failure(self) -> None:
+        self.assertNotIn('class="post-list"', self.authors_index_html)
+        self.assertNotIn("The writers on this site", self.authors_index_html)
+        self.assertNotIn('id="comments"', self.authors_index_html)
+        self.assertNotIn("subscribe-form", self.authors_index_html)
+        self.assertNotIn("id=\"subscribe\"", self.authors_index_html)
+        nav = main_nav_html(self.authors_index_html)
+        self.assertTrue(nav, "authors index must keep the main nav")
+        self.assertNotIn(">Authors</a>", nav)
+        self.assertNotIn(">Contributors</a>", nav)
+        self.assertNotIn("/authors/", nav)
 
     def test_author_page_shows_profile_then_that_authors_posts_success(self) -> None:
         self.assertIn("Grady Davis", self.grady_html)

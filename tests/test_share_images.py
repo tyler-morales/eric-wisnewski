@@ -24,6 +24,19 @@ TWITTER_IMAGE_RE = re.compile(
 )
 
 
+def jpeg_size(data: bytes) -> tuple[int, int]:
+    """Return (height, width) from a baseline JPEG SOF marker."""
+    i = 2
+    while i + 8 < len(data) and data[i] == 0xFF:
+        marker = data[i + 1]
+        if marker in (0xC0, 0xC1, 0xC2):
+            return int.from_bytes(data[i + 5 : i + 7], "big"), int.from_bytes(
+                data[i + 7 : i + 9], "big"
+            )
+        i += 2 + int.from_bytes(data[i + 2 : i + 4], "big")
+    return (0, 0)
+
+
 def meta_images(html: str) -> tuple[str, str]:
     og = OG_IMAGE_RE.search(html)
     twitter = TWITTER_IMAGE_RE.search(html)
@@ -41,10 +54,12 @@ class ShareImageTemplateTests(unittest.TestCase):
         self.assertIn("og:image", head)
         self.assertIn("twitter:image", head)
 
-    def test_favicon_svg_is_not_the_share_image_failure(self) -> None:
+    def test_favicon_is_not_the_share_image_failure(self) -> None:
         head = HEAD_PARTIAL.read_text(encoding="utf-8")
         share_block = head.split("og:type", 1)[-1]
         self.assertNotIn("favicon.svg", share_block)
+        self.assertNotIn("favicon.png", share_block)
+        self.assertNotIn("apple-touch-icon", share_block)
 
 
 class ShareImageAssetTests(unittest.TestCase):
@@ -53,6 +68,8 @@ class ShareImageAssetTests(unittest.TestCase):
         data = OG_DEFAULT.read_bytes()
         self.assertTrue(data.startswith(b"\xff\xd8\xff"), "og-default.jpg must be JPEG")
         self.assertGreater(len(data), 8_000, "share image is too small for Instagram")
+        height, width = jpeg_size(data)
+        self.assertEqual((width, height), (1200, 630), "share cards want 1200×630")
 
     def test_default_share_image_is_not_svg_failure(self) -> None:
         self.assertNotEqual(OG_DEFAULT.suffix.lower(), ".svg")
@@ -180,3 +197,4 @@ class ShareImageDocsTests(unittest.TestCase):
         readme = README.read_text(encoding="utf-8")
         self.assertIn("og-default.jpg", readme)
         self.assertIn("og:image", readme)
+        self.assertIn("Eric’s portrait", readme)

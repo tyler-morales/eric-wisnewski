@@ -8,6 +8,10 @@
     <a href="{{ . }}">Updates</a>
     <span aria-hidden="true"> · </span>
     {{ end }}{{ end }}
+    {{ with .Site.GetPage "/authors" }}{{ with .RelPermalink }}
+    <a href="{{ . }}">Contributors</a>
+    <span aria-hidden="true"> · </span>
+    {{ end }}{{ end }}
     <a href="{{ "privacy/" | relURL }}">Privacy</a>
   </p>
 </footer>

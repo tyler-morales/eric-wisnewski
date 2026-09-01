@@ -1,0 +1,22 @@
+{{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+{{ partial "header.html" . }}
+<main>
+  <header class="authors-intro">
+    <h1>{{ .Title }}</h1>
+    {{ .Content }}
+  </header>
+  {{ $authors := .Pages }}
+  {{ $eric := where $authors "Params.slug" "eq" "eric-wisnewski" }}
+  {{ $rest := sort (where $authors "Params.slug" "ne" "eric-wisnewski") "Params.name" }}
+  <ul class="author-list" role="list">
+    {{ range $eric }}
+    <li>{{ partial "author-card.html" (dict "author" . "link_name" true "element" "article") }}</li>
+    {{ end }}
+    {{ range $rest }}
+    <li>{{ partial "author-card.html" (dict "author" . "link_name" true "element" "article") }}</li>
+    {{ end }}
+  </ul>
+</main>
+{{ end }}

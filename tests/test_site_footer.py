@@ -100,6 +100,12 @@ class FooterTemplateTests(unittest.TestCase):
         self.assertIn(">Updates</a>", partial)
         self.assertNotIn('"updates/" | relURL', partial)
 
+    def test_footer_authors_link_gates_on_the_page_having_a_url_success(self) -> None:
+        partial = FOOTER_PARTIAL.read_text(encoding="utf-8")
+        self.assertIn('.Site.GetPage "/authors"', partial)
+        self.assertIn(">Contributors</a>", partial)
+        self.assertNotIn('"authors/" | relURL', partial)
+
     def test_hugo_toml_has_builder_params_success(self) -> None:
         toml = HUGO_TOML.read_text(encoding="utf-8")
         self.assertIn("builder_name", toml)
@@ -180,6 +186,10 @@ class FooterBuildTests(unittest.TestCase):
         self.assertTrue(has_copyright(footer))
         self.assertTrue(has_privacy_link(footer))
         self.assertTrue(has_webmaster_invite(footer))
+        self.assertRegex(
+            footer,
+            r'<a\b[^>]*href="[^"]*authors/?[^"]*"[^>]*>\s*Contributors\s*</a>',
+        )
 
     def test_map_and_tour_and_admin_include_footer_success(self) -> None:
         for name, html in (

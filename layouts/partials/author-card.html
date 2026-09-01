@@ -1,6 +1,6 @@
 {{/*
   Author photo + name + bio.
-  dict: author (page), profile (bool), link_name (bool), element (aside|header)
+  dict: author (page), profile (bool), link_name (bool), element (aside|header|article)
 */}}
 {{- $author := .author -}}
 {{- $name := $author.Params.name | default $author.Title -}}

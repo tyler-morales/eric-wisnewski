@@ -49,14 +49,6 @@ buildFuture = true
   builder_name = 'Tyler Morales'
   builder_url = 'https://tylermorales.pro'
 
-# Publish /authors/<slug>/ profiles; keep the /authors/ index unpublished.
-[[cascade]]
-  [cascade.build]
-    list = 'never'
-    render = 'never'
-  [cascade.target]
-    path = '/authors'
-
 # Updates: each note has its own page at /updates/<slug>/, but notes are listed
 # only on /updates/ — never mixed into the home page feed of posts.
 [[cascade]]
