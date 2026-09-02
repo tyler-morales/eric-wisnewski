@@ -8,5 +8,10 @@ image: /images/uploads/IMG_1591.jpeg
 ---
 Sep 1: Mile 600
 
-The ride is over. We arrived in Bordeaux.
+The ride is over. We made it to Bordeaux.
 
+
+
+&nbsp;
+
+&nbsp;
