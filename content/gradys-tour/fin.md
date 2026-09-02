@@ -12,7 +12,7 @@ The ride is over. We made it to Bordeaux.
 
 ![](/images/uploads/IMG_1629.jpeg)
 
-Before leaving the area large wild fires and a full week of rain predicted, but someone must be looking out for us because we only had one day of bad weather in 13 days riding. 
+What a ride! A lot went our way especially after our slow start. Large wild fires and a full week of rain were predicted but we only had one day of bad weather in 13 days riding. Wow! Someone must be looking out for us. A wise man once told me there is nothing harder to stop than god fearing men. Nor sure if that pertains to this, but the idea still applies.
 
 ![](/images/uploads/IMG_1630.jpeg)
 
