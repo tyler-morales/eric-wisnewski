@@ -12,7 +12,7 @@ The ride is over. We made it to Bordeaux.
 
 ![](/images/uploads/IMG_1629.jpeg)
 
-Someone must be looking out for us. We have only had one day of bad weather out of 13 days riding. Even when rain was predicted everyday. 
+Before leaving the area large wild fires and a full week of rain predicted, but someone must be looking out for us because we only had one day of bad weather in 13 days riding. 
 
 ![](/images/uploads/IMG_1630.jpeg)
 
@@ -22,11 +22,15 @@ Someone must be looking out for us. We have only had one day of bad weather out 
 
 *The Bordeux reflecting pool as someone skimboards*
 
-Going into the final ride, clear sunny sky's welcoming us, we reflected back to an encounter we had day one with a mysterious French man. Sitting down for coffee two bikers on a bike trip with no bikes something had clearly gone wrong. We sat watching passers by when we were greeted by a Frenchman at a neighboring table. After exchanging pleasantries we explained our plight. He listened, then paused taking a drag of his cigaret: “You don’t know why now, but your bike was lost for a reason. You will figure out soon enough”. He said this with 100% sincerity through his thick french accent. At the time we just thought he was super cool, but after 13 days of dodging storms and disaster his words seem more like premonitions. We were constantly avoiding rain and windy weather to the point it became eerie. We would sit down for coffee it would start raining and by the time we were done it was sunny. 
+Going into the final ride as clear sunny sky's welcoming us we reflected back to an encounter we had day one with a mysterious French man. Sitting down for coffee we were two bikers on a bike trip with no bikes. Something had clearly gone wrong. We sat watching passers by when we were greeted the Frenchman at a neighboring table. After exchanging pleasantries we explained our plight. We were biking with no bikes. He listened, then paused taking a drag of his cigaret **“You don’t know why now, but your bike was lost for a reason. You will figure out soon enough”** he said sincerely in his thick french accent. At the time we just thought he was super cool, but after 13 days of dodging storms and disaster his words seem more like premonitions. We were constantly avoiding rain and windy weather to the point it became eerie. We would sit down for coffee it would start raining and by the time we were done it was sunny. 
 
 ![](/images/uploads/IMG_1580.jpeg)
 
 *Chateau Lagrange, we told them our village and they hosted us for a tasting. Lagrange like my Dad says it*
+
+![](/images/uploads/7b700824-4ec5-4b4c-a6ab-5736b5b050eb.jpeg)
+
+*TMO*
 
 The ride was smooth and by the final days our pace had increased to 14mph up from 11.5mph. I feel like we could do another 400 even faster. Waking up and not biking I feel a strange sense of guilt. Our two bikes stuffed wheels off into our rental it feels like we are hiding evidence. 
 
