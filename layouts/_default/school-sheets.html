@@ -41,7 +41,7 @@
 
       /** Letter grade to numeric value (4.0 scale, + = +0.3, - = -0.3). Used for Arena, Fan Base, Campus sort. */
       var gradeToNumber = (function () {
-        var map = { 'A+': 4.3, 'A': 4, 'A-': 3.7, 'B+': 3.3, 'B': 3, 'B-': 2.7, 'C+': 2.3, 'C': 2, 'C-': 1.7, 'D+': 1.3, 'D': 1, 'D-': 0.7, 'F': 0 };
+        var map = { 'A+': 4.3, 'A': 4, 'A-': 3.7, 'B+': 3.3, 'B': 3, 'B-': 2.7, 'C+': 2.3, 'C': 2, 'C-': 1.7, 'D+': 1.3, 'D': 1, 'D-': 0.7, 'F+': 0.3, 'F': 0, 'F-': 0 };
         return function (str) {
           if (!str || !str.length) return -Infinity;
           var s = str.trim();

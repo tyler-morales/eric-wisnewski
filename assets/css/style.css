@@ -1263,9 +1263,15 @@ article.post-content .report-card thead th {
   border-bottom: 2px solid #8a6a32;
 }
 
+article.post-content .report-card thead th:first-child,
+article.post-content .report-card tbody th,
+article.post-content .report-card tfoot th {
+  text-align: left;
+  padding-left: 0;
+}
+
 article.post-content .report-card tbody th {
   font-weight: 600;
-  text-align: left;
 }
 
 article.post-content .report-card td {
@@ -1289,7 +1295,7 @@ article.post-content .report-card tfoot th {
 .report-card-grade,
 .report-card-gpa {
   display: inline-block;
-  min-width: 2.4em;
+  min-width: 2.85em;
   padding: 0.1em 0.35em 0.05em;
   border: 1px solid #b42318;
   border-radius: 0.08em;

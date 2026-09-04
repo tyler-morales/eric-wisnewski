@@ -155,30 +155,35 @@ content:
             type: string
             required: false
             description: Full school name (e.g. Boston College).
+          - name: year
+            label: Year
+            type: number
+            required: false
+            description: Year of the visit (e.g. 2026). Leave blank to use the publish date year.
           - name: stadium
             label: Stadium grade
             type: select
             required: false
-            description: Letter grade for the arena.
+            description: Letter grade for the arena, including plus and minus (A+ through F-).
             options:
               placeholder: Select a grade
-              values: ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F", "N/A (A+)"]
+              values: ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F+", "F", "F-", "N/A (A+)"]
           - name: fan_base
             label: Fan base grade
             type: select
             required: false
-            description: Letter grade for the crowd.
+            description: Letter grade for the crowd, including plus and minus (A+ through F-).
             options:
               placeholder: Select a grade
-              values: ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F", "N/A (A+)"]
+              values: ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F+", "F", "F-", "N/A (A+)"]
           - name: campus
             label: Campus grade
             type: select
             required: false
-            description: Letter grade for the campus. N/A (A+) is for a campus Eric did not really tour.
+            description: Letter grade for the campus, including plus and minus. N/A (A+) is for a campus Eric did not really tour.
             options:
               placeholder: Select a grade
-              values: ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F", "N/A (A+)"]
+              values: ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F+", "F", "F-", "N/A (A+)"]
       - name: body
         label: Body
         type: rich-text

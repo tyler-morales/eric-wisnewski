@@ -12,6 +12,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SHORTCODE = REPO_ROOT / "layouts" / "shortcodes" / "report-card.html"
 PARTIAL = REPO_ROOT / "layouts" / "partials" / "report-card.html"
+REPORT_CARD_JS = REPO_ROOT / "static" / "js" / "report-card.js"
 SINGLE_LAYOUT = REPO_ROOT / "layouts" / "_default" / "single.html"
 PAGES_YML = REPO_ROOT / ".pages.yml"
 STYLE_CSS = REPO_ROOT / "assets" / "css" / "style.css"
@@ -39,7 +40,9 @@ GRADE_POINTS = {
     "D+": 1.3,
     "D": 1.0,
     "D-": 0.7,
+    "F+": 0.3,
     "F": 0.0,
+    "F-": 0.0,
     "N/A (A+)": 4.3,
 }
 
@@ -77,6 +80,26 @@ FIXTURE_NIU = "\n".join(
         "  campus: F",
         "---",
         "DeKalb.",
+        "",
+    ]
+)
+
+FIXTURE_PLUSMINUS = "\n".join(
+    [
+        "---",
+        "title: Plus Minus Fixture",
+        "slug: report-card-plus-minus",
+        "author: eric-wisnewski",
+        "date: 2026-09-04T00:06:00Z",
+        "draft: false",
+        "report_card:",
+        "  school: Purdue",
+        "  year: 2026",
+        '  stadium: "A-"',
+        '  fan_base: "F+"',
+        "  campus: B",
+        "---",
+        "Mackey.",
         "",
     ]
 )
@@ -197,7 +220,10 @@ class ReportCardGradeTests(unittest.TestCase):
         self.assertEqual(report_gpa("D", "F", "B"), "1.33")
         self.assertEqual(report_gpa("C-", "D", "F"), "0.90")
         self.assertEqual(report_gpa("B", "A", "N/A (A+)"), "3.77")
+        self.assertEqual(report_gpa("A-", "F+", "B"), "2.33")
         self.assertEqual(GRADE_POINTS["F"], 0.0)
+        self.assertEqual(GRADE_POINTS["F+"], 0.3)
+        self.assertEqual(GRADE_POINTS["F-"], 0.0)
         self.assertEqual(GRADE_POINTS["A+"], GRADE_POINTS["N/A (A+)"])
 
     def test_gpa_rejects_unknown_marks_failure(self) -> None:
@@ -221,6 +247,9 @@ class ReportCardSourceTests(unittest.TestCase):
         self.assertIn("name: campus", posts)
         self.assertGreaterEqual(posts.count("type: select"), 3)
         self.assertIn("N/A (A+)", posts)
+        self.assertIn("F+", posts)
+        self.assertIn("F-", posts)
+        self.assertIn("name: year", posts)
         self.assertIn("placeholder: Select a grade", posts)
         layout = SINGLE_LAYOUT.read_text(encoding="utf-8")
         self.assertIn('partial "report-card.html"', layout)
@@ -273,10 +302,14 @@ class ReportCardSourceTests(unittest.TestCase):
         self.assertIn("fractalNoise", block)
         self.assertIn("#7a2a2a", block)
         self.assertIn("#b42318", block)
+        self.assertIn(".report-card-label", block)
+        self.assertIn("th:first-child", block)
+        self.assertIn("2.85em", block)
         src = (REPO_ROOT / "layouts" / "partials" / "report-card.html").read_text(
             encoding="utf-8"
         )
-        self.assertIn("Student", src)
+        self.assertIn('.Date.Format "2006"', src)
+        self.assertNotIn("Student", src)
 
     def test_card_is_not_a_gym_flip_board_failure(self) -> None:
         src = PARTIAL.read_text(encoding="utf-8")
@@ -287,9 +320,14 @@ class ReportCardSourceTests(unittest.TestCase):
         self.assertNotIn("report-card-digit", src)
         self.assertNotIn("rotateX", block)
         self.assertNotIn("IntersectionObserver", src)
+        self.assertNotIn("@keyframes report-card-land", block)
+        self.assertNotIn(".is-landed", block)
+        self.assertNotIn("/js/report-card.js", src)
+        self.assertFalse(REPORT_CARD_JS.is_file())
         self.assertNotIn('role="img"', src)
         self.assertNotIn("<button", src)
         self.assertNotIn("{{< report-card", src)
+        self.assertNotIn(">Student<", src)
         self.assertNotIn("var(--bg)", block)
         self.assertNotIn("background: #fff", block)
 
@@ -307,8 +345,8 @@ class ReportCardSourceTests(unittest.TestCase):
         self.assertIn("school: Boston College", boston)
         self.assertIn("stadium: D", boston)
         self.assertIn("fan_base: F", boston)
-        self.assertIn("campus: B", boston)
-        self.assertIn("report_card:", niu)
+        self.assertIn("year: 2026", boston)
+        self.assertIn("year: 2026", niu)
         self.assertIn("school: Northern Illinois", niu)
         self.assertIn("stadium: C-", niu)
         self.assertIn("fan_base: D", niu)
@@ -339,6 +377,9 @@ class ReportCardBuildTests(unittest.TestCase):
         (content_dir / "posts" / "report-card-iowa.md").write_text(
             FIXTURE_IOWA, encoding="utf-8"
         )
+        (content_dir / "posts" / "report-card-plus-minus.md").write_text(
+            FIXTURE_PLUSMINUS, encoding="utf-8"
+        )
         (content_dir / "posts" / "report-card-bogus.md").write_text(
             FIXTURE_BAD_GRADE, encoding="utf-8"
         )
@@ -366,6 +407,9 @@ class ReportCardBuildTests(unittest.TestCase):
             cls.iowa = (dest / "posts" / "report-card-iowa" / "index.html").read_text(
                 encoding="utf-8"
             )
+            cls.plusminus = (
+                dest / "posts" / "report-card-plus-minus" / "index.html"
+            ).read_text(encoding="utf-8")
             cls.bogus = (dest / "posts" / "report-card-bogus" / "index.html").read_text(
                 encoding="utf-8"
             )
@@ -407,12 +451,22 @@ class ReportCardBuildTests(unittest.TestCase):
         iowa = unescape(self.iowa)
         self.assertIn("N/A (A+)", iowa)
         self.assertIn(report_gpa("B", "A", "N/A (A+)") or "", iowa)
+        plus = unescape(self.plusminus)
+        self.assertIn('data-grade="A-"', plus)
+        self.assertIn('data-grade="F+"', plus)
+        self.assertIn(report_gpa("A-", "F+", "B") or "", plus)
+        self.assertIn('class="report-card-label">2026', plus)
+        self.assertNotIn("/js/report-card.js", html)
+        self.assertNotIn("Student", plus)
 
     def test_partial_omits_invalid_and_non_eric_cards_failure(self) -> None:
         self.assertNotIn('class="report-card"', self.bogus)
         self.assertNotIn('data-grade="Q"', self.bogus)
         self.assertNotIn('class="report-card"', self.tour)
         self.assertNotIn('class="report-card"', self.other)
+        self.assertNotIn("/js/report-card.js", self.bogus)
+        self.assertNotIn("/js/report-card.js", self.tour)
+        self.assertNotIn("/js/report-card.js", self.other)
         self.assertNotIn("{{< report-card", self.fixture)
 
     def test_boston_college_page_includes_the_sheet_card_success(self) -> None:
@@ -426,6 +480,7 @@ class ReportCardBuildTests(unittest.TestCase):
         self.assertGreater(body, 0)
         self.assertLess(self.boston.find('class="scoreboard"'), body)
         self.assertGreater(self.boston.find('class="report-card"'), body)
+        self.assertIn('class="report-card-label">2026', self.boston)
 
     def test_niu_page_includes_the_sheet_card_success(self) -> None:
         self.assertIn('class="report-card"', self.niu)

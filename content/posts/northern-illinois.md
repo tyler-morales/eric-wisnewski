@@ -7,6 +7,7 @@ image: /images/uploads/IMG_3719.jpeg
 author: eric-wisnewski
 report_card:
   school: Northern Illinois
+  year: 2026
   stadium: C-
   fan_base: D
   campus: F

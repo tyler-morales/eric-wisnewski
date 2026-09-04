@@ -5,20 +5,22 @@
 */}}
 {{- $ericPost := and (eq .Section "posts") (eq .Params.author "eric-wisnewski") -}}
 {{- $rc := .Params.report_card -}}
-{{- $scale := dict "A+" 4.3 "A" 4.0 "A-" 3.7 "B+" 3.3 "B" 3.0 "B-" 2.7 "C+" 2.3 "C" 2.0 "C-" 1.7 "D+" 1.3 "D" 1.0 "D-" 0.7 "F" 0.0 "N/A (A+)" 4.3 -}}
+{{- $scale := dict "A+" 4.3 "A" 4.0 "A-" 3.7 "B+" 3.3 "B" 3.0 "B-" 2.7 "C+" 2.3 "C" 2.0 "C-" 1.7 "D+" 1.3 "D" 1.0 "D-" 0.7 "F+" 0.3 "F" 0.0 "F-" 0.0 "N/A (A+)" 4.3 -}}
 {{- if and $ericPost $rc $rc.school $rc.stadium $rc.fan_base $rc.campus (isset $scale $rc.stadium) (isset $scale $rc.fan_base) (isset $scale $rc.campus) -}}
 {{- $school := $rc.school -}}
 {{- $stadium := $rc.stadium -}}
 {{- $fans := $rc.fan_base -}}
 {{- $campus := $rc.campus -}}
+{{- $year := .Date.Format "2006" -}}
+{{- if $rc.year -}}{{- $year = printf "%v" $rc.year -}}{{- end -}}
 {{- $gpa := printf "%.2f" (div (add (add (index $scale $stadium) (index $scale $fans)) (index $scale $campus)) 3.0) -}}
 <aside class="report-card">
   <p class="report-card-banner">Report Card</p>
   <div class="report-card-inner">
-    <p class="report-card-label">Student</p>
+    <p class="report-card-label">{{ $year | htmlEscape }}</p>
     <p class="report-card-school">{{ $school | htmlEscape }}</p>
     <table>
-      <caption class="visually-hidden">Report card for {{ $school | htmlEscape }}. Stadium {{ $stadium | htmlEscape }}, Fan Base {{ $fans | htmlEscape }}, Campus {{ $campus | htmlEscape }}. GPA {{ $gpa }}.</caption>
+      <caption class="visually-hidden">Report card for {{ $school | htmlEscape }}, {{ $year | htmlEscape }}. Stadium {{ $stadium | htmlEscape }}, Fan Base {{ $fans | htmlEscape }}, Campus {{ $campus | htmlEscape }}. GPA {{ $gpa }}.</caption>
       <thead>
         <tr>
           <th scope="col">Subject</th>

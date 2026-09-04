@@ -12,6 +12,7 @@ scoreboard:
   away_score: 86
 report_card:
   school: Boston College
+  year: 2026
   stadium: D
   fan_base: F
   campus: B
