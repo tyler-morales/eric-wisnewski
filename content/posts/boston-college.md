@@ -5,8 +5,18 @@ author: eric-wisnewski
 date: 2026-03-10T20:52:00Z
 draft: false
 image: /images/uploads/IMG_3656 (1).jpeg
+scoreboard:
+  home: Boston College
+  home_score: 75
+  away: University of California
+  away_score: 86
+report_card:
+  school: Boston College
+  stadium: D
+  fan_base: F
+  campus: B
 ---
-The game I attended was an ACC classic of Boston College v. Cal - Berkeley, noon tip-off. 
+The game I attended was an ACC classic of Boston College v. Cal - Berkeley, noon tip-off.
 
 **Campus: B**
 

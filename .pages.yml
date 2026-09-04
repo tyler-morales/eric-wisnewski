@@ -120,6 +120,65 @@ content:
             max: 12
           unique: true
           extensions: [jpg, jpeg, png, webp, gif]
+      - name: scoreboard
+        label: Scoreboard
+        type: object
+        required: false
+        description: Optional. Eric’s game recaps only — fill all four fields to show a gym flip-card final on the post. Leave blank otherwise.
+        fields:
+          - name: home
+            label: Home school
+            type: string
+            required: false
+            description: Full school name (e.g. Boston College).
+          - name: home_score
+            label: Home score
+            type: number
+            required: false
+          - name: away
+            label: Visitor school
+            type: string
+            required: false
+            description: Full school name (e.g. University of California).
+          - name: away_score
+            label: Visitor score
+            type: number
+            required: false
+      - name: report_card
+        label: Report card
+        type: object
+        required: false
+        description: Optional. Eric’s recaps only — fill School plus all three grades to show a paper report card under the scoreboard. Leave blank otherwise.
+        fields:
+          - name: school
+            label: School
+            type: string
+            required: false
+            description: Full school name (e.g. Boston College).
+          - name: stadium
+            label: Stadium grade
+            type: select
+            required: false
+            description: Letter grade for the arena.
+            options:
+              placeholder: Select a grade
+              values: ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F", "N/A (A+)"]
+          - name: fan_base
+            label: Fan base grade
+            type: select
+            required: false
+            description: Letter grade for the crowd.
+            options:
+              placeholder: Select a grade
+              values: ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F", "N/A (A+)"]
+          - name: campus
+            label: Campus grade
+            type: select
+            required: false
+            description: Letter grade for the campus. N/A (A+) is for a campus Eric did not really tour.
+            options:
+              placeholder: Select a grade
+              values: ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F", "N/A (A+)"]
       - name: body
         label: Body
         type: rich-text

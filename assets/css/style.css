@@ -928,6 +928,390 @@ article.post-content iframe.youtube-embed:focus-visible {
   outline-offset: 2px;
 }
 
+/* Gym flip-card scoreboard */
+article.post-content .scoreboard {
+  display: block;
+  width: 100%;
+  margin: 1.35em 0 1.5em;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-sans);
+  text-align: center;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+article.post-content .scoreboard:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+article.post-content .scoreboard span {
+  font-family: var(--font-sans);
+  text-wrap: initial;
+}
+
+.scoreboard-frame {
+  display: block;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid #e4e4e4;
+  border-radius: 0.4rem;
+  padding: 0.85rem 0.9rem 0.9rem;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+
+.scoreboard.is-playing .scoreboard-frame {
+  animation: scoreboard-kick 0.4s ease-out;
+}
+
+.scoreboard-banner,
+.scoreboard-name,
+.scoreboard-tag {
+  display: block;
+}
+
+.scoreboard-banner {
+  margin: 0 0 0.65rem;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.scoreboard-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.scoreboard-side {
+  display: grid;
+  justify-items: center;
+  gap: 0.28rem;
+  min-width: 0;
+}
+
+.scoreboard-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.scoreboard-tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.scoreboard-digits {
+  display: flex;
+  gap: 0.2em;
+  font-size: clamp(1.85rem, 9vw, 2.85rem);
+  line-height: 1;
+  min-height: 1.2em;
+}
+
+.scoreboard-digit {
+  position: relative;
+  display: block;
+  width: 0.72em;
+  height: 1.2em;
+  background: #fff;
+  color: var(--text);
+  border: 1px solid #d8d8d8;
+  border-radius: 0.1em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  perspective: 320px;
+  transform-style: preserve-3d;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+  overflow: visible;
+}
+
+.scoreboard-digit::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  margin-top: -0.5px;
+  background: #cfcfcf;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.scoreboard-digit-base-top,
+.scoreboard-digit-base-bottom,
+.scoreboard-digit-leaf-top,
+.scoreboard-digit-leaf-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  overflow: hidden;
+}
+
+.scoreboard-digit-base-top,
+.scoreboard-digit-leaf-top {
+  top: 0;
+}
+
+.scoreboard-digit-base-bottom,
+.scoreboard-digit-leaf-bottom {
+  bottom: 0;
+}
+
+.scoreboard-digit-base-top [data-flip-text],
+.scoreboard-digit-leaf-top [data-flip-text],
+.scoreboard-digit-base-bottom [data-flip-text],
+.scoreboard-digit-leaf-bottom [data-flip-text] {
+  display: block;
+  height: 1.2em;
+  line-height: 1.2em;
+}
+
+.scoreboard-digit-base-bottom [data-flip-text],
+.scoreboard-digit-leaf-bottom [data-flip-text] {
+  transform: translateY(-50%);
+}
+
+.scoreboard-digit-base-bottom {
+  background: #f3f3f3;
+}
+
+.scoreboard-digit-leaf-top,
+.scoreboard-digit-leaf-bottom {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: #fff;
+}
+
+.scoreboard-digit-leaf-top {
+  transform-origin: bottom;
+  z-index: 3;
+}
+
+.scoreboard-digit-leaf-bottom {
+  transform-origin: top;
+  transform: rotateX(90deg);
+  z-index: 2;
+  background: #f3f3f3;
+}
+
+.scoreboard-digit.is-flipping .scoreboard-digit-leaf-top {
+  animation: scoreboard-fold-top 0.07s ease-in forwards;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.12);
+}
+
+.scoreboard-digit.is-flipping .scoreboard-digit-leaf-bottom {
+  animation: scoreboard-fold-bottom 0.07s ease-out 0.07s forwards;
+}
+
+@keyframes scoreboard-fold-top {
+  from {
+    transform: rotateX(0deg);
+  }
+
+  to {
+    transform: rotateX(-90deg);
+  }
+}
+
+@keyframes scoreboard-fold-bottom {
+  from {
+    transform: rotateX(90deg);
+  }
+
+  to {
+    transform: rotateX(0deg);
+  }
+}
+
+@keyframes scoreboard-kick {
+  0% {
+    transform: translateY(3px);
+  }
+
+  55% {
+    transform: translateY(-2px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.scoreboard-noscript {
+  display: block;
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scoreboard.is-playing .scoreboard-frame,
+  .scoreboard-digit.is-flipping .scoreboard-digit-leaf-top,
+  .scoreboard-digit.is-flipping .scoreboard-digit-leaf-bottom {
+    animation: none;
+  }
+}
+
+/* School report card */
+article.post-content .report-card {
+  margin: 2.25em 0 1.75em;
+  padding: 0;
+  overflow: hidden;
+  color: #2a1f12;
+  background-color: #f1dcab;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(
+      transparent,
+      transparent 1.7rem,
+      rgba(120, 80, 30, 0.08) 1.7rem,
+      rgba(120, 80, 30, 0.08) 1.76rem
+    );
+  background-blend-mode: multiply, normal;
+  border: 1px solid #8a6a32;
+  border-radius: 0.12rem;
+  box-shadow:
+    inset 0 0 0 3px #e8c98a,
+    inset 0 0 48px rgba(140, 90, 30, 0.12),
+    2px 3px 0 rgba(90, 60, 20, 0.12);
+  font-family: var(--font-sans);
+}
+
+article.post-content .report-card p {
+  margin: 0;
+  text-wrap: initial;
+}
+
+.report-card-banner {
+  margin: 0;
+  padding: 0.55rem 0.95rem;
+  background: #7a2a2a;
+  color: #f8efd4;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.report-card-inner {
+  padding: 0.85rem 1rem 1rem;
+}
+
+.report-card-label {
+  margin: 0 0 0.15rem;
+  text-align: center;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #6b4e2e;
+}
+
+.report-card-school {
+  margin: 0 0 0.85rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid #c4a15a;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #2a1f12;
+  text-wrap: balance;
+}
+
+article.post-content .report-card table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: #2a1f12;
+}
+
+article.post-content .report-card th,
+article.post-content .report-card td {
+  padding: 0.5rem 0.1rem;
+  border-bottom: 1px solid #c4a15a;
+  vertical-align: middle;
+  background: transparent;
+}
+
+article.post-content .report-card thead th {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #6b4e2e;
+  border-bottom: 2px solid #8a6a32;
+}
+
+article.post-content .report-card tbody th {
+  font-weight: 600;
+  text-align: left;
+}
+
+article.post-content .report-card td {
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}
+
+article.post-content .report-card tfoot th,
+article.post-content .report-card tfoot td {
+  border-bottom: 0;
+  border-top: 2px solid #8a6a32;
+  padding-top: 0.65rem;
+  font-weight: 700;
+}
+
+article.post-content .report-card tfoot th {
+  text-align: left;
+}
+
+.report-card-grade,
+.report-card-gpa {
+  display: inline-block;
+  min-width: 2.4em;
+  padding: 0.1em 0.35em 0.05em;
+  border: 1px solid #b42318;
+  border-radius: 0.08em;
+  background: rgba(255, 248, 230, 0.55);
+  color: #b42318;
+  box-shadow: none;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.report-card-grade {
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+}
+
+.report-card-gpa {
+  font-size: 1.05rem;
+}
+
 /* Captions: CMS italic line after a photo, or <figcaption> */
 article.post-content figcaption,
 article.post-content p:has(> img:only-child)+p:has(> em:only-child),

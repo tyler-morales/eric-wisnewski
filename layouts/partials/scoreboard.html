@@ -1,0 +1,39 @@
+{{/*
+  Gym flip-card final. Pages CMS stores this as `scoreboard` front matter
+  on Posts (Eric). Other collections never get the fields.
+*/}}
+{{- $ericPost := and (eq .Section "posts") (eq .Params.author "eric-wisnewski") -}}
+{{- $sb := .Params.scoreboard -}}
+{{- if and $ericPost $sb $sb.home $sb.away (isset $sb "home_score") (isset $sb "away_score") -}}
+{{- $home := $sb.home -}}
+{{- $away := $sb.away -}}
+{{- $homeScore := int $sb.home_score -}}
+{{- $awayScore := int $sb.away_score -}}
+{{- if lt $homeScore 0 }}{{ $homeScore = 0 }}{{ end -}}
+{{- if lt $awayScore 0 }}{{ $awayScore = 0 }}{{ end -}}
+{{- if gt $homeScore 999 }}{{ $homeScore = 999 }}{{ end -}}
+{{- if gt $awayScore 999 }}{{ $awayScore = 999 }}{{ end -}}
+{{- $width := 2 -}}
+{{- if or (ge $homeScore 100) (ge $awayScore 100) }}{{ $width = 3 }}{{ end -}}
+<button type="button" class="scoreboard" aria-label="Final score: {{ $home | htmlEscape }} {{ $homeScore }}, {{ $away | htmlEscape }} {{ $awayScore }}" data-home-score="{{ $homeScore }}" data-away-score="{{ $awayScore }}" data-width="{{ $width }}">
+  <span class="scoreboard-frame" aria-hidden="true">
+    <span class="scoreboard-banner">Final</span>
+    <span class="scoreboard-row">
+      <span class="scoreboard-side">
+        <span class="scoreboard-name">{{ $home | htmlEscape }}</span>
+        <span class="scoreboard-tag">Home</span>
+        <span class="scoreboard-digits" data-side="home"></span>
+      </span>
+      <span class="scoreboard-side">
+        <span class="scoreboard-name">{{ $away | htmlEscape }}</span>
+        <span class="scoreboard-tag">Visitor</span>
+        <span class="scoreboard-digits" data-side="away"></span>
+      </span>
+    </span>
+  </span>
+</button>
+<noscript>
+  <span class="scoreboard-noscript">Final score: {{ $home | htmlEscape }} {{ $homeScore }}, {{ $away | htmlEscape }} {{ $awayScore }}</span>
+</noscript>
+<script type="module" src="{{ "/js/scoreboard.js" | relURL }}?v={{ md5 (readFile "static/js/scoreboard.js") }}"></script>
+{{- end -}}
