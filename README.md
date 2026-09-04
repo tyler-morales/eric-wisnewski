@@ -49,7 +49,7 @@ Placeholder bios/images can be replaced anytime by editing the author files in t
 - **YouTube:** Paste a YouTube URL (`youtube.com/watch?v=…` or `youtu.be/…`) on its own line. Hugo turns that into a player (`layouts/_default/_markup/render-link.html`). A named link such as “campus tour” stays a clickable link.
 - **Reading:** Post bodies use a serif (Iowan / Palatino / Georgia) at 18px with a ~65-character measure. An italic line immediately after a photo is treated as a caption (smaller, gray, sans). On viewports 768px and below, photos (featured, body, gallery) go edge to edge; captions stay in the padded column.
 - **Featured / share image:** Set the `image` field in the post’s front matter (e.g. in the CMS “Featured Image” or in the YAML as `image: /images/uploads/hero.jpg`). That URL is used for `og:image` and `twitter:image`; the file must exist in `static/images/uploads/`. Home, section lists, and posts without a featured image share `static/images/og-default.jpg` (Eric’s portrait JPEG, not the favicon).
-- **Favicon:** Tab icon is `static/favicon.png` (32×32 portrait). iOS uses `static/apple-touch-icon.png`. Linked from `layouts/partials/head.html`.
+- **Favicon:** Tab icon is `static/favicon.png` (48×48 portrait PNG — Google Search needs at least 48×48). iOS uses `static/apple-touch-icon.png` (180×180). Linked from `layouts/partials/head.html`. The old wizard emoji SVG is gone; Search may keep the emoji until Google recrawls the icon.
 - **Share button:** Article pages (Posts, Grady’s Tour, Da Breakdown) put a Share control next to the date and again after the article, before the author bio — the usual spots on a single-column blog, not a sidebar or sticky bar. Phones use the device share sheet; computers get a menu with Copy link, Messages, Email, WhatsApp, Facebook, and X. Markup is `layouts/partials/share.html`; behavior is `static/js/share.js`.
 
 ## Change the School Sheets or Map links
@@ -86,8 +86,7 @@ Technical SEO here is crawl/index basics, not a ranking plugin.
 - **`404.html`:** Hugo builds `layouts/404.html` to `public/404.html`. Cloudflare Pages then returns a real 404 for missing paths instead of serving the homepage (`200` soft 404).
 - **`robots.txt`:** `enableRobotsTXT = true` plus `layouts/robots.txt`. Allows the site, disallows `/admin/`, `/add-photos/`, and `/subscribe/manage/`, and points crawlers at `https://ericwisnewski.com/sitemap.xml`. After deploy, the response should end with a `Sitemap:` line (Cloudflare may prepend managed AI-bot rules). If `/robots.txt` returns homepage HTML, the build did not ship `robots.txt`.
 - **Sitemap:** Hugo’s default `sitemap.xml` lists public pages. Admin, add-photos, Updates (list never), and subscribe utilities stay out via `build.list = never`. Live `/sitemap.xml` should return `200`.
-- **Meta description:** Every page gets `<meta name="description">` (plain text, truncated to ~155 characters) from the site description, page summary, or author bio. Home `params.description` is the college-basketball / Division I line — not “personal site and blog.” Without this tag, Google invents a snippet from the subscribe form (“Email Notify me about…”).
-- **Home lede:** The homepage shows that same description as `.site-lede` above the post list so crawlers see real copy before the newsletter checkboxes.
+- **Meta description:** Every page gets `<meta name="description">` (plain text, truncated to ~170 characters) from the site description, page summary, or author bio. Home `params.description` is the lifelong Division I / friends copy — not “personal site and blog,” and it is **not** shown as body text on the homepage. Without this tag, Google invents a snippet from nav or the subscribe form.
 - **JSON-LD:** `layouts/partials/json-ld.html` adds `WebSite` (home), `BlogPosting` (posts / Grady / Tad / Jer), and `Person` (author pages). No `SearchAction` (no site search).
 - **noindex:** Admin, add-photos, and subscribe confirm/invalid/unsubscribed/manage pages send `noindex, nofollow`.
 
@@ -97,6 +96,17 @@ Technical SEO here is crawl/index basics, not a ranking plugin.
 2. Submit `https://ericwisnewski.com/sitemap.xml`.
 3. Confirm `www.ericwisnewski.com` 301s to the apex `https://ericwisnewski.com` (matches `baseURL`). Host redirects are a Cloudflare/DNS rule, not `static/_redirects`. Google currently shows `www` in some results until that redirect is fixed and re-crawled.
 4. Use URL Inspection → Request indexing on the homepage so the garbled old snippet can refresh. Spot-check with `site:ericwisnewski.com` after Google has crawled.
+
+### Phase 3 — rank (ops, not code)
+
+Phases 1–2 made the site crawlable and gave Google a clean description. Ranking is mostly publishing and links:
+
+1. **Search Console** — verify the apex domain, submit the sitemap, request indexing on `/`, Eric’s author page, and important posts. Watch Coverage and Queries over weeks.
+2. **One hostname** — `www` → apex **301** (Cloudflare Single Redirect). Path `_redirects` cannot do host redirects.
+3. **No tags for SEO** — Hugo `tags`/`categories` are disabled (`disableKinds`). Empty taxonomy pages are thin junk. Niche comes from **post titles and body** (“Boston College — Conte Forum”), not a tag cloud.
+4. **Links** — apex URL in social bios, newsletter footers, and shares.
+5. **Content** — keep shipping specific posts. “Eric Wisnewski” is realistic. Broad “division I basketball” is not — compete on school/stadium long-tails instead.
+6. **Do not** add SEO plugins, keyword meta tags, or more JSON-LD unless Search Console shows a concrete gap.
 
 ## Analytics (Umami)
 

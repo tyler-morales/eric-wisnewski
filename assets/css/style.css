@@ -61,15 +61,6 @@ body {
   outline-offset: 4px;
 }
 
-.site-lede {
-  max-width: 40rem;
-  margin: 0 auto 1.5rem;
-  padding: 0 1rem;
-  font-size: 1.125rem;
-  line-height: 1.45;
-  color: #333;
-}
-
 /* Ensure images never blow out the layout */
 img {
   max-width: 100%;

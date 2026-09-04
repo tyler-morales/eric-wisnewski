@@ -27,11 +27,13 @@ class FaviconTemplateTests(unittest.TestCase):
 
 
 class FaviconAssetTests(unittest.TestCase):
-    def test_png_favicon_exists_success(self) -> None:
-        self.assertTrue(FAVICON.is_file(), f"missing {FAVICON}")
+    def test_png_favicon_is_at_least_48px_for_google_success(self) -> None:
         data = FAVICON.read_bytes()
         self.assertTrue(data.startswith(PNG_MAGIC), "favicon.png must be PNG")
-        self.assertGreater(len(data), 200)
+        width = int.from_bytes(data[16:20], "big")
+        height = int.from_bytes(data[20:24], "big")
+        self.assertEqual(width, height)
+        self.assertGreaterEqual(width, 48, "Google Search wants favicons ≥ 48×48")
         self.assertLess(len(data), 40_000, "favicon should stay small")
 
     def test_wizard_svg_favicon_is_gone_failure(self) -> None:

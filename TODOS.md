@@ -1,7 +1,14 @@
 # TODOS
 
 ## Next
-- [ ] SEO follow-up (dashboard): verify `ericwisnewski.com` in Google Search Console, submit `/sitemap.xml`, 301 `www` → apex, and Request indexing on `/` so the SERP drops “personal site and blog Email Notify me about…”. Code for meta description, home lede, JSON-LD, 404, and robots is done — see Done.
+- [ ] SEO Phase 3 (rank — not more template code): Search Console + links + publishing. See README **SEO → Phase 3**. Checklist:
+  - [ ] Google Search Console: verify `ericwisnewski.com` (DNS), submit sitemap, Request indexing on `/`, `/authors/eric-wisnewski/`, and key posts (`an-introduction`, school posts)
+  - [x] Cloudflare: 301 `www` → apex (Single Redirect template) — confirm in a private window
+  - [ ] Push pending SEO copy/favicon/taxonomy cleanup when ready (description, 48×48 favicon, no home lede, disable empty tags/categories)
+  - [ ] Apex URL in Eric’s Instagram/X/LinkedIn/bio and newsletter footers; share each new post with the real link
+  - [ ] Publish: every Eric post titled like a place people search (`Northern Illinois`, `Boston College — Conte Forum`), not vague titles; first paragraph names the school/stadium
+  - [ ] Do **not** add tags/keyword meta — empty `/tags/` `/categories/` are disabled; niche = more school posts, not tag pages
+  - [ ] Measure in Search Console: expect **Eric Wisnewski** first; long-tail school/stadium queries next; broad “division I basketball” is ESPN/Wikipedia territory
 - [ ] Set `WRITER_EMAIL_POSTS` and `WRITER_EMAIL_GRADYS_TOUR` (and `WRITER_EMAIL_DA_BREAKDOWN_W_TAD` if Tad wants mail) in Cloudflare Pages env after deploy. Unset means no writer mail for that section.
 - [x] Run D1 migration `0008_jer_newsletter_list.sql` on production so people can subscribe to Jer’s Prospect Profiles. Applied remotely 4 Sep 2026 via D1 query (table recreate + copy). `subscribers` 18 rows and `newsletter_sends` 14 rows preserved; CHECK now includes `jers-prospect-profiles`.
 - [ ] Set `WRITER_EMAIL_JERS_PROSPECT_PROFILES=jeremybryan123@gmail.com` in Cloudflare Pages env (Production) so Jeremy gets comment mail.
@@ -11,7 +18,8 @@
 - [x] Run D1 migration `0005_email_confirm_guard.sql` on production (comment email confirm columns + subscriber `confirm_sent_at`). Applied remotely 28 Aug 2026 (`5` queries, `49` rows written).
 
 ## Done
-- [x] SEO Phase 2: JSON-LD (`WebSite` / `BlogPosting` / `Person` via `layouts/partials/json-ld.html`); homepage `.site-lede` + SERP-focused `params.description` (college basketball / D1, not “personal site and blog”); meta descriptions plainified and truncated to ~155 chars so Google stops inventing snippets from the subscribe form. Skipped CMS `summary` field — `.Summary` from posts is readable. Live check: `/sitemap.xml` returns 200; `/robots.txt` still needs Phase 1 deploy (today it appends homepage HTML after Cloudflare managed content). Tests in `tests/test_seo.py`.
+- [x] SERP copy + favicon: site `params.description` set to Eric’s lifelong Division I / friends summary; removed homepage `.site-lede` body text; favicon resized to 48×48 (Google’s minimum) with `sizes="48x48"`. Wizard emoji in Search is a Google cache — Request indexing after deploy. Tests in `tests/test_seo.py` and `tests/test_favicon.py`.
+- [x] SEO Phase 2: JSON-LD (`WebSite` / `BlogPosting` / `Person` via `layouts/partials/json-ld.html`); SERP-focused `params.description`; meta descriptions plainified and truncated; skipped CMS `summary` field. Live: `/sitemap.xml` and `/robots.txt` (with `Sitemap:`) return 200. Tests in `tests/test_seo.py`. Ranking work is Phase 3 under Next.
 - [x] Jer’s Prospect Profiles: nav tab next to Da Breakdown w Tad (`/jers-prospect-profiles/`); CMS collection; author `jeremy-bryan`; home and author pages include the section; newsletter list `jers-prospect-profiles`. Tab and subscribe checkbox appear when the first post is published (no staging block). Migration `0008` adds the list to D1 CHECK. Tests in `tests/test_jers_prospect_profiles.py`. Deleted/consolidated: none — same gate pattern as Tad (`has-jers-prospect-profiles-posts.html`).
 - [x] SEO crawl/index basics: `layouts/404.html` so Cloudflare Pages returns a real 404 (not homepage soft 404); `enableRobotsTXT` + `layouts/robots.txt` with Sitemap and Disallow for `/admin/`, `/add-photos/`, `/subscribe/manage/`; `<meta name="description">` from existing `$headDescription`; tighter `params.description`; `robots: noindex` on subscribe confirm/invalid/unsubscribed/manage; brand `<h1>` only on home (`<p class="brand-name">` elsewhere); `content/admin/_index.md` with `list/render never` so `/admin/` stays out of the sitemap. Tests in `tests/test_seo.py`. Dashboard leftovers listed under Next.
 - [x] Run D1 migration `0007_tad_newsletter_list.sql` on production. Applied remotely 31 Aug 2026 via D1 query (table recreate + copy). `subscribers` 14 rows and `newsletter_sends` 9 rows preserved; CHECK now includes `da-breakdown-w-tad`. Wrangler CLI lacked D1 auth (`code: 7403`); MCP query path worked.

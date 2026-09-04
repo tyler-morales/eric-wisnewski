@@ -159,7 +159,8 @@ class SeoTemplateTests(unittest.TestCase):
         head = HEAD_PARTIAL.read_text(encoding="utf-8")
         self.assertIn('name="description"', head)
         self.assertIn("$headDescription", head)
-        self.assertIn("truncate 155", head)
+        self.assertIn("truncate 170", head)
+        self.assertIn('sizes="48x48"', head)
 
     def test_head_includes_json_ld_partial_success(self) -> None:
         head = HEAD_PARTIAL.read_text(encoding="utf-8")
@@ -172,11 +173,9 @@ class SeoTemplateTests(unittest.TestCase):
         self.assertNotIn('"@type" "SearchAction"', json_ld)
         self.assertNotIn('"@type": "SearchAction"', json_ld)
 
-    def test_home_list_shows_site_lede_success(self) -> None:
+    def test_home_list_has_no_site_lede_failure(self) -> None:
         layout = LIST_LAYOUT.read_text(encoding="utf-8")
-        self.assertIn("site-lede", layout)
-        self.assertIn(".Site.Params.description", layout)
-        self.assertIn(".IsHome", layout)
+        self.assertNotIn("site-lede", layout)
 
     def test_head_noindexes_404_kind_success(self) -> None:
         head = HEAD_PARTIAL.read_text(encoding="utf-8")
@@ -193,8 +192,10 @@ class SeoTemplateTests(unittest.TestCase):
     def test_hugo_enables_robots_txt_success(self) -> None:
         toml = HUGO_TOML.read_text(encoding="utf-8")
         self.assertIn("enableRobotsTXT = true", toml)
-        self.assertIn("College basketball", toml)
+        self.assertIn("life long blog", toml)
+        self.assertIn("division I college basketball", toml)
         self.assertNotIn("personal site and blog", toml)
+        self.assertNotIn("College basketball writing from Eric Wisnewski", toml)
 
     def test_404_layout_exists_success(self) -> None:
         self.assertTrue(NOT_FOUND_LAYOUT.is_file())
@@ -290,19 +291,19 @@ class SeoBuildTests(unittest.TestCase):
         self.assertIsNotNone(post_desc)
         assert home_desc is not None and post_desc is not None
         self.assertIn("college basketball", home_desc.group(1).lower())
+        self.assertIn("life long blog", home_desc.group(1).lower())
         self.assertNotIn("personal site and blog", home_desc.group(1).lower())
         self.assertNotIn("Notify me about", home_desc.group(1))
         self.assertIn("College basketball", post_desc.group(1))
-        self.assertLessEqual(len(home_desc.group(1)), 160)
-        self.assertLessEqual(len(post_desc.group(1)), 160)
+        self.assertLessEqual(len(home_desc.group(1)), 175)
+        self.assertLessEqual(len(post_desc.group(1)), 175)
 
-    def test_home_lede_matches_description_not_subscribe_form_success(self) -> None:
+    def test_home_has_no_visible_lede_failure(self) -> None:
         home = (self.dest / "index.html").read_text(encoding="utf-8")
-        self.assertIn('class="site-lede"', home)
-        self.assertIn("college basketball", home.lower())
-        lede_start = home.index('class="site-lede"')
-        subscribe_start = home.index('id="subscribe"')
-        self.assertLess(lede_start, subscribe_start)
+        self.assertNotIn("site-lede", home)
+        # Description stays in meta only — not as homepage body copy.
+        body = home.split("<main>", 1)[-1]
+        self.assertNotIn("life long blog", body)
 
     def test_json_ld_website_blogposting_person_success(self) -> None:
         import json
@@ -344,7 +345,17 @@ class SeoBuildTests(unittest.TestCase):
         sitemap = (self.dest / "sitemap.xml").read_text(encoding="utf-8")
         self.assertNotIn("/admin/", sitemap)
         self.assertNotIn("/add-photos/", sitemap)
+        self.assertNotIn("/tags/", sitemap)
+        self.assertNotIn("/categories/", sitemap)
         self.assertIn("/posts/hello/", sitemap)
+
+    def test_empty_taxonomies_are_disabled_success(self) -> None:
+        toml = HUGO_TOML.read_text(encoding="utf-8")
+        self.assertIn("disableKinds", toml)
+        self.assertIn("taxonomy", toml)
+        self.assertIn("term", toml)
+        self.assertFalse((self.dest / "tags" / "index.html").is_file())
+        self.assertFalse((self.dest / "categories" / "index.html").is_file())
 
     def test_subscribe_status_pages_are_noindex_success(self) -> None:
         for rel in (
@@ -369,7 +380,11 @@ class SeoDocsTests(unittest.TestCase):
         self.assertIn("Search Console", readme)
         self.assertIn("www", readme)
         self.assertIn("JSON-LD", readme)
-        self.assertIn("site-lede", readme)
+        self.assertNotIn("site-lede", readme)
+        self.assertTrue(
+            "48x48" in readme or "48×48" in readme,
+            "README should document Google’s 48×48 favicon minimum",
+        )
 
 
 if __name__ == "__main__":

@@ -3,9 +3,6 @@
 {{ define "main" }}
   {{ partial "header.html" . }}
   <main>
-    {{ if .IsHome }}
-    <p class="site-lede">{{ .Site.Params.description }}</p>
-    {{ end }}
     <ul class="post-list">
       {{ $sections := slice "posts" }}
       {{ if .IsHome }}

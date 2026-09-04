@@ -3,6 +3,9 @@ baseURL = 'https://ericwisnewski.com'
 languageCode = 'en-us'
 title = 'Eric Wisnewski'
 enableRobotsTXT = true
+# Empty Hugo taxonomies create /tags/ and /categories/ with no posts — thin
+# pages in the sitemap that dilute crawl budget. No content uses tags today.
+disableKinds = ['taxonomy', 'term']
 # Pages CMS stores publish dates with a literal Z (UTC). Contributors often save a
 # local "now" that is still a few minutes in the future at deploy time; without this,
 # Hugo omits the post and Cloudflare serves the home page at its URL. Applies to all
@@ -29,7 +32,7 @@ buildFuture = true
   updates = '/updates/:slug/'
 
 [params]
-  description = 'College basketball writing from Eric Wisnewski — visiting every Division I program, plus travel and contributor posts.'
+  description = 'Eric Wisnewski is a life long blog dedicated to visiting every division I college basketball stadium, plus travel, sports and various other topics written by his friends.'
   # CSV URL for School Sheets page (File > Share > Publish to web, or export URL if sheet is public)
   school_sheets_csv_url = 'https://docs.google.com/spreadsheets/d/1fyJS_hWWZw4gu_1VYxgz2Laetw5az1c2LPuvCgHrl1U/export?format=csv&gid=0'
   # Link to open the sheet in Google Sheets (optional; used for "View original" on /school-sheets/)
