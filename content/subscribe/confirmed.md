@@ -1,6 +1,7 @@
 ---
 title: Subscription confirmed
 layout: subscribe-status
+robots: noindex
 build:
   list: never
 ---

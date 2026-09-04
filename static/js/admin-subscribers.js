@@ -2,6 +2,7 @@ export const ADMIN_LIST_COLUMNS = [
   { id: 'posts', label: "Eric's blog" },
   { id: 'gradys-tour', label: "Grady's Tour" },
   { id: 'da-breakdown-w-tad', label: 'Da Breakdown w Tad' },
+  { id: 'jers-prospect-profiles', label: "Jer's Prospect Profiles" },
 ];
 
 export function listStatusById(lists) {

@@ -29,6 +29,7 @@ CMS_COLLECTIONS = (
     "posts",
     "gradys-tour",
     "da-breakdown-w-tad",
+    "jers-prospect-profiles",
     "updates",
 )
 COLLECTION_RE = re.compile(

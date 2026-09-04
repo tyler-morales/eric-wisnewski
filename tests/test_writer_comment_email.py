@@ -42,6 +42,10 @@ class CommentListIdTests(unittest.TestCase):
             "da-breakdown-w-tad",
         )
         self.assertEqual(
+            call_comments_api("commentListId", "/jers-prospect-profiles/week-1/"),
+            "jers-prospect-profiles",
+        )
+        self.assertEqual(
             call_comments_api("commentListId", "/posts/gradys-tour/day-1/"),
             "gradys-tour",
         )
@@ -58,6 +62,7 @@ class WriterNotifyToTests(unittest.TestCase):
             "WRITER_EMAIL_POSTS": " eric@example.com ",
             "WRITER_EMAIL_GRADYS_TOUR": "grady@example.com",
             "WRITER_EMAIL_DA_BREAKDOWN_W_TAD": "tad@example.com",
+            "WRITER_EMAIL_JERS_PROSPECT_PROFILES": "jeremybryan123@gmail.com",
         }
         self.assertEqual(call_comments_api("writerNotifyTo", "posts", env, "pat@x.co"), "eric@example.com")
         self.assertEqual(
@@ -67,6 +72,10 @@ class WriterNotifyToTests(unittest.TestCase):
         self.assertEqual(
             call_comments_api("writerNotifyTo", "da-breakdown-w-tad", env, "other@x.co"),
             "tad@example.com",
+        )
+        self.assertEqual(
+            call_comments_api("writerNotifyTo", "jers-prospect-profiles", env, "other@x.co"),
+            "jeremybryan123@gmail.com",
         )
 
     def test_writer_notify_to_skips_self_and_junk_failure(self) -> None:
@@ -130,7 +139,9 @@ class WriterNotifyDocsTests(unittest.TestCase):
         dev_vars = DEV_VARS.read_text(encoding="utf-8")
         self.assertIn("WRITER_EMAIL_POSTS", readme)
         self.assertIn("WRITER_EMAIL_GRADYS_TOUR", readme)
+        self.assertIn("WRITER_EMAIL_JERS_PROSPECT_PROFILES", readme)
         self.assertIn("WRITER_EMAIL_POSTS", dev_vars)
+        self.assertIn("WRITER_EMAIL_JERS_PROSPECT_PROFILES", dev_vars)
         self.assertIn("emailed to the writer", privacy.lower())
 
     def test_docs_do_not_put_writer_email_in_client_failure(self) -> None:

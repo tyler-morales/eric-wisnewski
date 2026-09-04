@@ -26,6 +26,12 @@
             Da Breakdown w Tad
           </label>
           {{ end }}
+          {{ if partial "has-jers-prospect-profiles-posts.html" . }}
+          <label class="subscribe-list-option">
+            <input type="checkbox" name="lists" value="jers-prospect-profiles">
+            Jer’s Prospect Profiles
+          </label>
+          {{ end }}
         </fieldset>
         <div class="subscribe-form-actions">
           <button type="submit">Save preferences</button>

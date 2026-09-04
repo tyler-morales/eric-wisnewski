@@ -6,4 +6,4 @@
 {{- with .Params.slug -}}
 {{- if not (in $keys .) }}{{ $keys = $keys | append . }}{{ end -}}
 {{- end -}}
-{{- return where (where .Site.RegularPages "Section" "in" (slice "posts" "gradys-tour" "da-breakdown-w-tad")) "Params.author" "in" $keys -}}
+{{- return where (where .Site.RegularPages "Section" "in" (slice "posts" "gradys-tour" "da-breakdown-w-tad" "jers-prospect-profiles")) "Params.author" "in" $keys -}}

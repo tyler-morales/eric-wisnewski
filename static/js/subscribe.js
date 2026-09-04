@@ -3,7 +3,7 @@ export const CONFIRMED_KEY = 'subscribe_confirmed';
 export const SAVED_LISTS_KEY = 'subscribe_lists';
 export const DRAFT_EMAIL_KEY = 'subscribe_email';
 
-const VALID_LIST_IDS = ['posts', 'gradys-tour', 'da-breakdown-w-tad'];
+const VALID_LIST_IDS = ['posts', 'gradys-tour', 'da-breakdown-w-tad', 'jers-prospect-profiles'];
 
 export function normalizePendingEmail(value) {
   if (typeof value !== 'string') return '';

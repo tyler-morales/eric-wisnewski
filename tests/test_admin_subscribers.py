@@ -122,15 +122,15 @@ class SubscriberTableTests(unittest.TestCase):
         self.assertEqual(rows[0]["email"], "ada@example.com")
         self.assertEqual(
             [cell["id"] for cell in rows[0]["cells"]],
-            ["posts", "gradys-tour", "da-breakdown-w-tad"],
+            ["posts", "gradys-tour", "da-breakdown-w-tad", "jers-prospect-profiles"],
         )
         self.assertEqual(
             [cell["label"] for cell in rows[0]["cells"]],
-            ["Eric's blog", "Grady's Tour", "Da Breakdown w Tad"],
+            ["Eric's blog", "Grady's Tour", "Da Breakdown w Tad", "Jer's Prospect Profiles"],
         )
         self.assertEqual(
             [cell["status"] for cell in rows[0]["cells"]],
-            ["confirmed", "pending", ""],
+            ["confirmed", "pending", "", ""],
         )
         all_lists = [
             {
@@ -139,22 +139,23 @@ class SubscriberTableTests(unittest.TestCase):
                     {"list": "posts", "status": "confirmed"},
                     {"list": "gradys-tour", "status": "confirmed"},
                     {"list": "da-breakdown-w-tad", "status": "confirmed"},
+                    {"list": "jers-prospect-profiles", "status": "confirmed"},
                 ],
             }
         ]
         filled = call_js_fn(ADMIN_SUBSCRIBERS_JS, "subscriberTableRows", all_lists)
         self.assertEqual(
             [cell["status"] for cell in filled[0]["cells"]],
-            ["confirmed", "confirmed", "confirmed"],
+            ["confirmed", "confirmed", "confirmed", "confirmed"],
         )
         self.assertEqual(
             call_js_fn(ADMIN_SUBSCRIBERS_JS, "summarizeSubscribers", all_lists),
-            "1 person. Confirmed: Eric's blog 1, Grady's Tour 1, Da Breakdown w Tad 1.",
+            "1 person. Confirmed: Eric's blog 1, Grady's Tour 1, Da Breakdown w Tad 1, Jer's Prospect Profiles 1.",
         )
         summary = call_js_fn(ADMIN_SUBSCRIBERS_JS, "summarizeSubscribers", people)
         self.assertEqual(
             summary,
-            "1 person. Confirmed: Eric's blog 1, Grady's Tour 0, Da Breakdown w Tad 0.",
+            "1 person. Confirmed: Eric's blog 1, Grady's Tour 0, Da Breakdown w Tad 0, Jer's Prospect Profiles 0.",
         )
         self.assertEqual(
             call_js_fn(
@@ -175,7 +176,7 @@ class SubscriberTableTests(unittest.TestCase):
         self.assertEqual(call_js_fn(ADMIN_SUBSCRIBERS_JS, "listStatusById", None), {})
         self.assertEqual(
             call_js_fn(ADMIN_SUBSCRIBERS_JS, "summarizeSubscribers", None),
-            "0 people. Confirmed: Eric's blog 0, Grady's Tour 0, Da Breakdown w Tad 0.",
+            "0 people. Confirmed: Eric's blog 0, Grady's Tour 0, Da Breakdown w Tad 0, Jer's Prospect Profiles 0.",
         )
 
 
@@ -249,6 +250,8 @@ class AdminSubscriberSourceTests(unittest.TestCase):
         self.assertIn("admin-subscriber-table", script)
         self.assertIn("da-breakdown-w-tad", script)
         self.assertIn("Da Breakdown w Tad", script)
+        self.assertIn("jers-prospect-profiles", script)
+        self.assertIn("Jer's Prospect Profiles", script)
         self.assertNotIn("admin-subscriber-lists", script)
         self.assertIn('partial "admin-nav.html"', layout)
         self.assertNotIn("admin_secret=", layout)
@@ -334,6 +337,7 @@ class AdminSubscriberBuildTests(unittest.TestCase):
         self.assertNotIn("/ /js/admin-subscribers.js", self.subscribers_html)
         self.assertIn("/admin/comments/", self.subscribers_html)
         self.assertIn("Da Breakdown w Tad", self.subscribers_html)
+        self.assertIn("Jer&rsquo;s Prospect Profiles", self.subscribers_html)
         self.assertNotIn("confirm_token", self.subscribers_html)
         self.assertNotIn("unsub_token", self.subscribers_html)
         script = (self._output_dir / "js" / "admin-subscribers.js").read_text(
@@ -343,6 +347,8 @@ class AdminSubscriberBuildTests(unittest.TestCase):
         self.assertIn("admin-subscriber-table", script)
         self.assertIn("da-breakdown-w-tad", script)
         self.assertIn("Da Breakdown w Tad", script)
+        self.assertIn("jers-prospect-profiles", script)
+        self.assertIn("Jer's Prospect Profiles", script)
         self.assertNotIn("admin-subscriber-lists", script)
         self.assertNotIn("admin_secret=", script)
 

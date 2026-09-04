@@ -17,7 +17,7 @@ STYLE_CSS = REPO_ROOT / "assets" / "css" / "style.css"
 POSTS_DIR = REPO_ROOT / "content" / "posts"
 
 COLLECTION_RE = re.compile(
-    r"(?m)^  - name: (posts|gradys-tour|da-breakdown-w-tad)\n(.*?)(?=^  - name: |\Z)",
+    r"(?m)^  - name: (posts|gradys-tour|da-breakdown-w-tad|jers-prospect-profiles)\n(.*?)(?=^  - name: |\Z)",
     re.DOTALL,
 )
 GALLERY_FIELD_RE = re.compile(
@@ -68,7 +68,7 @@ class GalleryConfigTests(unittest.TestCase):
         self.pages_yml = PAGES_YML.read_text(encoding="utf-8")
 
     def test_posts_and_tour_have_multi_image_gallery_success(self) -> None:
-        for name in ("posts", "gradys-tour", "da-breakdown-w-tad"):
+        for name in ("posts", "gradys-tour", "da-breakdown-w-tad", "jers-prospect-profiles"):
             with self.subTest(collection=name):
                 block = collection_block(self.pages_yml, name)
                 field = gallery_field(block)
@@ -79,7 +79,7 @@ class GalleryConfigTests(unittest.TestCase):
                 self.assertIn("unique: true", field)
 
     def test_featured_image_stays_single_failure(self) -> None:
-        for name in ("posts", "gradys-tour", "da-breakdown-w-tad"):
+        for name in ("posts", "gradys-tour", "da-breakdown-w-tad", "jers-prospect-profiles"):
             with self.subTest(collection=name):
                 block = collection_block(self.pages_yml, name)
                 field = featured_image_field(block)

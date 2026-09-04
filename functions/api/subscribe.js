@@ -19,7 +19,7 @@ import {
   verifyTurnstile,
 } from '../../lib/api.js';
 
-const VALID_LISTS = ['posts', 'gradys-tour', 'da-breakdown-w-tad'];
+const VALID_LISTS = ['posts', 'gradys-tour', 'da-breakdown-w-tad', 'jers-prospect-profiles'];
 const GENERIC_OK =
   "Check your inbox for a confirmation link. You won't get posts until you click it. If you don't see it, look in spam.";
 

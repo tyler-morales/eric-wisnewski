@@ -4,6 +4,8 @@
 {{ $default = "gradys-tour" }}
 {{ else if eq .Section "da-breakdown-w-tad" }}
 {{ $default = "da-breakdown-w-tad" }}
+{{ else if eq .Section "jers-prospect-profiles" }}
+{{ $default = "jers-prospect-profiles" }}
 {{ end }}
 <link rel="preconnect" href="https://challenges.cloudflare.com">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
@@ -44,6 +46,13 @@
         <input type="checkbox" name="lists" value="da-breakdown-w-tad" {{ if eq $default "da-breakdown-w-tad"
           }}checked{{ end }}>
         Da Breakdown w Tad
+      </label>
+      {{ end }}
+      {{ if partial "has-jers-prospect-profiles-posts.html" . }}
+      <label class="subscribe-list-option">
+        <input type="checkbox" name="lists" value="jers-prospect-profiles" {{ if eq $default "jers-prospect-profiles"
+          }}checked{{ end }}>
+        Jer’s Prospect Profiles
       </label>
       {{ end }}
     </fieldset>

@@ -38,7 +38,7 @@
   </div>
 
   {{ $posts := dict }}
-  {{ range where .Site.RegularPages "Section" "in" (slice "posts" "gradys-tour" "da-breakdown-w-tad") }}
+  {{ range where .Site.RegularPages "Section" "in" (slice "posts" "gradys-tour" "da-breakdown-w-tad" "jers-prospect-profiles") }}
   {{ $name := "Other" }}
   {{ $slug := .Params.author | default "" }}
   {{ with (partial "author-page.html" .) }}

@@ -155,11 +155,12 @@ export function replyNotifyEmail({ parentAuthor, replyAuthor, replyText, postUrl
   return { subject, html, text };
 }
 
-/** Section id for a comment URL (`posts` / `gradys-tour` / `da-breakdown-w-tad`); empty means skip. */
+/** Section id for a comment URL (`posts` / `gradys-tour` / `da-breakdown-w-tad` / `jers-prospect-profiles`); empty means skip. */
 export function commentListId(url) {
   const live = relocateCommentUrl(url);
   if (live.startsWith('/gradys-tour/')) return 'gradys-tour';
   if (live.startsWith('/da-breakdown-w-tad/')) return 'da-breakdown-w-tad';
+  if (live.startsWith('/jers-prospect-profiles/')) return 'jers-prospect-profiles';
   if (live.startsWith('/posts/')) return 'posts';
   return '';
 }
@@ -189,7 +190,7 @@ export function writerNotifyEmail({ commentAuthor, commentText, postUrl }) {
 }
 
 async function sendCommentNotice(env, to, mail) {
-  // ponytail: From is always NEWSLETTER_FROM_EMAIL (Eric). Ceiling: Grady/Tad see Eric in From. Upgrade: newsletterFromHeader(env, sectionName).
+  // ponytail: From is always NEWSLETTER_FROM_EMAIL (Eric). Ceiling: Grady/Tad/Jer see Eric in From. Upgrade: newsletterFromHeader(env, sectionName).
   if (!env || !env.RESEND_API_KEY || !to || !mail) return;
   try {
     await sendResendEmail(env, { to, subject: mail.subject, html: mail.html, text: mail.text });

@@ -3,10 +3,13 @@
 {{ define "main" }}
   {{ partial "header.html" . }}
   <main>
+    {{ if .IsHome }}
+    <p class="site-lede">{{ .Site.Params.description }}</p>
+    {{ end }}
     <ul class="post-list">
       {{ $sections := slice "posts" }}
       {{ if .IsHome }}
-        {{ $sections = slice "posts" "gradys-tour" "da-breakdown-w-tad" }}
+        {{ $sections = slice "posts" "gradys-tour" "da-breakdown-w-tad" "jers-prospect-profiles" }}
       {{ end }}
       {{ range where .Site.RegularPages "Section" "in" $sections }}
         {{ partial "post-list-item.html" . }}

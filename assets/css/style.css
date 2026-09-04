@@ -35,7 +35,7 @@ body {
 }
 
 /* Header: Big Name — clamp() for responsive scaling without media queries */
-.site-header h1.brand-name {
+.site-header .brand-name {
   font-size: clamp(3rem, 12vw, 10rem);
   line-height: 0.9;
   letter-spacing: -0.05em;
@@ -46,19 +46,28 @@ body {
   padding: 0.5rem 1rem;
 }
 
-.site-header h1 a {
+.site-header .brand-name a {
   color: inherit;
   text-decoration: none;
 }
 
-.site-header h1 a:hover,
-.site-header h1 a:focus-visible {
+.site-header .brand-name a:hover,
+.site-header .brand-name a:focus-visible {
   text-decoration: underline;
 }
 
-.site-header h1 a:focus-visible {
+.site-header .brand-name a:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 4px;
+}
+
+.site-lede {
+  max-width: 40rem;
+  margin: 0 auto 1.5rem;
+  padding: 0 1rem;
+  font-size: 1.125rem;
+  line-height: 1.45;
+  color: #333;
 }
 
 /* Ensure images never blow out the layout */

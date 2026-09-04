@@ -82,7 +82,7 @@ class InviteDocContentTests(unittest.TestCase):
         self.assertIn("docs/invite-author.md", readme)
 
     def test_live_authors_are_not_drafts_success(self) -> None:
-        for slug in ("eric-wisnewski", "grady-davis", "tad", "tyler-morales"):
+        for slug in ("eric-wisnewski", "grady-davis", "tad", "jeremy-bryan", "tyler-morales"):
             text = (AUTHORS_DIR / f"{slug}.md").read_text(encoding="utf-8")
             self.assertRegex(
                 text,
@@ -108,6 +108,13 @@ class CmsDraftDefaultTests(unittest.TestCase):
         yaml_text = PAGES_YML.read_text(encoding="utf-8")
         self.assertEqual(
             field_default(collection_block(yaml_text, "da-breakdown-w-tad"), "draft"),
+            "true",
+        )
+
+    def test_jers_prospect_profiles_draft_default_true_success(self) -> None:
+        yaml_text = PAGES_YML.read_text(encoding="utf-8")
+        self.assertEqual(
+            field_default(collection_block(yaml_text, "jers-prospect-profiles"), "draft"),
             "true",
         )
 

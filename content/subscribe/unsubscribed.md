@@ -1,6 +1,7 @@
 ---
 title: Unsubscribed
 layout: subscribe-status
+robots: noindex
 build:
   list: never
 ---

@@ -2,10 +2,11 @@
 baseURL = 'https://ericwisnewski.com'
 languageCode = 'en-us'
 title = 'Eric Wisnewski'
+enableRobotsTXT = true
 # Pages CMS stores publish dates with a literal Z (UTC). Contributors often save a
 # local "now" that is still a few minutes in the future at deploy time; without this,
 # Hugo omits the post and Cloudflare serves the home page at its URL. Applies to all
-# sections (Eric's Posts, Grady's Tour, Da Breakdown w Tad) — intended for this CMS-edited site.
+# sections (Eric's Posts, Grady's Tour, Da Breakdown w Tad, Jer’s Prospect Profiles) — intended for this CMS-edited site.
 buildFuture = true
 
 [imaging]
@@ -23,11 +24,12 @@ buildFuture = true
   posts = '/posts/:slug/'
   gradys-tour = '/gradys-tour/:slug/'
   da-breakdown-w-tad = '/da-breakdown-w-tad/:slug/'
+  jers-prospect-profiles = '/jers-prospect-profiles/:slug/'
   authors = '/authors/:slug/'
   updates = '/updates/:slug/'
 
 [params]
-  description = 'Eric Wisnewski — personal site and blog'
+  description = 'College basketball writing from Eric Wisnewski — visiting every Division I program, plus travel and contributor posts.'
   # CSV URL for School Sheets page (File > Share > Publish to web, or export URL if sheet is public)
   school_sheets_csv_url = 'https://docs.google.com/spreadsheets/d/1fyJS_hWWZw4gu_1VYxgz2Laetw5az1c2LPuvCgHrl1U/export?format=csv&gid=0'
   # Link to open the sheet in Google Sheets (optional; used for "View original" on /school-sheets/)
@@ -36,6 +38,7 @@ buildFuture = true
   nav_map = '/map/'
   nav_gradys_tour = '/gradys-tour/'
   nav_da_breakdown_w_tad = '/da-breakdown-w-tad/'
+  nav_jers_prospect_profiles = '/jers-prospect-profiles/'
   # Link to open the map in Google Maps (optional; used for "View original" on /map/)
   map_viewer_url = 'https://www.google.com/maps/d/viewer?mid=1iRNx3DgEm5TJJmN1A4xM0uienUMFfqc'
   # Cloudflare Turnstile site key for comments (from Cloudflare Dashboard → Turnstile)
@@ -77,3 +80,10 @@ buildFuture = true
     author = 'tad'
   [cascade.target]
     path = '{/da-breakdown-w-tad,/da-breakdown-w-tad/**}'
+
+# Jer’s Prospect Profiles always attribute to Jeremy even if CMS author is missing.
+[[cascade]]
+  [cascade.params]
+    author = 'jeremy-bryan'
+  [cascade.target]
+    path = '{/jers-prospect-profiles,/jers-prospect-profiles/**}'

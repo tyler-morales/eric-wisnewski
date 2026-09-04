@@ -1,0 +1,9 @@
+{{/*
+  True when Jer’s Prospect Profiles has at least one published post.
+  Nav tab and newsletter checkbox follow this so unchecking Draft on the first
+  post is what puts the section in the UI. Uses the section page's own
+  RegularPages so the header does not scan .Site.RegularPages while Hugo is
+  still collecting them.
+*/}}
+{{- $section := .Site.GetPage "/jers-prospect-profiles" -}}
+{{- return and $section (gt (len $section.RegularPages) 0) -}}

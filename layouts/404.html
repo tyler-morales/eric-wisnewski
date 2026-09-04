@@ -1,0 +1,14 @@
+{{ define "title" }}Page not found | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "header.html" . }}
+  <main>
+    <article class="post-content subscribe-status-page">
+      <header>
+        <h1>Page not found</h1>
+      </header>
+      <p>That URL is not on this site.</p>
+      <p><a href="{{ "/" | relURL }}">Back to the home page</a></p>
+    </article>
+  </main>
+{{ end }}

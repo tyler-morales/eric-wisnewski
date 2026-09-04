@@ -1,0 +1,48 @@
+{{/*
+  Structured data for Google: WebSite (home), BlogPosting (articles), Person (authors).
+  Skip noindex / 404 pages. No SearchAction — there is no site search.
+*/}}
+{{- if or (eq .Params.robots "noindex") (eq .Kind "404") -}}
+{{- else if .IsHome -}}
+{{- $site := dict
+  "@context" "https://schema.org"
+  "@type" "WebSite"
+  "name" .Site.Title
+  "url" .Site.BaseURL
+  "description" (.Site.Params.description | default "")
+-}}
+<script type="application/ld+json">{{ $site | jsonify | safeJS }}</script>
+{{- else if and (eq .Section "authors") .IsPage -}}
+{{- $person := dict
+  "@context" "https://schema.org"
+  "@type" "Person"
+  "name" (.Params.name | default .Title)
+  "url" .Permalink
+-}}
+{{- with .Params.bio -}}{{- $person = merge $person (dict "description" .) -}}{{- end -}}
+{{- with .Params.image -}}{{- $person = merge $person (dict "image" (. | absURL)) -}}{{- end -}}
+<script type="application/ld+json">{{ $person | jsonify | safeJS }}</script>
+{{- else if and .IsPage (in (slice "posts" "gradys-tour" "da-breakdown-w-tad" "jers-prospect-profiles") .Section) -}}
+{{- $desc := .Summary | plainify | htmlUnescape | strings.TrimSpace -}}
+{{- if not $desc -}}{{- $desc = .Site.Params.description | default "" -}}{{- end -}}
+{{- $image := "images/og-default.jpg" | absURL -}}
+{{- with .Params.image -}}{{- $image = . | absURL -}}{{- end -}}
+{{- $author := dict "@type" "Person" "name" .Site.Title -}}
+{{- with (partial "author-page.html" .) -}}
+  {{- $author = dict "@type" "Person" "name" (.Params.name | default .Title) "url" .Permalink -}}
+{{- end -}}
+{{- $post := dict
+  "@context" "https://schema.org"
+  "@type" "BlogPosting"
+  "headline" .Title
+  "description" $desc
+  "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
+  "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+  "url" .Permalink
+  "mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink)
+  "image" $image
+  "author" $author
+  "publisher" (dict "@type" "Organization" "name" .Site.Title "url" .Site.BaseURL)
+-}}
+<script type="application/ld+json">{{ $post | jsonify | safeJS }}</script>
+{{- end -}}

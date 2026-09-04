@@ -1,5 +1,9 @@
 <header class="site-header" role="banner">
+  {{ if .IsHome }}
   <h1 class="brand-name"><a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a></h1>
+  {{ else }}
+  <p class="brand-name"><a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a></p>
+  {{ end }}
   <nav class="site-nav" aria-label="Main navigation">
     <ul role="list">
       <li><a href="{{ .Site.Params.nav_school_sheets | default " /school-sheets/" }}"{{ if hasPrefix
@@ -10,6 +14,9 @@
       <li><a href="{{ .Site.Params.nav_gradys_tour | default "/gradys-tour/" }}">Grady's Tour</a></li>
       {{ if partial "has-da-breakdown-posts.html" . }}
       <li><a href="{{ .Site.Params.nav_da_breakdown_w_tad | default "/da-breakdown-w-tad/" }}">Da Breakdown w Tad</a></li>
+      {{ end }}
+      {{ if partial "has-jers-prospect-profiles-posts.html" . }}
+      <li><a href="{{ .Site.Params.nav_jers_prospect_profiles | default "/jers-prospect-profiles/" }}">Jer’s Prospect Profiles</a></li>
       {{ end }}
     </ul>
   </nav>

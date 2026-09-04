@@ -6,8 +6,10 @@
 {{ end }}
 {{ $headDescription := .Site.Params.description }}
 {{ with .Description }}{{ $headDescription = . }}{{ else }}{{ with .Params.bio }}{{ $headDescription = . }}{{ else }}{{ if .IsPage }}{{ $headDescription = .Summary }}{{ end }}{{ end }}{{ end }}
+{{ $headDescription = $headDescription | plainify | htmlUnescape | strings.TrimSpace | truncate 155 }}
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="{{ $headDescription }}">
 <link rel="icon" href="{{ "favicon.png" | absURL }}" type="image/png" />
 <link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | absURL }}" />
 <link rel="canonical" href="{{ .Permalink }}">
@@ -25,9 +27,10 @@
 <meta property="og:image" content="{{ $ogImage | absURL }}">
 <meta property="og:image:alt" content="{{ $headTitle }}">
 <meta name="twitter:image" content="{{ $ogImage | absURL }}">
-{{ if eq .Params.robots "noindex" }}
+{{ if or (eq .Params.robots "noindex") (eq .Kind "404") }}
 <meta name="robots" content="noindex, nofollow">
 {{ end }}
+{{ partial "json-ld.html" . }}
 {{ if and hugo.IsProduction .Site.Params.umami_website_id }}
 <script defer src="{{ .Site.Params.umami_script_url | default "https://cloud.umami.is/script.js" }}" data-website-id="{{ .Site.Params.umami_website_id }}"></script>
 {{ end }}

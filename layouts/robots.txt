@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /add-photos/
+Disallow: /subscribe/manage/
+
+Sitemap: {{ site.BaseURL }}sitemap.xml

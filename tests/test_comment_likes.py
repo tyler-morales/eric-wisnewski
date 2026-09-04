@@ -215,7 +215,7 @@ class LikeSchemaAndDocsTests(unittest.TestCase):
         self.assertIn("0006_comment_likes.sql", readme)
         self.assertIn("/api/comment-likes", readme)
         self.assertIn("liked", privacy.lower())
-        self.assertIn("eight", readme.lower())
+        self.assertIn("nine", readme.lower())
 
     def test_migration_has_no_downvote_column_failure(self) -> None:
         sql = MIGRATION.read_text(encoding="utf-8")

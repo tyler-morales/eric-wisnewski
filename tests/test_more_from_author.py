@@ -148,6 +148,7 @@ class MoreFromTemplateTests(unittest.TestCase):
         self.assertIn('"posts"', posts)
         self.assertIn('"gradys-tour"', posts)
         self.assertIn('"da-breakdown-w-tad"', posts)
+        self.assertIn('"jers-prospect-profiles"', posts)
 
     def test_author_page_reuses_author_posts_partial_success(self) -> None:
         layout = AUTHOR_LAYOUT.read_text(encoding="utf-8")

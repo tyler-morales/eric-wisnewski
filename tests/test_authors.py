@@ -74,7 +74,7 @@ def parse_front_matter(path: Path) -> dict[str, str]:
 def published_article_titles() -> set[str]:
     """Every non-draft post in Posts and Grady's Tour."""
     titles: set[str] = set()
-    for section in ("posts", "gradys-tour", "da-breakdown-w-tad"):
+    for section in ("posts", "gradys-tour", "da-breakdown-w-tad", "jers-prospect-profiles"):
         for path in sorted((REPO_ROOT / "content" / section).glob("*.md")):
             if path.name.startswith("_"):
                 continue
@@ -119,6 +119,7 @@ class AuthorTemplateContractTests(unittest.TestCase):
         self.assertIn('"posts"', template)
         self.assertIn('"gradys-tour"', template)
         self.assertIn('"da-breakdown-w-tad"', template)
+        self.assertIn('"jers-prospect-profiles"', template)
         self.assertNotIn("is-tour-post.html", template)
 
     def test_home_without_section_mix_fails_contract(self) -> None:
@@ -312,6 +313,7 @@ class AuthorBuildTests(unittest.TestCase):
         self.assertEqual(names[1:], sorted(names[1:]))
         self.assertIn("Grady Davis", names)
         self.assertIn("Tad Davis", names)
+        self.assertIn("Jeremy Bryan", names)
         self.assertIn("Tyler Morales", names)
         self.assertIn("All contributors", self.eric_html)
         self.assertIn("All contributors", self.grady_html)

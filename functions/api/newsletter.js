@@ -20,6 +20,11 @@ const LISTS = [
     feedPath: '/da-breakdown-w-tad/index.xml',
     fromName: 'Da Breakdown w Tad',
   },
+  {
+    id: 'jers-prospect-profiles',
+    feedPath: '/jers-prospect-profiles/index.xml',
+    fromName: "Jer's Prospect Profiles",
+  },
 ];
 
 export { newsletterFromHeader };

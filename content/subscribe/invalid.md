@@ -1,6 +1,7 @@
 ---
 title: This link didn’t work
 layout: subscribe-status
+robots: noindex
 build:
   list: never
 ---

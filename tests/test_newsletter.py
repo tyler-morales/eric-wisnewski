@@ -14,6 +14,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 MIGRATIONS_DIR = REPO_ROOT / "migrations"
 TAD_LIST_MIGRATION = MIGRATIONS_DIR / "0007_tad_newsletter_list.sql"
+JER_LIST_MIGRATION = MIGRATIONS_DIR / "0008_jer_newsletter_list.sql"
 SUBSCRIBE_API = REPO_ROOT / "functions" / "api" / "subscribe.js"
 NEWSLETTER_API = REPO_ROOT / "functions" / "api" / "newsletter.js"
 SUBSCRIBE_JS = REPO_ROOT / "static" / "js" / "subscribe.js"
@@ -112,6 +113,14 @@ class NewsletterHelperTests(unittest.TestCase):
             call_js_fn(
                 SUBSCRIBE_API,
                 "normalizeLists",
+                ["jers-prospect-profiles", "spam"],
+            ),
+            ["jers-prospect-profiles"],
+        )
+        self.assertEqual(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "normalizeLists",
                 ["da-breakdown-w-tad", "posts"],
             ),
             ["da-breakdown-w-tad", "posts"],
@@ -130,6 +139,10 @@ class NewsletterHelperTests(unittest.TestCase):
         self.assertEqual(
             call_js_fn(SUBSCRIBE_API, "listLabel", "da-breakdown-w-tad"),
             "Da Breakdown w Tad",
+        )
+        self.assertEqual(
+            call_js_fn(SUBSCRIBE_API, "listLabel", "jers-prospect-profiles"),
+            "Jer's Prospect Profiles",
         )
 
     def test_list_label_unknown_failure(self) -> None:
@@ -192,7 +205,8 @@ class NewsletterHelperTests(unittest.TestCase):
     def test_valid_newsletter_lists_constant(self) -> None:
         lists = call_js_fn(SUBSCRIBE_API, "getValidLists")
         self.assertEqual(
-            sorted(lists), ["da-breakdown-w-tad", "gradys-tour", "posts"]
+            sorted(lists),
+            ["da-breakdown-w-tad", "gradys-tour", "jers-prospect-profiles", "posts"],
         )
 
     def test_already_subscribed_message_success(self) -> None:
@@ -782,7 +796,80 @@ class NewsletterSchemaTests(unittest.TestCase):
         self.assertIn("da-breakdown-w-tad", sql)
         self.assertIn("confirm_sent_at", sql)
         self.assertIn("0007_tad_newsletter_list.sql", readme)
-        self.assertIn("eight", readme.lower())
+        self.assertIn("0008_jer_newsletter_list.sql", readme)
+        self.assertIn("nine", readme.lower())
+
+    def test_jer_insert_rejected_before_migration_failure(self) -> None:
+        conn = sqlite3.connect(":memory:")
+        _apply_migrations_through(conn, TAD_LIST_MIGRATION.name)
+        with self.assertRaises(sqlite3.IntegrityError):
+            conn.execute(
+                """INSERT INTO subscribers
+                   (email, list, status, confirm_token, unsub_token)
+                   VALUES (?, ?, 'pending', ?, ?)""",
+                ("new@x.co", "jers-prospect-profiles", self.TOKEN, self.TOKEN),
+            )
+        conn.close()
+
+    def test_jer_insert_works_after_migration_for_new_and_existing_success(self) -> None:
+        conn = sqlite3.connect(":memory:")
+        conn.row_factory = sqlite3.Row
+        _apply_migrations_through(conn, TAD_LIST_MIGRATION.name)
+        conn.execute(
+            """INSERT INTO subscribers
+               (email, list, status, confirm_token, unsub_token, confirm_sent_at)
+               VALUES (?, 'posts', 'confirmed', ?, ?, datetime('now'))""",
+            ("old@x.co", self.TOKEN, self.TOKEN),
+        )
+        conn.executescript(JER_LIST_MIGRATION.read_text(encoding="utf-8"))
+        conn.execute(
+            """INSERT INTO subscribers
+               (email, list, status, confirm_token, unsub_token)
+               VALUES (?, 'jers-prospect-profiles', 'pending', ?, ?)""",
+            ("old@x.co", self.TOKEN, self.TOKEN),
+        )
+        conn.execute(
+            """INSERT INTO subscribers
+               (email, list, status, confirm_token, unsub_token)
+               VALUES (?, 'jers-prospect-profiles', 'pending', ?, ?)""",
+            ("new@x.co", self.TOKEN, self.TOKEN),
+        )
+        conn.execute(
+            """INSERT INTO newsletter_sends
+               (list, post_guid, post_url, post_title)
+               VALUES (?, ?, ?, ?)""",
+            (
+                "jers-prospect-profiles",
+                "https://x.co/jer/",
+                "https://x.co/jer/",
+                "Jer",
+            ),
+        )
+        rows = {
+            (r["email"], r["list"], r["status"])
+            for r in conn.execute("SELECT email, list, status FROM subscribers")
+        }
+        self.assertEqual(
+            rows,
+            {
+                ("old@x.co", "posts", "confirmed"),
+                ("old@x.co", "jers-prospect-profiles", "pending"),
+                ("new@x.co", "jers-prospect-profiles", "pending"),
+            },
+        )
+        conn.close()
+
+    def test_unknown_list_still_rejected_after_jer_migration_failure(self) -> None:
+        conn = sqlite3.connect(":memory:")
+        _apply_migrations_through(conn, JER_LIST_MIGRATION.name)
+        with self.assertRaises(sqlite3.IntegrityError):
+            conn.execute(
+                """INSERT INTO subscribers
+                   (email, list, status, confirm_token, unsub_token)
+                   VALUES (?, 'spam', 'pending', ?, ?)""",
+                ("a@b.co", self.TOKEN, self.TOKEN),
+            )
+        conn.close()
 
 
 class NewsletterTemplateTests(unittest.TestCase):
@@ -794,6 +881,7 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn('value="posts"', html)
         self.assertIn('value="gradys-tour"', html)
         self.assertIn('value="da-breakdown-w-tad"', html)
+        self.assertIn('value="jers-prospect-profiles"', html)
         self.assertIn("fieldset", html)
         self.assertIn("aria-live", html)
         self.assertIn("/js/subscribe.js", html)
@@ -1314,6 +1402,7 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn('value="posts"', html)
         self.assertIn('value="gradys-tour"', html)
         self.assertIn('value="da-breakdown-w-tad"', html)
+        self.assertIn('value="jers-prospect-profiles"', html)
         self.assertIn("fieldset", html)
         self.assertIn("aria-live", html)
         self.assertIn("/js/subscribe.js", html)
