@@ -1,0 +1,7 @@
+{{/*
+  Markdown YouTube URLs are already iframes via render-link.html.
+  Pages CMS often stores the same paste as an HTML <a>; rewrite those here.
+*/}}
+{{- $html := .Content -}}
+{{- $html = replaceRE `<a href="https://(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)([A-Za-z0-9_-]{11})[^"]*"[^>]*>https?://[^<]*</a>` `<iframe class="youtube-embed" src="https://www.youtube-nocookie.com/embed/$1" title="YouTube video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>` $html -}}
+{{- $html | safeHTML -}}

@@ -14,7 +14,7 @@
         <img src="{{ . | absURL }}" alt="{{ with $.Params.image_alt }}{{ . }}{{ else }}{{ $.Title }}{{ end }}" loading="lazy" decoding="async">
       </figure>
       {{ end }}
-      {{ .Content }}
+      {{ partial "page-content.html" . }}
     </article>
   </main>
 {{ end }}

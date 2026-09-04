@@ -59,7 +59,7 @@ class ShareTemplateTests(unittest.TestCase):
 
     def test_article_single_has_back_to_top_after_the_article_success(self) -> None:
         template = SINGLE_TEMPLATE.read_text(encoding="utf-8")
-        content_at = template.find("{{ .Content }}")
+        content_at = template.find("page-content.html")
         gallery_at = template.find("post-gallery.html")
         share_footer_at = template.find('id" "footer"')
         link_at = template.find('href="#top"')

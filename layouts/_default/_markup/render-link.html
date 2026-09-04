@@ -1,0 +1,23 @@
+{{/*
+  YouTube watch/share/short URLs become a player. Named links stay links.
+  Pages CMS pastes land here as markdown [url](url); Goldmark linkify does the same
+  for a bare URL on its own line.
+*/}}
+{{- $dest := .Destination -}}
+{{- $id := "" -}}
+{{- if findRE `(?i)^https?://(?:(?:www|m|music)\.)?(?:youtube\.com/(?:watch\?(?:[^#]*&)?v=|embed/|shorts/|live/|v/)|youtu\.be/)([A-Za-z0-9_-]{11})` $dest -}}
+  {{- $id = replaceRE `(?i)^https?://(?:(?:www|m|music)\.)?(?:youtube\.com/(?:watch\?(?:[^#]*&)?v=|embed/|shorts/|live/|v/)|youtu\.be/)([A-Za-z0-9_-]{11}).*$` `$1` $dest -}}
+{{- end -}}
+{{- if and $id (eq (len $id) 11) (in .PlainText $id) -}}
+<iframe
+  class="youtube-embed"
+  src="https://www.youtube-nocookie.com/embed/{{ $id }}"
+  title="YouTube video"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowfullscreen
+  loading="lazy"
+  referrerpolicy="strict-origin-when-cross-origin"
+></iframe>
+{{- else -}}
+<a href="{{ $dest | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>
+{{- end -}}

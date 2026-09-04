@@ -17,7 +17,7 @@
         <img src="{{ . | absURL }}" alt="{{ with $.Params.image_alt }}{{ . }}{{ else }}Featured image for {{ $.Title }}{{ end }}" loading="lazy" decoding="async">
       </figure>
       {{ end }}
-      {{ .Content }}
+      {{ partial "page-content.html" . }}
       {{ partial "post-gallery.html" . }}
       {{ partial "share.html" (dict "page" . "id" "footer") }}
       <a href="#top" class="back-to-top">Back to top</a>

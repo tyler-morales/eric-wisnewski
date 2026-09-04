@@ -9,6 +9,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 POSTS_DIR = REPO_ROOT / "content" / "posts"
+CONTENT_DIR = REPO_ROOT / "content"
+PAGES_YML = REPO_ROOT / ".pages.yml"
 GITIGNORE = REPO_ROOT / ".gitignore"
 README = REPO_ROOT / "README.md"
 SINGLE_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "single.html"
@@ -22,6 +24,27 @@ NEWSLETTER_API = REPO_ROOT / "functions" / "api" / "newsletter.js"
 SHARED_API = REPO_ROOT / "lib" / "api.js"
 DEV_VARS_EXAMPLE = REPO_ROOT / ".dev.vars.example"
 SLUG_RE = re.compile(r"(?m)^slug:\s*['\"]?([A-Za-z0-9-]+)")
+CMS_COLLECTIONS = (
+    "authors",
+    "posts",
+    "gradys-tour",
+    "da-breakdown-w-tad",
+    "updates",
+)
+COLLECTION_RE = re.compile(
+    r"(?m)^  - name: ([a-z0-9-]+)\n(.*?)(?=^  - name: |\Z)",
+    re.DOTALL,
+)
+
+
+def collection_filename(pages_yml: str, name: str) -> str:
+    """Return the `filename:` value for one `.pages.yml` collection."""
+    for match in COLLECTION_RE.finditer(pages_yml):
+        if match.group(1) != name:
+            continue
+        found = re.search(r'(?m)^    filename: "([^"]+)"', match.group(2))
+        return found.group(1) if found else ""
+    return ""
 
 
 class PostFilenameTests(unittest.TestCase):
@@ -35,8 +58,30 @@ class PostFilenameTests(unittest.TestCase):
             self.assertEqual(path.stem, match.group(1), f"{path.name} must match slug")
 
     def test_cms_placeholder_filenames_are_gone_failure(self) -> None:
-        for path in POSTS_DIR.glob("*.md"):
-            self.assertNotIn("{{", path.name, f"CMS leftover filename: {path.name}")
+        leftovers: list[str] = []
+        for path in CONTENT_DIR.rglob("*.md"):
+            name = path.name
+            if "{{" in name or name == "}.md":
+                leftovers.append(str(path.relative_to(REPO_ROOT)))
+        self.assertEqual(leftovers, [], f"CMS leftover filenames: {leftovers}")
+
+
+class CmsFilenameTemplateTests(unittest.TestCase):
+    def test_collections_use_fields_slug_filename_success(self) -> None:
+        yml = PAGES_YML.read_text(encoding="utf-8")
+        for name in CMS_COLLECTIONS:
+            with self.subTest(collection=name):
+                self.assertEqual(
+                    collection_filename(yml, name),
+                    "{fields.slug}.md",
+                    f"{name} must interpolate the slug field so Save writes hello-again.md",
+                )
+
+    def test_mustache_slug_filename_is_rejected_failure(self) -> None:
+        yml = PAGES_YML.read_text(encoding="utf-8")
+        self.assertNotIn('filename: "{{slug}}.md"', yml)
+        self.assertNotIn("filename: '{{slug}}.md'", yml)
+        self.assertNotEqual(collection_filename(yml, "posts"), "{{slug}}.md")
 
 
 class HugoFrontMatterTests(unittest.TestCase):

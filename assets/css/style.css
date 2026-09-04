@@ -893,6 +893,7 @@ article.post-content blockquote {
 }
 
 article.post-content p:has(> img:only-child),
+article.post-content p:has(> iframe.youtube-embed:only-child),
 article.post-content figure {
   margin-top: 1em;
   margin-bottom: 0.45em;
@@ -911,6 +912,20 @@ article.post-content figure img,
 article.post-content p:has(> img:only-child) img {
   width: 100%;
   margin: 0;
+}
+
+article.post-content iframe.youtube-embed {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 0;
+  display: block;
+  background: #000;
+}
+
+article.post-content iframe.youtube-embed:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
 }
 
 /* Captions: CMS italic line after a photo, or <figcaption> */
@@ -996,6 +1011,7 @@ article.post-content hr {
   }
 
   article.post-content p:has(> img:only-child),
+  article.post-content p:has(> iframe.youtube-embed:only-child),
   article.post-content figure,
   article.post-content .post-featured-image,
   article.post-content .post-gallery {

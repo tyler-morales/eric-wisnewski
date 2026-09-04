@@ -61,7 +61,7 @@ content:
     type: collection
     path: content/posts
     format: yaml-frontmatter
-    filename: "{{slug}}.md"
+    filename: "{fields.slug}.md"
     subfolders: false
     view:
       primary: title
@@ -123,6 +123,7 @@ content:
       - name: body
         label: Body
         type: rich-text
+        description: Paste a YouTube URL on its own line to embed the video on the post.
 
   - name: gradys-tour
     label: Grady's Tour
@@ -192,6 +193,7 @@ content:
       - name: body
         label: Body
         type: rich-text
+        description: Paste a YouTube URL on its own line to embed the video on the post.
 
   - name: da-breakdown-w-tad
     label: Da Breakdown w Tad
@@ -262,13 +264,14 @@ content:
       - name: body
         label: Body
         type: rich-text
+        description: Paste a YouTube URL on its own line to embed the video on the post.
 
   - name: updates
     label: Site updates
     type: collection
     path: content/updates
     format: yaml-frontmatter
-    filename: "{{slug}}.md"
+    filename: "{fields.slug}.md"
     exclude: [_index.md]
     subfolders: false
     view:
