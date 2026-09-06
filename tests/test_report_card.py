@@ -269,6 +269,7 @@ class ReportCardSourceTests(unittest.TestCase):
         self.assertIn("Campus", src)
         self.assertIn("GPA", src)
         self.assertIn("isset", src)
+        self.assertNotIn("$band", src)
         for mark in GRADE_POINTS:
             self.assertIn(mark, src)
 
@@ -287,34 +288,43 @@ class ReportCardSourceTests(unittest.TestCase):
         self.assertIn("type: select", stadium_block)
         self.assertNotIn("type: string", stadium_block)
 
-    def test_card_styles_look_like_a_paper_report_success(self) -> None:
+    def test_card_styles_match_scoreboard_chrome_success(self) -> None:
         css = STYLE_CSS.read_text(encoding="utf-8")
-        start = css.find("/* School report card */")
+        start = css.find("/* School report card")
         end = css.find("/* Captions", start)
         block = css[start:end] if start >= 0 and end > start else ""
         self.assertIn(".report-card", block)
         self.assertIn(".report-card-banner", block)
         self.assertIn(".report-card-school", block)
+        self.assertIn("1.65rem", block)
+        self.assertIn("align-items: center", block)
         self.assertIn(".report-card-grade", block)
         self.assertIn(".report-card-gpa", block)
-        self.assertIn("var(--font-serif)", block)
-        self.assertIn("#f1dcab", block)
-        self.assertIn("fractalNoise", block)
-        self.assertIn("#7a2a2a", block)
-        self.assertIn("#b42318", block)
+        self.assertIn(".report-card-gpa-line", block)
+        self.assertIn("var(--bg)", block)
+        self.assertIn("#e4e4e4", block)
         self.assertIn(".report-card-label", block)
-        self.assertIn("th:first-child", block)
-        self.assertIn("2.85em", block)
-        src = (REPO_ROOT / "layouts" / "partials" / "report-card.html").read_text(
-            encoding="utf-8"
-        )
+        self.assertIn(".report-card-grade[data-grade^=\"A\"]", block)
+        self.assertIn(".report-card-grade[data-grade^=\"B\"]", block)
+        self.assertIn(".report-card-grade[data-grade^=\"C\"]", block)
+        self.assertIn(".report-card-grade[data-grade^=\"D\"]", block)
+        self.assertIn(".report-card-grade[data-grade^=\"F\"]", block)
+        self.assertIn("#157a3a", block)
+        self.assertIn("#b42318", block)
+        self.assertIn("font-size: 1.25rem", block)
+        self.assertIn("font-size: 0.875rem", block)
+        src = PARTIAL.read_text(encoding="utf-8")
         self.assertIn('.Date.Format "2006"', src)
+        self.assertIn('scope="col">Stadium', src)
+        self.assertIn("report-card-gpa-line", src)
         self.assertNotIn("Student", src)
+        self.assertNotIn(">Subject<", src)
+        self.assertNotIn('colspan="3"', src)
 
-    def test_card_is_not_a_gym_flip_board_failure(self) -> None:
+    def test_card_is_not_a_paper_report_or_flip_board_failure(self) -> None:
         src = PARTIAL.read_text(encoding="utf-8")
         css = STYLE_CSS.read_text(encoding="utf-8")
-        start = css.find("/* School report card */")
+        start = css.find("/* School report card")
         end = css.find("/* Captions", start)
         block = css[start:end] if start >= 0 and end > start else ""
         self.assertNotIn("report-card-digit", src)
@@ -328,8 +338,17 @@ class ReportCardSourceTests(unittest.TestCase):
         self.assertNotIn("<button", src)
         self.assertNotIn("{{< report-card", src)
         self.assertNotIn(">Student<", src)
-        self.assertNotIn("var(--bg)", block)
-        self.assertNotIn("background: #fff", block)
+        self.assertNotIn("#f1dcab", block)
+        self.assertNotIn("fractalNoise", block)
+        self.assertNotIn("#7a2a2a", block)
+        self.assertNotIn("var(--font-serif)", block)
+        self.assertNotIn("report-card-inner", src)
+        self.assertNotIn(".report-card-grade,\n.report-card-gpa", block)
+        self.assertNotIn(".report-card [data-grade", block)
+        self.assertNotIn("$band", src)
+        self.assertNotIn("0 0 0.95rem", block)
+        self.assertNotIn("colspan", src)
+        self.assertNotIn("display: flex", block)
 
     def test_readme_documents_cms_fields_success(self) -> None:
         text = README.read_text(encoding="utf-8")
@@ -456,8 +475,15 @@ class ReportCardBuildTests(unittest.TestCase):
         self.assertIn('data-grade="F+"', plus)
         self.assertIn(report_gpa("A-", "F+", "B") or "", plus)
         self.assertIn('class="report-card-label">2026', plus)
+        self.assertIn('class="report-card-gpa"', plus)
+        self.assertIn('class="report-card-gpa"', html)
+        self.assertIn('class="report-card-gpa"', unescape(self.iowa))
+        self.assertNotIn("report-card-gpa\" data-grade", plus)
+        self.assertNotIn("report-card-gpa\" data-grade", html)
         self.assertNotIn("/js/report-card.js", html)
         self.assertNotIn("Student", plus)
+        self.assertNotIn(">Subject<", html)
+        self.assertNotIn("report-card-inner", html)
 
     def test_partial_omits_invalid_and_non_eric_cards_failure(self) -> None:
         self.assertNotIn('class="report-card"', self.bogus)
@@ -481,6 +507,8 @@ class ReportCardBuildTests(unittest.TestCase):
         self.assertLess(self.boston.find('class="scoreboard"'), body)
         self.assertGreater(self.boston.find('class="report-card"'), body)
         self.assertIn('class="report-card-label">2026', self.boston)
+        self.assertIn('class="report-card-gpa"', self.boston)
+        self.assertNotIn("report-card-gpa\" data-grade", self.boston)
 
     def test_niu_page_includes_the_sheet_card_success(self) -> None:
         self.assertIn('class="report-card"', self.niu)
@@ -490,6 +518,8 @@ class ReportCardBuildTests(unittest.TestCase):
         thanks = self.niu.find("Thank you, Northern Illinois")
         self.assertGreater(thanks, 0)
         self.assertGreater(self.niu.find('class="report-card"'), thanks)
+        self.assertIn('class="report-card-gpa"', self.niu)
+        self.assertNotIn("report-card-gpa\" data-grade", self.niu)
 
 
 if __name__ == "__main__":
