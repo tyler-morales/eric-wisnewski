@@ -84,7 +84,7 @@ content:
         label: Author
         type: reference
         required: true
-        description: Who wrote this post. Add people under Authors first. Grady's travel posts belong in Grady's Tour; Tad's posts belong in Da Breakdown w Tad; Jeremy's posts belong in Jer’s Prospect Profiles, not here.
+        description: Who wrote this post. Add people under Authors first. Grady's travel posts belong in Grady's Tour; Tad's posts belong in Da Breakdown w Tad; Jeremy's posts belong in Jeremy On Tap, not here.
         options:
           collection: authors
           search: "name,slug"
@@ -330,10 +330,10 @@ content:
         type: rich-text
         description: Paste a YouTube URL on its own line to embed the video on the post.
 
-  - name: jers-prospect-profiles
-    label: Jer’s Prospect Profiles
+  - name: jeremy-on-tap
+    label: Jeremy On Tap
     type: collection
-    path: content/jers-prospect-profiles
+    path: content/jeremy-on-tap
     format: yaml-frontmatter
     filename: "{fields.slug}.md"
     exclude: [_index.md]
@@ -354,7 +354,7 @@ content:
         label: Slug
         type: string
         required: true
-        description: URL-friendly identifier (e.g. first-profile). Lowercase letters and hyphens only; this becomes the filename and /jers-prospect-profiles/<slug>/ URL.
+        description: URL-friendly identifier (e.g. first-profile). Lowercase letters and hyphens only; this becomes the filename and /jeremy-on-tap/<slug>/ URL.
       - name: author
         label: Author
         type: reference

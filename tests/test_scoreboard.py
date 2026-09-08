@@ -22,7 +22,7 @@ BOSTON = REPO_ROOT / "content" / "posts" / "boston-college.md"
 HUGO_TIMEOUT_SECONDS = 120
 
 COLLECTION_RE = re.compile(
-    r"(?m)^  - name: (posts|gradys-tour|da-breakdown-w-tad|jers-prospect-profiles)\n(.*?)(?=^  - name: |\Z)",
+    r"(?m)^  - name: (posts|gradys-tour|da-breakdown-w-tad|jeremy-on-tap)\n(.*?)(?=^  - name: |\Z)",
     re.DOTALL,
 )
 
@@ -182,7 +182,7 @@ class ScoreboardSourceTests(unittest.TestCase):
 
     def test_other_collections_and_shortcode_stay_out_failure(self) -> None:
         pages = PAGES_YML.read_text(encoding="utf-8")
-        for name in ("gradys-tour", "da-breakdown-w-tad", "jers-prospect-profiles"):
+        for name in ("gradys-tour", "da-breakdown-w-tad", "jeremy-on-tap"):
             with self.subTest(collection=name):
                 self.assertNotIn("name: scoreboard", collection_block(pages, name))
         self.assertFalse(SHORTCODE.is_file())

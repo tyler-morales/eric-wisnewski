@@ -15,6 +15,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 MIGRATIONS_DIR = REPO_ROOT / "migrations"
 TAD_LIST_MIGRATION = MIGRATIONS_DIR / "0007_tad_newsletter_list.sql"
 JER_LIST_MIGRATION = MIGRATIONS_DIR / "0008_jer_newsletter_list.sql"
+JEREMY_ON_TAP_MIGRATION = MIGRATIONS_DIR / "0009_jeremy_on_tap.sql"
 SUBSCRIBE_API = REPO_ROOT / "functions" / "api" / "subscribe.js"
 NEWSLETTER_API = REPO_ROOT / "functions" / "api" / "newsletter.js"
 SUBSCRIBE_JS = REPO_ROOT / "static" / "js" / "subscribe.js"
@@ -113,9 +114,9 @@ class NewsletterHelperTests(unittest.TestCase):
             call_js_fn(
                 SUBSCRIBE_API,
                 "normalizeLists",
-                ["jers-prospect-profiles", "spam"],
+                ["jeremy-on-tap", "spam"],
             ),
-            ["jers-prospect-profiles"],
+            ["jeremy-on-tap"],
         )
         self.assertEqual(
             call_js_fn(
@@ -141,8 +142,8 @@ class NewsletterHelperTests(unittest.TestCase):
             "Da Breakdown w Tad",
         )
         self.assertEqual(
-            call_js_fn(SUBSCRIBE_API, "listLabel", "jers-prospect-profiles"),
-            "Jer's Prospect Profiles",
+            call_js_fn(SUBSCRIBE_API, "listLabel", "jeremy-on-tap"),
+            "Jeremy On Tap",
         )
 
     def test_list_label_unknown_failure(self) -> None:
@@ -206,7 +207,7 @@ class NewsletterHelperTests(unittest.TestCase):
         lists = call_js_fn(SUBSCRIBE_API, "getValidLists")
         self.assertEqual(
             sorted(lists),
-            ["da-breakdown-w-tad", "gradys-tour", "jers-prospect-profiles", "posts"],
+            ["da-breakdown-w-tad", "gradys-tour", "jeremy-on-tap", "posts"],
         )
 
     def test_already_subscribed_message_success(self) -> None:
@@ -797,7 +798,8 @@ class NewsletterSchemaTests(unittest.TestCase):
         self.assertIn("confirm_sent_at", sql)
         self.assertIn("0007_tad_newsletter_list.sql", readme)
         self.assertIn("0008_jer_newsletter_list.sql", readme)
-        self.assertIn("nine", readme.lower())
+        self.assertIn("0009_jeremy_on_tap.sql", readme)
+        self.assertIn("ten migrations", readme.lower())
 
     def test_jer_insert_rejected_before_migration_failure(self) -> None:
         conn = sqlite3.connect(":memory:")
@@ -871,6 +873,78 @@ class NewsletterSchemaTests(unittest.TestCase):
             )
         conn.close()
 
+    def test_jeremy_on_tap_insert_rejected_before_rename_failure(self) -> None:
+        conn = sqlite3.connect(":memory:")
+        _apply_migrations_through(conn, JER_LIST_MIGRATION.name)
+        with self.assertRaises(sqlite3.IntegrityError):
+            conn.execute(
+                """INSERT INTO subscribers
+                   (email, list, status, confirm_token, unsub_token)
+                   VALUES (?, ?, 'pending', ?, ?)""",
+                ("new@x.co", "jeremy-on-tap", self.TOKEN, self.TOKEN),
+            )
+        conn.close()
+
+    def test_jeremy_on_tap_renames_jer_list_success(self) -> None:
+        conn = sqlite3.connect(":memory:")
+        conn.row_factory = sqlite3.Row
+        _apply_migrations_through(conn, JER_LIST_MIGRATION.name)
+        conn.execute(
+            """INSERT INTO subscribers
+               (email, list, status, confirm_token, unsub_token)
+               VALUES (?, 'jers-prospect-profiles', 'pending', ?, ?)""",
+            ("old@x.co", self.TOKEN, self.TOKEN),
+        )
+        conn.execute(
+            """INSERT INTO newsletter_sends
+               (list, post_guid, post_url, post_title)
+               VALUES (?, ?, ?, ?)""",
+            (
+                "jers-prospect-profiles",
+                "https://x.co/jers-prospect-profiles/week-1/",
+                "https://x.co/jers-prospect-profiles/week-1/",
+                "Jer",
+            ),
+        )
+        conn.executescript(JEREMY_ON_TAP_MIGRATION.read_text(encoding="utf-8"))
+        conn.execute(
+            """INSERT INTO subscribers
+               (email, list, status, confirm_token, unsub_token)
+               VALUES (?, 'jeremy-on-tap', 'pending', ?, ?)""",
+            ("new@x.co", self.TOKEN, self.TOKEN),
+        )
+        rows = {
+            (r["email"], r["list"], r["status"])
+            for r in conn.execute("SELECT email, list, status FROM subscribers")
+        }
+        self.assertEqual(
+            rows,
+            {
+                ("old@x.co", "jeremy-on-tap", "pending"),
+                ("new@x.co", "jeremy-on-tap", "pending"),
+            },
+        )
+        send = conn.execute(
+            "SELECT list, post_guid, post_url FROM newsletter_sends"
+        ).fetchone()
+        self.assertEqual(send["list"], "jeremy-on-tap")
+        self.assertIn("/jeremy-on-tap/", send["post_guid"])
+        self.assertIn("/jeremy-on-tap/", send["post_url"])
+        self.assertNotIn("jers-prospect-profiles", send["post_guid"])
+        conn.close()
+
+    def test_old_jer_list_rejected_after_rename_failure(self) -> None:
+        conn = sqlite3.connect(":memory:")
+        _apply_migrations_through(conn, JEREMY_ON_TAP_MIGRATION.name)
+        with self.assertRaises(sqlite3.IntegrityError):
+            conn.execute(
+                """INSERT INTO subscribers
+                   (email, list, status, confirm_token, unsub_token)
+                   VALUES (?, 'jers-prospect-profiles', 'pending', ?, ?)""",
+                ("a@b.co", self.TOKEN, self.TOKEN),
+            )
+        conn.close()
+
 
 class NewsletterTemplateTests(unittest.TestCase):
     def test_partial_exists_with_a11y_fields(self) -> None:
@@ -881,7 +955,7 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn('value="posts"', html)
         self.assertIn('value="gradys-tour"', html)
         self.assertIn('value="da-breakdown-w-tad"', html)
-        self.assertIn('value="jers-prospect-profiles"', html)
+        self.assertIn('value="jeremy-on-tap"', html)
         self.assertIn("fieldset", html)
         self.assertIn("aria-live", html)
         self.assertIn("/js/subscribe.js", html)
@@ -1402,7 +1476,7 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertIn('value="posts"', html)
         self.assertIn('value="gradys-tour"', html)
         self.assertIn('value="da-breakdown-w-tad"', html)
-        self.assertIn('value="jers-prospect-profiles"', html)
+        self.assertIn('value="jeremy-on-tap"', html)
         self.assertIn("fieldset", html)
         self.assertIn("aria-live", html)
         self.assertIn("/js/subscribe.js", html)

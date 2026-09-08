@@ -21,9 +21,9 @@ const LISTS = [
     fromName: 'Da Breakdown w Tad',
   },
   {
-    id: 'jers-prospect-profiles',
-    feedPath: '/jers-prospect-profiles/index.xml',
-    fromName: "Jer's Prospect Profiles",
+    id: 'jeremy-on-tap',
+    feedPath: '/jeremy-on-tap/index.xml',
+    fromName: 'Jeremy On Tap',
   },
 ];
 

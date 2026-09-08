@@ -9,6 +9,9 @@ export function relocateCommentUrl(url) {
   if (t.indexOf('/posts/gradys-tour/') === 0) {
     return '/gradys-tour/' + t.slice('/posts/gradys-tour/'.length);
   }
+  if (t.indexOf('/jers-prospect-profiles/') === 0) {
+    return '/jeremy-on-tap/' + t.slice('/jers-prospect-profiles/'.length);
+  }
   return t;
 }
 

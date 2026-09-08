@@ -9,7 +9,7 @@ disableKinds = ['taxonomy', 'term']
 # Pages CMS stores publish dates with a literal Z (UTC). Contributors often save a
 # local "now" that is still a few minutes in the future at deploy time; without this,
 # Hugo omits the post and Cloudflare serves the home page at its URL. Applies to all
-# sections (Eric's Posts, Grady's Tour, Da Breakdown w Tad, Jer’s Prospect Profiles) — intended for this CMS-edited site.
+# sections (Eric's Posts, Grady's Tour, Da Breakdown w Tad, Jeremy On Tap) — intended for this CMS-edited site.
 buildFuture = true
 
 [imaging]
@@ -27,7 +27,7 @@ buildFuture = true
   posts = '/posts/:slug/'
   gradys-tour = '/gradys-tour/:slug/'
   da-breakdown-w-tad = '/da-breakdown-w-tad/:slug/'
-  jers-prospect-profiles = '/jers-prospect-profiles/:slug/'
+  jeremy-on-tap = '/jeremy-on-tap/:slug/'
   authors = '/authors/:slug/'
   updates = '/updates/:slug/'
 
@@ -41,7 +41,7 @@ buildFuture = true
   nav_map = '/map/'
   nav_gradys_tour = '/gradys-tour/'
   nav_da_breakdown_w_tad = '/da-breakdown-w-tad/'
-  nav_jers_prospect_profiles = '/jers-prospect-profiles/'
+  nav_jeremy_on_tap = '/jeremy-on-tap/'
   # Link to open the map in Google Maps (optional; used for "View original" on /map/)
   map_viewer_url = 'https://www.google.com/maps/d/viewer?mid=1iRNx3DgEm5TJJmN1A4xM0uienUMFfqc'
   # Cloudflare Turnstile site key for comments (from Cloudflare Dashboard → Turnstile)
@@ -84,9 +84,9 @@ buildFuture = true
   [cascade.target]
     path = '{/da-breakdown-w-tad,/da-breakdown-w-tad/**}'
 
-# Jer’s Prospect Profiles always attribute to Jeremy even if CMS author is missing.
+# Jeremy On Tap always attribute to Jeremy even if CMS author is missing.
 [[cascade]]
   [cascade.params]
     author = 'jeremy-bryan'
   [cascade.target]
-    path = '{/jers-prospect-profiles,/jers-prospect-profiles/**}'
+    path = '{/jeremy-on-tap,/jeremy-on-tap/**}'

@@ -111,10 +111,10 @@ class CmsDraftDefaultTests(unittest.TestCase):
             "true",
         )
 
-    def test_jers_prospect_profiles_draft_default_true_success(self) -> None:
+    def test_jeremy_on_tap_draft_default_true_success(self) -> None:
         yaml_text = PAGES_YML.read_text(encoding="utf-8")
         self.assertEqual(
-            field_default(collection_block(yaml_text, "jers-prospect-profiles"), "draft"),
+            field_default(collection_block(yaml_text, "jeremy-on-tap"), "draft"),
             "true",
         )
 

@@ -3,3 +3,6 @@
 /posts/gradys-tour/* /gradys-tour/:splat 301
 /posts/gradys-how-to-use-this-blog /gradys-tour/how-to-use-this-blog/ 301
 /posts/gradys-how-to-use-this-blog/ /gradys-tour/how-to-use-this-blog/ 301
+/jers-prospect-profiles /jeremy-on-tap/ 301
+/jers-prospect-profiles/ /jeremy-on-tap/ 301
+/jers-prospect-profiles/* /jeremy-on-tap/:splat 301

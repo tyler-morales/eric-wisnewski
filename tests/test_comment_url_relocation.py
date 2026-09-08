@@ -49,6 +49,14 @@ class RelocateCommentUrlTests(unittest.TestCase):
             "/gradys-tour/gearing-up/",
         )
 
+    def test_relocate_old_jeremy_path_success(self) -> None:
+        self.assertEqual(
+            call_comment_url_fn(
+                "relocateCommentUrl", "/jers-prospect-profiles/week-1/"
+            ),
+            "/jeremy-on-tap/week-1/",
+        )
+
     def test_relocate_eric_post_path_unchanged_failure_case(self) -> None:
         self.assertEqual(
             call_comment_url_fn("relocateCommentUrl", "/posts/my-first-post/"),
@@ -79,6 +87,13 @@ class CommentUrlLookupVariantTests(unittest.TestCase):
         )
         self.assertIn("/gradys-tour/gearing-up/", variants)
         self.assertIn("/posts/gradys-tour/gearing-up/", variants)
+
+    def test_live_jeremy_url_finds_legacy_path_success(self) -> None:
+        variants = call_comment_url_fn(
+            "commentUrlLookupVariants", "/jeremy-on-tap/week-1/"
+        )
+        self.assertIn("/jeremy-on-tap/week-1/", variants)
+        self.assertIn("/jers-prospect-profiles/week-1/", variants)
 
     def test_eric_post_does_not_include_tour_paths_failure_case(self) -> None:
         variants = call_comment_url_fn(

@@ -22,7 +22,7 @@
 {{- with .Params.bio -}}{{- $person = merge $person (dict "description" .) -}}{{- end -}}
 {{- with .Params.image -}}{{- $person = merge $person (dict "image" (. | absURL)) -}}{{- end -}}
 <script type="application/ld+json">{{ $person | jsonify | safeJS }}</script>
-{{- else if and .IsPage (in (slice "posts" "gradys-tour" "da-breakdown-w-tad" "jers-prospect-profiles") .Section) -}}
+{{- else if and .IsPage (in (slice "posts" "gradys-tour" "da-breakdown-w-tad" "jeremy-on-tap") .Section) -}}
 {{- $desc := .Summary | plainify | htmlUnescape | strings.TrimSpace -}}
 {{- if not $desc -}}{{- $desc = .Site.Params.description | default "" -}}{{- end -}}
 {{- $image := "images/og-default.jpg" | absURL -}}

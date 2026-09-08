@@ -25,6 +25,8 @@ const MAX_EMAIL = 320;
 
 const LEGACY_TOUR_PREFIX = '/posts/gradys-tour/';
 const LIVE_TOUR_PREFIX = '/gradys-tour/';
+const LEGACY_JER_PREFIX = '/jers-prospect-profiles/';
+const LIVE_JER_PREFIX = '/jeremy-on-tap/';
 const EXACT_ALIASES = {
   '/posts/gradys-how-to-use-this-blog/': '/gradys-tour/how-to-use-this-blog/',
 };
@@ -55,6 +57,9 @@ export function relocateCommentUrl(url) {
   if (EXACT_ALIASES[canonical]) return EXACT_ALIASES[canonical];
   if (canonical.startsWith(LEGACY_TOUR_PREFIX)) {
     return canonicalCommentUrl(LIVE_TOUR_PREFIX + canonical.slice(LEGACY_TOUR_PREFIX.length));
+  }
+  if (canonical.startsWith(LEGACY_JER_PREFIX)) {
+    return canonicalCommentUrl(LIVE_JER_PREFIX + canonical.slice(LEGACY_JER_PREFIX.length));
   }
   return canonical;
 }
@@ -103,6 +108,11 @@ export function commentUrlLookupVariants(url) {
 
   if (live.startsWith(LIVE_TOUR_PREFIX) && live !== LIVE_TOUR_PREFIX) {
     for (const item of withAndWithoutSlash(LEGACY_TOUR_PREFIX + live.slice(LIVE_TOUR_PREFIX.length))) {
+      variants.add(item);
+    }
+  }
+  if (live.startsWith(LIVE_JER_PREFIX) && live !== LIVE_JER_PREFIX) {
+    for (const item of withAndWithoutSlash(LEGACY_JER_PREFIX + live.slice(LIVE_JER_PREFIX.length))) {
       variants.add(item);
     }
   }
@@ -155,12 +165,12 @@ export function replyNotifyEmail({ parentAuthor, replyAuthor, replyText, postUrl
   return { subject, html, text };
 }
 
-/** Section id for a comment URL (`posts` / `gradys-tour` / `da-breakdown-w-tad` / `jers-prospect-profiles`); empty means skip. */
+/** Section id for a comment URL (`posts` / `gradys-tour` / `da-breakdown-w-tad` / `jeremy-on-tap`); empty means skip. */
 export function commentListId(url) {
   const live = relocateCommentUrl(url);
   if (live.startsWith('/gradys-tour/')) return 'gradys-tour';
   if (live.startsWith('/da-breakdown-w-tad/')) return 'da-breakdown-w-tad';
-  if (live.startsWith('/jers-prospect-profiles/')) return 'jers-prospect-profiles';
+  if (live.startsWith('/jeremy-on-tap/')) return 'jeremy-on-tap';
   if (live.startsWith('/posts/')) return 'posts';
   return '';
 }
