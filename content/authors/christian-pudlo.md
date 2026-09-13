@@ -1,6 +1,6 @@
 ---
 name: Christian Pudlo
 slug: christian-pudlo
-draft: true
+draft: false
 bio: add your bio here and upload a photo
 ---

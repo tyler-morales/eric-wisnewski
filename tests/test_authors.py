@@ -18,6 +18,7 @@ AUTHOR_CARD = REPO_ROOT / "layouts" / "partials" / "author-card.html"
 HEADER_PARTIAL = REPO_ROOT / "layouts" / "partials" / "header.html"
 POST_LIST_ITEM = REPO_ROOT / "layouts" / "partials" / "post-list-item.html"
 POST_BYLINE = REPO_ROOT / "layouts" / "partials" / "post-byline.html"
+AUTHOR_NAME_LINKS = REPO_ROOT / "layouts" / "partials" / "author-name-links.html"
 AUTHOR_BIO = REPO_ROOT / "layouts" / "partials" / "author-bio.html"
 HUGO_TOML = REPO_ROOT / "config" / "_default" / "hugo.toml"
 STYLE_CSS = REPO_ROOT / "assets" / "css" / "style.css"
@@ -142,19 +143,21 @@ class AuthorTemplateContractTests(unittest.TestCase):
     def test_author_names_are_links_not_nested_success(self) -> None:
         item = POST_LIST_ITEM.read_text(encoding="utf-8")
         byline = POST_BYLINE.read_text(encoding="utf-8")
+        names = AUTHOR_NAME_LINKS.read_text(encoding="utf-8")
         bio = AUTHOR_BIO.read_text(encoding="utf-8")
         card = AUTHOR_CARD.read_text(encoding="utf-8")
-        self.assertIn("RelPermalink", item)
-        self.assertIn("RelPermalink", byline)
+        self.assertIn("author-name-links.html", item)
+        self.assertIn("author-name-links.html", byline)
+        self.assertIn("RelPermalink", names)
         self.assertIn("link_name", bio)
         self.assertIn("RelPermalink", card)
         link_open = item.find("<a")
         link_close = item.find("</a>")
-        author_href = item.find("RelPermalink")
+        author_partial = item.find("author-name-links.html")
         self.assertGreater(link_open, -1)
         self.assertGreater(link_close, -1)
         self.assertGreater(
-            author_href,
+            author_partial,
             link_close,
             "Author permalink must sit outside the post list link so names are clickable",
         )
@@ -224,9 +227,14 @@ class AuthorTemplateContractTests(unittest.TestCase):
     def test_author_files_exist_failure_when_missing(self) -> None:
         self.assertTrue((AUTHORS_DIR / "eric-wisnewski.md").is_file())
         self.assertTrue((AUTHORS_DIR / "grady-davis.md").is_file())
+        self.assertTrue((AUTHORS_DIR / "christian-pudlo.md").is_file())
         self.assertTrue((AUTHORS_DIR / "tyler-morales.md").is_file())
         grady = (AUTHORS_DIR / "grady-davis.md").read_text(encoding="utf-8")
         self.assertIn("slug: grady-davis", grady)
+        christian = (AUTHORS_DIR / "christian-pudlo.md").read_text(encoding="utf-8")
+        self.assertIn("slug: christian-pudlo", christian)
+        self.assertIn("Christian Pudlo", christian)
+        self.assertRegex(christian, r"(?m)^draft:\s*false\s*$")
         tyler = (AUTHORS_DIR / "tyler-morales.md").read_text(encoding="utf-8")
         self.assertIn("slug: tyler-morales", tyler)
         self.assertIn("develops and maintains", tyler)
@@ -308,12 +316,13 @@ class AuthorBuildTests(unittest.TestCase):
 
     def test_authors_index_lists_eric_first_then_name_success(self) -> None:
         names = author_list_names(self.authors_index_html)
-        self.assertGreaterEqual(len(names), 4, f"Expected a roster, got {names}")
+        self.assertGreaterEqual(len(names), 5, f"Expected a roster, got {names}")
         self.assertEqual(names[0], "Eric Wisnewski")
         self.assertEqual(names[1:], sorted(names[1:]))
+        self.assertIn("Christian Pudlo", names)
         self.assertIn("Grady Davis", names)
         self.assertIn("Tad Davis", names)
-        self.assertIn("Jeremy Bryan", names)
+        self.assertNotIn("Jeremy Bryan", names)
         self.assertIn("Tyler Morales", names)
         self.assertIn("All contributors", self.eric_html)
         self.assertIn("All contributors", self.grady_html)

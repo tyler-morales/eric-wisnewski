@@ -42,21 +42,24 @@ function lookupPost(url, postIndex) {
   var live = relocateCommentUrl(url) || url || '';
   var info = postIndex && (postIndex[live] || postIndex[url]);
   if (info) {
+    var slugs = info.slugs;
+    if (!Array.isArray(slugs)) slugs = info.slug ? [info.slug] : [];
     return {
       url: live,
       title: info.title || live,
       author: info.author || 'Other',
-      slug: info.slug || ''
+      slug: info.slug || slugs[0] || '',
+      slugs: slugs
     };
   }
-  return { url: live, title: live || '(no url)', author: 'Other', slug: '' };
+  return { url: live, title: live || '(no url)', author: 'Other', slug: '', slugs: [] };
 }
 
 export function organizeAdminComments(comments, postIndex, authorSlug) {
   var byAuthor = {};
   (comments || []).forEach(function (c) {
     var post = lookupPost(c.url, postIndex);
-    if (authorSlug && post.slug !== authorSlug) return;
+    if (authorSlug && post.slugs.indexOf(authorSlug) === -1) return;
     var key = post.slug || '';
     if (!byAuthor[key]) {
       byAuthor[key] = { slug: key, name: post.author, posts: {}, latest: 0 };

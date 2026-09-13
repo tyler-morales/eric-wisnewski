@@ -1,0 +1,13 @@
+{{/*
+  Author slugs on a post. CMS may store a string or a list (multiple authors).
+*/}}
+{{- $slugs := slice -}}
+{{- $raw := .Params.author -}}
+{{- if reflect.IsSlice $raw -}}
+{{- range $raw -}}
+{{- with . }}{{ $slugs = $slugs | append . }}{{ end -}}
+{{- end -}}
+{{- else -}}
+{{- with $raw }}{{ $slugs = slice . }}{{ end -}}
+{{- end -}}
+{{- return $slugs -}}

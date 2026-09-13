@@ -4,7 +4,7 @@
   get the fields. GPA uses the same 4.0 scale as /school-sheets/.
   GPA is plain text; letter grades carry the color.
 */}}
-{{- $ericPost := and (eq .Section "posts") (eq .Params.author "eric-wisnewski") -}}
+{{- $ericPost := and (eq .Section "posts") (in (partial "post-author-slugs.html" .) "eric-wisnewski") -}}
 {{- $rc := .Params.report_card -}}
 {{- $scale := dict "A+" 4.3 "A" 4.0 "A-" 3.7 "B+" 3.3 "B" 3.0 "B-" 2.7 "C+" 2.3 "C" 2.0 "C-" 1.7 "D+" 1.3 "D" 1.0 "D-" 0.7 "F+" 0.3 "F" 0.0 "F-" 0.0 "N/A (A+)" 4.3 -}}
 {{- if and $ericPost $rc $rc.school $rc.stadium $rc.fan_base $rc.campus (isset $scale $rc.stadium) (isset $scale $rc.fan_base) (isset $scale $rc.campus) -}}

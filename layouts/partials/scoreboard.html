@@ -2,7 +2,7 @@
   Gym flip-card final. Pages CMS stores this as `scoreboard` front matter
   on Posts (Eric). Other collections never get the fields.
 */}}
-{{- $ericPost := and (eq .Section "posts") (eq .Params.author "eric-wisnewski") -}}
+{{- $ericPost := and (eq .Section "posts") (in (partial "post-author-slugs.html" .) "eric-wisnewski") -}}
 {{- $sb := .Params.scoreboard -}}
 {{- if and $ericPost $sb $sb.home $sb.away (isset $sb "home_score") (isset $sb "away_score") -}}
 {{- $home := $sb.home -}}

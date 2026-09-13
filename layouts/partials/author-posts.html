@@ -1,9 +1,15 @@
 {{/*
-  Published posts by this author page (filename or slug).
+  Published posts by this author page (filename or slug), including collabs.
   Same sections as the home list and /authors/<slug>/.
 */}}
 {{- $keys := slice .File.ContentBaseName -}}
 {{- with .Params.slug -}}
 {{- if not (in $keys .) }}{{ $keys = $keys | append . }}{{ end -}}
 {{- end -}}
-{{- return where (where .Site.RegularPages "Section" "in" (slice "posts" "gradys-tour" "da-breakdown-w-tad" "jeremy-on-tap")) "Params.author" "in" $keys -}}
+{{- $out := slice -}}
+{{- range where .Site.RegularPages "Section" "in" (slice "posts" "gradys-tour" "da-breakdown-w-tad" "jeremy-on-tap") -}}
+{{- if gt (len (intersect (partial "post-author-slugs.html" .) $keys)) 0 -}}
+{{- $out = $out | append . -}}
+{{- end -}}
+{{- end -}}
+{{- return $out -}}

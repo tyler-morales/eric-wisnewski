@@ -1,6 +1,11 @@
 {{/*
-  Post author bio under the article. Name links to /authors/<slug>/.
+  Post author bios under the article. Names link to /authors/<slug>/.
 */}}
-{{ with (partial "author-page.html" .) }}
+{{ $authors := partial "post-author-pages.html" . }}
+{{ if $authors }}
+<div class="author-bios">
+{{ range $authors }}
   {{ partial "author-card.html" (dict "author" . "link_name" true) }}
+{{ end }}
+</div>
 {{ end }}

@@ -1,0 +1,20 @@
+{{/*
+  Labeled per-writer blocks on a shared post (CMS "Who wrote what").
+*/}}
+{{- range $i, $part := .Params.parts -}}
+{{- $slug := $part.author -}}
+{{- if reflect.IsSlice $slug }}{{ $slug = index $slug 0 }}{{ end -}}
+{{- $author := partial "author-by-slug.html" (dict "site" $.Site "slug" $slug) -}}
+{{- $name := $slug -}}
+{{- with $author }}{{ $name = .Params.name | default .Title }}{{ end -}}
+<section class="post-part" aria-labelledby="post-part-{{ $i }}">
+  <h2 class="post-part-byline" id="post-part-{{ $i }}">
+    {{ with $author }}
+    <a href="{{ .RelPermalink }}" class="author-name-link">{{ $name }}</a>
+    {{ else }}
+    {{ $name }}
+    {{ end }}
+  </h2>
+  {{ with $part.body }}{{ partial "html-embeds.html" . }}{{ end }}
+</section>
+{{- end -}}

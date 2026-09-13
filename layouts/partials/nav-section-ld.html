@@ -1,0 +1,6 @@
+{{- $desc := .Description | plainify | htmlUnescape | strings.TrimSpace -}}
+{{- $type := "WebPage" -}}
+{{- if eq .Kind "section" -}}{{- $type = "CollectionPage" -}}{{- end -}}
+{{- $item := dict "@type" $type "name" .Title "url" .Permalink -}}
+{{- if $desc -}}{{- $item = merge $item (dict "description" $desc) -}}{{- end -}}
+{{- return $item -}}

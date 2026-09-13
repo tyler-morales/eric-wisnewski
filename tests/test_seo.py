@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import tempfile
@@ -66,7 +67,24 @@ def write_seo_fixture(content_dir: Path) -> None:
         encoding="utf-8",
     )
     (content_dir / "gradys-tour" / "_index.md").write_text(
-        "---\ntitle: Grady's Tour\n---\n",
+        "---\n"
+        "title: Grady's Tour\n"
+        "description: Travel writing from Grady Davis on the stadium trip.\n"
+        "---\n",
+        encoding="utf-8",
+    )
+    (content_dir / "school-sheets.md").write_text(
+        "---\n"
+        "title: List of College Stadiums\n"
+        'description: "Division I basketball schools on Eric\'s list: city, stadium, and trip notes."\n'
+        "---\n",
+        encoding="utf-8",
+    )
+    (content_dir / "map.md").write_text(
+        "---\n"
+        "title: Map\n"
+        "description: Map of Division I college basketball gyms Eric has visited.\n"
+        "---\n",
         encoding="utf-8",
     )
     (content_dir / "subscribe" / "_index.md").write_text(
@@ -170,8 +188,40 @@ class SeoTemplateTests(unittest.TestCase):
         self.assertIn("WebSite", json_ld)
         self.assertIn("BlogPosting", json_ld)
         self.assertIn("Person", json_ld)
+        self.assertIn("hasPart", json_ld)
+        self.assertIn("CollectionPage", json_ld)
         self.assertNotIn('"@type" "SearchAction"', json_ld)
         self.assertNotIn('"@type": "SearchAction"', json_ld)
+
+    def test_nav_section_landings_have_unique_descriptions_success(self) -> None:
+        for rel, needle in (
+            ("content/school-sheets.md", "stadium"),
+            ("content/map.md", "map"),
+            ("content/gradys-tour/_index.md", "Grady"),
+            ("content/da-breakdown-w-tad/_index.md", "Bears"),
+            ("content/jeremy-on-tap/_index.md", "Jeremy"),
+        ):
+            text = (REPO_ROOT / rel).read_text(encoding="utf-8")
+            self.assertRegex(text, r"(?m)^description:", rel)
+            self.assertIn(needle, text, rel)
+
+    def test_nav_section_pages_use_nav_gates_success(self) -> None:
+        nav = (REPO_ROOT / "layouts" / "partials" / "nav-section-pages.html").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("has-da-breakdown-posts.html", nav)
+        self.assertIn("has-jeremy-on-tap-posts.html", nav)
+        self.assertIn("/school-sheets", nav)
+        self.assertIn("/map", nav)
+        self.assertIn("/gradys-tour", nav)
+
+    def test_nav_section_pages_without_gates_failure(self) -> None:
+        nav = (REPO_ROOT / "layouts" / "partials" / "nav-section-pages.html").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("SearchAction", nav)
+        self.assertNotIn("/authors/", nav)
+        self.assertNotIn("/updates/", nav)
 
     def test_home_list_has_no_site_lede_failure(self) -> None:
         layout = LIST_LAYOUT.read_text(encoding="utf-8")
@@ -306,8 +356,6 @@ class SeoBuildTests(unittest.TestCase):
         self.assertNotIn("life long blog", body)
 
     def test_json_ld_website_blogposting_person_success(self) -> None:
-        import json
-
         home = (self.dest / "index.html").read_text(encoding="utf-8")
         post = (self.dest / "posts" / "hello" / "index.html").read_text(encoding="utf-8")
         author = (self.dest / "authors" / "eric-wisnewski" / "index.html").read_text(
@@ -325,6 +373,45 @@ class SeoBuildTests(unittest.TestCase):
         self.assertEqual(
             json.loads(post_ld[0])["author"]["name"], "Eric Wisnewski"
         )
+        home_site = json.loads(home_ld[0])
+        parts = home_site["hasPart"]
+        names = [part["name"] for part in parts]
+        self.assertEqual(names, ["List of College Stadiums", "Map", "Grady's Tour"])
+        self.assertTrue(all(part.get("description") for part in parts))
+        self.assertEqual(parts[0]["@type"], "WebPage")
+        self.assertEqual(parts[1]["@type"], "WebPage")
+        self.assertEqual(parts[2]["@type"], "CollectionPage")
+        self.assertIn("/school-sheets/", parts[0]["url"])
+        self.assertIn("/map/", parts[1]["url"])
+        self.assertIn("/gradys-tour/", parts[2]["url"])
+
+    def test_json_ld_website_omits_gated_nav_failure(self) -> None:
+        home = (self.dest / "index.html").read_text(encoding="utf-8")
+        home_ld = LD_JSON_RE.findall(home)
+        self.assertEqual(len(home_ld), 1)
+        names = [part["name"] for part in json.loads(home_ld[0])["hasPart"]]
+        self.assertNotIn("Da Breakdown w Tad", names)
+        self.assertNotIn("Jeremy On Tap", names)
+        self.assertNotIn("SearchAction", home_ld[0])
+
+    def test_nav_section_pages_have_unique_meta_and_webpage_ld_success(self) -> None:
+        cases = (
+            ("school-sheets/index.html", "WebPage", "stadium"),
+            ("map/index.html", "WebPage", "Map of Division I"),
+            ("gradys-tour/index.html", "CollectionPage", "Grady"),
+        )
+        for rel, ld_type, needle in cases:
+            html = (self.dest / rel).read_text(encoding="utf-8")
+            desc = META_DESCRIPTION_RE.search(html)
+            self.assertIsNotNone(desc, rel)
+            assert desc is not None
+            self.assertIn(needle.lower(), desc.group(1).lower(), rel)
+            self.assertNotIn("life long blog", desc.group(1).lower(), rel)
+            scripts = LD_JSON_RE.findall(html)
+            self.assertEqual(len(scripts), 1, rel)
+            data = json.loads(scripts[0])
+            self.assertEqual(data["@type"], ld_type, rel)
+            self.assertEqual(data["isPartOf"]["@type"], "WebSite", rel)
 
     def test_noindex_pages_skip_json_ld_failure(self) -> None:
         html = (self.dest / "subscribe" / "confirmed" / "index.html").read_text(
@@ -380,6 +467,8 @@ class SeoDocsTests(unittest.TestCase):
         self.assertIn("Search Console", readme)
         self.assertIn("www", readme)
         self.assertIn("JSON-LD", readme)
+        self.assertIn("sitelinks", readme)
+        self.assertIn("hasPart", readme)
         self.assertNotIn("site-lede", readme)
         self.assertTrue(
             "48x48" in readme or "48×48" in readme,

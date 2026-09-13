@@ -12,8 +12,9 @@
   {{ end }}
   <div class="post-list-meta">
     <a href="{{ .Permalink }}" class="post-list-title">{{ .Title }}</a>
-    {{ with (partial "author-page.html" .) }}
-    <a href="{{ .RelPermalink }}" class="post-list-author">{{ .Params.name | default .Title }}</a>
+    {{ $authors := partial "post-author-pages.html" . }}
+    {{ if $authors }}
+    <p class="post-list-author">{{ partial "author-name-links.html" (dict "page" . "class" "post-list-author-link") }}</p>
     {{ end }}
     <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
   </div>

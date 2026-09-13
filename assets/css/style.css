@@ -392,7 +392,7 @@ main {
 }
 
 .post-list-title:focus-visible,
-.post-list-author:focus-visible,
+.post-list-author a:focus-visible,
 .author-name-link:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 4px;
@@ -570,6 +570,27 @@ article.post-content>header time {
   border-top: 1px solid #ccc;
   max-width: 70ch;
   font-family: var(--font-sans);
+}
+
+.author-bios {
+  margin: 2.5rem 0 0;
+  padding: 1.25rem 0 0;
+  border-top: 1px solid #ccc;
+  max-width: 70ch;
+  font-family: var(--font-sans);
+}
+
+.author-bios .author-bio {
+  margin: 0;
+  padding: 0;
+  border-top: 0;
+  max-width: none;
+}
+
+.author-bios .author-bio + .author-bio {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #eee;
 }
 
 .author-bio-image {
@@ -791,13 +812,23 @@ article.post-content>header time {
   font-size: 0.875rem;
   color: #333;
   margin-top: 0.2rem;
+  margin-bottom: 0;
   font-weight: 400;
-  text-decoration: none;
   width: fit-content;
 }
 
-.post-list-author:hover {
+.post-list-author a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.post-list-author a:hover {
   text-decoration: underline;
+}
+
+.post-list-author a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
 }
 
 article.post-content .post-featured-image {
@@ -810,6 +841,26 @@ article.post-content .post-featured-image img {
 }
 
 article.post-content .post-featured-image img:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+article.post-content .post-part {
+  margin: 1.75rem 0 0;
+}
+
+article.post-content .post-part:first-of-type {
+  margin-top: 1.25rem;
+}
+
+article.post-content .post-part-byline {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+article.post-content .post-part-byline .author-name-link:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 2px;
 }

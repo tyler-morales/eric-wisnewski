@@ -6,10 +6,10 @@ They write in Pages CMS right away. Nothing they create is public until you unch
 
 1. Get their **email** and **byline name**.
 2. Open [Pages CMS](https://app.pagescms.org/) (GitHub sign-in). **Collaborators** → invite that email. A magic-link invite goes to their inbox.
-3. **Authors** → New: Name, Slug (`firstname-lastname`), a one-line placeholder bio, **Draft on**. Leave the slug alone after this. The stub is so they can pick themselves as Author on posts; `/authors/<slug>/` stays unpublished.
+3. **Authors** → New: Name, Slug (`firstname-lastname`), a one-line placeholder bio, **Draft on**. Leave the slug alone after this. The stub is so they can pick themselves as Authors on posts; `/authors/<slug>/` stays unpublished.
 4. Send the email below. Fill in `[NAME]` and the `/add-photos/` password. Do not send a live author URL yet — it 404s until you undraft them.
 
-They can edit every collection (Posts, Grady’s Tour, Da Breakdown w Tad, Jeremy On Tap, Authors, Site updates). That is trust, not a permission system. The email tells them to write in **Posts** only — unless they are Tad (Da Breakdown w Tad) or Jeremy (Jeremy On Tap).
+They can edit every collection (Posts, Grady’s Tour, Da Breakdown w Tad, Jeremy On Tap, Authors, Site updates). That is trust, not a permission system. The email tells them where to write. A writer does not need their own nav tab — they can join an existing section (Christian writes in Grady’s Tour). On a shared post, pick every writer under **Authors** and add a **Who wrote what** block per person.
 
 ## Go live (later)
 
@@ -38,7 +38,7 @@ You’re set up as a writer. You can start now. Nothing you save is public until
    If the photo is from your phone, upload it at https://ericwisnewski.com/add-photos/ first (password: [ADD-PHOTOS PASSWORD]), wait until it says Saved, then pick it in the Photo field. Don’t upload big files in the CMS — that path fails.
 
 3. Write a post
-   Open Posts → New. Pick yourself as Author. Add a title, a slug (lowercase-with-hyphens), a date, and the body.
+   Open Posts → New. Pick yourself under Authors. Add a title, a slug (lowercase-with-hyphens), a date, and the body.
    Leave Draft checked. Hit Save. You can make as many drafts as you want.
 
 When we’re ready to publish, we’ll tell you to uncheck Draft and Save. Don’t uncheck it before then. Don’t edit other people’s posts, Grady’s Tour, or Site updates.
@@ -61,15 +61,45 @@ You’re set up as a writer. You can start now. Nothing you save is public until
    Use jeremybryan123@gmail.com. You’ll get a sign-in link in your inbox — no password, no GitHub.
 
 2. Add your bio and photo
-   Open Authors, click Jeremy Bryan, write a short Bio, add a Photo. Leave Draft unchecked (your profile is already live so bylines work).
+   Open Authors, click Jeremy Bryan, write a short Bio, add a Photo. Leave Draft checked until you are happy — the live site will not show your profile until you uncheck it.
    If the photo is from your phone, upload it at https://ericwisnewski.com/add-photos/ first (password: [ADD-PHOTOS PASSWORD]), wait until it says Saved, then pick it in the Photo field. Don’t upload big files in the CMS — that path fails.
 
 3. Write a post
-   Open Jeremy On Tap → New. Pick yourself as Author. Add a title, a slug (lowercase-with-hyphens), a date, and the body.
+   Open Jeremy On Tap → New. Pick yourself under Authors. Add a title, a slug (lowercase-with-hyphens), a date, and the body.
    Leave Draft checked. Hit Save. You can make as many drafts as you want.
    Don’t write in Posts, Grady’s Tour, or Da Breakdown w Tad.
 
 When you’re ready to publish, uncheck Draft and Save. That rebuilds the site and puts your tab plus the email checkbox on the live site. Don’t edit other people’s posts or Site updates.
+
+If something breaks, email me.
+
+Tyler
+```
+
+## Email for Christian (copy and paste)
+
+Subject: You’re set up to write on Eric’s site
+
+```
+Hi Christian,
+
+You’re set up as a writer. You can start now. Nothing you save is public until we say so.
+
+1. Sign in at https://app.pagescms.org/
+   Use cpudlo@outlook.com. You’ll get a sign-in link in your inbox — no password, no GitHub.
+
+2. Add your bio and photo
+   Open Authors, click Christian Pudlo, write a short Bio, add a Photo. Leave Draft unchecked (your profile is already live so bylines work).
+   If the photo is from your phone, upload it at https://ericwisnewski.com/add-photos/ first (password: [ADD-PHOTOS PASSWORD]), wait until it says Saved, then pick it in the Photo field. Don’t upload big files in the CMS — that path fails.
+
+3. Write a post
+   Open Grady’s Tour → New. You don’t have your own tab — you write in Grady’s Tour (and can help on other sections if we ask).
+   For a post you write with Grady, pick both Grady Davis and Christian Pudlo under Authors (Grady first). Put any shared intro in Body. Then under Who wrote what, add one block for Grady and one for you so readers can see who wrote each part.
+   Add a title, a slug (lowercase-with-hyphens), a date, and the text.
+   Leave Draft checked. Hit Save. You can make as many drafts as you want.
+   Don’t edit other people’s solo posts or Site updates.
+
+When we’re ready to publish, we’ll tell you to uncheck Draft and Save. Don’t uncheck it before then.
 
 If something breaks, email me.
 

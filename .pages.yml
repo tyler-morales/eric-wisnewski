@@ -81,15 +81,18 @@ content:
         required: true
         description: URL-friendly identifier (e.g. my-first-post). Used for the filename.
       - name: author
-        label: Author
+        label: Authors
         type: reference
         required: true
-        description: Who wrote this post. Add people under Authors first. Grady's travel posts belong in Grady's Tour; Tad's posts belong in Da Breakdown w Tad; Jeremy's posts belong in Jeremy On Tap, not here.
+        description: Who wrote this post. Pick every writer. Add people under Authors first. Grady's travel posts belong in Grady's Tour; Tad's posts belong in Da Breakdown w Tad; Jeremy's posts belong in Jeremy On Tap, not here. On a shared post, also fill Who wrote what.
         options:
           collection: authors
           search: "name,slug"
           value: "{fields.slug}"
           label: "{fields.name}"
+          multiple: true
+          min: 1
+          max: 4
       - name: date
         label: Publish Date
         type: date
@@ -187,7 +190,28 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Paste a YouTube URL on its own line to embed the video on the post.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube URL on its own line to embed the video.
+      - name: parts
+        label: Who wrote what
+        type: object
+        required: false
+        list: true
+        description: Optional. For a shared post, add one block per writer. Their name appears above their text. Leave empty when one person wrote the whole post in Body.
+        fields:
+          - name: author
+            label: Writer
+            type: reference
+            required: true
+            options:
+              collection: authors
+              search: "name,slug"
+              value: "{fields.slug}"
+              label: "{fields.name}"
+          - name: body
+            label: Their text
+            type: rich-text
+            required: true
+            description: Paste a YouTube URL on its own line to embed the video.
 
   - name: gradys-tour
     label: Grady's Tour
@@ -215,16 +239,19 @@ content:
         required: true
         description: URL-friendly identifier (e.g. from-boat-to-bus). Lowercase letters and hyphens only; this becomes the filename and /gradys-tour/<slug>/ URL.
       - name: author
-        label: Author
+        label: Authors
         type: reference
         required: true
         default: grady-davis
-        description: Who wrote this post. Travel posts in this folder also appear on the home page (latest first) and on this author's /authors/<slug>/ page.
+        description: Who wrote this post. Pick every writer (Grady and Christian on a shared travel post). Posts here also appear on the home page and on each writer's /authors/<slug>/ page. On a shared post, also fill Who wrote what.
         options:
           collection: authors
           search: "name,slug"
           value: "{fields.slug}"
           label: "{fields.name}"
+          multiple: true
+          min: 1
+          max: 4
       - name: date
         label: Publish Date
         type: date
@@ -257,7 +284,28 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Paste a YouTube URL on its own line to embed the video on the post.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube URL on its own line to embed the video.
+      - name: parts
+        label: Who wrote what
+        type: object
+        required: false
+        list: true
+        description: Optional. For a shared post, add one block per writer. Their name appears above their text. Leave empty when one person wrote the whole post in Body.
+        fields:
+          - name: author
+            label: Writer
+            type: reference
+            required: true
+            options:
+              collection: authors
+              search: "name,slug"
+              value: "{fields.slug}"
+              label: "{fields.name}"
+          - name: body
+            label: Their text
+            type: rich-text
+            required: true
+            description: Paste a YouTube URL on its own line to embed the video.
 
   - name: da-breakdown-w-tad
     label: Da Breakdown w Tad
@@ -285,16 +333,19 @@ content:
         required: true
         description: URL-friendly identifier (e.g. first-breakdown). Lowercase letters and hyphens only; this becomes the filename and /da-breakdown-w-tad/<slug>/ URL.
       - name: author
-        label: Author
+        label: Authors
         type: reference
         required: true
         default: tad
-        description: Who wrote this post. Posts in this folder also appear on the home page (latest first) and on this author's /authors/<slug>/ page.
+        description: Who wrote this post. Pick every writer. Posts here also appear on the home page and on each writer's /authors/<slug>/ page. On a shared post, also fill Who wrote what.
         options:
           collection: authors
           search: "name,slug"
           value: "{fields.slug}"
           label: "{fields.name}"
+          multiple: true
+          min: 1
+          max: 4
       - name: date
         label: Publish Date
         type: date
@@ -328,7 +379,28 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Paste a YouTube URL on its own line to embed the video on the post.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube URL on its own line to embed the video.
+      - name: parts
+        label: Who wrote what
+        type: object
+        required: false
+        list: true
+        description: Optional. For a shared post, add one block per writer. Their name appears above their text. Leave empty when one person wrote the whole post in Body.
+        fields:
+          - name: author
+            label: Writer
+            type: reference
+            required: true
+            options:
+              collection: authors
+              search: "name,slug"
+              value: "{fields.slug}"
+              label: "{fields.name}"
+          - name: body
+            label: Their text
+            type: rich-text
+            required: true
+            description: Paste a YouTube URL on its own line to embed the video.
 
   - name: jeremy-on-tap
     label: Jeremy On Tap
@@ -356,16 +428,19 @@ content:
         required: true
         description: URL-friendly identifier (e.g. first-profile). Lowercase letters and hyphens only; this becomes the filename and /jeremy-on-tap/<slug>/ URL.
       - name: author
-        label: Author
+        label: Authors
         type: reference
         required: true
         default: jeremy-bryan
-        description: Who wrote this post. Posts in this folder also appear on the home page (latest first) and on this author's /authors/<slug>/ page.
+        description: Who wrote this post. Pick every writer. Posts here also appear on the home page and on each writer's /authors/<slug>/ page. On a shared post, also fill Who wrote what.
         options:
           collection: authors
           search: "name,slug"
           value: "{fields.slug}"
           label: "{fields.name}"
+          multiple: true
+          min: 1
+          max: 4
       - name: date
         label: Publish Date
         type: date
@@ -399,7 +474,28 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Paste a YouTube URL on its own line to embed the video on the post.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube URL on its own line to embed the video.
+      - name: parts
+        label: Who wrote what
+        type: object
+        required: false
+        list: true
+        description: Optional. For a shared post, add one block per writer. Their name appears above their text. Leave empty when one person wrote the whole post in Body.
+        fields:
+          - name: author
+            label: Writer
+            type: reference
+            required: true
+            options:
+              collection: authors
+              search: "name,slug"
+              value: "{fields.slug}"
+              label: "{fields.name}"
+          - name: body
+            label: Their text
+            type: rich-text
+            required: true
+            description: Paste a YouTube URL on its own line to embed the video.
 
   - name: updates
     label: Site updates

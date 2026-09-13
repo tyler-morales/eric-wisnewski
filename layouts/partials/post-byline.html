@@ -1,6 +1,7 @@
 {{/*
-  Compact byline: "By Name" linking to the author page.
+  Compact byline: "By Name" or "By A and B", each name linking to /authors/<slug>/.
 */}}
-{{ with (partial "author-page.html" .) }}
-  <p class="post-byline">By <a href="{{ .RelPermalink }}" class="author-name-link">{{ .Params.name | default .Title }}</a></p>
+{{ $authors := partial "post-author-pages.html" . }}
+{{ if $authors }}
+  <p class="post-byline">By {{ partial "author-name-links.html" (dict "page" .) }}</p>
 {{ end }}

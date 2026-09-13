@@ -114,6 +114,33 @@ class OrganizeAdminCommentsTests(unittest.TestCase):
         self.assertEqual([author["slug"] for author in grouped], ["eric-wisnewski"])
         self.assertEqual(grouped[0]["count"], 2)
 
+    def test_filter_matches_collab_slugs_success(self) -> None:
+        index = {
+            "/gradys-tour/collab/": {
+                "title": "Collab",
+                "author": "Grady Davis and Christian Pudlo",
+                "slug": "grady-davis",
+                "slugs": ["grady-davis", "christian-pudlo"],
+            }
+        }
+        comments = [
+            {
+                "id": 9,
+                "url": "/gradys-tour/collab/",
+                "author": "Sam",
+                "body": "hi",
+                "created_at": "2026-09-01T00:00:00Z",
+            }
+        ]
+        for slug in ("grady-davis", "christian-pudlo"):
+            grouped = call_js_fn("organizeAdminComments", comments, index, slug)
+            self.assertEqual(len(grouped), 1, slug)
+            self.assertEqual(grouped[0]["posts"][0]["url"], "/gradys-tour/collab/")
+        self.assertEqual(
+            call_js_fn("organizeAdminComments", comments, index, "eric-wisnewski"),
+            [],
+        )
+
     def test_empty_and_unknown_filter_failure(self) -> None:
         self.assertEqual(call_js_fn("organizeAdminComments", [], POST_INDEX, ""), [])
         self.assertEqual(

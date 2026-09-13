@@ -1,19 +1,9 @@
 {{/*
-Resolve a post's author page from Params.author (CMS slug).
-Falls back to matching content/authors filename or slug if they drifted.
+  Primary (first) author page for a post. CMS slug, string or list.
 */}}
-{{- $key := .Params.author -}}
 {{- $found := false -}}
-{{- with $key -}}
-{{- $found = $.Site.GetPage (printf "/authors/%s" .) -}}
-{{- end -}}
-{{- if not $found -}}
-{{- with $.Site.GetPage "/authors" -}}
-{{- range .Pages -}}
-{{- if or (eq .Params.slug $key) (eq .File.ContentBaseName $key) -}}
-{{- $found = . -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
+{{- $slugs := partial "post-author-slugs.html" . -}}
+{{- if gt (len $slugs) 0 -}}
+{{- $found = partial "author-by-slug.html" (dict "site" $.Site "slug" (index $slugs 0)) -}}
 {{- end -}}
 {{- return $found -}}

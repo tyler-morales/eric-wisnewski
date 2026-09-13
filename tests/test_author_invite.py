@@ -82,13 +82,23 @@ class InviteDocContentTests(unittest.TestCase):
         self.assertIn("docs/invite-author.md", readme)
 
     def test_live_authors_are_not_drafts_success(self) -> None:
-        for slug in ("eric-wisnewski", "grady-davis", "tad", "jeremy-bryan", "tyler-morales"):
+        for slug in (
+            "eric-wisnewski",
+            "grady-davis",
+            "christian-pudlo",
+            "tad",
+            "tyler-morales",
+        ):
             text = (AUTHORS_DIR / f"{slug}.md").read_text(encoding="utf-8")
             self.assertRegex(
                 text,
                 r"(?m)^draft:\s*false\s*$",
                 f"{slug} must stay published (draft: false)",
             )
+
+    def test_jeremy_profile_stays_draft_until_he_undrafts_failure(self) -> None:
+        text = (AUTHORS_DIR / "jeremy-bryan.md").read_text(encoding="utf-8")
+        self.assertRegex(text, r"(?m)^draft:\s*true\s*$")
 
 
 class CmsDraftDefaultTests(unittest.TestCase):

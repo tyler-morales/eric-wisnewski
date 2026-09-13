@@ -1,0 +1,10 @@
+{{/*
+  Author pages for a post, in CMS order (first is primary).
+*/}}
+{{- $pages := slice -}}
+{{- range (partial "post-author-slugs.html" .) -}}
+{{- with (partial "author-by-slug.html" (dict "site" $.Site "slug" .)) -}}
+{{- $pages = $pages | append . -}}
+{{- end -}}
+{{- end -}}
+{{- return $pages -}}

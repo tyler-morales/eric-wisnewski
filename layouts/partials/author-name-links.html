@@ -1,0 +1,12 @@
+{{/*
+  Linked author names joined with commas and "and".
+  dict: page (post), class (optional, default author-name-link)
+*/}}
+{{- $page := .page -}}
+{{- $class := .class | default "author-name-link" -}}
+{{- $authors := partial "post-author-pages.html" $page -}}
+{{- $n := len $authors -}}
+{{- range $i, $author := $authors -}}
+{{- if $i -}}{{- if eq (add $i 1) $n }} and {{ else }}, {{ end -}}{{- end -}}
+<a href="{{ $author.RelPermalink }}" class="{{ $class }}">{{ $author.Params.name | default $author.Title }}</a>
+{{- end -}}

@@ -75,11 +75,16 @@ class YoutubeEmbedSourceTests(unittest.TestCase):
         self.assertIn("youtu\\.be", hook)
         self.assertIn(".PlainText", hook)
         self.assertIn("$dest | safeURL", hook)
+        embeds = (REPO_ROOT / "layouts" / "partials" / "html-embeds.html").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("replaceRE", embeds)
+        self.assertIn("youtube-nocookie.com/embed/$1", embeds)
         partial = CONTENT_PARTIAL.read_text(encoding="utf-8")
-        self.assertIn("replaceRE", partial)
-        self.assertIn("youtube-nocookie.com/embed/$1", partial)
+        self.assertIn('partial "html-embeds.html"', partial)
         layout = SINGLE_LAYOUT.read_text(encoding="utf-8")
         self.assertIn('partial "page-content.html"', layout)
+        self.assertIn('partial "post-parts.html"', layout)
 
     def test_link_hook_does_not_use_tracking_youtube_host_failure(self) -> None:
         hook = HOOK.read_text(encoding="utf-8")

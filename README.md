@@ -11,7 +11,7 @@ This site is hosted on **Cloudflare Pages**. Set the build command to `./scripts
 
 ## Authors / contributors
 
-Posts have an `author` front matter field that references a slug under `content/authors/` (e.g. `eric-wisnewski`, `grady-davis`, `tad`, `jeremy-bryan`, `tyler-morales`). Each author file has `name`, `slug`, `bio`, and optional `image`. `/authors/` is the **Contributors** roster (Eric first, then everyone else by name), including Tyler Morales who maintains the site. The single-post page shows a byline and an author bio block under the post; the home list shows the author name. Clicking an author name goes to `/authors/<slug>/` (photo, bio, then that author’s posts). Those profile pages link back with **All contributors**. After the article, **More from [author]** is a sideways-scrolling row of that writer’s other posts (featured image, date, title). The following post is labeled Next; the rest use the publish date. The author name in that heading links to the full list. The home page lists **all** published posts from **Posts**, **Grady’s Tour**, **Da Breakdown w Tad**, and **Jeremy On Tap**, newest first. The roster is also in the site footer as **Contributors** (not the main nav).
+Posts have an `author` front matter field (string or list of slugs) that references `content/authors/` (e.g. `eric-wisnewski`, `grady-davis`, `christian-pudlo`, `tad`, `jeremy-bryan`, `tyler-morales`). Each author file has `name`, `slug`, `bio`, and optional `image`. `/authors/` is the **Contributors** roster (Eric first, then everyone else by name), including Tyler Morales who maintains the site. The single-post page shows a byline and author bio(s) under the post; the home list shows the author name(s). A shared post can list more than one writer (`author: [grady-davis, christian-pudlo]`) and optional `parts` (CMS **Who wrote what**) so each person’s text is labeled with their name. Clicking an author name goes to `/authors/<slug>/` (photo, bio, then that author’s posts, including collabs). Those profile pages link back with **All contributors**. After the article, **More from [author]** is a sideways-scrolling row of the primary writer’s other posts (featured image, date, title). The following post is labeled Next; the rest use the publish date. The author name in that heading links to the full list. The home page lists **all** published posts from **Posts**, **Grady’s Tour**, **Da Breakdown w Tad**, and **Jeremy On Tap**, newest first. The roster is also in the site footer as **Contributors** (not the main nav).
 
 **Grady’s Tour:** Travel posts live in `content/gradys-tour/` (CMS collection **Grady’s Tour**) and always publish at `/gradys-tour/<slug>/`. They also appear on the home page in chronological order with everyone else’s posts. Use **Posts** for Eric’s writing (`/posts/<slug>/`); do not put Grady’s travel posts there. `buildFuture = true` in `hugo.toml` so a CMS publish date that is a few minutes ahead of the Cloudflare build still goes live (otherwise Hugo omits the post and the URL falls through to the home page).
 
@@ -19,23 +19,36 @@ Posts have an `author` front matter field that references a slug under `content/
 
 **Jeremy On Tap:** Jeremy Bryan’s posts live in `content/jeremy-on-tap/` (CMS collection **Jeremy On Tap**) at `/jeremy-on-tap/<slug>/`. Same gate as Tad: the nav tab (next to Da Breakdown w Tad) and the newsletter checkbox stay off until the first post in that folder is published (`draft: false`). New posts in this collection default to draft.
 
-In **Pages CMS**, use the **Authors** collection to edit bios/photos, and set **Author** on each post. Invite a new writer with the checklist and copy-paste email in [docs/invite-author.md](docs/invite-author.md): Collaborators invite, draft author stub, they write **draft** Posts. Nothing is public until you uncheck Draft.
+In **Pages CMS**, use the **Authors** collection to edit bios/photos, and set **Authors** on each post (one or more people). A shared post also has **Who wrote what**: one block per writer, with their name above their text. Invite a new writer with the checklist and copy-paste email in [docs/invite-author.md](docs/invite-author.md): Collaborators invite, author stub, they write **draft** posts. Nothing is public until you uncheck Draft. Christian Pudlo (`cpudlo@outlook.com`) has no nav tab — he writes in **Grady’s Tour**.
 
 Placeholder bios/images can be replaced anytime by editing the author files in the CMS or in `content/authors/`. New Posts and new Authors default to `draft: true` in `.pages.yml` so Save does not publish.
 
 ## Add a new post (without the CMS)
 
 1. Create a new file under `content/posts/` (Eric / home page), `content/gradys-tour/` (Grady’s travel posts), `content/da-breakdown-w-tad/` (Tad’s posts), or `content/jeremy-on-tap/` (Jeremy’s posts), e.g. `content/posts/my-new-post.md`.
-2. Add front matter at the top (include `slug` to match the filename and `author`):
+2. Add front matter at the top (include `slug` to match the filename and `author`). `author` can be one slug or a list. On a shared post, add `parts` so each writer’s text is labeled:
 
    ```yaml
    ---
    title: "Your Post Title"
-   slug: my-new-post
+   slug: my-first-post
    author: eric-wisnewski
    date: 2025-02-26T00:00:00Z
    draft: false
    ---
+   ```
+
+   Shared post:
+
+   ```yaml
+   author:
+     - grady-davis
+     - christian-pudlo
+   parts:
+     - author: grady-davis
+       body: <p>Grady’s section.</p>
+     - author: christian-pudlo
+       body: <p>Christian’s section.</p>
    ```
 
 3. Write your content below the front matter in Markdown.
@@ -89,7 +102,8 @@ Technical SEO here is crawl/index basics, not a ranking plugin.
 - **`robots.txt`:** `enableRobotsTXT = true` plus `layouts/robots.txt`. Allows the site, disallows `/admin/`, `/add-photos/`, and `/subscribe/manage/`, and points crawlers at `https://ericwisnewski.com/sitemap.xml`. After deploy, the response should end with a `Sitemap:` line (Cloudflare may prepend managed AI-bot rules). If `/robots.txt` returns homepage HTML, the build did not ship `robots.txt`.
 - **Sitemap:** Hugo’s default `sitemap.xml` lists public pages. Admin, add-photos, Updates (list never), and subscribe utilities stay out via `build.list = never`. Live `/sitemap.xml` should return `200`.
 - **Meta description:** Every page gets `<meta name="description">` (plain text, truncated to ~170 characters) from the site description, page summary, or author bio. Home `params.description` is the lifelong Division I / friends copy — not “personal site and blog,” and it is **not** shown as body text on the homepage. Without this tag, Google invents a snippet from nav or the subscribe form.
-- **JSON-LD:** `layouts/partials/json-ld.html` adds `WebSite` (home), `BlogPosting` (posts / Grady / Tad / Jeremy), and `Person` (author pages). No `SearchAction` (no site search).
+- **JSON-LD:** `layouts/partials/json-ld.html` adds `WebSite` (home), `BlogPosting` (posts / Grady / Tad / Jeremy), and `Person` (author pages). The home `WebSite` lists each main-nav landing as `hasPart` (`WebPage` or `CollectionPage`, same Tad/Jeremy gates as the header). Those landings also emit their own `WebPage`/`CollectionPage` with `isPartOf` the site. No `SearchAction` (no site search).
+- **Sitelinks:** Google builds the Flutter-style two-column links under a brand result from site structure, not a sitelinks API. Each nav landing has its own `<title>` and `description` (the snippet under that sitelink). `hasPart` names the same set. Google still decides whether to show them, and only after a crawl — request indexing on `/`, `/school-sheets/`, `/map/`, `/gradys-tour/`, and any live author sections after deploy. You cannot pin or order sitelinks in Search Console (only demote).
 - **noindex:** Admin, add-photos, and subscribe confirm/invalid/unsubscribed/manage pages send `noindex, nofollow`.
 
 **After deploy (dashboard, not this repo):**
@@ -103,12 +117,13 @@ Technical SEO here is crawl/index basics, not a ranking plugin.
 
 Phases 1–2 made the site crawlable and gave Google a clean description. Ranking is mostly publishing and links:
 
-1. **Search Console** — verify the apex domain, submit the sitemap, request indexing on `/`, Eric’s author page, and important posts. Watch Coverage and Queries over weeks.
+1. **Search Console** — verify the apex domain, submit the sitemap, request indexing on `/`, the nav landings (`/school-sheets/`, `/map/`, `/gradys-tour/`, and live author sections), Eric’s author page, and important posts. Watch Coverage and Queries over weeks.
 2. **One hostname** — `www` → apex **301** (Cloudflare Single Redirect). Path `_redirects` cannot do host redirects.
 3. **No tags for SEO** — Hugo `tags`/`categories` are disabled (`disableKinds`). Empty taxonomy pages are thin junk. Niche comes from **post titles and body** (“Boston College — Conte Forum”), not a tag cloud.
 4. **Links** — apex URL in social bios, newsletter footers, and shares.
 5. **Content** — keep shipping specific posts. “Eric Wisnewski” is realistic. Broad “division I basketball” is not — compete on school/stadium long-tails instead.
-6. **Do not** add SEO plugins, keyword meta tags, or more JSON-LD unless Search Console shows a concrete gap.
+6. **Sitelinks** — after the section pages are indexed, a brand query for Eric Wisnewski may grow the Flutter-style link grid (List of College Stadiums, Map, Grady’s Tour, plus Tad/Jeremy when those tabs are live). If they are missing, request indexing on those URLs; do not add keyword meta or a fake site-search box.
+7. **Do not** add SEO plugins, keyword meta tags, or more JSON-LD unless Search Console shows a concrete gap.
 
 ## Analytics (Umami)
 

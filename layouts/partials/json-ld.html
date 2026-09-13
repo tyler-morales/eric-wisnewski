@@ -1,6 +1,9 @@
 {{/*
-  Structured data for Google: WebSite (home), BlogPosting (articles), Person (authors).
+  Structured data for Google: WebSite (home, hasPart = main-nav sections),
+  CollectionPage/WebPage (those section landings), BlogPosting, Person.
   Skip noindex / 404 pages. No SearchAction — there is no site search.
+  hasPart does not force sitelinks; Google still chooses them. Unique titles
+  and descriptions on the nav landings are what the snippets are built from.
 */}}
 {{- if or (eq .Params.robots "noindex") (eq .Kind "404") -}}
 {{- else if .IsHome -}}
@@ -11,6 +14,8 @@
   "url" .Site.BaseURL
   "description" (.Site.Params.description | default "")
 -}}
+{{- $parts := partial "nav-section-pages.html" . -}}
+{{- if $parts -}}{{- $site = merge $site (dict "hasPart" $parts) -}}{{- end -}}
 <script type="application/ld+json">{{ $site | jsonify | safeJS }}</script>
 {{- else if and (eq .Section "authors") .IsPage -}}
 {{- $person := dict
@@ -28,8 +33,14 @@
 {{- $image := "images/og-default.jpg" | absURL -}}
 {{- with .Params.image -}}{{- $image = . | absURL -}}{{- end -}}
 {{- $author := dict "@type" "Person" "name" .Site.Title -}}
-{{- with (partial "author-page.html" .) -}}
-  {{- $author = dict "@type" "Person" "name" (.Params.name | default .Title) "url" .Permalink -}}
+{{- $authorsLd := slice -}}
+{{- range (partial "post-author-pages.html" .) -}}
+  {{- $authorsLd = $authorsLd | append (dict "@type" "Person" "name" (.Params.name | default .Title) "url" .Permalink) -}}
+{{- end -}}
+{{- if eq (len $authorsLd) 1 -}}
+  {{- $author = index $authorsLd 0 -}}
+{{- else if gt (len $authorsLd) 1 -}}
+  {{- $author = $authorsLd -}}
 {{- end -}}
 {{- $post := dict
   "@context" "https://schema.org"
@@ -45,4 +56,14 @@
   "publisher" (dict "@type" "Organization" "name" .Site.Title "url" .Site.BaseURL)
 -}}
 <script type="application/ld+json">{{ $post | jsonify | safeJS }}</script>
+{{- else if in (slice "page" "section") .Kind -}}
+{{- range $part := (partial "nav-section-pages.html" .) -}}
+  {{- if eq (printf "%s" $part.url) (printf "%s" $.Permalink) -}}
+    {{- $page := merge $part (dict
+      "@context" "https://schema.org"
+      "isPartOf" (dict "@type" "WebSite" "name" $.Site.Title "url" $.Site.BaseURL)
+    ) -}}
+<script type="application/ld+json">{{ $page | jsonify | safeJS }}</script>
+  {{- end -}}
+{{- end -}}
 {{- end -}}

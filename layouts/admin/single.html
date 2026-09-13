@@ -40,12 +40,15 @@
   {{ $posts := dict }}
   {{ range where .Site.RegularPages "Section" "in" (slice "posts" "gradys-tour" "da-breakdown-w-tad" "jeremy-on-tap") }}
   {{ $name := "Other" }}
-  {{ $slug := .Params.author | default "" }}
-  {{ with (partial "author-page.html" .) }}
-  {{ $name = .Params.name | default .Title }}
-  {{ $slug = .Params.slug | default .File.ContentBaseName }}
+  {{ $slugs := partial "post-author-slugs.html" . }}
+  {{ $slug := "" }}
+  {{ if gt (len $slugs) 0 }}{{ $slug = index $slugs 0 }}{{ end }}
+  {{ $names := slice }}
+  {{ range (partial "post-author-pages.html" .) }}
+  {{ $names = $names | append (.Params.name | default .Title) }}
   {{ end }}
-  {{ $posts = merge $posts (dict .RelPermalink (dict "title" .Title "author" $name "slug" $slug)) }}
+  {{ if $names }}{{ $name = delimit $names " and " }}{{ end }}
+  {{ $posts = merge $posts (dict .RelPermalink (dict "title" .Title "author" $name "slug" $slug "slugs" $slugs)) }}
   {{ end }}
   <script type="application/json" id="admin-post-index">{{ $posts | jsonify | safeJS }}</script>
   <script type="module" src="{{ "/js/admin-comments.js" | relURL }}?v={{ md5 (readFile "static/js/admin-comments.js") }}"></script>
