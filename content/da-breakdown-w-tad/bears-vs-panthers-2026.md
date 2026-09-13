@@ -3,7 +3,7 @@ title: Bears vs. Panthers Prediction
 slug: bears-vs-panthers-2026
 author: tad-davis
 date: 2026-09-13T08:32:00Z
-draft: true
+draft: false
 image: /images/uploads/images.jpeg
 ---
 HERE WE GO. Bears football is back today. Year 2 of Ben Johnson. Year 3 of Caleb Williams.Year infinity of a shitty defense. Before I get into my prediction I first off want to acknowledge all of my Buckeye buddies this morning after a devastating loss to Texas. At least you have the browns at 12. 
