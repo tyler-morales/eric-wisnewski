@@ -312,6 +312,22 @@ class SeoBuildTests(unittest.TestCase):
     def tearDownClass(cls) -> None:
         cls._tmp.cleanup()
 
+    def test_favicon_ico_is_published_success(self) -> None:
+        path = self.dest / "favicon.ico"
+        self.assertTrue(path.is_file(), "crawlers and mail clients request /favicon.ico")
+        data = path.read_bytes()
+        self.assertTrue(data.startswith(b"\x00\x00\x01\x00"), "must be an ICO, not a 404 HTML page")
+        home = (self.dest / "index.html").read_text(encoding="utf-8")
+        self.assertIn("favicon.ico", home)
+        self.assertIn("favicon.png", home)
+
+    def test_built_pages_do_not_link_wizard_favicon_failure(self) -> None:
+        home = (self.dest / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn("favicon.svg", home)
+        self.assertNotIn("image/svg+xml", home)
+        self.assertNotIn("🧙", home)
+        self.assertFalse((self.dest / "favicon.svg").is_file())
+
     def test_404_html_is_published_success(self) -> None:
         path = self.dest / "404.html"
         self.assertTrue(path.is_file(), "Cloudflare Pages needs public/404.html")
