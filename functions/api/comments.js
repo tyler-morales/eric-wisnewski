@@ -8,7 +8,6 @@
 
 import {
   adminSecretFromRequest,
-  brandedEmailHtml,
   isAdmin,
   isValidEmail,
   isValidToken,
@@ -159,10 +158,10 @@ export function replyNotifyEmail({ parentAuthor, replyAuthor, replyText, postUrl
   const greeting = you ? `${you}, ` : '';
   const subject = `${who} replied to your comment`;
   const text = `${greeting}${who} replied to your comment:\n\n${snippet}\n\n${url}`;
-  const html = brandedEmailHtml(`<p>${escapeHtml(greeting)}${escapeHtml(who)} replied to your comment:</p>
+  const html = `<p>${escapeHtml(greeting)}${escapeHtml(who)} replied to your comment:</p>
 <blockquote>${escapeHtml(snippet).replace(/\n/g, '<br>')}</blockquote>
 <p><a href="${escapeAttr(url)}">Read the comment</a></p>
-<p style="color:#666;font-size:12px;">You got this because you left a comment with this email.</p>`);
+<p style="color:#666;font-size:12px;">You got this because you left a comment with this email.</p>`;
   return { subject, html, text };
 }
 
@@ -193,10 +192,10 @@ export function writerNotifyEmail({ commentAuthor, commentText, postUrl }) {
   const url = typeof postUrl === 'string' ? postUrl : '';
   const subject = `${who} commented on your post`;
   const text = `${who} commented on your post:\n\n${snippet}\n\n${url}`;
-  const html = brandedEmailHtml(`<p>${escapeHtml(who)} commented on your post:</p>
+  const html = `<p>${escapeHtml(who)} commented on your post:</p>
 <blockquote>${escapeHtml(snippet).replace(/\n/g, '<br>')}</blockquote>
 <p><a href="${escapeAttr(url)}">Read the comment</a></p>
-<p style="color:#666;font-size:12px;">You got this because you wrote this post.</p>`);
+<p style="color:#666;font-size:12px;">You got this because you wrote this post.</p>`;
   return { subject, html, text };
 }
 

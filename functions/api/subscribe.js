@@ -5,7 +5,6 @@
 
 import {
   adminSecretFromRequest,
-  brandedEmailHtml,
   confirmMailAllowed,
   isAdmin,
   isValidEmail,
@@ -209,19 +208,19 @@ export function confirmEmailBody(origin, token, lists) {
   const labels = lists.map(listLabel).filter(Boolean).join(' and ');
   const link = `${origin}/api/subscribe?confirm=${encodeURIComponent(token)}`;
   const text = `Confirm your subscription to ${labels} on Eric Wisnewski.\n\nYou won't get new-post emails until you click this link:\n\n${link}\n\nIf you did not request this, ignore this email.`;
-  const html = brandedEmailHtml(`<p>Confirm your subscription to <strong>${labels}</strong> on Eric Wisnewski.</p>
+  const html = `<p>Confirm your subscription to <strong>${labels}</strong> on Eric Wisnewski.</p>
 <p>You won't get new-post emails until you click this link:</p>
 <p><a href="${link}">Confirm subscription</a></p>
-<p>If you did not request this, ignore this email.</p>`);
+<p>If you did not request this, ignore this email.</p>`;
   return { subject: `Confirm your subscription — ${labels}`, html, text };
 }
 
 export function manageEmailBody(origin, token) {
   const link = managePageUrl(origin, token);
   const text = `Manage your subscriptions on Eric Wisnewski.\n\nUse this link to choose which lists you get, or unsubscribe:\n\n${link}\n\nIf you did not request this, ignore this email.`;
-  const html = brandedEmailHtml(`<p>Manage your subscriptions on Eric Wisnewski.</p>
+  const html = `<p>Manage your subscriptions on Eric Wisnewski.</p>
 <p><a href="${link}">Manage subscriptions</a></p>
-<p>If you did not request this, ignore this email.</p>`);
+<p>If you did not request this, ignore this email.</p>`;
   return { subject: 'Manage your subscriptions — Eric Wisnewski', html, text };
 }
 
