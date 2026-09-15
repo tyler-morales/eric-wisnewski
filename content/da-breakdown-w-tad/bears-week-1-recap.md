@@ -11,7 +11,7 @@ WOW. Here we go. My first post game blog. I’ve been thinking about how to stru
 
 
 
-## **/The BJ Report**
+## **The BJ Report**
 
 WOW X2. What did I say in my prediction blog. The number one thing that matters is that we do not show regression. And what did the Bears do. 59 points, 6 rushing TDs. 291 yards rushing. Caleb Williams 21/29 (72.4%), 269 yards, 2 TDs, 0 INTs. Seriously what more do you want. The offense just unrelentingly moves defenders off the line. Not just offensive lineman. Skill position players are looking for defenders to block constantly. Ben Solak of ESPN (ew) said it best
 
