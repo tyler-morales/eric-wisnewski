@@ -11,7 +11,7 @@ WOW. Here we go. My first post game blog. I’ve been thinking about how to stru
 
 
 
-**The BJ Report**
+## **The BJ Report**
 
 WOW X2. What did I say in my prediction blog. The number one thing that matters is that we do not show regression. And what did the Bears do. 59 points, 6 rushing TDs. 291 yards rushing. Caleb Williams 21/29 (72.4%), 269 yards, 2 TDs, 0 INTs. Seriously what more do you want. The offense just unrelentingly moves defenders off the line. Not just offensive lineman. Skill position players are looking for defenders to block constantly. Ben Solak of ESPN (ew) said it best *“The running game is not the jab. It’s the haymaker. But the play-action pass is also the haymaker. The haymaker sets up the haymaker. Do you fear death?”* 
 
@@ -19,7 +19,7 @@ So yeah the bears offense didn’t regress they got better. There was a lot of c
 
 
 
-**Dennis the Menace**
+## **Dennis the Menace**
 
 Does our defense stink? Yeah I think it does. Looking at it from a birds eye view letting up 37 points nearly 480 yards is pretty terrible. Though they were in multiple scenarios having to defend a short field Luther Burden fumbling before the 50, Ben Johnson going for it on the Chicago 21, etc. And aside from those there were highlights getting 2 sacks and 3 turnovers makes you feel better. But I think everyone watching especially Ben Johnson knew the defense couldn’t be trusted. 
 
@@ -27,7 +27,7 @@ Now what do you think our problem is? Our interior line and linebackers are so i
 
 
 
-**Loose Balls**
+## **Loose Balls**
 
 To be serious first the bears had 12 penalties totaled for 57 yards. I think it’s because they didn’t play in preseason so they will fix it. Now I think the Loose Balls section is just funny stuff I find on twitter. Comment below what you want to see in the section.
 
