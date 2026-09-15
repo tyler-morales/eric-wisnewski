@@ -1,4 +1,4 @@
-"""Tab icon and site emails use the PNG portrait, not the wizard SVG."""
+"""Tab icon is the PNG/ICO portrait; site emails stay content-only (no wizard SVG)."""
 
 from __future__ import annotations
 
@@ -42,10 +42,10 @@ def call_js_fn(module: Path, fn_name: str, *args: object) -> object:
     return json.loads(result.stdout)
 
 
-def assert_portrait_email_html(test: unittest.TestCase, html: str) -> None:
-    test.assertIn(PORTRAIT_PNG_URL, html)
-    test.assertIn("<img", html)
-    test.assertIn('alt="Eric Wisnewski"', html)
+def assert_content_only_email_html(test: unittest.TestCase, html: str) -> None:
+    test.assertNotIn(PORTRAIT_PNG_URL, html)
+    test.assertNotIn("<img", html)
+    test.assertNotIn("favicon.png", html)
     test.assertNotIn("favicon.svg", html)
     test.assertNotIn("image/svg+xml", html)
     test.assertNotIn("🧙", html)
@@ -93,19 +93,8 @@ class FaviconAssetTests(unittest.TestCase):
         self.assertFalse(ico.startswith(PNG_MAGIC), "raw PNG at .ico 404s some mail clients")
 
 
-class EmailPortraitTests(unittest.TestCase):
-    def test_branded_email_html_prepends_portrait_success(self) -> None:
-        html = call_js_fn(SHARED_API, "brandedEmailHtml", "<p>Hello</p>")
-        assert_portrait_email_html(self, html)
-        self.assertIn("<p>Hello</p>", html)
-        self.assertLess(html.index(PORTRAIT_PNG_URL), html.index("Hello"))
-
-    def test_branded_email_html_skips_wizard_failure(self) -> None:
-        html = call_js_fn(SHARED_API, "brandedEmailHtml", "")
-        assert_portrait_email_html(self, html)
-        self.assertNotIn("favicon.svg", html)
-
-    def test_outbound_mail_html_includes_portrait_success(self) -> None:
+class EmailHtmlTests(unittest.TestCase):
+    def test_outbound_mail_html_is_content_only_success(self) -> None:
         confirm = call_js_fn(
             SUBSCRIBE_API,
             "confirmEmailBody",
@@ -147,6 +136,13 @@ class EmailPortraitTests(unittest.TestCase):
                 "postUrl": "https://ericwisnewski.com/posts/hi/#comments",
             },
         )
+        snippets = {
+            "confirm": "Confirm subscription",
+            "manage": "Manage subscriptions",
+            "newsletter": "There's a new post",
+            "reply": "replied to your comment",
+            "writer": "commented on your post",
+        }
         for name, mail in (
             ("confirm", confirm),
             ("manage", manage),
@@ -155,7 +151,8 @@ class EmailPortraitTests(unittest.TestCase):
             ("writer", writer),
         ):
             with self.subTest(mail=name):
-                assert_portrait_email_html(self, mail["html"])
+                assert_content_only_email_html(self, mail["html"])
+                self.assertIn(snippets[name], mail["html"])
 
     def test_outbound_mail_html_does_not_use_wizard_failure(self) -> None:
         sources = (
@@ -164,7 +161,8 @@ class EmailPortraitTests(unittest.TestCase):
             + COMMENTS_API.read_text(encoding="utf-8")
             + SHARED_API.read_text(encoding="utf-8")
         )
-        self.assertIn("brandedEmailHtml", sources)
+        self.assertNotIn("brandedEmailHtml", sources)
+        self.assertNotIn("SITE_FAVICON_PNG", sources)
         self.assertNotIn("favicon.svg", sources)
         self.assertNotIn("🧙", sources)
         self.assertNotIn("image/svg+xml", sources)

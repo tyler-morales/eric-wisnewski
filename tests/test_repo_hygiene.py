@@ -141,7 +141,6 @@ class DeadApiTests(unittest.TestCase):
             "secretsMatch",
             "adminSecretFromHeader",
             "confirmMailAllowed",
-            "brandedEmailHtml",
         ):
             defined_in = [
                 api.name

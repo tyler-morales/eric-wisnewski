@@ -5,7 +5,6 @@
 
 import {
   LIST_LABELS,
-  brandedEmailHtml,
   jsonResponse,
   newsletterFromHeader,
   publicOrigin,
@@ -106,11 +105,11 @@ export function postEmailContent(listId, item, origin, unsubToken, postalAddress
   const addressLine = postalAddress
     ? `<p style="color:#666;font-size:12px;">${escapeHtml(postalAddress)}</p>`
     : '';
-  const html = brandedEmailHtml(`<p>There's a new post on <strong>${escapeHtml(label)}</strong>.</p>
+  const html = `<p>There's a new post on <strong>${escapeHtml(label)}</strong>.</p>
 <p><a href="${escapeAttr(item.url)}">${escapeHtml(item.title)}</a></p>
 <hr>
 <p style="color:#666;font-size:12px;"><a href="${escapeAttr(links.manageUrl)}">Unsubscribe or manage email preferences</a></p>
-${addressLine}`);
+${addressLine}`;
   const text = `There's a new post on ${label}: ${item.title}\n\n${item.url}\n\nUnsubscribe or manage email preferences: ${links.manageUrl}${postalAddress ? `\n\n${postalAddress}` : ''
     }`;
   return { subject, html, text, unsubUrl: links.oneClickUrl };
