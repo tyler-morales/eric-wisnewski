@@ -1,5 +1,5 @@
 {{/*
-  Markdown YouTube URLs are already iframes via render-link.html.
+  Markdown YouTube and X/Twitter status URLs are already embeds via render-link.html.
   Pages CMS often stores the same paste as an HTML <a>; rewrite those here.
 */}}
-{{ partial "html-embeds.html" .Content }}
+{{ partial "html-embeds.html" (dict "page" . "html" .Content) }}

@@ -15,6 +15,6 @@
     {{ $name }}
     {{ end }}
   </h2>
-  {{ with $part.body }}{{ partial "html-embeds.html" . }}{{ end }}
+  {{ with $part.body }}{{ partial "html-embeds.html" (dict "page" $ "html" .) }}{{ end }}
 </section>
 {{- end -}}

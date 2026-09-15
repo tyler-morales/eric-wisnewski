@@ -979,6 +979,23 @@ article.post-content iframe.youtube-embed:focus-visible {
   outline-offset: 2px;
 }
 
+article.post-content blockquote.twitter-tweet {
+  margin: 1.25em 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  max-width: 550px;
+}
+
+article.post-content iframe.twitter-tweet {
+  max-width: 100%;
+}
+
+article.post-content iframe.twitter-tweet:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
 /* Gym flip-card scoreboard */
 article.post-content .scoreboard {
   display: block;

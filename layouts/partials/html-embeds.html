@@ -1,7 +1,13 @@
 {{/*
-  Rewrite CMS leftover YouTube <a> tags into privacy embeds.
-  Context is an HTML string (page .Content or a parts body).
+  Rewrite CMS leftover YouTube <a> tags into privacy embeds, and leftover
+  X/Twitter status <a> tags into official tweet embeds.
+  Context is dict "page" (the page, for widgets.js) and "html" (page .Content
+  or a parts body).
 */}}
-{{- $html := . -}}
+{{- $html := .html -}}
 {{- $html = replaceRE `<a href="https://(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)([A-Za-z0-9_-]{11})[^"]*"[^>]*>https?://[^<]*</a>` `<iframe class="youtube-embed" src="https://www.youtube-nocookie.com/embed/$1" title="YouTube video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>` $html -}}
+{{- $html = replaceRE `<a href="https?://(?:(?:www|mobile)\.)?(?:twitter\.com|x\.com)/[A-Za-z0-9_]+/status(?:es)?/(\d+)[^"]*"[^>]*>https?://[^<]*</a>` `<blockquote class="twitter-tweet" data-dnt="true"><a href="https://x.com/i/status/$1">View post on X</a></blockquote>` $html -}}
+{{- if in $html "twitter-tweet" -}}
+  {{- $_ := .page.Store.Set "hasTwitterEmbed" true -}}
+{{- end -}}
 {{- $html | safeHTML -}}
