@@ -11,9 +11,11 @@ WOW. Here we go. My first post game blog. I’ve been thinking about how to stru
 
 
 
-## **The BJ Report**
+## **/The BJ Report**
 
-WOW X2. What did I say in my prediction blog. The number one thing that matters is that we do not show regression. And what did the Bears do. 59 points, 6 rushing TDs. 291 yards rushing. Caleb Williams 21/29 (72.4%), 269 yards, 2 TDs, 0 INTs. Seriously what more do you want. The offense just unrelentingly moves defenders off the line. Not just offensive lineman. Skill position players are looking for defenders to block constantly. Ben Solak of ESPN (ew) said it best *“The running game is not the jab. It’s the haymaker. But the play-action pass is also the haymaker. The haymaker sets up the haymaker. Do you fear death?”* 
+WOW X2. What did I say in my prediction blog. The number one thing that matters is that we do not show regression. And what did the Bears do. 59 points, 6 rushing TDs. 291 yards rushing. Caleb Williams 21/29 (72.4%), 269 yards, 2 TDs, 0 INTs. Seriously what more do you want. The offense just unrelentingly moves defenders off the line. Not just offensive lineman. Skill position players are looking for defenders to block constantly. Ben Solak of ESPN (ew) said it best
+
+> *"The running game is not the jab. It’s the haymaker. But the play-action pass is also the haymaker. The haymaker sets up the haymaker. Do you fear death?”* 
 
 So yeah the bears offense didn’t regress they got better. There was a lot of commentary on Loveland having 0 catches and 2 targets. Fans were complaining especially fantasy owners. That just shows how much scarier BJ’s offense is. Loveland was the Bears leading receiver last year and he didn’t get the ball once in a 59 point scoring show. Including on the Cole Kmet touchdown Loveland stayed in pass protect 1 on 1 block on Jaelyn Phillips. The Panthers best defensive rusher. Blocking won’t go unnoticed to BJ. And it showed feeding Jahdae Walker an easy touchdown after his blocking display. All things considered we might be on a wild ride if the offense can stay healthy because I don’t see who is stopping this train.
 
