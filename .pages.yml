@@ -190,7 +190,7 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube URL on its own line to embed the video.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it.
       - name: parts
         label: Who wrote what
         type: object
@@ -211,7 +211,7 @@ content:
             label: Their text
             type: rich-text
             required: true
-            description: Paste a YouTube URL on its own line to embed the video.
+            description: Paste a YouTube or X/Twitter status URL on its own line to embed it.
 
   - name: gradys-tour
     label: Grady's Tour
@@ -284,7 +284,7 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube URL on its own line to embed the video.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it.
       - name: parts
         label: Who wrote what
         type: object
@@ -305,7 +305,7 @@ content:
             label: Their text
             type: rich-text
             required: true
-            description: Paste a YouTube URL on its own line to embed the video.
+            description: Paste a YouTube or X/Twitter status URL on its own line to embed it.
 
   - name: da-breakdown-w-tad
     label: Da Breakdown w Tad
@@ -379,7 +379,7 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube URL on its own line to embed the video.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it.
       - name: parts
         label: Who wrote what
         type: object
@@ -400,7 +400,7 @@ content:
             label: Their text
             type: rich-text
             required: true
-            description: Paste a YouTube URL on its own line to embed the video.
+            description: Paste a YouTube or X/Twitter status URL on its own line to embed it.
 
   - name: jeremy-on-tap
     label: Jeremy On Tap
@@ -474,7 +474,7 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube URL on its own line to embed the video.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it.
       - name: parts
         label: Who wrote what
         type: object
@@ -495,7 +495,7 @@ content:
             label: Their text
             type: rich-text
             required: true
-            description: Paste a YouTube URL on its own line to embed the video.
+            description: Paste a YouTube or X/Twitter status URL on its own line to embed it.
 
   - name: updates
     label: Site updates

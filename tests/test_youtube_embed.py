@@ -105,7 +105,7 @@ class YoutubeEmbedSourceTests(unittest.TestCase):
 
     def test_cms_body_fields_tell_writers_to_paste_a_url_success(self) -> None:
         yml = PAGES_YML.read_text(encoding="utf-8")
-        self.assertGreaterEqual(yml.count("Paste a YouTube URL on its own line"), 3)
+        self.assertGreaterEqual(yml.count("Paste a YouTube or X/Twitter status URL on its own line"), 3)
 
 
 class YoutubeEmbedBuildTests(unittest.TestCase):
