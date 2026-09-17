@@ -63,7 +63,7 @@ Four days fly by, including a day trip to Luxembourg (don’t go unless it’s o
 
 *Strasbourg, France*
 
-Thanks for continuing to follow along — coming up soon, the return to Italy, and you will figure out who this guy is.
+Thanks for continuing to follow along — coming up soon, the return to Italy. Do you want to figure out who this guy is? And follow along. 
 
 ![](/images/uploads/IMG_2158.jpeg)
 
