@@ -1,0 +1,21 @@
+---
+title: "Germany: Mini-America"
+slug: Mini america
+author:
+  - grady-davis
+date: 2026-09-17T21:22:00Z
+draft: true
+---
+Nanzdietschweiler - Germany
+
+September, 2026
+
+The bike journey is officially over. Future modes of transport will include planes, trains, automobiles, buses, and boats. We are here on a mission to visit John and Natalie, friends from Chicago stationed abroad in southwest Germany. While Natalie is off on important Air Force duty, us men of leisure go off to explore the area, home to a sprawl of US military bases built after WWII to keep an eye on the Germans and their neighbors. The area is home to over 70,000 Americans. Ramstein is their base, housing 16,000 service members and families. It’s a strange mix of concrete dorms — for the lowest enlisted — and suburbs that make you feel like you are “somewhere outside Denver.” Subdivisions dotted with parks give these artificial villages a strange sense of charm. They have created a mini-America. We drive past mothers pushing their kids on swings, pimple-faced high schoolers walking home from basketball practice, and a 900-student Ramstein High School. The mini-America illusion is only broken when we drive by unmarked radar facilities (no photos included) and military planes fly overhead. We work out at a YMCA-esque gym — T-Mo does a monkey workout on the pullup bar as a stern-looking soldier benches 425 below. We fit right in.
+
+Next we shop at an American-styled mall akin to an underfunded state school’s student union. It has a Bed Bath & Beyond, Panda Express, and an exorbitantly priced Starbucks. It feels good to order from an American in easygoing English — no “Mein shizen streiecken coffee!” needed here. Their imitation Jewel Osco has American wieners, buns, and ketchup. I wonder how much it costs to ship 1,000 sleeves of Oreos out here. That information is probably classified. When my mind drifts to these places, snap out of it — rest assured, it’s all to keep us safe.
+
+Our hosts are wonderful. They tolerate my wretched stench — a shirt I’ve worn 20 days and washed three — until I finally get a chance to do laundry. They’ve lived in Germany for about a year in a lovely home in a little farm town, lovelier yet 20 steps from the local bar. Our first night out, their only request is that we don’t go out for German food. We quickly agree, not wanting leathery, off-color sausages or whatever the hell schnitzel is — I ain’t putting that in my mouth! Four days fly by, including a day trip to Luxembourg (don’t go unless it’s on the way, it’s fine), Strasbourg — one of the most amazing picture stops on the trip — and a bathhouse in Baden-Baden. Imagine a nursing home sauna where everyone is naked. The heat was almost too hot to handle.
+
+Thanks for continuing to follow along — coming up soon, the return to Italy, and you will figure out who this guy is.
+
+-Grady​​​​​​​​​​​​​​​​
