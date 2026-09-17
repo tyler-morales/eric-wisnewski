@@ -6,6 +6,10 @@ author:
 date: 2026-09-17T21:22:00Z
 draft: false
 image: /images/uploads/IMG_2157.jpeg
+gallery:
+  - /images/uploads/IMG_1795.jpeg
+  - /images/uploads/IMG_1782.jpeg
+  - /images/uploads/IMG_1793.jpeg
 ---
 Nanzdietschweiler - Germany
 
