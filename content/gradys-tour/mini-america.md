@@ -15,7 +15,13 @@ Nanzdietschweiler - Germany
 
 September, 2026. 
 
-We are here on a mission to visit John and Natalie, friends from Chicago stationed abroad in southwest Germany. While Natalie is off on important Air Force duty, us men of leisure go off to explore the area, home to a sprawl of US military bases built after WWII to keep an eye on those Germans! As well as their neighbors. The greater area is home to around 70,000 Americans. Ramstein is their base, housing 16,000 service members and families. It’s a strange mix of concrete dorms — for the lowest enlisted — and suburbs that make you feel like you are “somewhere outside Denver.” Subdivisions dotted with parks give the artificial town a strange sense of charm. They’ve created a mini-America. We drive past mothers pushing their kids on swings, pimple-faced high schoolers walking home from basketball practice, and a 900-student Ramstein High School. The illusion is only broken as air force planes fly overhead and when we drive by unmarked radar facilities (no photos included). Later, we work out at a YMCA-esque gym — T-Mo does a monkey workout on the pull-up bar as a stern-looking soldier benches 425 below. We fit right in. 
+We are here on a mission to visit John and Natalie, friends from Chicago stationed in southwest Germany. We are joined by Christian Pudlo, who is celebrating his journey back into the working world - maybe not celebrating, either way we are happy to have him.  
+
+![](/images/uploads/IMG_2191.jpeg)
+
+*Christian Pudlo*
+
+Anyways, while Natalie is off on important Air Force duty, us men of leisure go off to explore the area, home to a sprawl of US military bases built after WWII to keep an eye on those Germans! As well as their neighbors. The greater area is home to around 70,000 Americans. Ramstein is their base, housing 16,000 service members and families. It’s a strange mix of concrete dorms — for the lowest enlisted — and suburbs that make you feel like you are “somewhere outside Denver.” Subdivisions dotted with parks give the artificial town a strange sense of charm. They’ve created a mini-America. We drive past mothers pushing their kids on swings, pimple-faced high schoolers walking home from basketball practice, and a 900-student Ramstein High School. The illusion is only broken as air force planes fly overhead and when we drive by unmarked radar facilities (no photos included). Later, we work out at a YMCA-esque gym — T-Mo does a monkey workout on the pull-up bar as a stern-looking soldier benches 425 below. We fit right in. 
 
 ![](/images/uploads/IMG_2167.jpeg)
 
