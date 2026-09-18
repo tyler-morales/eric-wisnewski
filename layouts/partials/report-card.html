@@ -1,7 +1,7 @@
 {{/*
   School report card for Stadium / Fan Base / Campus. Pages CMS stores this
   as `report_card` front matter on Posts (Eric). Other collections never
-  get the fields. GPA uses the same 4.0 scale as /school-sheets/.
+  get the fields. GPA uses the same 4.0 scale as the school list on Eric's D1 Mission.
   GPA is plain text; letter grades carry the color.
 */}}
 {{- $ericPost := and (eq .Section "posts") (in (partial "post-author-slugs.html" .) "eric-wisnewski") -}}

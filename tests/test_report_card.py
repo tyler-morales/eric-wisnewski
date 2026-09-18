@@ -26,7 +26,7 @@ COLLECTION_RE = re.compile(
     re.DOTALL,
 )
 
-# Same 4.0 scale as /school-sheets/ (A+ = 4.3, minus = −0.3). F is 0, not missing.
+# Same 4.0 scale as the school list on Eric's D1 Mission (A+ = 4.3, minus = −0.3). F is 0, not missing.
 GRADE_POINTS = {
     "A+": 4.3,
     "A": 4.0,

@@ -27,7 +27,7 @@ SUBSCRIBE_STATUS_LAYOUT = REPO_ROOT / "layouts" / "_default" / "subscribe-status
 LIST_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "list.html"
 TOUR_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "section-list.html"
 SINGLE_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "single.html"
-MAP_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "map.html"
+MISSION_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "erics-d1-mission.html"
 HUGO_TOML = REPO_ROOT / "config" / "_default" / "hugo.toml"
 HUGO_TIMEOUT_SECONDS = 120
 
@@ -1551,9 +1551,7 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertTrue(template_includes_subscribe(LIST_TEMPLATE.read_text(encoding="utf-8")))
         self.assertTrue(template_includes_subscribe(TOUR_TEMPLATE.read_text(encoding="utf-8")))
         self.assertTrue(template_includes_subscribe(SINGLE_TEMPLATE.read_text(encoding="utf-8")))
-
-    def test_map_does_not_include_partial_failure(self) -> None:
-        self.assertFalse(template_includes_subscribe(MAP_TEMPLATE.read_text(encoding="utf-8")))
+        self.assertTrue(template_includes_subscribe(MISSION_TEMPLATE.read_text(encoding="utf-8")))
 
     def test_hugo_toml_has_newsletter_enabled_flag(self) -> None:
         toml = HUGO_TOML.read_text(encoding="utf-8")
@@ -1574,7 +1572,8 @@ class NewsletterBuildTests(unittest.TestCase):
         cls.tour = (cls._output_dir / "gradys-tour" / "index.html").read_text(
             encoding="utf-8"
         )
-        cls.map_html = (cls._output_dir / "map" / "index.html").read_text(encoding="utf-8")
+        mission = cls._output_dir / "erics-d1-mission" / "index.html"
+        cls.mission_html = mission.read_text(encoding="utf-8") if mission.is_file() else ""
         posts_rss = cls._output_dir / "posts" / "index.xml"
         tour_rss = cls._output_dir / "gradys-tour" / "index.xml"
         cls.posts_rss = posts_rss.read_text(encoding="utf-8") if posts_rss.is_file() else ""
@@ -1699,14 +1698,10 @@ class NewsletterBuildTests(unittest.TestCase):
             r'value="gradys-tour"[^>]*checked|checked[^>]*value="gradys-tour"',
         )
 
-    def test_map_has_no_subscribe_form(self) -> None:
-        self.assertNotIn('id="subscribe"', self.map_html)
-        if self.home_enabled:
-            # Map still excluded when newsletter is on
-            map_enabled = (self._enabled_dir / "map" / "index.html").read_text(
-                encoding="utf-8"
-            )
-            self.assertNotIn('id="subscribe"', map_enabled)
+    def test_mission_form_defaults_to_posts_success(self) -> None:
+        self.assertTrue(self.mission_html, "erics-d1-mission must be in the build")
+        self.assertIn('id="subscribe"', self.mission_html)
+        self.assertIn('data-default-list="posts"', self.mission_html)
 
     def test_eric_single_defaults_posts_when_enabled(self) -> None:
         if not self.eric_single_enabled:

@@ -3,10 +3,7 @@
   Returns WebPage / CollectionPage dicts for WebSite.hasPart (sitelinks).
 */}}
 {{- $items := slice -}}
-{{- with .Site.GetPage "/school-sheets" -}}
-  {{- $items = $items | append (partial "nav-section-ld.html" .) -}}
-{{- end -}}
-{{- with .Site.GetPage "/map" -}}
+{{- with .Site.GetPage "/erics-d1-mission" -}}
   {{- $items = $items | append (partial "nav-section-ld.html" .) -}}
 {{- end -}}
 {{- with .Site.GetPage "/gradys-tour" -}}

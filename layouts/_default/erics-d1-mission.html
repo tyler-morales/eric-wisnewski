@@ -1,0 +1,60 @@
+{{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+{{ partial "header.html" . }}
+<main class="d1-mission-page" id="main-content" data-d1-mission>
+  <h1 class="d1-mission-title">{{ .Title }}</h1>
+  <nav class="d1-mission-subnav" data-d1-nav aria-label="Eric's D1 Mission sections">
+    <ul role="list">
+      <li><a href="#posts">Posts</a></li>
+      <li><a href="#map">Map</a></li>
+      <li><a href="#list">List of Stadiums</a></li>
+    </ul>
+  </nav>
+  <section id="posts" class="d1-mission-section d1-mission-posts" data-d1-panel="posts"
+    aria-labelledby="d1-mission-posts-heading" tabindex="-1">
+    <h2 id="d1-mission-posts-heading">Posts</h2>
+    {{ $posts := where .Site.RegularPages "Section" "eq" "posts" }}
+    {{ if $posts }}
+    <ul class="post-list">
+      {{ range $posts }}
+      {{ partial "post-list-item.html" . }}
+      {{ end }}
+    </ul>
+    {{ else }}
+    <p class="section-empty">No posts yet. Check back soon.</p>
+    {{ end }}
+  </section>
+  <section id="map" class="d1-mission-section" data-d1-panel="map" aria-labelledby="d1-mission-map-heading"
+    tabindex="-1">
+    <h2 id="d1-mission-map-heading">Map</h2>
+    {{ with .Site.Params.map_viewer_url }}
+    <p class="map-origin">
+      <a href="{{ . }}" target="_blank" rel="noopener noreferrer" class="map-origin-link">Open map in Google Maps</a>
+    </p>
+    {{ end }}
+    <div class="map-embed-wrapper">
+      <iframe
+        src="https://www.google.com/maps/d/embed?mid=1iRNx3DgEm5TJJmN1A4xM0uienUMFfqc&ehbc=2E312F"
+        width="640"
+        height="480"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Map of Division I college basketball stadiums"></iframe>
+    </div>
+  </section>
+  <section id="list" class="d1-mission-section" data-d1-panel="list" aria-labelledby="d1-mission-list-heading"
+    tabindex="-1">
+    <h2 id="d1-mission-list-heading">List of Stadiums</h2>
+    {{ partial "school-sheets.html" . }}
+  </section>
+  {{ partial "subscribe.html" . }}
+</main>
+{{ $missionJS := "/js/d1-mission.js" | relURL }}
+{{ $missionFile := "static/js/d1-mission.js" }}
+{{ $sheetsJS := "/js/school-sheets.js" | relURL }}
+{{ $sheetsFile := "static/js/school-sheets.js" }}
+<script type="module" src="{{ $missionJS }}?v={{ md5 (readFile $missionFile) }}"></script>
+<script src="{{ $sheetsJS }}?v={{ md5 (readFile $sheetsFile) }}"></script>
+{{ end }}

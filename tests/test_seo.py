@@ -36,7 +36,7 @@ LD_JSON_RE = re.compile(
 
 
 def write_seo_fixture(content_dir: Path) -> None:
-    """Minimal content so the Hugo build does not fetch School Sheets."""
+    """Minimal content so the Hugo build does not fetch the school-list CSV."""
     (content_dir / "posts").mkdir(parents=True)
     (content_dir / "gradys-tour").mkdir(parents=True)
     (content_dir / "subscribe").mkdir(parents=True)
@@ -73,17 +73,10 @@ def write_seo_fixture(content_dir: Path) -> None:
         "---\n",
         encoding="utf-8",
     )
-    (content_dir / "school-sheets.md").write_text(
+    (content_dir / "erics-d1-mission.md").write_text(
         "---\n"
-        "title: List of College Stadiums\n"
-        'description: "Division I basketball schools on Eric\'s list: city, stadium, and trip notes."\n'
-        "---\n",
-        encoding="utf-8",
-    )
-    (content_dir / "map.md").write_text(
-        "---\n"
-        "title: Map\n"
-        "description: Map of Division I college basketball gyms Eric has visited.\n"
+        "title: Eric's D1 Mission\n"
+        'description: "Eric Wisnewski\'s trip to every Division I college basketball stadium: the map, the school list, and recaps."\n'
         "---\n",
         encoding="utf-8",
     )
@@ -195,8 +188,7 @@ class SeoTemplateTests(unittest.TestCase):
 
     def test_nav_section_landings_have_unique_descriptions_success(self) -> None:
         for rel, needle in (
-            ("content/school-sheets.md", "stadium"),
-            ("content/map.md", "map"),
+            ("content/erics-d1-mission.md", "stadium"),
             ("content/gradys-tour/_index.md", "Grady"),
             ("content/da-breakdown-w-tad/_index.md", "Bears"),
             ("content/jeremy-on-tap/_index.md", "Jeremy"),
@@ -211,9 +203,10 @@ class SeoTemplateTests(unittest.TestCase):
         )
         self.assertIn("has-da-breakdown-posts.html", nav)
         self.assertIn("has-jeremy-on-tap-posts.html", nav)
-        self.assertIn("/school-sheets", nav)
-        self.assertIn("/map", nav)
+        self.assertIn("/erics-d1-mission", nav)
         self.assertIn("/gradys-tour", nav)
+        self.assertNotIn("/school-sheets", nav)
+        self.assertNotIn('"/map"', nav)
 
     def test_nav_section_pages_without_gates_failure(self) -> None:
         nav = (REPO_ROOT / "layouts" / "partials" / "nav-section-pages.html").read_text(
@@ -392,14 +385,12 @@ class SeoBuildTests(unittest.TestCase):
         home_site = json.loads(home_ld[0])
         parts = home_site["hasPart"]
         names = [part["name"] for part in parts]
-        self.assertEqual(names, ["List of College Stadiums", "Map", "Grady's Tour"])
+        self.assertEqual(names, ["Eric's D1 Mission", "Grady's Tour"])
         self.assertTrue(all(part.get("description") for part in parts))
         self.assertEqual(parts[0]["@type"], "WebPage")
-        self.assertEqual(parts[1]["@type"], "WebPage")
-        self.assertEqual(parts[2]["@type"], "CollectionPage")
-        self.assertIn("/school-sheets/", parts[0]["url"])
-        self.assertIn("/map/", parts[1]["url"])
-        self.assertIn("/gradys-tour/", parts[2]["url"])
+        self.assertEqual(parts[1]["@type"], "CollectionPage")
+        self.assertIn("/erics-d1-mission/", parts[0]["url"])
+        self.assertIn("/gradys-tour/", parts[1]["url"])
 
     def test_json_ld_website_omits_gated_nav_failure(self) -> None:
         home = (self.dest / "index.html").read_text(encoding="utf-8")
@@ -412,8 +403,7 @@ class SeoBuildTests(unittest.TestCase):
 
     def test_nav_section_pages_have_unique_meta_and_webpage_ld_success(self) -> None:
         cases = (
-            ("school-sheets/index.html", "WebPage", "stadium"),
-            ("map/index.html", "WebPage", "Map of Division I"),
+            ("erics-d1-mission/index.html", "WebPage", "stadium"),
             ("gradys-tour/index.html", "CollectionPage", "Grady"),
         )
         for rel, ld_type, needle in cases:

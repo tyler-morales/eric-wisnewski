@@ -2,7 +2,7 @@
 
 ## Next
 - [ ] SEO Phase 3 (rank — not more template code): Search Console + links + publishing. See README **SEO → Phase 3**. Checklist:
-  - [ ] Google Search Console: verify `ericwisnewski.com` (DNS), submit sitemap, Request indexing on `/`, `/school-sheets/`, `/map/`, `/gradys-tour/`, `/da-breakdown-w-tad/`, `/authors/eric-wisnewski/`, and key posts (`an-introduction`, school posts)
+  - [ ] Google Search Console: verify `ericwisnewski.com` (DNS), submit sitemap, Request indexing on `/`, `/erics-d1-mission/`, `/gradys-tour/`, `/da-breakdown-w-tad/`, `/authors/eric-wisnewski/`, and key posts (`an-introduction`, school posts)
   - [x] Cloudflare: 301 `www` → apex (Single Redirect template) — confirm in a private window
   - [ ] Push pending SEO copy/favicon/taxonomy cleanup when ready (description, 48×48 favicon, no home lede, disable empty tags/categories)
   - [ ] Apex URL in Eric’s Instagram/X/LinkedIn/bio and newsletter footers; share each new post with the real link
@@ -20,6 +20,7 @@
 - [x] Run D1 migration `0005_email_confirm_guard.sql` on production (comment email confirm columns + subscriber `confirm_sent_at`). Applied remotely 28 Aug 2026 (`5` queries, `49` rows written).
 
 ## Done
+- [x] Eric's D1 Mission hub at `/erics-d1-mission/`: sub-nav for **Posts**, **Map**, and **List of Stadiums** (hash panels; Posts default). Google My Map iframe + school list + `content/posts/` index; one main-nav tab in place of **List of College Stadiums** and **Map**. `/map/` and `/school-sheets/` 301 to the hub. Tests in `tests/test_erics_d1_mission.py`. Deleted/consolidated: `content/map.md`, `content/school-sheets.md`, `layouts/_default/map.html`, `layouts/_default/school-sheets.html`; table search/sort JS moved to `static/js/school-sheets.js`. Native US map (click-to-filter) waits on stadium geocodes.
 - [x] Admin subscribers table is full desktop width (`max-width: none`), not the 70ch comments column, so emails and Resend stay on one line. Comments admin stays 70ch. Tests in `tests/test_admin_subscribers.py`. Deleted/consolidated: `.admin-subscriber-email { word-break: break-word }`.
 - [x] Admin **Resend confirmation** on `/admin/subscribers/` for pending rows (same confirm link, skips the 24h public cooldown, stays pending until they click). Tests in `tests/test_admin_subscribers.py` and `tests/test_newsletter.py`. Deleted/consolidated: none — public signup still waits 24h before another confirm mail.
 - [x] Country chip (single-country pill and multi-country dropdown) has no underline; post-body link styles no longer leak onto it. Tests in `tests/test_gradys_tour_country.py`. Deleted/consolidated: `.post-country-chip:hover` and `.post-country-chip--menu a:hover` underline rules. Share/more-from hashes and list dates use variables so a wrap cannot insert `readFile " static/js…"` or `Format " 2006-01-02"`.
@@ -159,7 +160,8 @@
 - [x] Google Photos → blog: `/add-photos/` (password) + Pages Function `functions/api/photos.js` compresses in the browser and commits to `assets/images/uploads/`. Google Photos Picker or device files. Authors attach in Pages CMS after rebuild. Needs `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `UPLOAD_SECRET`, `GITHUB_TOKEN` on Cloudflare. Do not hotlink Google `baseUrl`.
 - [ ] Content is edited via Pages CMS (app.pagescms.org); ensure repo is connected and `.pages.yml` is present on the branch you use.
 - [ ] Cloudflare Pages: if builds still fail with "module not found", ensure the **branch Cloudflare builds from** has the fix (no `theme = ''` in `config/_default/hugo.toml`). If Pages CMS pushes to a different branch, merge `main` into it or remove the theme line on that branch.
-- [ ] Consider cache-bust or refresh note for Eric: when he updates the Google Sheet, a new deploy (or rebuild) is needed for the School Sheets page to show fresh data; optional: document or add a cache key hint in config.
+- [ ] Consider cache-bust or refresh note for Eric: when he updates the Google Sheet, a new deploy (or rebuild) is needed for the school list on Eric's D1 Mission to show fresh data; optional: document or add a cache key hint in config.
+- [ ] Native US map on Eric's D1 Mission (click a city to filter the list and posts). Blocked on geocodes: the My Map KMZ only has lat/lng for Finished pins; Unfinished are addresses. Keep the Google iframe until then.
 
 ## Domain
 - [x] Site domain set to **https://ericwisnewski.com** in `config/_default/hugo.toml` (baseURL). Canonical and og:url in `head.html` use it via `.Permalink`.

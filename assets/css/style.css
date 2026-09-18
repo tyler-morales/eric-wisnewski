@@ -2309,11 +2309,118 @@ article.post-content hr {
   border: 0;
 }
 
-/* Map page: full-width embedded map */
-.map-page {
-  max-width: none;
-  padding: 1rem;
+/* Eric's D1 Mission: wide enough for the school table + map embed */
+.d1-mission-page {
+  max-width: min(1400px, 100%);
 }
+
+.d1-mission-title {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.d1-mission-subnav {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin: 0 0 1.25rem;
+  padding: 0.25rem 0 0.75rem;
+  background: var(--bg);
+  border-bottom: 1px solid #ccc;
+}
+
+.d1-mission-subnav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.d1-mission-subnav ul::-webkit-scrollbar {
+  height: 0;
+}
+
+.d1-mission-subnav a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.d1-mission-subnav a:hover {
+  text-decoration: underline;
+}
+
+.d1-mission-subnav a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+.d1-mission-subnav a[aria-current="page"] {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.d1-mission-section {
+  margin: 0;
+  padding: 0;
+  scroll-margin-top: 3.5rem;
+}
+
+.d1-mission-section + .d1-mission-section {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #ccc;
+}
+
+.d1-mission-page--tabs .d1-mission-section + .d1-mission-section {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.d1-mission-page--tabs .d1-mission-section[hidden] {
+  display: none;
+}
+
+.d1-mission-section h2 {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.d1-mission-page--tabs .d1-mission-section h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.d1-mission-section:focus {
+  outline: none;
+}
+
+.d1-mission-section:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+.d1-mission-posts {
+  max-width: 90ch;
+}
+
+/* Map embed on Eric's D1 Mission */
 
 .map-origin {
   margin-bottom: 1rem;
@@ -2352,11 +2459,7 @@ article.post-content hr {
   border: 0;
 }
 
-/* School Sheets page: data table from Google Sheets CSV */
-.school-sheets-page {
-  max-width: min(1400px, 100%);
-}
-
+/* School list on Eric's D1 Mission: data table from Google Sheets CSV */
 .school-sheets-origin {
   margin-bottom: 1rem;
 }

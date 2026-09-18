@@ -6,11 +6,7 @@
   {{ end }}
   <nav class="site-nav" aria-label="Main navigation">
     <ul role="list">
-      <li><a href="{{ .Site.Params.nav_school_sheets | default " /school-sheets/" }}"{{ if hasPrefix
-          (.Site.Params.nav_school_sheets | default "" ) "http" }} target="_blank" rel="noopener noreferrer" {{ end
-          }}>List of College Stadiums</a></li>
-      <li><a href="{{ .Site.Params.nav_map | default " /map/" }}"{{ if hasPrefix (.Site.Params.nav_map | default ""
-          ) "http" }} target="_blank" rel="noopener noreferrer" {{ end }}>Map</a></li>
+      <li><a href="{{ .Site.Params.nav_erics_d1_mission | default "/erics-d1-mission/" }}">Eric's D1 Mission</a></li>
       <li><a href="{{ .Site.Params.nav_gradys_tour | default "/gradys-tour/" }}">Grady's Tour</a></li>
       {{ if partial "has-da-breakdown-posts.html" . }}
       <li><a href="{{ .Site.Params.nav_da_breakdown_w_tad | default "/da-breakdown-w-tad/" }}">Da Breakdown w Tad</a></li>

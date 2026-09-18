@@ -33,16 +33,15 @@ buildFuture = true
 
 [params]
   description = 'Eric Wisnewski is a life long blog dedicated to visiting every division I college basketball stadium, plus travel, sports and various other topics written by his friends.'
-  # CSV URL for School Sheets page (File > Share > Publish to web, or export URL if sheet is public)
+  # CSV URL for the school list on Eric's D1 Mission (File > Share > Publish to web, or export URL if sheet is public)
   school_sheets_csv_url = 'https://docs.google.com/spreadsheets/d/1fyJS_hWWZw4gu_1VYxgz2Laetw5az1c2LPuvCgHrl1U/export?format=csv&gid=0'
-  # Link to open the sheet in Google Sheets (optional; used for "View original" on /school-sheets/)
+  # Link to open the sheet in Google Sheets (optional; used for "View original" on Eric's D1 Mission)
   school_sheets_view_url = 'https://docs.google.com/spreadsheets/d/1fyJS_hWWZw4gu_1VYxgz2Laetw5az1c2LPuvCgHrl1U/edit'
-  nav_school_sheets = '/school-sheets/'
-  nav_map = '/map/'
+  nav_erics_d1_mission = '/erics-d1-mission/'
   nav_gradys_tour = '/gradys-tour/'
   nav_da_breakdown_w_tad = '/da-breakdown-w-tad/'
   nav_jeremy_on_tap = '/jeremy-on-tap/'
-  # Link to open the map in Google Maps (optional; used for "View original" on /map/)
+  # Link to open the map in Google Maps (optional; used for "Open map in Google Maps" on Eric's D1 Mission)
   map_viewer_url = 'https://www.google.com/maps/d/viewer?mid=1iRNx3DgEm5TJJmN1A4xM0uienUMFfqc'
   # Cloudflare Turnstile site key for comments (from Cloudflare Dashboard → Turnstile)
   turnstile_site_key = '0x4AAAAAACnww42_mYvpidw1'

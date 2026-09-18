@@ -167,7 +167,9 @@ class FooterBuildTests(unittest.TestCase):
                 f"hugo build failed; check that hugo is on PATH:\n{result.stderr}"
             )
         cls.home = (cls._output_dir / "index.html").read_text(encoding="utf-8")
-        cls.map_html = (cls._output_dir / "map" / "index.html").read_text(encoding="utf-8")
+        cls.mission_html = (cls._output_dir / "erics-d1-mission" / "index.html").read_text(
+            encoding="utf-8"
+        )
         cls.privacy = (cls._output_dir / "privacy" / "index.html").read_text(
             encoding="utf-8"
         )
@@ -191,9 +193,9 @@ class FooterBuildTests(unittest.TestCase):
             r'<a\b[^>]*href="[^"]*authors/?[^"]*"[^>]*>\s*Contributors\s*</a>',
         )
 
-    def test_map_and_tour_and_admin_include_footer_success(self) -> None:
+    def test_mission_and_tour_and_admin_include_footer_success(self) -> None:
         for name, html in (
-            ("map", self.map_html),
+            ("erics-d1-mission", self.mission_html),
             ("gradys-tour", self.tour),
             ("admin", self.admin),
         ):
@@ -229,7 +231,7 @@ class FooterBuildTests(unittest.TestCase):
         )
         for name, html in (
             ("home", self.home),
-            ("map", self.map_html),
+            ("erics-d1-mission", self.mission_html),
             ("privacy", self.privacy),
             ("admin", self.admin),
             ("gradys-tour", self.tour),
