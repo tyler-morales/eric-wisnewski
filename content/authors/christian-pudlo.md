@@ -1,14 +1,12 @@
 ---
 name: Christian Pudlo
 slug: christian-pudlo
-draft: true
+draft: false
 bio: >-
-  add your bio here and upload a photo
+  Christian Pudlo is a guest author who will be providing anything from travel
+  news to controversial takes. 
 
 
-  Once you toggle the draft button off, wait a minute, then you should see your
-  profile here ⬇️
-
-
-  https://ericwisnewski.com/authors/
+  He writes like an 8th grader so please take it easy on him.
+image: /images/uploads/IMG_0664.jpeg
 ---
