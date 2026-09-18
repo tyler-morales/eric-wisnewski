@@ -2567,6 +2567,10 @@ article.post-content hr {
   padding: 1rem;
 }
 
+main.admin-subscribers-main {
+  max-width: none;
+}
+
 .admin-comments-title {
   font-size: 1.25rem;
   margin: 0 0 1rem;
@@ -2818,7 +2822,8 @@ article.post-content hr {
 }
 
 .admin-subscriber-table {
-  width: 100%;
+  width: auto;
+  min-width: 100%;
   border-collapse: collapse;
   font-size: 0.95rem;
 }
@@ -2836,9 +2841,9 @@ article.post-content hr {
   white-space: nowrap;
 }
 
-.admin-subscriber-email {
-  word-break: break-word;
-  min-width: 10rem;
+.admin-subscriber-email,
+.admin-subscriber-actions {
+  white-space: nowrap;
 }
 
 .admin-subscriber-email a {

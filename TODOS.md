@@ -20,6 +20,7 @@
 - [x] Run D1 migration `0005_email_confirm_guard.sql` on production (comment email confirm columns + subscriber `confirm_sent_at`). Applied remotely 28 Aug 2026 (`5` queries, `49` rows written).
 
 ## Done
+- [x] Admin subscribers table is full desktop width (`max-width: none`), not the 70ch comments column, so emails and Resend stay on one line. Comments admin stays 70ch. Tests in `tests/test_admin_subscribers.py`. Deleted/consolidated: `.admin-subscriber-email { word-break: break-word }`.
 - [x] Admin **Resend confirmation** on `/admin/subscribers/` for pending rows (same confirm link, skips the 24h public cooldown, stays pending until they click). Tests in `tests/test_admin_subscribers.py` and `tests/test_newsletter.py`. Deleted/consolidated: none — public signup still waits 24h before another confirm mail.
 - [x] Country chip (single-country pill and multi-country dropdown) has no underline; post-body link styles no longer leak onto it. Tests in `tests/test_gradys_tour_country.py`. Deleted/consolidated: `.post-country-chip:hover` and `.post-country-chip--menu a:hover` underline rules. Share/more-from hashes and list dates use variables so a wrap cannot insert `readFile " static/js…"` or `Format " 2006-01-02"`.
 - [x] Globe wheel-zoom only on the disk (not the square SVG box); dropped the extra **All countries** link under the count (the dropdown already has it). Tests in `tests/test_gradys_tour_country.py`.

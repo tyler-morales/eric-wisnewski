@@ -318,6 +318,26 @@ class AdminSubscriberSourceTests(unittest.TestCase):
         self.assertIn("display: none", css.split(".admin-secret-form[hidden]", 1)[-1][:80])
         self.assertIn(".admin-subscriber-resend:focus-visible", css)
 
+    def test_subscribers_page_uses_full_width_success(self) -> None:
+        layout = SUBSCRIBERS_LAYOUT.read_text(encoding="utf-8")
+        css = (REPO_ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
+        self.assertIn("admin-subscribers-main", layout)
+        wide = css.split("main.admin-subscribers-main", 1)[-1][:80]
+        self.assertIn("max-width: none", wide)
+        email = css.split(".admin-subscriber-email,", 1)[-1].split("}", 1)[0]
+        self.assertIn("white-space: nowrap", email)
+        table = css.split(".admin-subscriber-table {", 1)[-1].split("}", 1)[0]
+        self.assertIn("width: auto", table)
+
+    def test_comments_page_keeps_reading_width_failure(self) -> None:
+        comments = COMMENTS_LAYOUT.read_text(encoding="utf-8")
+        css = (REPO_ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
+        self.assertNotIn("admin-subscribers-main", comments)
+        comments_main = css.split(".admin-comments-main {", 1)[-1].split("}", 1)[0]
+        self.assertIn("max-width: 70ch", comments_main)
+        email = css.split(".admin-subscriber-email,", 1)[-1].split("}", 1)[0]
+        self.assertNotIn("word-break: break-word", email)
+
     def test_flex_without_hidden_override_failure(self) -> None:
         sample = ".admin-secret-form {\n  display: flex;\n}\n"
         self.assertNotIn(".admin-secret-form[hidden]", sample)
@@ -374,6 +394,7 @@ class AdminSubscriberBuildTests(unittest.TestCase):
         self.assertIn("/js/admin-subscribers.js", self.subscribers_html)
         self.assertNotIn("%20/js/admin-subscribers.js", self.subscribers_html)
         self.assertNotIn("/ /js/admin-subscribers.js", self.subscribers_html)
+        self.assertIn("admin-subscribers-main", self.subscribers_html)
         self.assertIn("/admin/comments/", self.subscribers_html)
         self.assertIn("Da Breakdown w Tad", self.subscribers_html)
         self.assertIn("Jeremy On Tap", self.subscribers_html)
