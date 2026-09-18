@@ -1,0 +1,15 @@
+{{/*
+Country slugs on a Grady post. CMS may store a string or a list.
+*/}}
+{{- $slugs := slice -}}
+{{- $raw := .Params.country -}}
+{{- if $raw -}}
+{{- if eq (printf "%T" $raw) "string" -}}
+{{- $slugs = $slugs | append ($raw | urlize) -}}
+{{- else -}}
+{{- range $raw -}}
+{{- with . }}{{ $slugs = $slugs | append (. | urlize) }}{{ end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- return $slugs -}}

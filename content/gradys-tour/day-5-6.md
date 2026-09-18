@@ -4,6 +4,7 @@ slug: Day-5-7
 author: grady-davis
 date: 2026-08-26T22:47:00Z
 draft: false
+country: France
 image: /images/uploads/IMG_1451-1.jpeg
 ---
 Aug 27, 26’

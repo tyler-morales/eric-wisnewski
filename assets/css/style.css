@@ -444,15 +444,101 @@ article.post-content>header h1 {
 }
 
 article.post-content>header .post-byline,
+article.post-content>header .post-byline-row,
 article.post-content>header time,
 article.post-content>header .post-share {
   font-family: var(--font-sans);
 }
 
-article.post-content>header .post-byline {
+article.post-content>header .post-byline-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem 0.75rem;
+  width: 100%;
   margin: 0.35rem 0 0;
+}
+
+article.post-content>header .post-byline {
+  margin: 0;
   font-size: 0.9375rem;
   color: #333;
+}
+
+.post-country-chip,
+article.post-content a.post-country-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid #000;
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+  background: var(--bg);
+}
+
+.post-country-chip--menu {
+  display: block;
+  position: relative;
+  z-index: 6;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.post-country-chip--menu summary {
+  list-style: none;
+  cursor: pointer;
+  border: 1px solid #000;
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+  font-weight: 600;
+}
+
+.post-country-chip--menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.post-country-chip--menu summary::after {
+  content: " ▾";
+  font-weight: 400;
+}
+
+.post-country-chip--menu[open] summary::after {
+  content: " ▴";
+}
+
+.post-country-chip--menu ul {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  left: auto;
+  margin: 0.35rem 0 0;
+  padding: 0.35rem 0;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid #000;
+  border-radius: 0.25rem;
+  min-width: 12rem;
+}
+
+.post-country-chip--menu a,
+article.post-content .post-country-chip--menu a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.post-country-chip:focus-visible,
+.post-country-chip--menu summary:focus-visible,
+.post-country-chip--menu a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
 }
 
 article.post-content>header .post-meta {
@@ -587,7 +673,7 @@ article.post-content>header time {
   max-width: none;
 }
 
-.author-bios .author-bio + .author-bio {
+.author-bios .author-bio+.author-bio {
   margin-top: 1.25rem;
   padding-top: 1.25rem;
   border-top: 1px solid #eee;
@@ -805,6 +891,194 @@ article.post-content>header time {
 .more-from-card:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 4px;
+}
+
+/* Grady’s Tour: country dropdown + locator globe on the index. */
+.tour-country-title {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.tour-country {
+  width: 100%;
+  max-width: none;
+  margin: 2.5rem 0 0;
+  padding: 1.25rem 0 0;
+  border-top: 1px solid #ccc;
+  font-family: var(--font-sans);
+}
+
+#main-content>.tour-country {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.tour-country-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 720px) {
+  .tour-country-layout {
+    grid-template-columns: minmax(14rem, 20rem) minmax(0, 1fr);
+    gap: 1.25rem 1.75rem;
+    align-items: start;
+  }
+}
+
+.tour-country-heading {
+  margin: 0 0 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.tour-country-count {
+  margin: 0.75rem 0 0;
+}
+
+.tour-country-select select:focus-visible,
+.tour-country-map-tools button:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+.tour-country-select label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.tour-country-select select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.6rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid #000;
+  border-radius: 0.25rem;
+}
+
+.tour-country-map {
+  min-width: 0;
+}
+
+.tour-country-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(36rem, 100vw);
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.tour-country-ocean,
+.tour-country-land {
+  pointer-events: auto;
+  cursor: grab;
+}
+
+.tour-country-svg.is-dragging .tour-country-ocean,
+.tour-country-svg.is-dragging .tour-country-land {
+  cursor: grabbing;
+}
+
+.tour-country-map-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tour-country-map-tools button {
+  min-height: 2.75rem;
+  padding: 0.4rem 0.75rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid #000;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.tour-country-map-hint {
+  margin: 0.45rem 0 0;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.tour-country-ocean {
+  fill: #b7c9d3;
+}
+
+.tour-country-graticule {
+  fill: none;
+  stroke: #8ea3ae;
+  stroke-width: 0.5;
+  pointer-events: none;
+}
+
+.tour-country-sphere {
+  fill: none;
+  stroke: #111;
+  stroke-width: 1.75;
+  pointer-events: none;
+}
+
+.tour-country-svg [data-slug] {
+  fill: #7a7a7a;
+  stroke: #b7c9d3;
+  stroke-width: 0.45;
+}
+
+.tour-country-svg [data-slug].has-posts {
+  fill: #fff;
+  stroke: #000;
+  stroke-width: 1.15;
+  cursor: pointer;
+  outline: none;
+}
+
+.tour-country-svg [data-slug].has-posts.is-current {
+  fill: #111;
+}
+
+.tour-country-badge circle {
+  fill: #000;
+  stroke: #fff;
+  stroke-width: 2;
+}
+
+.tour-country-badge text {
+  fill: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+}
+
+.tour-country-badge.is-current circle {
+  fill: #fff;
+  stroke: #000;
+}
+
+.tour-country-badge.is-current text {
+  fill: #000;
+}
+
+.tour-country-count {
+  font-weight: 600;
+}
+
+.post-list-item[hidden],
+.post-list[hidden],
+.gradys-tour-empty[hidden],
+.tour-country-count[hidden] {
+  display: none;
 }
 
 .post-list-author {
@@ -1230,6 +1504,7 @@ article.post-content .scoreboard span {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .scoreboard.is-playing .scoreboard-frame,
   .scoreboard-digit.is-flipping .scoreboard-digit-leaf-top,
   .scoreboard-digit.is-flipping .scoreboard-digit-leaf-bottom {
@@ -1763,13 +2038,23 @@ article.post-content hr {
 }
 
 @keyframes comment-like-count-up {
-  from { transform: translateY(0); }
-  to { transform: translateY(-1.2em); }
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-1.2em);
+  }
 }
 
 @keyframes comment-like-count-down {
-  from { transform: translateY(-1.2em); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(-1.2em);
+  }
+
+  to {
+    transform: translateY(0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

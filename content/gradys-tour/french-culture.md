@@ -4,6 +4,7 @@ slug: French-culture
 author: grady-davis
 date: 2026-08-29T21:55:00Z
 draft: false
+country: France
 image: /images/uploads/image-1.jpg
 ---
 Aug 31st, Mile 532: *Live updates* 

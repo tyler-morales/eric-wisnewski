@@ -1,19 +1,21 @@
 {{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
 
 {{ define "main" }}
-  {{ partial "header.html" . }}
-  <main id="main-content">
-    <h1 class="visually-hidden">{{ .Title }}</h1>
-    {{ $posts := .RegularPages }}
-    {{ if $posts }}
-    <ul class="post-list">
-      {{ range $posts }}
-        {{ partial "post-list-item.html" . }}
-      {{ end }}
-    </ul>
-    {{ else }}
-    <p class="gradys-tour-empty">No posts from Grady yet. Check back soon.</p>
+{{ partial "header.html" . }}
+<main id="main-content">
+  <h1 class="tour-country-title" data-tour-title>{{ .Title }}</h1>
+  {{ partial "gradys-tour-country-nav.html" . }}
+  {{ $posts := .RegularPages }}
+  {{ if $posts }}
+  <ul class="post-list">
+    {{ range $posts }}
+    {{ partial "post-list-item.html" . }}
     {{ end }}
-    {{ partial "subscribe.html" . }}
-  </main>
+  </ul>
+  <p class="gradys-tour-empty" data-tour-empty hidden>No posts for this country yet.</p>
+  {{ else }}
+  <p class="gradys-tour-empty">No travel posts yet. Check back soon.</p>
+  {{ end }}
+  {{ partial "subscribe.html" . }}
+</main>
 {{ end }}

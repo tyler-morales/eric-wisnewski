@@ -1,35 +1,41 @@
 {{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
 
 {{ define "main" }}
-  {{ partial "header.html" . }}
-  <main>
-    <article class="post-content">
-      <header>
-        <h1>{{ .Title }}</h1>
-        {{ partial "post-byline.html" . }}
-        <div class="post-meta">
-          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-          {{ partial "share.html" (dict "page" . "id" "header") }}
-        </div>
-      </header>
-      {{ with .Params.image }}
-      <figure class="post-featured-image" aria-label="Featured image for {{ $.Title }}">
-        <img src="{{ . | absURL }}" alt="{{ with $.Params.image_alt }}{{ . }}{{ else }}Featured image for {{ $.Title }}{{ end }}" loading="lazy" decoding="async">
-      </figure>
-      {{ end }}
-      {{ partial "scoreboard.html" . }}
-      {{ partial "page-content.html" . }}
-      {{ partial "post-parts.html" . }}
-      {{ partial "post-gallery.html" . }}
-      {{ partial "report-card.html" . }}
-      {{ partial "share.html" (dict "page" . "id" "footer") }}
-      <a href="#top" class="back-to-top">Back to top</a>
-      {{ partial "author-bio.html" . }}
-    </article>
-    {{ partial "more-from-author.html" . }}
-    {{ partial "subscribe.html" . }}
-    {{ partial "comments.html" . }}
-    <script type="module" src="{{ "/js/share.js" | relURL }}?v={{ md5 (readFile "static/js/share.js") }}"></script>
-    <script type="module" src="{{ "/js/more-from.js" | relURL }}?v={{ md5 (readFile "static/js/more-from.js") }}"></script>
-  </main>
+{{ partial "header.html" . }}
+<main>
+  <article class="post-content">
+    <header>
+      <h1>{{ .Title }}</h1>
+      {{ partial "post-byline.html" . }}
+      <div class="post-meta">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        {{ partial "share.html" (dict "page" . "id" "header") }}
+      </div>
+    </header>
+    {{ with .Params.image }}
+    <figure class="post-featured-image" aria-label="Featured image for {{ $.Title }}">
+      <img src="{{ . | absURL }}"
+        alt="{{ with $.Params.image_alt }}{{ . }}{{ else }}Featured image for {{ $.Title }}{{ end }}" loading="lazy"
+        decoding="async">
+    </figure>
+    {{ end }}
+    {{ partial "scoreboard.html" . }}
+    {{ partial "page-content.html" . }}
+    {{ partial "post-parts.html" . }}
+    {{ partial "post-gallery.html" . }}
+    {{ partial "report-card.html" . }}
+    {{ partial "share.html" (dict "page" . "id" "footer") }}
+    <a href="#top" class="back-to-top">Back to top</a>
+    {{ partial "author-bio.html" . }}
+  </article>
+  {{ partial "more-from-author.html" . }}
+  {{ partial "subscribe.html" . }}
+  {{ partial "comments.html" . }}
+  {{ $shareJS := "/js/share.js" | relURL }}
+  {{ $moreFromJS := "/js/more-from.js" | relURL }}
+  {{ $shareFile := "static/js/share.js" }}
+  {{ $moreFromFile := "static/js/more-from.js" }}
+  <script type="module" src="{{ $shareJS }}?v={{ md5 (readFile $shareFile) }}"></script>
+  <script type="module" src="{{ $moreFromJS }}?v={{ md5 (readFile $moreFromFile) }}"></script>
+</main>
 {{ end }}

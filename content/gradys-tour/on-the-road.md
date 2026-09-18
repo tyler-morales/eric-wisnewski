@@ -6,6 +6,7 @@ aliases:
 author: grady-davis
 date: 2026-08-22T22:43:00Z
 draft: false
+country: France
 image: /images/uploads/IMG_1041-1.jpeg
 ---
 Aug 20, 26’

@@ -5,6 +5,10 @@ author:
   - grady-davis
 date: 2026-09-14T13:41:00Z
 draft: false
+country:
+  - Italy
+  - Switzerland
+  - Germany
 gallery:
   - /images/uploads/IMG_2001.jpeg
   - /images/uploads/790489d1-1bdf-47bd-b5b7-9ee832164e0b.jpeg

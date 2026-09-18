@@ -6,6 +6,7 @@ author:
   - christian-pudlo
 date: 2026-09-10T19:38:00Z
 draft: true
+country: Germany
 parts:
   - author: grady-davis
     body: "The food sucks and the people are tattle tails. They also give you dead
