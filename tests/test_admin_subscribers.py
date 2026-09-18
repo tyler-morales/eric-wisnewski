@@ -132,6 +132,7 @@ class SubscriberTableTests(unittest.TestCase):
             [cell["status"] for cell in rows[0]["cells"]],
             ["confirmed", "pending", "", ""],
         )
+        self.assertTrue(rows[0]["pending"])
         all_lists = [
             {
                 "email": "ada@example.com",
@@ -148,6 +149,7 @@ class SubscriberTableTests(unittest.TestCase):
             [cell["status"] for cell in filled[0]["cells"]],
             ["confirmed", "confirmed", "confirmed", "confirmed"],
         )
+        self.assertFalse(filled[0]["pending"])
         self.assertEqual(
             call_js_fn(ADMIN_SUBSCRIBERS_JS, "summarizeSubscribers", all_lists),
             "1 person. Confirmed: Eric's blog 1, Grady's Tour 1, Da Breakdown w Tad 1, Jeremy On Tap 1.",
@@ -232,6 +234,30 @@ class AdminSubscriberSourceTests(unittest.TestCase):
         self.assertIn("SELECT email, list, status, created_at, confirmed_at, unsubscribed_at", source)
         self.assertNotIn("searchParams.get('admin_secret')", source)
 
+    def test_admin_resend_confirm_stays_pending_success(self) -> None:
+        source = SUBSCRIBE_API.read_text(encoding="utf-8")
+        self.assertIn("resendConfirm", source)
+        self.assertIn("pendingConfirmPlan", source)
+        self.assertIn("No pending confirmation for that email.", source)
+        self.assertIn("confirmEmailBody", source)
+        self.assertIn("isAdmin", source)
+        self.assertIn(
+            "UPDATE subscribers SET confirm_token = ? WHERE email = ? AND status = 'pending'",
+            source,
+        )
+        self.assertNotIn("searchParams.get('admin_secret')", source)
+
+    def test_admin_resend_does_not_confirm_or_leak_token_failure(self) -> None:
+        source = SUBSCRIBE_API.read_text(encoding="utf-8")
+        self.assertNotIn("resendConfirm && status = 'confirmed'", source)
+        self.assertNotIn("jsonResponse({ ok: true, confirm_token", source)
+        self.assertNotIn("token: plan.token", source)
+        resend_block = source.split("async function resendPendingConfirm", 1)[-1].split(
+            "\nexport async function ", 1
+        )[0]
+        self.assertNotIn("confirmMailAllowed", resend_block)
+        self.assertNotIn("SET status = 'confirmed'", resend_block)
+
     def test_comments_uses_shared_is_admin_failure_if_local(self) -> None:
         source = COMMENTS_API.read_text(encoding="utf-8")
         self.assertIn("isAdmin", source)
@@ -263,6 +289,15 @@ class AdminSubscriberSourceTests(unittest.TestCase):
         self.assertIn('id="admin-content" class="admin-content" tabindex="-1"', layout)
         self.assertIn("adminContent.focus()", script)
         self.assertIn("secretInput.focus()", script)
+        self.assertIn("Resend confirmation", script)
+        self.assertIn("resendConfirm", script)
+        self.assertIn("row.pending", script)
+        self.assertIn("aria-label", script)
+
+    def test_admin_resend_button_only_for_pending_failure(self) -> None:
+        script = ADMIN_SUBSCRIBERS_JS.read_text(encoding="utf-8")
+        self.assertIn("if (row.pending)", script)
+        self.assertIn("No pending confirmation", script)
 
     def test_comments_layout_links_subscribers_success(self) -> None:
         comments = COMMENTS_LAYOUT.read_text(encoding="utf-8")
@@ -281,6 +316,7 @@ class AdminSubscriberSourceTests(unittest.TestCase):
         css = (REPO_ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
         self.assertIn(".admin-secret-form[hidden]", css)
         self.assertIn("display: none", css.split(".admin-secret-form[hidden]", 1)[-1][:80])
+        self.assertIn(".admin-subscriber-resend:focus-visible", css)
 
     def test_flex_without_hidden_override_failure(self) -> None:
         sample = ".admin-secret-form {\n  display: flex;\n}\n"
@@ -291,6 +327,9 @@ class AdminSubscriberSourceTests(unittest.TestCase):
             text = path.read_text(encoding="utf-8")
             self.assertIn("robots: noindex", text)
             self.assertIn("list: never", text)
+
+    def test_subscribers_guide_mentions_resend_success(self) -> None:
+        self.assertIn("Resend confirmation", SUBSCRIBERS_CONTENT.read_text(encoding="utf-8"))
 
 
 class AdminSubscriberBuildTests(unittest.TestCase):
@@ -351,6 +390,8 @@ class AdminSubscriberBuildTests(unittest.TestCase):
         self.assertIn("Jeremy On Tap", script)
         self.assertNotIn("admin-subscriber-lists", script)
         self.assertNotIn("admin_secret=", script)
+        self.assertIn("Resend confirmation", script)
+        self.assertIn("button.textContent = 'Sent'", script)
 
     def test_comments_page_links_subscribers_success(self) -> None:
         self.assertIn("/admin/subscribers/", self.comments_html)

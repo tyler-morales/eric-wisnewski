@@ -196,6 +196,22 @@ export function confirmRedirectPath(rows) {
   return confirmOutcome(rows) === 'invalid' ? '/subscribe/invalid/' : '/subscribe/confirmed/';
 }
 
+export function pendingConfirmPlan(rows) {
+  const lists = [];
+  const seen = new Set();
+  let token = '';
+  for (const row of Array.isArray(rows) ? rows : []) {
+    if (!row || row.status !== 'pending') continue;
+    const list = typeof row.list === 'string' ? row.list.trim() : '';
+    if (!VALID_LISTS.includes(list) || seen.has(list)) continue;
+    seen.add(list);
+    lists.push(list);
+    if (!token && isValidToken(row.confirm_token)) token = row.confirm_token;
+  }
+  if (!lists.length) return null;
+  return { lists, token };
+}
+
 function managePageUrl(origin, token) {
   return `${origin}/subscribe/manage/?token=${encodeURIComponent(token)}`;
 }
@@ -340,6 +356,67 @@ async function savePreferences(context, body) {
   }
 }
 
+async function resendPendingConfirm(context, body) {
+  const db = context.env.COMMENTS_DB;
+  if (!db) return jsonResponse({ error: 'Newsletter not configured' }, 503);
+  const secret = adminSecretFromRequest(context.request, body);
+  if (!isAdmin(secret, context.env)) {
+    const configuredSet =
+      typeof context.env.COMMENTS_ADMIN_SECRET === 'string' &&
+      context.env.COMMENTS_ADMIN_SECRET.length > 0;
+    return jsonResponse(
+      { error: configuredSet ? 'Invalid admin secret.' : 'Admin secret not configured on server.' },
+      401
+    );
+  }
+  const email = normalizeEmail(body.email != null ? String(body.email) : '');
+  if (!isValidEmail(email)) {
+    return jsonResponse({ error: 'Valid email is required' }, 400);
+  }
+  if (!context.env.RESEND_API_KEY) {
+    return jsonResponse({ error: 'Could not send confirmation email. Try again later.' }, 503);
+  }
+  try {
+    const found = await db
+      .prepare('SELECT list, status, confirm_token FROM subscribers WHERE email = ?')
+      .bind(email)
+      .all();
+    const plan = pendingConfirmPlan(found.results || []);
+    if (!plan) {
+      return jsonResponse({ error: 'No pending confirmation for that email.' }, 404);
+    }
+    const token = isValidToken(plan.token) ? plan.token : randomToken();
+    await db
+      .prepare(
+        `UPDATE subscribers SET confirm_token = ? WHERE email = ? AND status = 'pending'`
+      )
+      .bind(token, email)
+      .run();
+    const origin = publicOrigin(context.env, context.request);
+    const mail = confirmEmailBody(origin, token, plan.lists);
+    await sendResendEmail(context.env, {
+      to: email,
+      subject: mail.subject,
+      html: mail.html,
+      text: mail.text,
+    });
+    await db
+      .prepare(
+        `UPDATE subscribers SET confirm_sent_at = datetime('now')
+         WHERE email = ? AND status = 'pending'`
+      )
+      .bind(email)
+      .run();
+    return jsonResponse({
+      ok: true,
+      message: `Confirmation emailed to ${email} for ${joinListLabels(plan.lists)}.`,
+    });
+  } catch (e) {
+    console.error('subscribe admin resend', e);
+    return jsonResponse({ error: 'Failed to send confirmation email' }, 500);
+  }
+}
+
 export async function onRequestPost(context) {
   const unsubscribeParam = new URL(context.request.url).searchParams.get('unsubscribe');
   if (unsubscribeParam) {
@@ -359,6 +436,10 @@ export async function onRequestPost(context) {
   const prefToken = typeof body.token === 'string' ? body.token.trim() : '';
   if (prefToken && (body.email == null || String(body.email).trim() === '')) {
     return savePreferences(context, body);
+  }
+
+  if (body && body.resendConfirm === true) {
+    return resendPendingConfirm(context, body);
   }
 
   const email = normalizeEmail(body.email != null ? String(body.email) : '');

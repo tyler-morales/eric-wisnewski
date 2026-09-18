@@ -416,6 +416,50 @@ class NewsletterHelperTests(unittest.TestCase):
             "/subscribe/invalid/",
         )
 
+    def test_pending_confirm_plan_reuses_token_success(self) -> None:
+        token = "ab" * 24
+        plan = call_js_fn(
+            SUBSCRIBE_API,
+            "pendingConfirmPlan",
+            [
+                {
+                    "list": "posts",
+                    "status": "confirmed",
+                    "confirm_token": token,
+                },
+                {
+                    "list": "gradys-tour",
+                    "status": "pending",
+                    "confirm_token": token,
+                },
+                {
+                    "list": "da-breakdown-w-tad",
+                    "status": "unsubscribed",
+                    "confirm_token": token,
+                },
+            ],
+        )
+        self.assertEqual(plan["lists"], ["gradys-tour"])
+        self.assertEqual(plan["token"], token)
+
+    def test_pending_confirm_plan_none_or_invalid_failure(self) -> None:
+        self.assertIsNone(call_js_fn(SUBSCRIBE_API, "pendingConfirmPlan", None))
+        self.assertIsNone(call_js_fn(SUBSCRIBE_API, "pendingConfirmPlan", []))
+        self.assertIsNone(
+            call_js_fn(
+                SUBSCRIBE_API,
+                "pendingConfirmPlan",
+                [{"list": "posts", "status": "confirmed", "confirm_token": "ab" * 24}],
+            )
+        )
+        plan = call_js_fn(
+            SUBSCRIBE_API,
+            "pendingConfirmPlan",
+            [{"list": "posts", "status": "pending", "confirm_token": "nope"}],
+        )
+        self.assertEqual(plan["lists"], ["posts"])
+        self.assertEqual(plan["token"], "")
+
     def test_public_origin_pinned_success(self) -> None:
         self.assertEqual(
             call_js_fn(

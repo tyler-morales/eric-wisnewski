@@ -10,4 +10,4 @@ build:
 1. Type the password Tyler gave you, then click **Unlock**.
 2. Each row is one email. Columns are **Eric's blog**, **Grady's Tour**, **Da Breakdown w Tad**, and **Jeremy On Tap**.
 
-**Pending** means they have not clicked the confirmation link yet, so they will not get new-post emails. A dash means they never signed up for that list.
+**Pending** means they have not clicked the confirmation link yet, so they will not get new-post emails. Click **Resend confirmation** on that row to email the same link again (ask them to check inbox, spam, and trash). A dash means they never signed up for that list.

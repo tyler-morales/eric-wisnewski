@@ -2858,6 +2858,41 @@ article.post-content hr {
   color: #999;
 }
 
+.admin-subscriber-resend-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.admin-subscriber-resend {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  border: 1px solid #0891b2;
+  background: #fff;
+  color: #0891b2;
+}
+
+.admin-subscriber-resend:hover,
+.admin-subscriber-resend:focus-visible {
+  background: #0891b2;
+  color: #fff;
+  outline: 2px solid #0891b2;
+  outline-offset: 2px;
+}
+
+.admin-subscriber-resend:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.admin-subscriber-resend-status {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #555;
+}
+
 .admin-comment-edit {
   padding: 0.25rem 0.5rem;
   font-size: 0.8125rem;

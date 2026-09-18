@@ -26,11 +26,14 @@ export function subscriberTableRows(people, columns) {
     if (!person || typeof person.email !== 'string' || !person.email) continue;
     var byId = listStatusById(person.lists);
     var cells = [];
+    var pending = false;
     for (var j = 0; j < columns.length; j++) {
       var col = columns[j];
-      cells.push({ id: col.id, label: col.label, status: byId[col.id] || '' });
+      var status = byId[col.id] || '';
+      if (status === 'pending') pending = true;
+      cells.push({ id: col.id, label: col.label, status: status });
     }
-    out.push({ email: person.email, cells: cells });
+    out.push({ email: person.email, cells: cells, pending: pending });
   }
   return out;
 }
@@ -116,6 +119,68 @@ export function initAdminSubscribers() {
     td.appendChild(badge);
   }
 
+  function renderResend(td, email) {
+    var wrap = document.createElement('div');
+    wrap.className = 'admin-subscriber-resend-wrap';
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'admin-subscriber-resend';
+    button.textContent = 'Resend confirmation';
+    button.setAttribute('aria-label', 'Resend confirmation email to ' + email);
+    var statusEl = document.createElement('p');
+    statusEl.className = 'admin-subscriber-resend-status';
+    statusEl.setAttribute('role', 'status');
+    statusEl.setAttribute('aria-live', 'polite');
+    statusEl.hidden = true;
+    button.addEventListener('click', function () {
+      var secret = getSecret();
+      if (!secret) { showSecretForm('Session expired.'); return; }
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+      statusEl.hidden = false;
+      statusEl.textContent = 'Sending…';
+      fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + secret
+        },
+        body: JSON.stringify({ resendConfirm: true, email: email })
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok, status: res.status, data: data || {} };
+          }).catch(function () {
+            return { ok: res.ok, status: res.status, data: {} };
+          });
+        })
+        .then(function (result) {
+          button.removeAttribute('aria-busy');
+          if (result.status === 401 || result.status === 403) {
+            showSecretForm(result.data.error || 'Invalid or expired secret.');
+            return;
+          }
+          if (!result.ok) {
+            button.disabled = false;
+            statusEl.textContent = result.data.error || 'Could not send confirmation email.';
+            return;
+          }
+          button.textContent = 'Sent';
+          button.setAttribute('aria-label', 'Confirmation emailed to ' + email);
+          statusEl.textContent = result.data.message || 'Confirmation emailed.';
+        })
+        .catch(function () {
+          button.disabled = false;
+          button.removeAttribute('aria-busy');
+          statusEl.hidden = false;
+          statusEl.textContent = 'Could not send confirmation email.';
+        });
+    });
+    wrap.appendChild(button);
+    wrap.appendChild(statusEl);
+    td.appendChild(wrap);
+  }
+
   function renderSubscribers(people) {
     adminList.innerHTML = '';
     adminListError.hidden = true;
@@ -147,6 +212,13 @@ export function initAdminSubscribers() {
       th.textContent = ADMIN_LIST_COLUMNS[c].label;
       headRow.appendChild(th);
     }
+    var actionTh = document.createElement('th');
+    actionTh.scope = 'col';
+    var actionLabel = document.createElement('span');
+    actionLabel.className = 'visually-hidden';
+    actionLabel.textContent = 'Actions';
+    actionTh.appendChild(actionLabel);
+    headRow.appendChild(actionTh);
     thead.appendChild(headRow);
     table.appendChild(thead);
     var tbody = document.createElement('tbody');
@@ -165,6 +237,17 @@ export function initAdminSubscribers() {
         renderStatusCell(td, row.cells[j].status);
         tr.appendChild(td);
       }
+      var actionTd = document.createElement('td');
+      actionTd.className = 'admin-subscriber-actions';
+      if (row.pending) {
+        renderResend(actionTd, row.email);
+      } else {
+        var none = document.createElement('span');
+        none.className = 'visually-hidden';
+        none.textContent = 'No pending confirmation';
+        actionTd.appendChild(none);
+      }
+      tr.appendChild(actionTd);
       tbody.appendChild(tr);
     }
     table.appendChild(tbody);
