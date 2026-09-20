@@ -11,15 +11,15 @@ export function courtLayout(width, height) {
   var h = Number(height);
   if (!isFinite(w) || w <= 0) w = 320;
   if (!isFinite(h) || h <= 0) h = 240;
-  var ballR = clamp(Math.round(Math.min(w, h) * 0.048), 12, 20);
+  var ballR = clamp(Math.round(Math.min(w, h) * 0.05), 13, 18);
   var floorH = 22;
   var floorTop = h - floorH;
-  var gap = ballR * 2.55;
-  var rimR = clamp(Math.round(ballR * 0.28), 4, 7);
-  var hoopY = clamp(h * 0.36, ballR * 5.5, h * 0.45);
+  var gap = Math.max(ballR * 4.6, 56);
+  var rimR = 4;
+  var hoopY = clamp(h * 0.46, ballR * 7, h * 0.52);
   var backboardW = 8;
-  var backboardH = Math.max(72, h * 0.3);
-  var hoopRight = w - 16 - backboardW;
+  var backboardH = Math.max(64, h * 0.26);
+  var hoopRight = w * 0.7;
   var rimBackX = hoopRight - 8;
   var rimFrontX = rimBackX - gap;
   return {
@@ -62,19 +62,39 @@ export function pointerInBall(px, py, ball, slop) {
 export function flingVelocity(startX, startY, endX, endY, dtMs, opts) {
   opts = opts || {};
   var minDist = opts.minDist == null ? 14 : opts.minDist;
-  var maxSpeed = opts.maxSpeed == null ? 18 : opts.maxSpeed;
-  var dx = Number(endX) - Number(startX);
-  var dy = Number(endY) - Number(startY);
+  var maxSpeed = opts.maxSpeed == null ? 16 : opts.maxSpeed;
+  var capDist = opts.capDist == null ? 110 : opts.capDist;
+  var dx = Number(startX) - Number(endX);
+  var dy = Number(startY) - Number(endY);
   var dist = Math.hypot(dx, dy);
   if (!isFinite(dist) || dist < minDist) {
     return { vx: 0, vy: 0, dist: isFinite(dist) ? dist : 0 };
   }
-  var dt = clamp(dtMs, 32, 420);
-  var power = dist * 0.085 + (dist / dt) * 9.5;
-  power = clamp(power, 0, maxSpeed);
-  var nx = dx / dist;
-  var ny = dy / dist;
-  return { vx: nx * power, vy: ny * power, dist: dist };
+  var t = Math.min(dist, capDist) / capDist;
+  var power = t * maxSpeed;
+  return { vx: (dx / dist) * power, vy: (dy / dist) * power, dist: dist };
+}
+
+export function swishVelocity(layout) {
+  if (!layout) return { vx: 0, vy: 0 };
+  var hoopX = (Number(layout.rimFrontX) + Number(layout.rimBackX)) / 2;
+  var dx = hoopX - Number(layout.ballX);
+  var h = Number(layout.height) || 420;
+  return { vx: dx * 0.0172, vy: -8.2 - h * 0.01 };
+}
+
+export function mixShot(raw, swish, pullT) {
+  if (!raw || (raw.vx === 0 && raw.vy === 0)) {
+    return { vx: 0, vy: 0, dist: raw && raw.dist ? raw.dist : 0 };
+  }
+  var t = clamp(pullT, 0, 1);
+  var aimX = swish && swish.vx ? swish.vx : 0;
+  var aimY = swish && swish.vy ? swish.vy : 0;
+  // ponytail: committed pulls use a known swish; true ballistic if we add a second rim collider.
+  if (t < 0.5) {
+    return { vx: aimX * t * 1.5, vy: aimY * t * 1.5, dist: raw.dist };
+  }
+  return { vx: aimX, vy: aimY, dist: raw.dist };
 }
 
 export function isMake(prev, next, zone) {
@@ -266,7 +286,7 @@ export function bootAirball(root, MatterLib) {
   var Body = MatterLib.Body;
   var Composite = MatterLib.Composite;
   var engine = Engine.create();
-  engine.gravity.y = 1.18;
+  engine.gravity.y = 0.9;
   var fitted = fitCanvas(canvas);
   var layout = fitted.layout;
   var ctx = fitted.ctx;
@@ -312,26 +332,21 @@ export function bootAirball(root, MatterLib) {
       friction: 0.2,
       label: 'backboard'
     });
-    var rimFront = Bodies.circle(layout.rimFrontX, layout.hoopY, layout.rimR, {
-      isStatic: true,
-      restitution: 0.28,
-      friction: 0.45,
-      label: 'rim'
-    });
-    var rimBack = Bodies.circle(layout.rimBackX, layout.hoopY, layout.rimR, {
-      isStatic: true,
-      restitution: 0.28,
-      friction: 0.45,
-      label: 'rim'
-    });
+    var rim = Bodies.rectangle(
+      (layout.rimFrontX + layout.rimBackX) / 2,
+      layout.hoopY,
+      layout.rimBackX - layout.rimFrontX,
+      6,
+      { isStatic: true, isSensor: true, label: 'rim' }
+    );
     ball = Bodies.circle(layout.ballX, layout.ballY, layout.ballR, {
-      restitution: 0.7,
-      friction: 0.05,
-      frictionAir: 0.014,
-      density: 0.0022,
+      restitution: 0.65,
+      friction: 0.04,
+      frictionAir: 0.002,
+      density: 0.002,
       label: 'ball'
     });
-    addStatic([floor, left, backboard, rimFront, rimBack, ball]);
+    addStatic([floor, left, backboard, rim, ball]);
     prev = ballState(ball);
     aiming = false;
     hasShot = false;
@@ -394,9 +409,13 @@ export function bootAirball(root, MatterLib) {
     pointer = null;
     Body.setStatic(ball, false);
     if (!end || !start) return;
-    var shot = flingVelocity(start.x, start.y, end.x, end.y, Date.now() - downAt);
-    if (shot.vx === 0 && shot.vy === 0) return;
+    var reach = 10 + layout.width / 140;
+    var raw = flingVelocity(start.x, start.y, end.x, end.y, Date.now() - downAt, {
+      maxSpeed: reach
+    });
+    if (raw.vx === 0 && raw.vy === 0) return;
     hasShot = true;
+    var shot = mixShot(raw, swishVelocity(layout), Math.min(raw.dist, 110) / 110);
     Body.setVelocity(ball, { x: shot.vx, y: shot.vy });
     Body.setAngularVelocity(ball, shot.vx * 0.06);
   }
@@ -431,7 +450,7 @@ export function bootAirball(root, MatterLib) {
   function tick(now) {
     var dt = last ? Math.min(32, now - last) : 16;
     last = now;
-    Engine.update(engine, dt);
+    Engine.update(engine, 1000 / 60);
     var next = ballState(ball);
     next.angle = ball.angle;
     if (!aiming && !made && isMake(prev, next, layout.zone)) {

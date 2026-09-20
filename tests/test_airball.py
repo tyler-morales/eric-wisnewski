@@ -73,7 +73,7 @@ class AirballLogicTests(unittest.TestCase):
     def test_fling_toward_hoop_success(self) -> None:
         shot = call_airball(
             "flingVelocity",
-            "console.log(JSON.stringify(flingVelocity(40, 200, 140, 80, 180)));",
+            "console.log(JSON.stringify(flingVelocity(40, 200, 10, 280, 180)));",
         )
         self.assertGreater(shot["vx"], 0)
         self.assertLess(shot["vy"], 0)
@@ -90,10 +90,10 @@ class AirballLogicTests(unittest.TestCase):
     def test_fling_clamps_max_speed_failure(self) -> None:
         shot = call_airball(
             "flingVelocity",
-            "console.log(JSON.stringify(flingVelocity(0, 0, 800, -800, 32, { maxSpeed: 18 })));",
+            "console.log(JSON.stringify(flingVelocity(0, 0, 800, -800, 32, { maxSpeed: 15, capDist: 100 })));",
         )
         speed = (shot["vx"] ** 2 + shot["vy"] ** 2) ** 0.5
-        self.assertLessEqual(speed, 18.01)
+        self.assertLessEqual(speed, 15.01)
 
     def test_make_when_ball_drops_through_rim_success(self) -> None:
         zone = {"left": 200, "right": 260, "top": 80, "bottom": 110}
@@ -158,6 +158,34 @@ class AirballLogicTests(unittest.TestCase):
         )
         self.assertFalse(idle)
         self.assertTrue(missed)
+
+    def test_swish_velocity_aims_at_hoop_success(self) -> None:
+        layout = call_airball(
+            "courtLayout",
+            "console.log(JSON.stringify(courtLayout(800, 420)));",
+        )
+        shot = call_airball(
+            "swishVelocity",
+            "console.log(JSON.stringify(swishVelocity(" + json.dumps(layout) + ")));",
+        )
+        self.assertGreater(shot["vx"], 0)
+        self.assertLess(shot["vy"], 0)
+
+    def test_mix_shot_idle_stays_zero_failure(self) -> None:
+        mixed = call_airball(
+            "mixShot",
+            "console.log(JSON.stringify(mixShot({ vx: 0, vy: 0, dist: 4 }, { vx: 6, vy: -14 }, 0.9)));",
+        )
+        self.assertEqual(mixed["vx"], 0)
+        self.assertEqual(mixed["vy"], 0)
+
+    def test_mix_shot_committed_pull_uses_swish_success(self) -> None:
+        mixed = call_airball(
+            "mixShot",
+            "console.log(JSON.stringify(mixShot({ vx: 3, vy: -8, dist: 80 }, { vx: 6, vy: -12.4 }, 0.8)));",
+        )
+        self.assertAlmostEqual(mixed["vx"], 6)
+        self.assertAlmostEqual(mixed["vy"], -12.4)
 
     def test_pointer_hit_target_success(self) -> None:
         hit = call_airball(
