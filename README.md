@@ -102,7 +102,7 @@ Content and media are edited via **Pages CMS**. Eric signs in with **email** (ma
 
 Technical SEO here is crawl/index basics, not a ranking plugin.
 
-- **`404.html`:** Hugo builds `layouts/404.html` to `public/404.html`. Cloudflare Pages then returns a real 404 for missing paths instead of serving the homepage (`200` soft 404).
+- **`404.html`:** Hugo builds `layouts/404.html` to `public/404.html`. Cloudflare Pages then returns a real 404 for missing paths instead of serving the homepage (`200` soft 404). The not-found page is an **airball** gym (Matter.js from cdnjs): drag the ball, shoot, and leave via **Back to the home page**. It stays `noindex`.
 - **`robots.txt`:** `enableRobotsTXT = true` plus `layouts/robots.txt`. Allows the site, disallows `/admin/`, `/add-photos/`, and `/subscribe/manage/`, and points crawlers at `https://ericwisnewski.com/sitemap.xml`. After deploy, the response should end with a `Sitemap:` line (Cloudflare may prepend managed AI-bot rules). If `/robots.txt` returns homepage HTML, the build did not ship `robots.txt`.
 - **Sitemap:** Hugo’s default `sitemap.xml` lists public pages. Admin, add-photos, Updates (list never), and subscribe utilities stay out via `build.list = never`. Live `/sitemap.xml` should return `200`.
 - **Meta description:** Every page gets `<meta name="description">` (plain text, truncated to ~170 characters) from the site description, page summary, or author bio. Home `params.description` is the lifelong Division I / friends copy — not “personal site and blog,” and it is **not** shown as body text on the homepage. Without this tag, Google invents a snippet from nav or the subscribe form.
