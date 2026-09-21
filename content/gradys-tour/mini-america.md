@@ -10,6 +10,8 @@ gallery:
   - /images/uploads/IMG_1795.jpeg
   - /images/uploads/IMG_1782.jpeg
   - /images/uploads/IMG_1793.jpeg
+country:
+  - Germany
 ---
 Nanzdietschweiler - Germany
 
