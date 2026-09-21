@@ -326,6 +326,12 @@ class SeoBuildTests(unittest.TestCase):
         self.assertTrue(path.is_file(), "Cloudflare Pages needs public/404.html")
         html = path.read_text(encoding="utf-8")
         self.assertIn("Page not found", html)
+        self.assertIn("404 — airball", html)
+        self.assertIn("Sink one to feel better", html)
+        self.assertIn("airball-court", html)
+        self.assertIn("matter-js", html)
+        self.assertIn("/js/airball.js", html)
+        self.assertIn("Back to the home page", html)
         robots = ROBOTS_META_RE.search(html)
         self.assertIsNotNone(robots)
         assert robots is not None

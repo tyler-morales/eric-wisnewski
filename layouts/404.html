@@ -1,14 +1,30 @@
-{{ define "title" }}Page not found | {{ .Site.Title }}{{ end }}
+{{ define "title" }}404 — airball | {{ .Site.Title }}{{ end }}
 
 {{ define "main" }}
   {{ partial "header.html" . }}
-  <main>
-    <article class="post-content subscribe-status-page">
+  <main class="airball-page">
+    <article class="airball" data-airball>
       <header>
-        <h1>Page not found</h1>
+        <h1>404 — airball</h1>
+        <p class="airball-lede">Page not found. Sink one to feel better.</p>
       </header>
-      <p>That URL is not on this site.</p>
-      <p><a href="{{ "/" | relURL }}">Back to the home page</a></p>
+      <p class="airball-cta">
+        <a href="{{ "/" | relURL }}">Back to the home page</a>
+        <a href="{{ .Site.Params.nav_erics_d1_mission | default "/erics-d1-mission/" }}">Eric's D1 Mission</a>
+      </p>
+      <p class="airball-how" id="airball-how">Pull the ball down and back, then let go. Makes count. The game is optional — home still works.</p>
+      <p class="airball-score" aria-live="polite">Makes: <span data-airball-makes>0</span></p>
+      <canvas
+        class="airball-court"
+        width="800"
+        height="420"
+        role="img"
+        aria-labelledby="airball-how"
+      ></canvas>
+      <p class="airball-fallback" hidden>The gym needs JavaScript. Use the home link above.</p>
     </article>
   </main>
+  {{ $airballJS := "/js/airball.js" | relURL }}
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
+  <script type="module" src="{{ $airballJS }}?v={{ md5 (readFile "static/js/airball.js") }}"></script>
 {{ end }}

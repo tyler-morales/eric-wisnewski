@@ -3400,3 +3400,87 @@ main.admin-subscribers-main {
 .add-photos-list li {
   margin: 0 0 0.35rem;
 }
+
+/* 404 airball gym */
+.airball-page {
+  max-width: min(52rem, 100%);
+}
+
+article.airball {
+  max-width: none;
+  font-family: var(--font-sans);
+}
+
+.airball h1 {
+  margin: 0 0 0.4rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.airball-lede,
+.airball-how,
+.airball-score {
+  margin: 0 0 0.85rem;
+}
+
+.airball-lede {
+  color: var(--text);
+}
+
+.airball-how,
+.airball-score {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.airball-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+}
+
+.airball-cta a {
+  display: inline-block;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--text);
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.airball-cta a:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.airball-cta a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+  background: var(--text);
+  color: var(--bg);
+}
+
+.airball-score {
+  font-variant-numeric: tabular-nums;
+}
+
+.airball-court {
+  display: block;
+  width: 100%;
+  height: min(62vw, 420px);
+  min-height: 260px;
+  touch-action: none;
+  background: #f3efe6;
+  border: 1px solid var(--text);
+  cursor: grab;
+}
+
+.airball-court:active {
+  cursor: grabbing;
+}
+
+.airball-fallback {
+  margin: 0.75rem 0 0;
+}
