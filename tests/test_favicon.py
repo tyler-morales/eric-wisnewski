@@ -1,4 +1,4 @@
-"""Tab icon is the PNG/ICO portrait; site emails stay content-only (no wizard SVG)."""
+"""Tab icon is the PNG/ICO portrait; site emails use a CSS EW mark (no portrait img)."""
 
 from __future__ import annotations
 
@@ -153,6 +153,9 @@ class EmailHtmlTests(unittest.TestCase):
             with self.subTest(mail=name):
                 assert_content_only_email_html(self, mail["html"])
                 self.assertIn(snippets[name], mail["html"])
+                self.assertIn(">EW<", mail["html"])
+                self.assertIn("role=\"presentation\"", mail["html"])
+                self.assertIn("1340 W 18th Pl, Chicago, IL 60608, USA", mail["html"])
 
     def test_outbound_mail_html_does_not_use_wizard_failure(self) -> None:
         sources = (

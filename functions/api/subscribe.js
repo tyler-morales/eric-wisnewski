@@ -5,13 +5,17 @@
 
 import {
   adminSecretFromRequest,
+  brandedTransactionalEmail,
   confirmMailAllowed,
+  escapeAttr,
+  escapeHtml,
   isAdmin,
   isValidEmail,
   isValidToken,
   jsonResponse,
   listLabel,
   newsletterFromHeader,
+  newsletterPostalAddress,
   normalizeEmail,
   publicOrigin,
   randomToken,
@@ -220,24 +224,38 @@ function redirect(path) {
   return Response.redirect(path, 302);
 }
 
-export function confirmEmailBody(origin, token, lists) {
+export function confirmEmailBody(origin, token, lists, options) {
   const labels = lists.map(listLabel).filter(Boolean).join(' and ');
   const link = `${origin}/api/subscribe?confirm=${encodeURIComponent(token)}`;
-  const text = `Confirm your subscription to ${labels} on Eric Wisnewski.\n\nYou won't get new-post emails until you click this link:\n\n${link}\n\nIf you did not request this, ignore this email.`;
-  const html = `<p>Confirm your subscription to <strong>${labels}</strong> on Eric Wisnewski.</p>
-<p>You won't get new-post emails until you click this link:</p>
-<p><a href="${link}">Confirm subscription</a></p>
-<p>If you did not request this, ignore this email.</p>`;
-  return { subject: `Confirm your subscription — ${labels}`, html, text };
+  const manageUrl =
+    options && typeof options.manageUrl === 'string' ? options.manageUrl.trim() : '';
+  const mail = brandedTransactionalEmail({
+    fromName: 'Eric Wisnewski',
+    title: 'Confirm your subscription',
+    bodyHtml: `<p style="margin:0 0 12px 0;">Confirm your subscription to <strong>${escapeHtml(labels)}</strong> on Eric Wisnewski.</p>
+<p style="margin:0 0 12px 0;">You won't get new-post emails until you click this link:</p>
+<p style="margin:0 0 12px 0;"><a href="${escapeAttr(link)}" style="color:#1a0dab;text-decoration:underline;">Confirm subscription</a></p>
+<p style="margin:0;">If you did not request this, ignore this email.</p>`,
+    bodyText: `Confirm your subscription to ${labels} on Eric Wisnewski.\n\nYou won't get new-post emails until you click this link:\n\n${link}\n\nIf you did not request this, ignore this email.`,
+    unsubUrl: manageUrl,
+    postalAddress: options && options.postalAddress,
+  });
+  return { subject: `Confirm your subscription — ${labels}`, html: mail.html, text: mail.text };
 }
 
-export function manageEmailBody(origin, token) {
+export function manageEmailBody(origin, token, options) {
   const link = managePageUrl(origin, token);
-  const text = `Manage your subscriptions on Eric Wisnewski.\n\nUse this link to choose which lists you get, or unsubscribe:\n\n${link}\n\nIf you did not request this, ignore this email.`;
-  const html = `<p>Manage your subscriptions on Eric Wisnewski.</p>
-<p><a href="${link}">Manage subscriptions</a></p>
-<p>If you did not request this, ignore this email.</p>`;
-  return { subject: 'Manage your subscriptions — Eric Wisnewski', html, text };
+  const mail = brandedTransactionalEmail({
+    fromName: 'Eric Wisnewski',
+    title: 'Manage your subscriptions',
+    bodyHtml: `<p style="margin:0 0 12px 0;">Manage your subscriptions on Eric Wisnewski.</p>
+<p style="margin:0 0 12px 0;"><a href="${escapeAttr(link)}" style="color:#1a0dab;text-decoration:underline;">Manage subscriptions</a></p>
+<p style="margin:0;">If you did not request this, ignore this email.</p>`,
+    bodyText: `Manage your subscriptions on Eric Wisnewski.\n\nUse this link to choose which lists you get, or unsubscribe:\n\n${link}\n\nIf you did not request this, ignore this email.`,
+    unsubUrl: link,
+    postalAddress: options && options.postalAddress,
+  });
+  return { subject: 'Manage your subscriptions — Eric Wisnewski', html: mail.html, text: mail.text };
 }
 
 async function handleOneClickUnsubscribe(context, rawToken) {
@@ -328,7 +346,9 @@ async function savePreferences(context, body) {
 
     if (needingConfirm.length && context.env.RESEND_API_KEY) {
       const origin = publicOrigin(context.env, context.request);
-      const mail = confirmEmailBody(origin, confirmToken, needingConfirm);
+      const mail = confirmEmailBody(origin, confirmToken, needingConfirm, {
+        postalAddress: newsletterPostalAddress(context.env),
+      });
       await sendResendEmail(context.env, {
         to: owner.email,
         subject: mail.subject,
@@ -393,7 +413,9 @@ async function resendPendingConfirm(context, body) {
       .bind(token, email)
       .run();
     const origin = publicOrigin(context.env, context.request);
-    const mail = confirmEmailBody(origin, token, plan.lists);
+    const mail = confirmEmailBody(origin, token, plan.lists, {
+      postalAddress: newsletterPostalAddress(context.env),
+    });
     await sendResendEmail(context.env, {
       to: email,
       subject: mail.subject,
@@ -517,7 +539,9 @@ export async function onRequestPost(context) {
       if (!context.env.RESEND_API_KEY) {
         return jsonResponse({ error: 'Could not send confirmation email. Try again later.' }, 503);
       }
-      const mail = confirmEmailBody(origin, confirmToken, plan.newlyPending);
+      const mail = confirmEmailBody(origin, confirmToken, plan.newlyPending, {
+        postalAddress: newsletterPostalAddress(context.env),
+      });
       await sendResendEmail(context.env, {
         to: email,
         subject: mail.subject,
@@ -545,7 +569,9 @@ export async function onRequestPost(context) {
           .bind(email)
           .first();
         if (row && isValidToken(row.unsub_token)) {
-          const mail = manageEmailBody(origin, row.unsub_token);
+          const mail = manageEmailBody(origin, row.unsub_token, {
+            postalAddress: newsletterPostalAddress(context.env),
+          });
           await sendResendEmail(context.env, {
             to: email,
             subject: mail.subject,
