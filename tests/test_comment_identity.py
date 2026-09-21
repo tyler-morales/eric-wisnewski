@@ -300,8 +300,7 @@ class CommentReplyNotifyHelperTests(unittest.TestCase):
         self.assertIn("https://ericwisnewski.com/posts/hi/#comments", mail["html"])
         self.assertIn("Grady", mail["html"])
         self.assertIn("Read the comment", mail["html"])
-        self.assertIn("View post", mail["html"])
-        self.assertIn('href="https://ericwisnewski.com/posts/hi/"', mail["html"])
+        self.assertNotIn("View post", mail["html"])
 
     def test_reply_notify_email_escapes_html_failure(self) -> None:
         mail = call_comments_api(

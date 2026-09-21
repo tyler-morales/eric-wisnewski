@@ -237,10 +237,6 @@ export function confirmEmailBody(origin, token, lists, options) {
 <p style="margin:0 0 12px 0;"><a href="${escapeAttr(link)}" style="color:#1a0dab;text-decoration:underline;">Confirm subscription</a></p>
 <p style="margin:0;">If you did not request this, ignore this email.</p>`,
     bodyText: `Confirm your subscription to ${labels} on Eric Wisnewski.\n\nYou won't get new-post emails until you click this link:\n\n${link}\n\nIf you did not request this, ignore this email.`,
-    primaryCta: { label: 'Confirm subscription', url: link },
-    secondaryCta: manageUrl
-      ? { label: 'Manage email', url: manageUrl }
-      : { label: 'Visit site', url: origin },
     unsubUrl: manageUrl,
     postalAddress: options && options.postalAddress,
   });
@@ -256,8 +252,6 @@ export function manageEmailBody(origin, token, options) {
 <p style="margin:0 0 12px 0;"><a href="${escapeAttr(link)}" style="color:#1a0dab;text-decoration:underline;">Manage subscriptions</a></p>
 <p style="margin:0;">If you did not request this, ignore this email.</p>`,
     bodyText: `Manage your subscriptions on Eric Wisnewski.\n\nUse this link to choose which lists you get, or unsubscribe:\n\n${link}\n\nIf you did not request this, ignore this email.`,
-    primaryCta: { label: 'Manage subscriptions', url: link },
-    secondaryCta: { label: 'Visit site', url: origin },
     unsubUrl: link,
     postalAddress: options && options.postalAddress,
   });

@@ -130,12 +130,6 @@ export function commentUrlLookupVariants(url) {
   return [...variants];
 }
 
-function commentPostUrl(postUrl) {
-  const url = typeof postUrl === 'string' ? postUrl : '';
-  const hash = url.indexOf('#');
-  return hash === -1 ? url : url.slice(0, hash);
-}
-
 /** Address to notify when someone replies; empty means skip. */
 export function parentReplyNotifyTo(parentEmail, replyEmail) {
   // ponytail: no inbox confirm. Anyone can put another address on a comment;
@@ -153,7 +147,6 @@ export function replyNotifyEmail({ parentAuthor, replyAuthor, replyText, postUrl
   const you = typeof parentAuthor === 'string' ? parentAuthor.trim() : '';
   const snippet = String(replyText || '').trim().slice(0, 280);
   const url = typeof postUrl === 'string' ? postUrl : '';
-  const viewUrl = commentPostUrl(url) || url;
   const greeting = you ? `${you}, ` : '';
   const subject = `${who} replied to your comment`;
   const mail = brandedTransactionalEmail({
@@ -165,8 +158,6 @@ export function replyNotifyEmail({ parentAuthor, replyAuthor, replyText, postUrl
 <p style="margin:0 0 12px 0;"><a href="${escapeAttr(url)}" style="color:#1a0dab;text-decoration:underline;">Read the comment</a></p>
 <p style="margin:0;color:#6b7280;font-size:12px;">You got this because you left a comment with this email.</p>`,
     bodyText: `${greeting}${who} replied to your comment:\n\n${snippet}\n\n${url}`,
-    primaryCta: { label: 'Read the comment', url },
-    secondaryCta: { label: 'View post', url: viewUrl },
     postalAddress,
   });
   return { subject, html: mail.html, text: mail.text };
@@ -197,7 +188,6 @@ export function writerNotifyEmail({ commentAuthor, commentText, postUrl, postalA
   const who = (typeof commentAuthor === 'string' && commentAuthor.trim()) || 'Someone';
   const snippet = String(commentText || '').trim().slice(0, 280);
   const url = typeof postUrl === 'string' ? postUrl : '';
-  const viewUrl = commentPostUrl(url) || url;
   const subject = `${who} commented on your post`;
   const mail = brandedTransactionalEmail({
     fromName: 'Eric Wisnewski',
@@ -207,8 +197,6 @@ export function writerNotifyEmail({ commentAuthor, commentText, postUrl, postalA
 <p style="margin:0 0 12px 0;"><a href="${escapeAttr(url)}" style="color:#1a0dab;text-decoration:underline;">Read the comment</a></p>
 <p style="margin:0;color:#6b7280;font-size:12px;">You got this because you wrote this post.</p>`,
     bodyText: `${who} commented on your post:\n\n${snippet}\n\n${url}`,
-    primaryCta: { label: 'Read the comment', url },
-    secondaryCta: { label: 'View post', url: viewUrl },
     postalAddress,
   });
   return { subject, html: mail.html, text: mail.text };

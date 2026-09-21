@@ -102,28 +102,19 @@ export function newsletterLinks(origin, unsubToken) {
   };
 }
 
-function listPublicPath(listId) {
-  return `/${listId}/`;
-}
-
 export function postEmailContent(listId, item, origin, unsubToken, postalAddress) {
   const label = LIST_LABELS[listId] || listId;
   const fromName = listId === 'posts' ? 'Eric Wisnewski' : label;
   const links = newsletterLinks(origin, unsubToken);
   const subject = `New on ${label}: ${item.title}`;
   const postUrl = item.url;
-  const isEric = listId === 'posts';
   const mail = brandedTransactionalEmail({
-    markVariant: isEric ? 'orange' : 'dark',
+    markVariant: listId === 'posts' ? 'orange' : 'dark',
     fromName,
     title: item.title,
     bodyHtml: `<p style="margin:0 0 12px 0;">There's a new post on <strong>${escapeHtml(label)}</strong>.</p>
 <p style="margin:0;"><a href="${escapeAttr(postUrl)}" style="color:#1a0dab;text-decoration:underline;">${escapeHtml(item.title)}</a></p>`,
     bodyText: `There's a new post on ${label}: ${item.title}\n\n${postUrl}`,
-    primaryCta: { label: 'Read the post', url: postUrl },
-    secondaryCta: isEric
-      ? { label: 'Manage email', url: links.manageUrl }
-      : { label: 'View on site', url: `${origin}${listPublicPath(listId)}` },
     unsubUrl: links.manageUrl,
     postalAddress,
   });
