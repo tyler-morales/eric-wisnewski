@@ -14,7 +14,8 @@ TOUR_SECTION_DIR = REPO_ROOT / "content" / "gradys-tour"
 POSTS_DIR = REPO_ROOT / "content" / "posts"
 HUGO_TOML = REPO_ROOT / "config" / "_default" / "hugo.toml"
 HUGO_TIMEOUT_SECONDS = 120
-POST_LIST_RE = re.compile(r'<ul class="post-list">(.*?)</ul>', re.DOTALL)
+# greedy: country-chip dropdowns nest a <ul> inside .post-list
+POST_LIST_RE = re.compile(r'<ul class="post-list">(.*)</ul>', re.DOTALL)
 TITLE_RE = re.compile(r'class="post-list-title"[^>]*>(.*?)</(?:span|a)>', re.DOTALL)
 FRONT_MATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
 

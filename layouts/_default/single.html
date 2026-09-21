@@ -13,10 +13,10 @@
       </div>
     </header>
     {{ with .Params.image }}
-    <figure class="post-featured-image" aria-label="Featured image for {{ $.Title }}">
+    <figure class="post-featured-image media-frame media-frame--fluid" aria-label="Featured image for {{ $.Title }}">
       <img src="{{ . | absURL }}"
-        alt="{{ with $.Params.image_alt }}{{ . }}{{ else }}Featured image for {{ $.Title }}{{ end }}" loading="lazy"
-        decoding="async">
+        alt="{{ with $.Params.image_alt }}{{ . }}{{ else }}Featured image for {{ $.Title }}{{ end }}" loading="eager"
+        fetchpriority="high" decoding="async">
     </figure>
     {{ end }}
     {{ partial "scoreboard.html" . }}

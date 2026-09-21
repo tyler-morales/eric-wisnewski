@@ -12,10 +12,10 @@
   {{ $rest := sort (where $authors "Params.slug" "ne" "eric-wisnewski") "Params.name" }}
   <ul class="author-list" role="list">
     {{ range $eric }}
-    <li>{{ partial "author-card.html" (dict "author" . "link_name" true "element" "article") }}</li>
+    <li>{{ partial "author-card.html" (dict "author" . "link_name" true "element" "article" "show_count" true) }}</li>
     {{ end }}
     {{ range $rest }}
-    <li>{{ partial "author-card.html" (dict "author" . "link_name" true "element" "article") }}</li>
+    <li>{{ partial "author-card.html" (dict "author" . "link_name" true "element" "article" "show_count" true) }}</li>
     {{ end }}
   </ul>
 </main>

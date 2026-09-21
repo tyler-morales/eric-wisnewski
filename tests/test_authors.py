@@ -25,7 +25,8 @@ STYLE_CSS = REPO_ROOT / "assets" / "css" / "style.css"
 HUGO_TIMEOUT_SECONDS = 120
 
 FRONT_MATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
-POST_LIST_RE = re.compile(r'<ul class="post-list">(.*?)</ul>', re.DOTALL)
+# greedy: country-chip dropdowns nest a <ul> inside .post-list
+POST_LIST_RE = re.compile(r'<ul class="post-list">(.*)</ul>', re.DOTALL)
 TITLE_RE = re.compile(r'class="post-list-title"[^>]*>(.*?)</(?:span|a)>', re.DOTALL)
 DATE_RE = re.compile(r'<time class="post-date" datetime="([^"]+)"')
 AUTHOR_LINK_RE = re.compile(
@@ -190,6 +191,15 @@ class AuthorTemplateContractTests(unittest.TestCase):
         layout = AUTHOR_LAYOUT.read_text(encoding="utf-8")
         self.assertIn('.Site.GetPage "/authors"', layout)
         self.assertIn("All contributors", layout)
+        self.assertIn('partial "post-count.html"', layout)
+
+    def test_authors_index_shows_post_counts_success(self) -> None:
+        layout = AUTHOR_LIST_LAYOUT.read_text(encoding="utf-8")
+        card = AUTHOR_CARD.read_text(encoding="utf-8")
+        self.assertIn("show_count", layout)
+        self.assertIn("show_count", card)
+        self.assertIn('partial "post-count.html"', card)
+        self.assertIn('partial "author-posts.html"', card)
 
     def test_authors_index_cascade_no_longer_unpublishes_success(self) -> None:
         toml = HUGO_TOML.read_text(encoding="utf-8")
@@ -331,6 +341,17 @@ class AuthorBuildTests(unittest.TestCase):
         self.assertIn("Contributors", self.authors_index_html)
         self.assertIn("/images/uploads/tyler-morales.jpg", self.authors_index_html)
         self.assertIn("/images/uploads/tyler-morales.jpg", self.tyler_html)
+
+    def test_authors_show_post_counts_success(self) -> None:
+        self.assertIn('class="post-count"', self.authors_index_html)
+        self.assertIn("0 posts", self.tyler_html)
+        eric_n = len(post_list_titles(self.eric_html))
+        self.assertGreater(eric_n, 0)
+        self.assertIn(f"{eric_n} posts" if eric_n != 1 else "1 post", self.eric_html)
+        self.assertIn(f"{eric_n} posts" if eric_n != 1 else "1 post", self.authors_index_html)
+        grady_n = len(post_list_titles(self.grady_html))
+        self.assertGreater(grady_n, 0)
+        self.assertIn(f"{grady_n} posts" if grady_n != 1 else "1 post", self.grady_html)
 
     def test_authors_index_is_not_a_post_feed_failure(self) -> None:
         self.assertNotIn('class="post-list"', self.authors_index_html)

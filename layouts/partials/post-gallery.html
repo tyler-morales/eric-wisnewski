@@ -18,7 +18,7 @@
 <section class="post-gallery" aria-label="Photos for {{ .Title }}">
   <ul class="post-gallery-list">
     {{- range $index, $src := $items -}}
-    <li>
+    <li class="media-frame media-frame--fluid">
       <img
         src="{{ $src | absURL }}"
         alt="{{ $.Title }} photo {{ add $index 1 }}"

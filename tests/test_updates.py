@@ -23,7 +23,8 @@ STYLE_CSS = REPO_ROOT / "assets" / "css" / "style.css"
 HUGO_TIMEOUT_SECONDS = 120
 
 FRONT_MATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
-POST_LIST_RE = re.compile(r'<ul class="post-list">(.*?)</ul>', re.DOTALL)
+# greedy: country-chip dropdowns nest a <ul> inside .post-list
+POST_LIST_RE = re.compile(r'<ul class="post-list">(.*)</ul>', re.DOTALL)
 NAV_RE = re.compile(
     r'<nav\b[^>]*aria-label="Main navigation"[^>]*>(.*?)</nav>',
     re.DOTALL | re.IGNORECASE,

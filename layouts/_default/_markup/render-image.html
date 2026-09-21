@@ -3,6 +3,7 @@
   "Failed to publish Resource: open public: is a directory" (asset resource publish path bug).
   Images under static/images/uploads/ are served as-is. Other destinations get simple <img>.
 */}}
+<span class="media-frame media-frame--fluid">
 <img
   src="{{ .Destination | safeURL }}"
   alt="{{ .PlainText }}"
@@ -10,3 +11,4 @@
   loading="lazy"
   decoding="async"
 >
+</span>

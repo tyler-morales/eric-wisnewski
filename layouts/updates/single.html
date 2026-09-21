@@ -10,8 +10,8 @@
         <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
       </header>
       {{ with .Params.image }}
-      <figure class="post-featured-image">
-        <img src="{{ . | absURL }}" alt="{{ with $.Params.image_alt }}{{ . }}{{ else }}{{ $.Title }}{{ end }}" loading="lazy" decoding="async">
+      <figure class="post-featured-image media-frame media-frame--fluid">
+        <img src="{{ . | absURL }}" alt="{{ with $.Params.image_alt }}{{ . }}{{ else }}{{ $.Title }}{{ end }}" loading="eager" fetchpriority="high" decoding="async">
       </figure>
       {{ end }}
       {{ partial "page-content.html" . }}

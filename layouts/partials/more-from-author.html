@@ -35,7 +35,7 @@
     <li>
       <a href="{{ .RelPermalink }}" class="more-from-card"{{ if $isNext }} rel="next"{{ else if $isPrev }} rel="prev"{{ end }}>
         {{ with .Params.image }}
-        <span class="more-from-image">
+        <span class="more-from-image media-frame">
           <img src="{{ . | relURL }}" alt="" width="640" height="360" loading="lazy" decoding="async">
         </span>
         {{ end }}

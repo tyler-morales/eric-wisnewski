@@ -21,6 +21,7 @@
       {{ partial "post-list-item.html" . }}
       {{ end }}
     </ul>
+    {{ partial "post-count.html" (dict "count" (len $posts)) }}
     {{ else }}
     <p class="section-empty">No posts yet. Check back soon.</p>
     {{ end }}

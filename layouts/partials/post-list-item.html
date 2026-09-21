@@ -1,23 +1,31 @@
 {{/*
 One post in a list. Expects the post page as context (.).
 Title and image link to the post; author name links to /authors/<slug>/.
+  Tour posts put the country chip on the left of the featured image.
   */}}
-  {{- $countrySlugs := partial "tour-country-slugs.html" . -}}
-  <li class="post-list-item" {{ if $countrySlugs }} data-country="{{ delimit $countrySlugs " " }}" {{ end }}>
-    {{ with .Params.image }}
+{{- $countrySlugs := partial "tour-country-slugs.html" . -}}
+{{- $authors := partial "post-author-pages.html" . -}}
+<li class="post-list-item" {{ if $countrySlugs }} data-country="{{ delimit $countrySlugs " " }}" {{ end }}>
+  {{ with .Params.image }}
+  <div class="post-list-media">
     <a href="{{ $.Permalink }}" class="post-list-image-link" tabindex="-1" aria-hidden="true">
-      <span class="post-list-image">
+      <span class="post-list-image media-frame">
         <img src="{{ . | absURL }}" alt="" width="640" height="360" loading="lazy" decoding="async">
       </span>
     </a>
+    {{ partial "post-country-chip.html" $ }}
+  </div>
+  {{ else }}
+  {{ partial "post-country-chip.html" . }}
+  {{ end }}
+  <div class="post-list-meta">
+    <a href="{{ .Permalink }}" class="post-list-title">{{ .Title }}</a>
+    {{ if $authors }}
+    <p class="post-list-author">{{ partial "author-name-links.html" (dict "page" . "class" "post-list-author-link") }}
+    </p>
     {{ end }}
-    <div class="post-list-meta">
-      <a href="{{ .Permalink }}" class="post-list-title">{{ .Title }}</a>
-      {{ $authors := partial "post-author-pages.html" . }}
-      {{ if $authors }}
-      <p class="post-list-author">{{ partial "author-name-links.html" (dict "page" . "class" "post-list-author-link") }}
-      </p>
-      {{ end }}
-      <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-    </div>
-  </li>
+    {{ $listDate := .Date.Format "2006-01-02" }}
+    {{ $listDateLabel := .Date.Format "January 2, 2006" }}
+    <time class="post-date" datetime="{{ $listDate }}">{{ $listDateLabel }}</time>
+  </div>
+</li>

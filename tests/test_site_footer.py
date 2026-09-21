@@ -219,7 +219,7 @@ class FooterBuildTests(unittest.TestCase):
         )
 
     def test_privacy_is_not_listed_on_home_failure(self) -> None:
-        list_html = re.search(r'<ul class="post-list">(.*?)</ul>', self.home, re.DOTALL)
+        list_html = re.search(r'<ul class="post-list">(.*)</ul>', self.home, re.DOTALL)
         self.assertIsNotNone(list_html)
         assert list_html is not None
         self.assertNotIn("/privacy/", list_html.group(1))

@@ -2,16 +2,31 @@
 
 {{ define "main" }}
   {{ partial "header.html" . }}
-  <main>
+  <main{{ if .IsHome }} class="home-page"{{ end }}>
+    {{ $sections := slice "posts" }}
+    {{ if .IsHome }}
+      {{ $sections = slice "posts" "gradys-tour" "da-breakdown-w-tad" "jeremy-on-tap" }}
+    {{ end }}
+    {{ $pages := where .Site.RegularPages "Section" "in" $sections }}
+    {{ if .IsHome }}<div class="home-feed">{{ end }}
     <ul class="post-list">
-      {{ $sections := slice "posts" }}
-      {{ if .IsHome }}
-        {{ $sections = slice "posts" "gradys-tour" "da-breakdown-w-tad" "jeremy-on-tap" }}
-      {{ end }}
-      {{ range where .Site.RegularPages "Section" "in" $sections }}
+      {{ range $pages }}
         {{ partial "post-list-item.html" . }}
       {{ end }}
     </ul>
+    {{ if .IsHome }}
+    <p class="post-list-more" hidden>
+      <button type="button" class="post-list-more-button" data-post-list-more data-page-size="8">
+        Show more posts
+      </button>
+    </p>
+    {{ end }}
+    {{ if $pages }}
+    {{ partial "post-count.html" (dict "count" (len $pages)) }}
+    {{ end }}
+    {{ if .IsHome }}</div>
+    <aside class="home-subscribe">{{ end }}
     {{ partial "subscribe.html" . }}
+    {{ if .IsHome }}</aside>{{ end }}
   </main>
 {{ end }}

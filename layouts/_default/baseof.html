@@ -9,5 +9,8 @@
   <body>
     {{ block "main" . }}{{ end }}
     {{ partial "footer.html" . }}
+    {{ $mediaJS := "/js/media.js" | relURL }}
+    {{ $mediaHash := md5 (readFile "static/js/media.js") }}
+    <script type="module" src="{{ $mediaJS }}?v={{ $mediaHash }}"></script>
   </body>
 </html>

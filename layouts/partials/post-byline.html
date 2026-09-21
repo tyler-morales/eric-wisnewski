@@ -2,34 +2,13 @@
 Compact byline: "By Name" or "By A and B", each name linking to /authors/<slug>/.
   Tour posts add a country chip. One country is a link; several open a dropdown.
   */}}
-  {{- $authors := partial "post-author-pages.html" . -}}
-  {{- $slugs := partial "tour-country-slugs.html" . -}}
-  {{- $tour := .Site.GetPage "/gradys-tour" -}}
-  {{- if or $authors $slugs -}}
-  <div class="post-byline-row">
-    {{- if $authors -}}
-    <p class="post-byline">By {{ partial "author-name-links.html" (dict "page" .) }}</p>
-    {{- end -}}
-    {{- if and $tour $slugs -}}
-    {{- $labels := slice -}}
-    {{- range $slugs -}}
-    {{- $labels = $labels | append (. | humanize | title) -}}
-    {{- end -}}
-    {{- if eq (len $slugs) 1 -}}
-    <a class="post-country-chip" href="{{ $tour.RelPermalink }}?country={{ index $slugs 0 }}"
-      aria-label="All {{ index $labels 0 }} posts">{{ index $labels 0 }}</a>
-    {{- else -}}
-    <details class="post-country-chip post-country-chip--menu">
-      <summary aria-label="Countries. Open to see posts from each.">{{ delimit $labels " · " }}</summary>
-      <ul>
-        {{- range $i, $slug := $slugs -}}
-        <li>
-          <a href="{{ $tour.RelPermalink }}?country={{ $slug }}">{{ index $labels $i }}</a>
-        </li>
-        {{- end -}}
-      </ul>
-    </details>
-    {{- end -}}
-    {{- end -}}
-  </div>
+{{- $authors := partial "post-author-pages.html" . -}}
+{{- $slugs := partial "tour-country-slugs.html" . -}}
+{{- if or $authors $slugs -}}
+<div class="post-byline-row">
+  {{- if $authors -}}
+  <p class="post-byline">By {{ partial "author-name-links.html" (dict "page" .) }}</p>
   {{- end -}}
+  {{ partial "post-country-chip.html" . }}
+</div>
+{{- end -}}

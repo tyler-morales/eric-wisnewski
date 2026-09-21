@@ -17,6 +17,7 @@ SINGLE_LAYOUT = REPO_ROOT / "layouts" / "_default" / "single.html"
 LIST_ITEM = REPO_ROOT / "layouts" / "partials" / "post-list-item.html"
 COUNTRY_NAV = REPO_ROOT / "layouts" / "partials" / "gradys-tour-country-nav.html"
 POST_BYLINE = REPO_ROOT / "layouts" / "partials" / "post-byline.html"
+POST_COUNTRY_CHIP = REPO_ROOT / "layouts" / "partials" / "post-country-chip.html"
 COUNTRY_JS = REPO_ROOT / "static" / "js" / "gradys-tour-country.js"
 STYLE_CSS = REPO_ROOT / "assets" / "css" / "style.css"
 README = REPO_ROOT / "README.md"
@@ -147,6 +148,8 @@ class CountryHelperTests(unittest.TestCase):
         )
         self.assertEqual(call_fn("optionLabel", "france", 6), "France (6)")
         self.assertEqual(call_fn("countLabel", "france", 6), "6 posts in France")
+        self.assertEqual(call_fn("postCountLabel", 12), "12 posts")
+        self.assertEqual(call_fn("postCountLabel", 1), "1 post")
         self.assertEqual(
             call_fn("featureCountrySlug", "United States of America"),
             "united-states",
@@ -196,7 +199,8 @@ class CountryHelperTests(unittest.TestCase):
         self.assertEqual(call_fn("countByCountry", []), {})
         self.assertEqual(call_fn("featureCountrySlug", ""), "")
         self.assertFalse(call_fn("itemVisible", "italy switzerland", "france"))
-        self.assertEqual(call_fn("parseCatalogJson", "not-json")["posts"], [])
+        self.assertEqual(call_fn("postCountLabel", "nope"), "0 posts")
+        self.assertEqual(call_fn("postCountLabel", -4), "0 posts")
         scale_min = read_export("GLOBE_SCALE_MIN")
         self.assertEqual(call_fn("clampGlobeScale", "nope"), scale_min)
         self.assertEqual(call_fn("scaleToFit", None, 100, 640, 0.82), scale_min)
@@ -244,16 +248,25 @@ class CountrySourceTests(unittest.TestCase):
         nav = COUNTRY_NAV.read_text(encoding="utf-8")
         item = LIST_ITEM.read_text(encoding="utf-8")
         byline = POST_BYLINE.read_text(encoding="utf-8")
+        chip = POST_COUNTRY_CHIP.read_text(encoding="utf-8")
         css = STYLE_CSS.read_text(encoding="utf-8")
         self.assertIn('partial "gradys-tour-country-nav.html"', tour)
+        self.assertIn('partial "post-count.html"', tour)
+        self.assertIn('"live" true', tour)
         self.assertNotIn('partial "gradys-tour-country-nav.html"', single)
         self.assertIn('partial "post-byline.html"', single)
-        self.assertIn("post-country-chip", byline)
-        self.assertIn("?country=", byline)
-        self.assertIn("<details", byline)
+        self.assertIn('partial "post-country-chip.html"', byline)
+        self.assertIn('partial "post-country-chip.html"', item)
+        self.assertIn("post-country-chip", chip)
+        self.assertIn("?country=", chip)
+        self.assertIn("<details", chip)
         self.assertIn('partial "tour-country-slugs.html"', item)
         self.assertIn('partial "tour-country-slugs.html"', byline)
+        self.assertIn('partial "tour-country-slugs.html"', chip)
         self.assertIn('data-country="{{', item)
+        self.assertIn("post-list-media", item)
+        self.assertNotIn("post-byline-row", item)
+        self.assertIn("post-country-chip.html\" $", item)
         self.assertIn('name="country"', nav)
         self.assertIn("data-tour-country-select", nav)
         self.assertIn("data-tour-country-nav", nav)
@@ -278,6 +291,16 @@ class CountrySourceTests(unittest.TestCase):
             css,
             r"\.post-byline-row\s*\{[^}]*justify-content:\s*space-between",
         )
+        self.assertRegex(
+            css,
+            r"\.post-list li\s*\{[^}]*max-width:\s*640px",
+        )
+        self.assertIn(".post-list-media .post-country-chip", css)
+        self.assertRegex(
+            css,
+            r"\.post-list-media \.post-country-chip\s*\{[^}]*left:\s*0\.5rem",
+        )
+        self.assertNotIn(".post-list-meta .post-byline-row", css)
         self.assertRegex(
             css,
             r"\.tour-country-svg \[data-slug\]\.has-posts\s*\{[^}]*outline:\s*none",
@@ -365,6 +388,10 @@ class CountryBuildTests(unittest.TestCase):
         cls.eric = (
             cls._output_dir / "posts" / "an-introduction" / "index.html"
         ).read_text(encoding="utf-8")
+        cls.home = (cls._output_dir / "index.html").read_text(encoding="utf-8")
+        cls.eric_author = (
+            cls._output_dir / "authors" / "eric-wisnewski" / "index.html"
+        ).read_text(encoding="utf-8")
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -417,6 +444,14 @@ class CountryBuildTests(unittest.TestCase):
         self.assertNotIn("data-tour-country-nav", self.coming)
         self.assertNotIn("class=\"post-country-chip\"", self.prep)
         self.assertNotIn("data-tour-country-nav", self.prep)
+        self.assertIn('class="post-country-chip"', self.tour)
+        self.assertIn("post-country-chip--menu", self.tour)
+        self.assertRegex(
+            self.tour,
+            r'class="post-country-chip"[^>]*\?country=france',
+        )
+        self.assertIn('class="post-country-chip"', self.home)
+        self.assertIn("post-country-chip--menu", self.home)
 
     def test_controls_stay_off_eric_posts_failure(self) -> None:
         self.assertNotIn("data-tour-country-nav", self.eric)
@@ -424,6 +459,7 @@ class CountryBuildTests(unittest.TestCase):
         self.assertNotIn("post-country-chip", self.eric)
         self.assertNotIn("?country=france", self.eric)
         self.assertNotIn("data-tour-globe", self.eric)
+        self.assertNotIn("post-country-chip", self.eric_author)
 
 
 class CountryDocsTests(unittest.TestCase):
@@ -432,6 +468,7 @@ class CountryDocsTests(unittest.TestCase):
         self.assertIn("?country=", readme)
         self.assertIn("Country", readme)
         self.assertIn("chip", readme.lower())
+        self.assertIn("list cards", readme)
 
 
 if __name__ == "__main__":

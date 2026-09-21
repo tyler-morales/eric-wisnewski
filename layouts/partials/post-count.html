@@ -1,0 +1,8 @@
+{{/*
+  "N posts" under a list, or on a contributor card.
+  dict: count (int), live (bool — Grady’s Tour country filter rewrites the text).
+*/}}
+{{- $n := .count | default 0 -}}
+<p class="post-count"{{ if .live }} data-post-count aria-live="polite"{{ end }}>
+{{- if eq $n 1 -}}1 post{{- else -}}{{ $n }} posts{{- end -}}
+</p>

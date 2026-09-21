@@ -32,7 +32,8 @@ NAV_RE = re.compile(
     r'<nav\b[^>]*aria-label="Main navigation"[^>]*>(.*?)</nav>',
     re.DOTALL | re.IGNORECASE,
 )
-POST_LIST_RE = re.compile(r'<ul class="post-list">(.*?)</ul>', re.DOTALL)
+# greedy: country-chip dropdowns nest a <ul> inside .post-list
+POST_LIST_RE = re.compile(r'<ul class="post-list">(.*)</ul>', re.DOTALL)
 TITLE_RE = re.compile(r'class="post-list-title"[^>]*>(.*?)</(?:span|a)>', re.DOTALL)
 FIXTURE_POST = (
     "---\n"
@@ -150,6 +151,7 @@ class JeremyOnTapContractTests(unittest.TestCase):
         layout = SECTION_LAYOUT.read_text(encoding="utf-8")
         self.assertIn(".RegularPages", layout)
         self.assertIn("section-empty", layout)
+        self.assertIn('partial "post-count.html"', layout)
         self.assertNotIn('Section" "posts"', layout)
 
     def test_permalinks_and_author_cascade_success(self) -> None:

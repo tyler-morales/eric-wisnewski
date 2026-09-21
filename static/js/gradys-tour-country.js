@@ -140,6 +140,13 @@ export function countLabel(country, count) {
   return n + ' posts in ' + name;
 }
 
+export function postCountLabel(count) {
+  var n = Number(count);
+  if (!isFinite(n) || n < 0) n = 0;
+  if (n === 1) return '1 post';
+  return n + ' posts';
+}
+
 export function parseCatalogJson(raw) {
   try {
     var data = JSON.parse(raw || '{}');
@@ -212,6 +219,11 @@ function applyIndexFilter(selected) {
   if (empty) empty.hidden = visible !== 0;
   var list = document.querySelector('.post-list');
   if (list) list.hidden = selected !== '' && visible === 0;
+  var total = document.querySelector('[data-post-count]');
+  if (total) {
+    total.hidden = visible === 0;
+    total.textContent = postCountLabel(visible);
+  }
   return visible;
 }
 

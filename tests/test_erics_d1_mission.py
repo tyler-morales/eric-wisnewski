@@ -25,7 +25,8 @@ NAV_RE = re.compile(
     r'<nav\b[^>]*aria-label="Main navigation"[^>]*>(.*?)</nav>',
     re.DOTALL | re.IGNORECASE,
 )
-POST_LIST_RE = re.compile(r'<ul class="post-list">(.*?)</ul>', re.DOTALL)
+# greedy: country-chip dropdowns nest a <ul> inside .post-list
+POST_LIST_RE = re.compile(r'<ul class="post-list">(.*)</ul>', re.DOTALL)
 TITLE_RE = re.compile(r'class="post-list-title"[^>]*>(.*?)</(?:span|a)>', re.DOTALL)
 
 
@@ -101,6 +102,7 @@ class EricsD1MissionTemplateTests(unittest.TestCase):
         self.assertIn('id="posts"', layout)
         self.assertIn('partial "school-sheets.html"', layout)
         self.assertIn('partial "post-list-item.html"', layout)
+        self.assertIn('partial "post-count.html"', layout)
         self.assertIn('Section" "eq" "posts"', layout)
         self.assertIn('partial "subscribe.html"', layout)
         self.assertIn("/js/school-sheets.js", layout)

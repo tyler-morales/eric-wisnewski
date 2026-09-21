@@ -7,6 +7,7 @@
 {{- $html := .html -}}
 {{- $html = replaceRE `<a href="https://(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)([A-Za-z0-9_-]{11})[^"]*"[^>]*>https?://[^<]*</a>` `<iframe class="youtube-embed" src="https://www.youtube-nocookie.com/embed/$1" title="YouTube video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>` $html -}}
 {{- $html = replaceRE `<a href="https?://(?:(?:www|mobile)\.)?(?:twitter\.com|x\.com)/[A-Za-z0-9_]+/status(?:es)?/(\d+)[^"]*"[^>]*>https?://[^<]*</a>` `<blockquote class="twitter-tweet" data-dnt="true"><a href="https://x.com/i/status/$1">View post on X</a></blockquote>` $html -}}
+{{- $html = replaceRE `(?s)<p([^>]*)>\s*<img([^>]*)>\s*</p>` `<p$1><span class="media-frame media-frame--fluid"><img loading="lazy" decoding="async"$2></span></p>` $html -}}
 {{- if in $html "twitter-tweet" -}}
   {{- $_ := .page.Store.Set "hasTwitterEmbed" true -}}
 {{- end -}}

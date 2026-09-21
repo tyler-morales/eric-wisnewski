@@ -6,20 +6,23 @@
 {{- $name := $author.Params.name | default $author.Title -}}
 {{- $profile := .profile | default false -}}
 {{- $linkName := .link_name | default false -}}
+{{- $showCount := .show_count | default false -}}
 {{- $el := .element | default "aside" -}}
 {{- $class := "author-bio" -}}
 {{- if $profile }}{{ $class = "author-bio author-profile" }}{{ end -}}
 {{ printf `<%s class="%s" aria-label="About %s">` $el $class $name | safeHTML }}
   {{ with $author.Params.image }}
-  <img
-    class="author-bio-image"
-    src="{{ . | absURL }}"
-    alt="{{ $name }}"
-    width="96"
-    height="96"
-    loading="lazy"
-    decoding="async"
-  >
+  <span class="author-bio-media media-frame">
+    <img
+      class="author-bio-image"
+      src="{{ . | absURL }}"
+      alt="{{ $name }}"
+      width="96"
+      height="96"
+      loading="lazy"
+      decoding="async"
+    >
+  </span>
   {{ end }}
   <div class="author-bio-text">
     {{ if $profile }}
@@ -35,6 +38,9 @@
     {{ end }}
     {{ with $author.Params.bio }}
     <p class="author-bio-blurb">{{ . }}</p>
+    {{ end }}
+    {{ if $showCount }}
+    {{ partial "post-count.html" (dict "count" (len (partial "author-posts.html" $author))) }}
     {{ end }}
   </div>
 {{ printf `</%s>` $el | safeHTML }}

@@ -15,5 +15,6 @@
     {{ end }}
   </ul>
   {{ end }}
+  {{ partial "post-count.html" (dict "count" (len $posts)) }}
 </main>
 {{ end }}

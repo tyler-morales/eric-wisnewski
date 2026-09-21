@@ -12,6 +12,7 @@
     {{ partial "post-list-item.html" . }}
     {{ end }}
   </ul>
+  {{ partial "post-count.html" (dict "count" (len $posts) "live" true) }}
   <p class="gradys-tour-empty" data-tour-empty hidden>No posts for this country yet.</p>
   {{ else }}
   <p class="gradys-tour-empty">No travel posts yet. Check back soon.</p>

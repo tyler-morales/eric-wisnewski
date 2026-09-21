@@ -26,8 +26,10 @@ SUBSCRIBE_INVALID_CONTENT = REPO_ROOT / "content" / "subscribe" / "invalid.md"
 SUBSCRIBE_STATUS_LAYOUT = REPO_ROOT / "layouts" / "_default" / "subscribe-status.html"
 LIST_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "list.html"
 TOUR_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "section-list.html"
+GRADYS_TOUR_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "gradys-tour.html"
 SINGLE_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "single.html"
 MISSION_TEMPLATE = REPO_ROOT / "layouts" / "_default" / "erics-d1-mission.html"
+STYLE_CSS = REPO_ROOT / "assets" / "css" / "style.css"
 HUGO_TOML = REPO_ROOT / "config" / "_default" / "hugo.toml"
 HUGO_TIMEOUT_SECONDS = 120
 
@@ -1553,6 +1555,42 @@ class NewsletterTemplateTests(unittest.TestCase):
         self.assertTrue(template_includes_subscribe(SINGLE_TEMPLATE.read_text(encoding="utf-8")))
         self.assertTrue(template_includes_subscribe(MISSION_TEMPLATE.read_text(encoding="utf-8")))
 
+    def test_home_subscribe_uses_desktop_sidebar_success(self) -> None:
+        template = LIST_TEMPLATE.read_text(encoding="utf-8")
+        css = STYLE_CSS.read_text(encoding="utf-8")
+        self.assertIn('class="home-page"', template)
+        self.assertIn('class="home-feed"', template)
+        self.assertIn("<aside class=\"home-subscribe\">", template)
+        self.assertIn(".IsHome", template)
+        self.assertIn("@media (min-width: 960px)", css)
+        desktop = css.split("@media (min-width: 960px)", 1)[-1]
+        home_grid = desktop.split("main.home-page", 1)[-1].split("}", 1)[0]
+        self.assertIn("grid-template-columns", home_grid)
+        self.assertIn("40rem", home_grid)
+        self.assertIn("20.5rem", home_grid)
+        self.assertIn("max-width: calc(40rem + 2.5rem + 20.5rem + 2 * var(--page-pad))", home_grid)
+        aside = desktop.split(".home-subscribe {", 1)[-1].split("}", 1)[0]
+        self.assertIn("position: sticky", aside)
+        self.assertIn("top: 1rem", aside)
+        self.assertIn("max-height", aside)
+        self.assertIn(".home-subscribe .subscribe-section", desktop)
+
+    def test_inner_pages_keep_subscribe_at_bottom_failure(self) -> None:
+        for path in (
+            TOUR_TEMPLATE,
+            GRADYS_TOUR_TEMPLATE,
+            SINGLE_TEMPLATE,
+            MISSION_TEMPLATE,
+        ):
+            text = path.read_text(encoding="utf-8")
+            self.assertTrue(template_includes_subscribe(text), path.name)
+            self.assertNotIn("home-subscribe", text)
+            self.assertNotIn("home-page", text)
+        css = STYLE_CSS.read_text(encoding="utf-8")
+        base = css.split("@media (min-width: 960px)", 1)[0]
+        self.assertNotIn("main.home-page", base)
+        self.assertNotIn(".home-subscribe {", base)
+
     def test_hugo_toml_has_newsletter_enabled_flag(self) -> None:
         toml = HUGO_TOML.read_text(encoding="utf-8")
         self.assertRegex(toml, r"(?m)^\s*newsletter_enabled\s*=")
@@ -1665,6 +1703,29 @@ class NewsletterBuildTests(unittest.TestCase):
         for title in titles:
             self.assertNotIn("An Introduction", title)
             self.assertNotIn("Boston College", title)
+
+    def test_home_html_puts_subscribe_in_aside_success(self) -> None:
+        self.assertIn('class="home-page"', self.home)
+        self.assertIn('class="home-feed"', self.home)
+        self.assertIn('class="home-subscribe"', self.home)
+        aside_at = self.home.find('class="home-subscribe"')
+        subscribe_at = self.home.find('id="subscribe"')
+        feed_at = self.home.find('class="home-feed"')
+        self.assertGreater(aside_at, feed_at)
+        self.assertGreater(subscribe_at, aside_at)
+        close_aside = self.home.find("</aside>", aside_at)
+        self.assertGreater(close_aside, subscribe_at)
+
+    def test_inner_pages_html_keep_subscribe_out_of_sidebar_failure(self) -> None:
+        self.assertIn('id="subscribe"', self.tour)
+        self.assertNotIn("home-subscribe", self.tour)
+        self.assertNotIn("home-page", self.tour)
+        self.assertIn('id="subscribe"', self.mission_html)
+        self.assertNotIn("home-subscribe", self.mission_html)
+        self.assertTrue(self.eric_single, "an-introduction must be in the build")
+        self.assertIn('id="subscribe"', self.eric_single)
+        self.assertNotIn("home-subscribe", self.eric_single)
+        self.assertNotIn('class="home-page"', self.eric_single)
 
     def test_home_form_defaults_to_posts_when_enabled(self) -> None:
         if not self.home_enabled:

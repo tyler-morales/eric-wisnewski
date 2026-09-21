@@ -20,7 +20,7 @@
           <li class="updates-entry">
             {{ with .Params.image }}
             <a href="{{ $entry.RelPermalink }}" class="updates-entry-image-link" tabindex="-1" aria-hidden="true">
-              <span class="updates-entry-image">
+              <span class="updates-entry-image media-frame">
                 <img src="{{ . | absURL }}" alt="" width="640" height="360" loading="lazy" decoding="async">
               </span>
             </a>
