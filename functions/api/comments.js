@@ -8,11 +8,15 @@
 
 import {
   adminSecretFromRequest,
+  brandedTransactionalEmail,
+  escapeAttr,
+  escapeHtml,
   isAdmin,
   isValidEmail,
   isValidToken,
   isValidVisitorId,
   jsonResponse,
+  newsletterPostalAddress,
   normalizeEmail,
   publicOrigin,
   sendResendEmail,
@@ -126,16 +130,10 @@ export function commentUrlLookupVariants(url) {
   return [...variants];
 }
 
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function escapeAttr(s) {
-  return escapeHtml(s).replace(/'/g, '&#39;');
+function commentPostUrl(postUrl) {
+  const url = typeof postUrl === 'string' ? postUrl : '';
+  const hash = url.indexOf('#');
+  return hash === -1 ? url : url.slice(0, hash);
 }
 
 /** Address to notify when someone replies; empty means skip. */
@@ -150,19 +148,28 @@ export function parentReplyNotifyTo(parentEmail, replyEmail) {
   return to;
 }
 
-export function replyNotifyEmail({ parentAuthor, replyAuthor, replyText, postUrl }) {
+export function replyNotifyEmail({ parentAuthor, replyAuthor, replyText, postUrl, postalAddress }) {
   const who = (typeof replyAuthor === 'string' && replyAuthor.trim()) || 'Someone';
   const you = typeof parentAuthor === 'string' ? parentAuthor.trim() : '';
   const snippet = String(replyText || '').trim().slice(0, 280);
   const url = typeof postUrl === 'string' ? postUrl : '';
+  const viewUrl = commentPostUrl(url) || url;
   const greeting = you ? `${you}, ` : '';
   const subject = `${who} replied to your comment`;
-  const text = `${greeting}${who} replied to your comment:\n\n${snippet}\n\n${url}`;
-  const html = `<p>${escapeHtml(greeting)}${escapeHtml(who)} replied to your comment:</p>
-<blockquote>${escapeHtml(snippet).replace(/\n/g, '<br>')}</blockquote>
-<p><a href="${escapeAttr(url)}">Read the comment</a></p>
-<p style="color:#666;font-size:12px;">You got this because you left a comment with this email.</p>`;
-  return { subject, html, text };
+  const mail = brandedTransactionalEmail({
+    fromName: 'Eric Wisnewski',
+    toName: you,
+    title: subject,
+    bodyHtml: `<p style="margin:0 0 12px 0;">${escapeHtml(greeting)}${escapeHtml(who)} replied to your comment:</p>
+<blockquote style="margin:0 0 12px 0;padding:0;border:0;">${escapeHtml(snippet).replace(/\n/g, '<br>')}</blockquote>
+<p style="margin:0 0 12px 0;"><a href="${escapeAttr(url)}" style="color:#1a0dab;text-decoration:underline;">Read the comment</a></p>
+<p style="margin:0;color:#6b7280;font-size:12px;">You got this because you left a comment with this email.</p>`,
+    bodyText: `${greeting}${who} replied to your comment:\n\n${snippet}\n\n${url}`,
+    primaryCta: { label: 'Read the comment', url },
+    secondaryCta: { label: 'View post', url: viewUrl },
+    postalAddress,
+  });
+  return { subject, html: mail.html, text: mail.text };
 }
 
 /** Section id for a comment URL (`posts` / `gradys-tour` / `da-breakdown-w-tad` / `jeremy-on-tap`); empty means skip. */
@@ -186,17 +193,25 @@ export function writerNotifyTo(listId, env, commentEmail) {
   return to;
 }
 
-export function writerNotifyEmail({ commentAuthor, commentText, postUrl }) {
+export function writerNotifyEmail({ commentAuthor, commentText, postUrl, postalAddress }) {
   const who = (typeof commentAuthor === 'string' && commentAuthor.trim()) || 'Someone';
   const snippet = String(commentText || '').trim().slice(0, 280);
   const url = typeof postUrl === 'string' ? postUrl : '';
+  const viewUrl = commentPostUrl(url) || url;
   const subject = `${who} commented on your post`;
-  const text = `${who} commented on your post:\n\n${snippet}\n\n${url}`;
-  const html = `<p>${escapeHtml(who)} commented on your post:</p>
-<blockquote>${escapeHtml(snippet).replace(/\n/g, '<br>')}</blockquote>
-<p><a href="${escapeAttr(url)}">Read the comment</a></p>
-<p style="color:#666;font-size:12px;">You got this because you wrote this post.</p>`;
-  return { subject, html, text };
+  const mail = brandedTransactionalEmail({
+    fromName: 'Eric Wisnewski',
+    title: subject,
+    bodyHtml: `<p style="margin:0 0 12px 0;">${escapeHtml(who)} commented on your post:</p>
+<blockquote style="margin:0 0 12px 0;padding:0;border:0;">${escapeHtml(snippet).replace(/\n/g, '<br>')}</blockquote>
+<p style="margin:0 0 12px 0;"><a href="${escapeAttr(url)}" style="color:#1a0dab;text-decoration:underline;">Read the comment</a></p>
+<p style="margin:0;color:#6b7280;font-size:12px;">You got this because you wrote this post.</p>`,
+    bodyText: `${who} commented on your post:\n\n${snippet}\n\n${url}`,
+    primaryCta: { label: 'Read the comment', url },
+    secondaryCta: { label: 'View post', url: viewUrl },
+    postalAddress,
+  });
+  return { subject, html: mail.html, text: mail.text };
 }
 
 async function sendCommentNotice(env, to, mail) {
@@ -497,6 +512,7 @@ export async function onRequestPost(context) {
           replyAuthor: author,
           replyText: text,
           postUrl,
+          postalAddress: newsletterPostalAddress(context.env),
         })
       );
     }
@@ -504,7 +520,12 @@ export async function onRequestPost(context) {
       await queueCommentEmail(
         context,
         writerTo,
-        writerNotifyEmail({ commentAuthor: author, commentText: text, postUrl })
+        writerNotifyEmail({
+          commentAuthor: author,
+          commentText: text,
+          postUrl,
+          postalAddress: newsletterPostalAddress(context.env),
+        })
       );
     }
     return jsonResponse(withIsoCreatedAt({ ...row, edit_token: editToken }), 201);

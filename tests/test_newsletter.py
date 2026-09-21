@@ -18,6 +18,8 @@ JER_LIST_MIGRATION = MIGRATIONS_DIR / "0008_jer_newsletter_list.sql"
 JEREMY_ON_TAP_MIGRATION = MIGRATIONS_DIR / "0009_jeremy_on_tap.sql"
 SUBSCRIBE_API = REPO_ROOT / "functions" / "api" / "subscribe.js"
 NEWSLETTER_API = REPO_ROOT / "functions" / "api" / "newsletter.js"
+SHARED_API = REPO_ROOT / "lib" / "api.js"
+COMMENTS_API = REPO_ROOT / "functions" / "api" / "comments.js"
 SUBSCRIBE_JS = REPO_ROOT / "static" / "js" / "subscribe.js"
 SUBSCRIBE_PARTIAL = REPO_ROOT / "layouts" / "partials" / "subscribe.html"
 SUBSCRIBE_MANAGE_LAYOUT = REPO_ROOT / "layouts" / "_default" / "subscribe-manage.html"
@@ -299,6 +301,9 @@ class NewsletterHelperTests(unittest.TestCase):
             "https://ericwisnewski.com/subscribe/manage/?token=", mail["html"]
         )
         self.assertIn("Manage subscriptions", mail["html"])
+        self.assertIn("Visit site", mail["html"])
+        self.assertIn("Unsubscribe", mail["html"])
+        self.assertIn("1340 W 18th Pl, Chicago, IL 60608, USA", mail["html"])
 
     def test_manage_email_is_not_a_confirm_mail_failure(self) -> None:
         mail = call_js_fn(
@@ -325,6 +330,9 @@ class NewsletterHelperTests(unittest.TestCase):
         self.assertIn(
             "https://ericwisnewski.com/api/subscribe?confirm=", mail["text"]
         )
+        self.assertIn("Confirm subscription", mail["html"])
+        self.assertIn("Visit site", mail["html"])
+        self.assertIn("1340 W 18th Pl, Chicago, IL 60608, USA", mail["text"])
 
     def test_confirm_email_omits_already_done_copy_failure(self) -> None:
         mail = call_js_fn(
@@ -713,15 +721,17 @@ class NewsletterHelperTests(unittest.TestCase):
             "tok",
             "",
         )
-        self.assertIn(
-            '<a href="https://ericwisnewski.com/gradys-tour/day-5-6/">'
-            "Pushing to 100: Day 5-6</a>",
-            mail["html"],
-        )
-        self.assertEqual(mail["html"].count("<a href="), 2)
-        self.assertIn("Unsubscribe or manage email preferences", mail["html"])
+        self.assertIn('href="https://ericwisnewski.com/gradys-tour/day-5-6/"', mail["html"])
+        self.assertIn("Pushing to 100: Day 5-6", mail["html"])
+        self.assertIn("Read the post", mail["html"])
+        self.assertIn("View on site", mail["html"])
+        self.assertIn("https://ericwisnewski.com/gradys-tour/", mail["html"])
+        self.assertIn("Unsubscribe", mail["html"])
+        self.assertIn("1340 W 18th Pl, Chicago, IL 60608, USA", mail["html"])
+        self.assertIn("Read the post: https://ericwisnewski.com/gradys-tour/day-5-6/", mail["text"])
+        self.assertGreaterEqual(mail["html"].count("<a href="), 4)
 
-    def test_post_email_content_omits_read_the_post_failure(self) -> None:
+    def test_post_email_content_omits_portrait_and_old_unsub_copy_failure(self) -> None:
         mail = call_js_fn(
             NEWSLETTER_API,
             "postEmailContent",
@@ -731,9 +741,109 @@ class NewsletterHelperTests(unittest.TestCase):
             "tok",
             "",
         )
-        self.assertNotIn("Read the post", mail["html"])
-        self.assertNotIn("Read the post", mail["text"])
+        self.assertIn("Read the post", mail["html"])
+        self.assertIn("Read the post", mail["text"])
+        self.assertIn("Manage email", mail["html"])
+        self.assertNotIn("View on site", mail["html"])
+        self.assertNotIn("<img", mail["html"])
+        self.assertNotIn("favicon.png", mail["html"])
+        self.assertNotIn("Unsubscribe or manage email preferences", mail["html"])
         self.assertIn("https://ericwisnewski.com/posts/hello/", mail["text"])
+
+
+class OverreactedEmailTemplateTests(unittest.TestCase):
+    def test_branded_email_has_mark_ctas_and_address_success(self) -> None:
+        mail = call_js_fn(
+            SHARED_API,
+            "brandedTransactionalEmail",
+            {
+                "fromName": "Eric Wisnewski",
+                "title": "Hello Again",
+                "bodyHtml": "<p>Check it out.</p>",
+                "bodyText": "Check it out.",
+                "primaryCta": {
+                    "label": "Read the post",
+                    "url": "https://ericwisnewski.com/posts/hello/",
+                },
+                "secondaryCta": {
+                    "label": "Manage email",
+                    "url": "https://ericwisnewski.com/subscribe/manage/?token=ab",
+                },
+                "unsubUrl": "https://ericwisnewski.com/subscribe/manage/?token=ab",
+            },
+        )
+        html = mail["html"]
+        self.assertIn(">EW<", html)
+        self.assertIn("Hello Again", html)
+        self.assertIn("Read the post", html)
+        self.assertIn("Manage email", html)
+        self.assertIn("Unsubscribe", html)
+        self.assertIn("1340 W 18th Pl, Chicago, IL 60608, USA", html)
+        self.assertIn("role=\"presentation\"", html)
+        self.assertIn("background-color:#111111", html)
+        self.assertIn("color:#ea580c", html)
+        self.assertIn("Read the post: https://ericwisnewski.com/posts/hello/", mail["text"])
+        self.assertIn("1340 W 18th Pl, Chicago, IL 60608, USA", mail["text"])
+        self.assertEqual(
+            call_js_fn(SHARED_API, "newsletterPostalAddress", {}),
+            "1340 W 18th Pl, Chicago, IL 60608, USA",
+        )
+        self.assertEqual(
+            call_js_fn(
+                SHARED_API,
+                "newsletterPostalAddress",
+                {"NEWSLETTER_POSTAL_ADDRESS": "  1 Main St  "},
+            ),
+            "1 Main St",
+        )
+
+    def test_branded_email_omits_images_and_empty_unsub_failure(self) -> None:
+        mail = call_js_fn(
+            SHARED_API,
+            "brandedTransactionalEmail",
+            {
+                "title": "Note",
+                "bodyHtml": "<p>Hi &amp; bye</p>",
+                "bodyText": "Hi",
+                "postalAddress": "1 Main St",
+            },
+        )
+        self.assertNotIn("<img", mail["html"])
+        self.assertNotIn("favicon.png", mail["html"])
+        self.assertNotIn("Unsubscribe", mail["html"])
+        self.assertIn("1 Main St", mail["html"])
+        self.assertNotIn("1340 W 18th Pl", mail["html"])
+        escaped = call_js_fn(
+            SHARED_API,
+            "brandedTransactionalEmail",
+            {"fromName": "<b>X</b>", "title": "<script>x</script>", "bodyText": "x"},
+        )
+        self.assertNotIn("<script>x</script>", escaped["html"])
+        self.assertNotIn("<b>X</b>", escaped["html"])
+        self.assertIn("&lt;script&gt;", escaped["html"])
+        self.assertNotIn("brandedEmailHtml", SHARED_API.read_text(encoding="utf-8"))
+        self.assertEqual(
+            call_js_fn(SHARED_API, "newsletterPostalAddress", {"NEWSLETTER_POSTAL_ADDRESS": "   "}),
+            "1340 W 18th Pl, Chicago, IL 60608, USA",
+        )
+
+    def test_mail_builders_share_overreacted_template_success(self) -> None:
+        shared = SHARED_API.read_text(encoding="utf-8")
+        self.assertIn("export function brandedTransactionalEmail", shared)
+        for path in (NEWSLETTER_API, SUBSCRIBE_API, COMMENTS_API):
+            text = path.read_text(encoding="utf-8")
+            self.assertIn("brandedTransactionalEmail", text)
+            self.assertNotIn("function brandedTransactionalEmail", text)
+            self.assertNotIn("function escapeHtml", text)
+
+    def test_mail_builders_do_not_reintroduce_portrait_wrap_failure(self) -> None:
+        blob = "".join(
+            path.read_text(encoding="utf-8")
+            for path in (SHARED_API, NEWSLETTER_API, SUBSCRIBE_API, COMMENTS_API)
+        )
+        self.assertNotIn("brandedEmailHtml", blob)
+        self.assertNotIn("SITE_FAVICON_PNG", blob)
+        self.assertNotIn("<img", blob)
 
 
 def _apply_migrations_through(conn: sqlite3.Connection, last_name: str) -> None:

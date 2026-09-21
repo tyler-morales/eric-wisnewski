@@ -14,7 +14,7 @@ TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 # RESEND_API_KEY=re_xxx
 # NEWSLETTER_DISPATCH_SECRET=openssl-rand-hex-32
 # NEWSLETTER_FROM_EMAIL=hello@ericwisnewski.com
-# NEWSLETTER_POSTAL_ADDRESS=Your Name, City, ST
+# NEWSLETTER_POSTAL_ADDRESS=1340 W 18th Pl, Chicago, IL 60608, USA
 # NEWSLETTER_SITE_ORIGIN=https://ericwisnewski.com
 # Email the post writer on a new comment (same Resend key as newsletter).
 # WRITER_EMAIL_POSTS=eric@example.com

@@ -5,8 +5,12 @@
 
 import {
   LIST_LABELS,
+  brandedTransactionalEmail,
+  escapeAttr,
+  escapeHtml,
   jsonResponse,
   newsletterFromHeader,
+  newsletterPostalAddress,
   publicOrigin,
   secretsMatch,
   sendResendEmail,
@@ -98,33 +102,32 @@ export function newsletterLinks(origin, unsubToken) {
   };
 }
 
+function listPublicPath(listId) {
+  return `/${listId}/`;
+}
+
 export function postEmailContent(listId, item, origin, unsubToken, postalAddress) {
   const label = LIST_LABELS[listId] || listId;
+  const fromName = listId === 'posts' ? 'Eric Wisnewski' : label;
   const links = newsletterLinks(origin, unsubToken);
   const subject = `New on ${label}: ${item.title}`;
-  const addressLine = postalAddress
-    ? `<p style="color:#666;font-size:12px;">${escapeHtml(postalAddress)}</p>`
-    : '';
-  const html = `<p>There's a new post on <strong>${escapeHtml(label)}</strong>.</p>
-<p><a href="${escapeAttr(item.url)}">${escapeHtml(item.title)}</a></p>
-<hr>
-<p style="color:#666;font-size:12px;"><a href="${escapeAttr(links.manageUrl)}">Unsubscribe or manage email preferences</a></p>
-${addressLine}`;
-  const text = `There's a new post on ${label}: ${item.title}\n\n${item.url}\n\nUnsubscribe or manage email preferences: ${links.manageUrl}${postalAddress ? `\n\n${postalAddress}` : ''
-    }`;
-  return { subject, html, text, unsubUrl: links.oneClickUrl };
-}
-
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function escapeAttr(s) {
-  return escapeHtml(s).replace(/'/g, '&#39;');
+  const postUrl = item.url;
+  const isEric = listId === 'posts';
+  const mail = brandedTransactionalEmail({
+    markVariant: isEric ? 'orange' : 'dark',
+    fromName,
+    title: item.title,
+    bodyHtml: `<p style="margin:0 0 12px 0;">There's a new post on <strong>${escapeHtml(label)}</strong>.</p>
+<p style="margin:0;"><a href="${escapeAttr(postUrl)}" style="color:#1a0dab;text-decoration:underline;">${escapeHtml(item.title)}</a></p>`,
+    bodyText: `There's a new post on ${label}: ${item.title}\n\n${postUrl}`,
+    primaryCta: { label: 'Read the post', url: postUrl },
+    secondaryCta: isEric
+      ? { label: 'Manage email', url: links.manageUrl }
+      : { label: 'View on site', url: `${origin}${listPublicPath(listId)}` },
+    unsubUrl: links.manageUrl,
+    postalAddress,
+  });
+  return { subject, html: mail.html, text: mail.text, unsubUrl: links.oneClickUrl };
 }
 
 async function processList(db, env, origin, listConfig) {
@@ -172,7 +175,7 @@ async function processList(db, env, origin, listConfig) {
     .all();
   const recipients = subscribers.results || [];
   const from = newsletterFromHeader(env, listConfig.fromName);
-  const postal = env.NEWSLETTER_POSTAL_ADDRESS || '';
+  const postal = newsletterPostalAddress(env);
 
   for (const item of toSend) {
     for (const sub of recipients) {
