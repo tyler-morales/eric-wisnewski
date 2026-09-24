@@ -4,7 +4,7 @@ slug: Italy
 author:
   - grady-davis
 date: 2026-09-24T22:20:00Z
-draft: true
+draft: false
 image: /images/uploads/IMG_2384.jpeg
 country:
   - Switzerland
@@ -78,13 +78,39 @@ Stella comes to lunch with her nephew and is astonished when he starts speaking 
 
 Basketball primetime Milan. We show up to Milan’s central park at the courts ready to hoop. One of the opposing team’s players is a former national teamer and even at 38 he can still shoot, but he’s no match for me and Christian’s Church League chemistry. We take care of team one… on to the next. With a crowd forming for game two, the pressure intensifies. We aren’t playing for ourselves, we are playing for our country. Christian begins to pad his stats with blocks and steals, and after a few acrobatic slashes and finishes in the lane, I receive gasps and cheers from the crowd. They might know how to play soccer but we showed them how it’s done in the USA. After game two, balling in my hiking shoes, a massive blister cracks open on my foot and I hold back vomit. A small price to pay.
 
+![](/images/uploads/IMG_2408.jpeg)
 
+*2-0 mission complete*
+
+![](/images/uploads/IMG_2405.jpeg)
+
+*GRAPHIC. A couple days of limping.*
 
 Leaving the park we spot a guy in a Bears jersey hurrying by us drinking a beer. As he passes we give him a “go Bears.” As we continue walking: “Where are you from?” “Chicago.” “Chicago suburbs.” Our distance apart increases. “Western Springs.” We pause. “Shit, did you guys go to LT?” LT gets around, I guess. He is going to a sports bar where they are playing the Bears game, so we meet him there an hour later. We’re joined by a few other fans and an Argentinian whose aunt lives in Evanston and who knows as much ball as “Da Breakdowns” Tad Davis.
 
+![](/images/uploads/PXL_20260913_204825429.RAW-01.COVER_Original.jpeg)
+
+*Da bears crew and incidental LT reunion*
+
 The next day we head to Como. We rent a boat from the greasiest Italian boat rental in Como. He overcharges us €30 and says we can’t jump into the water because “itsssa tooo cold youmayya dieee.” Thanks, Lucca. The ride itself is worth it, the lake is stunning, great to see Clooney too! Plus we make things right when we return the boat. We tell Lucca his boat flooded. “We got water in” - me. “Nice yeah you swim?” “No, we got water in the boat” - Tmo. The greasy Lucca’s smile slowly fades, “Yeah, it was up to here,” I put my hand to the top of the seats. We let the panic sink in, then burst into drunken laughter. Forever the salesman, he asks for a five-star review; we settle on 3.
 
-We go to a Como soccer match that night. The game is set in a dreamy stadium on the lake. It’s small but perfect, like T-mo, and only the real fans show up. They drink, sing and smoke cigs all match. What’s not to like? Next, Sardinia, Napoli, Bari.​​​​​​​​​​​​​​​​
+![](/images/uploads/IMG_2410.jpeg)
+
+![](/images/uploads/IMG_2411.jpeg)
+
+![](/images/uploads/IMG_2031.jpeg)
+
+*Lake Como to celebrate T-Mos birthday*
+
+We go to a Como soccer match that night. The game is set in a dreamy stadium on the lake. It’s small but perfect, like T-mo, and only the real fans show up. They drink, sing and smoke cigs all match.
+
+![](/images/uploads/IMG_2407.jpeg)
+
+![](/images/uploads/IMG_2406.jpeg)
+
+*Impressive fan section, with some deafening chants*
+
+What’s not to like? Next, Sardinia, Napoli, Bari.​​​​​​​​​​​​​​​​
 
 -Grady
 
