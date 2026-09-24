@@ -1342,6 +1342,34 @@ article.post-content iframe.twitter-tweet:focus-visible {
   outline-offset: 2px;
 }
 
+article.post-content audio.audio-embed,
+article.post-content figure.audio-embed audio {
+  display: block;
+  width: 100%;
+}
+
+article.post-content audio.audio-embed:focus-visible,
+article.post-content figure.audio-embed audio:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+article.post-content p:has(> audio.audio-embed:only-child),
+article.post-content figure.audio-embed {
+  margin-top: 1em;
+  margin-bottom: 0.45em;
+}
+
+article.post-content figure.audio-embed {
+  width: auto;
+  max-width: 100%;
+}
+
+article.post-content figure.audio-embed figcaption {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 /* Gym flip-card scoreboard */
 article.post-content .scoreboard {
   display: block;

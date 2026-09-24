@@ -1,5 +1,6 @@
 {{/*
-  Markdown YouTube and X/Twitter status URLs are already embeds via render-link.html.
-  Pages CMS often stores the same paste as an HTML <a>; rewrite those here.
+  Markdown YouTube, X/Twitter, and uploaded-audio URLs are already embeds via
+  render-link.html. Pages CMS often stores the same paste as an HTML <a>;
+  rewrite those here.
 */}}
 {{ partial "html-embeds.html" (dict "page" . "html" .Content) }}
