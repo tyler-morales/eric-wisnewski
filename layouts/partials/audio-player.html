@@ -1,0 +1,19 @@
+{{/*
+  Native player for one uploaded clip. src is already a /audio/uploads/ path.
+  title and caption are optional; a bare URL embed passes neither.
+*/}}
+{{- $src := .src -}}
+{{- $label := .title | default .caption | default "Audio clip" -}}
+{{- $caption := .caption | default .title -}}
+{{- if $caption -}}
+<figure class="audio-embed">
+  <audio controls preload="none" src="{{ $src | safeURL }}" aria-label="{{ $label }}">
+    <a href="{{ $src | safeURL }}">Listen to audio</a>
+  </audio>
+  <figcaption>{{ $caption }}</figcaption>
+</figure>
+{{- else -}}
+<audio class="audio-embed" controls preload="none" src="{{ $src | safeURL }}" aria-label="Audio clip">
+  <a href="{{ $src | safeURL }}">Listen to audio</a>
+</audio>
+{{- end -}}

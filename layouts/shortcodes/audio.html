@@ -1,0 +1,8 @@
+{{/*
+  {{< audio src="/audio/uploads/clip.mp3" title="Optional" caption="Optional" >}}
+  src must be an uploaded clip. Other URLs render nothing.
+*/}}
+{{- $src := partial "audio-src.html" (.Get "src" | default "") -}}
+{{- if $src -}}
+  {{- partial "audio-player.html" (dict "src" $src "title" (.Get "title") "caption" (.Get "caption")) -}}
+{{- end -}}

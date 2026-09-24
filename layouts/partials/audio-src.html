@@ -1,0 +1,10 @@
+{{/*
+  Site audio uploads only: /audio/uploads/file.mp3|m4a|ogg, or the same path
+  on an absolute URL. Any other extension or host returns empty.
+*/}}
+{{- $raw := . | default "" -}}
+{{- $src := "" -}}
+{{- if findRE `(?i)^(?:https?://[^/]+)?/audio/uploads/.+\.(?:mp3|m4a|ogg)(?:[?#].*)?$` $raw -}}
+  {{- $src = replaceRE `(?i)^(?:https?://[^/]+)?(/audio/uploads/.+\.(?:mp3|m4a|ogg))(?:[?#].*)?$` `$1` $raw -}}
+{{- end -}}
+{{- return $src -}}

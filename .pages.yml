@@ -2,10 +2,20 @@
 # Edit content and media here; contributors sign in with email (magic link). Repo backend: GitHub; config drives the CMS UI.
 
 # Restrict to web-friendly formats to avoid huge files that can trigger 504 on upload.
+# Pages CMS allows several media sources. `images` stays first so image fields and
+# rich-text inserts keep the image library. Audio is a separate folder (no wav:
+# uncompressed clips blow the upload limit). Keep clips under about 10 MB.
 media:
-  input: assets/images/uploads
-  output: /images/uploads
-  extensions: [jpg, jpeg, png, webp, gif]
+  - name: images
+    label: Images
+    input: assets/images/uploads
+    output: /images/uploads
+    extensions: [jpg, jpeg, png, webp, gif]
+  - name: audio
+    label: Audio
+    input: assets/audio/uploads
+    output: /audio/uploads
+    extensions: [mp3, m4a, ogg]
 
 content:
   - name: authors
@@ -190,7 +200,17 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it. Upload an mp3, m4a, or ogg in Audio upload (under about 10 MB), then paste that /audio/uploads/ path on its own line where the clip should play.
+        options:
+          media: images
+      - name: audio_upload
+        label: Audio upload
+        type: file
+        required: false
+        description: Uploads the file only — it does not place a player. Copy the path (/audio/uploads/…) into the body on its own line, or use the audio shortcode. mp3, m4a, or ogg. Keep clips under about 10 MB so the upload does not 504.
+        options:
+          media: audio
+          extensions: [mp3, m4a, ogg]
       - name: parts
         label: Who wrote what
         type: object
@@ -211,7 +231,9 @@ content:
             label: Their text
             type: rich-text
             required: true
-            description: Paste a YouTube or X/Twitter status URL on its own line to embed it.
+            description: Paste a YouTube or X/Twitter status URL on its own line to embed it. An uploaded audio path (/audio/uploads/….mp3, .m4a, or .ogg) on its own line becomes a player. Keep clips under about 10 MB.
+            options:
+              media: images
 
   - name: gradys-tour
     label: Grady's Tour
@@ -465,7 +487,17 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it. Upload an mp3, m4a, or ogg in Audio upload (under about 10 MB), then paste that /audio/uploads/ path on its own line where the clip should play.
+        options:
+          media: images
+      - name: audio_upload
+        label: Audio upload
+        type: file
+        required: false
+        description: Uploads the file only — it does not place a player. Copy the path (/audio/uploads/…) into the body on its own line, or use the audio shortcode. mp3, m4a, or ogg. Keep clips under about 10 MB so the upload does not 504.
+        options:
+          media: audio
+          extensions: [mp3, m4a, ogg]
       - name: parts
         label: Who wrote what
         type: object
@@ -486,7 +518,9 @@ content:
             label: Their text
             type: rich-text
             required: true
-            description: Paste a YouTube or X/Twitter status URL on its own line to embed it.
+            description: Paste a YouTube or X/Twitter status URL on its own line to embed it. An uploaded audio path (/audio/uploads/….mp3, .m4a, or .ogg) on its own line becomes a player. Keep clips under about 10 MB.
+            options:
+              media: images
 
   - name: da-breakdown-w-tad
     label: Da Breakdown w Tad
@@ -560,7 +594,17 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it. Upload an mp3, m4a, or ogg in Audio upload (under about 10 MB), then paste that /audio/uploads/ path on its own line where the clip should play.
+        options:
+          media: images
+      - name: audio_upload
+        label: Audio upload
+        type: file
+        required: false
+        description: Uploads the file only — it does not place a player. Copy the path (/audio/uploads/…) into the body on its own line, or use the audio shortcode. mp3, m4a, or ogg. Keep clips under about 10 MB so the upload does not 504.
+        options:
+          media: audio
+          extensions: [mp3, m4a, ogg]
       - name: parts
         label: Who wrote what
         type: object
@@ -581,7 +625,9 @@ content:
             label: Their text
             type: rich-text
             required: true
-            description: Paste a YouTube or X/Twitter status URL on its own line to embed it.
+            description: Paste a YouTube or X/Twitter status URL on its own line to embed it. An uploaded audio path (/audio/uploads/….mp3, .m4a, or .ogg) on its own line becomes a player. Keep clips under about 10 MB.
+            options:
+              media: images
 
   - name: jeremy-on-tap
     label: Jeremy On Tap
@@ -655,7 +701,17 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it. Upload an mp3, m4a, or ogg in Audio upload (under about 10 MB), then paste that /audio/uploads/ path on its own line where the clip should play.
+        options:
+          media: images
+      - name: audio_upload
+        label: Audio upload
+        type: file
+        required: false
+        description: Uploads the file only — it does not place a player. Copy the path (/audio/uploads/…) into the body on its own line, or use the audio shortcode. mp3, m4a, or ogg. Keep clips under about 10 MB so the upload does not 504.
+        options:
+          media: audio
+          extensions: [mp3, m4a, ogg]
       - name: parts
         label: Who wrote what
         type: object
@@ -676,7 +732,9 @@ content:
             label: Their text
             type: rich-text
             required: true
-            description: Paste a YouTube or X/Twitter status URL on its own line to embed it.
+            description: Paste a YouTube or X/Twitter status URL on its own line to embed it. An uploaded audio path (/audio/uploads/….mp3, .m4a, or .ogg) on its own line becomes a player. Keep clips under about 10 MB.
+            options:
+              media: images
 
   - name: updates
     label: Site updates
