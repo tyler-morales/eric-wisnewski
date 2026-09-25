@@ -13,9 +13,7 @@ country:
 
 ## Sardinia
 
-Italys second most famous and second biggest island. Its just a hair smaller than Sicily and 1/3 its size. It’s half Italy half its own thing kind of like Catalonia Spain or Texas. They have their own food and dialect but to be honest it feels a lot like Italy. But they do have a lot of pride so don’t say that to any Sardinians. Their flag (shown above) is displayed everywhere. Its displaying four severed Moorish heads to 
-
-The Moors were never able to take over Sardinia and they are proud of that - take that Sicily.
+Italys second island. Its a hair smaller than Sicily and 1/3 its size. It’s part Italy part its own thing kind of like Catalonia Spain, Puerto Rico or Texas. They have their own food and dialect but it feels a lot like Italy. And is part of Italy (but they have a lot of pride so watch what you say around Sardinians). Just look at their flag (shown above) is displayed everywhere. Its four severed Moorish head. A reminder the Moors were never able to take over Sardinia and they are proud of that - take that Sicily.
 
 While our home base Cagliari is gritty and the old town is charming, we are here for the nature and beaches. And Sardinia is the place for it. It has some of Italy’s most beautiful beaches with half the crowds. You practically need a car so we rented one for a couple days to explore the coast. We lounge at a beach club in between two mountains then go off to rent a boat. We’ve just learned our lesson from the greasy Lucca (refer to Milan article), so we are prepared to play hardball.
 
