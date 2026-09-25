@@ -13,9 +13,9 @@ country:
 
 ## Sardinia
 
-Italys second island. Its a hair smaller than Sicily and 1/3 its size. It’s part Italy part its own thing kind of like Catalonia Spain, Puerto Rico or Texas. They have their own food and dialect but it feels a lot like Italy. And is part of Italy (but they have a lot of pride so watch what you say around Sardinians). Just look at their flag (shown above) is displayed everywhere. Its four severed Moorish head. A reminder the Moors were never able to take over Sardinia and they are proud of that - take that Sicily.
+Italys second island. Its a hair smaller than Sicily and 1/3 its size. It’s part Italy part its own thing kind of like Catalonia Spain, Puerto Rico or Texas. They have their own food and dialect but it feels a lot like Italy. And is part of Italy (but they have a lot of pride so watch what you say around Sardinians). Just look at their flag (shown above) is displayed everywhere. Its four severed Moorish head. A constant reminder the Moors were never able to take over Sardinia - take that Sicily!
 
-While our home base Cagliari is gritty and the old town is charming, we are here for the nature and beaches. And Sardinia is the place for it. It has some of Italy’s most beautiful beaches with half the crowds. You practically need a car so we rented one for a couple days to explore the coast. We lounge at a beach club in between two mountains then go off to rent a boat. We’ve just learned our lesson from the greasy Lucca (refer to Milan article), so we are prepared to play hardball.
+Our home base is the gritty capital city Cagliari. It is beautifully hilly and hosts a charming old town, but we are really here for the nature and beaches. Sardinias real draw. It has some of Italy’s most beautiful beaches with half the crowds. Practically you need a car, so we rented one for a couple days to explore the coast. We lounge at a beach club in between two mountains then go off to rent a boat. We’ve just learned our lesson from the greasy Lucca (refer to Milan article), so we are prepared to play hardball.
 
 We stride into the first rental. The Italian speaking boss and his ironically named assistant “Gianluca” lounge out front. The boss is straight out of Goodfellas and Gianluca plays the part of his bad boy enforcer.
 
