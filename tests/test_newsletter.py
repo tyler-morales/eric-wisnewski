@@ -368,7 +368,13 @@ class NewsletterHelperTests(unittest.TestCase):
     def test_first_dispatch_sends_once_success(self) -> None:
         data = _send_post_once_probe()
         self.assertTrue(data["first"])
-        self.assertEqual(data["sends"], ["https://ericwisnewski.com/posts/hello/"])
+        self.assertEqual(
+            data["sends"],
+            [
+                "https://ericwisnewski.com/posts/hello/",
+                "https://ericwisnewski.com/posts/other/",
+            ],
+        )
         self.assertTrue(data["otherPost"])
 
     def test_second_dispatch_does_not_resend_failure(self) -> None:
