@@ -104,8 +104,10 @@ That night we head to a bar every local has told us to avoid. “It’s too roug
 
 The crowd is local but not rough. People are super friendly and the drinks are cheap. What else can you ask for? We make friends with a group of students, play foosball and sing duets with them. We stay until 5am and get a couple hours of sleep before making our goodbyes with Pudlo.​​​​​​​​​​​​​​​​
 
+-Grady
+
 [/audio/uploads/Calzone.m4a](/audio/uploads/Calzone.m4a)
 
--Grady
+La Canzone de Sole
 
 PS. Let me know how the audio file sounds from Redskin, thanks to TMO it’s a new feature on the site.
