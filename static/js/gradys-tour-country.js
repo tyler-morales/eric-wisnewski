@@ -683,7 +683,7 @@ function initTourCountry(root) {
     if (isIndex) {
       applyIndexFilter(selected);
       var url = tourListUrl(selected, catalog.base);
-      if (opts && opts.push !== false && typeof history !== 'undefined' && history.pushState) {
+      if ((!opts || opts.push !== false) && typeof history !== 'undefined' && history.pushState) {
         var here = location.pathname + location.search;
         if (here !== url) history.pushState({ country: selected }, '', url);
       }

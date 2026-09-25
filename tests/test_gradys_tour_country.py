@@ -335,6 +335,8 @@ class CountrySourceTests(unittest.TestCase):
         self.assertNotIn("tour-country-status", nav)
         js = COUNTRY_JS.read_text(encoding="utf-8")
         self.assertIn("history.pushState", js)
+        self.assertIn("(!opts || opts.push !== false)", js)
+        self.assertNotIn("opts && opts.push !== false", js)
         self.assertIn("preventDefault", js)
         self.assertIn("export function pinchScale", js)
         self.assertIn("(hover: none) and (pointer: coarse)", js)
