@@ -175,6 +175,30 @@ export function pinchScale(startScale, startDist, nextDist) {
   return clampGlobeScale(start * (b / a));
 }
 
+export var TOUCH_SLOP = 12;
+export var TOUCH_HOLD_MS = 220;
+
+/* One-finger intent on a coarse screen. 'pending' until the finger leaves the slop.
+   A quick move that is vertical or tied scrolls the page. A quick move that is more
+   horizontal rotates. Movement that leaves the slop only after TOUCH_HOLD_MS rotates
+   in any direction (press, then drag, including a tilt). Stillness stays 'pending'
+   so a tap can still select a country. */
+export function oneFingerIntent(dx, dy, elapsed, slop, holdMs) {
+  var x = Math.abs(Number(dx));
+  var y = Math.abs(Number(dy));
+  var t = Number(elapsed);
+  var min = Number(slop);
+  var hold = Number(holdMs);
+  if (!isFinite(min) || min < 0) min = TOUCH_SLOP;
+  if (!isFinite(hold) || hold < 0) hold = TOUCH_HOLD_MS;
+  if (!isFinite(x) || !isFinite(y)) return 'pending';
+  if (!isFinite(t) || t < 0) t = 0;
+  if (x <= min && y <= min) return 'pending';
+  if (t >= hold) return 'rotate';
+  if (y >= x) return 'scroll';
+  return 'rotate';
+}
+
 export function scaleToFit(bounds, currentScale, size, padding) {
   var current = Number(currentScale);
   if (!isFinite(current)) current = GLOBE_SCALE_MIN;
@@ -387,6 +411,9 @@ function mountGlobe(nav, opts) {
     var fingers = new Map();
     var pinch = null;
     var tap = null;
+    var touchMode = '';
+    var scrollSample = null;
+    var coastFrame = 0;
 
     function postedFeatures() {
       var list = [];
@@ -448,33 +475,40 @@ function mountGlobe(nav, opts) {
       return node.getAttribute('data-slug') || '';
     }
 
+    function armRotate(pt) {
+      var inv = pt && projection.invert(pt);
+      if (!inv) return false;
+      dragging = true;
+      v0 = versorCartesian(inv);
+      r0 = projection.rotate();
+      q0 = versorFromAngles(r0);
+      svg.classList.add('is-dragging');
+      return true;
+    }
+
+    function followRotate(pt) {
+      var inv = pt && projection.rotate(r0).invert(pt);
+      if (!inv) return false;
+      projection.rotate(versorToAngles(versorMultiply(q0, versorDelta(v0, versorCartesian(inv)))));
+      return true;
+    }
+
     svg.addEventListener('pointerdown', function (event) {
       if (coarsePointer && event.pointerType === 'touch') return;
       if (blockMouse && event.pointerType === 'mouse') return;
       if (event.button != null && event.button !== 0) return;
       var pt = svgPointer(event, svg);
       if (!pointOnGlobe(pt, cx, cy, radius)) return;
-      var inv = pt && projection.invert(pt);
-      if (!inv) return;
-      dragging = true;
+      if (!armRotate(pt)) return;
       moved = 0;
       pressedSlug = pickCountry(event.target);
       svg.setPointerCapture(event.pointerId);
-      v0 = versorCartesian(inv);
-      r0 = projection.rotate();
-      q0 = versorFromAngles(r0);
-      svg.classList.add('is-dragging');
     });
     svg.addEventListener('pointermove', function (event) {
       if (coarsePointer && event.pointerType === 'touch') return;
       if (!dragging) return;
       moved += Math.abs(event.movementX) + Math.abs(event.movementY);
-      var pt = svgPointer(event, svg);
-      var inv = pt && projection.rotate(r0).invert(pt);
-      if (!inv) return;
-      var v1 = versorCartesian(inv);
-      projection.rotate(versorToAngles(versorMultiply(q0, versorDelta(v0, v1))));
-      render();
+      if (followRotate(svgPointer(event, svg))) render();
     });
     function endDrag(event) {
       if (!dragging) return;
@@ -505,12 +539,43 @@ function mountGlobe(nav, opts) {
     }, { passive: false });
 
     if (coarsePointer) {
-      // One finger scrolls the page (touch-action: pan-y). Two fingers zoom and turn.
-      // ponytail: pinch scales about the globe center, same as the buttons, not the finger midpoint.
+      // touch-action is none here so this gesture can go either way. oneFingerIntent
+      // picks scroll vs rotate. A scroll moves the page with scrollBy.
+      // ponytail: fling coast decays 8% a frame, not the platform curve. Pinch scales
+      // about the globe center, same as the buttons, not the finger midpoint.
       function holdMouse() {
         blockMouse = true;
         clearTimeout(blockTimer);
         blockTimer = setTimeout(function () { blockMouse = false; }, 500);
+      }
+      function cancelCoast() {
+        if (coastFrame) cancelAnimationFrame(coastFrame);
+        coastFrame = 0;
+      }
+      function beginScroll(clientY) {
+        cancelCoast();
+        scrollSample = { y: clientY, t: Date.now(), v: 0 };
+      }
+      function trackScroll(clientY) {
+        if (!scrollSample) beginScroll(clientY);
+        var now = Date.now();
+        var dy = clientY - scrollSample.y;
+        var dt = now - scrollSample.t;
+        if (dy) window.scrollBy(0, -dy);
+        if (dt > 0 && dt < 100) scrollSample.v = -dy / dt;
+        else if (dt >= 100) scrollSample.v = 0;
+        scrollSample.y = clientY;
+        scrollSample.t = now;
+      }
+      function coastScroll() {
+        if (!scrollSample || !(Math.abs(scrollSample.v) > 0.05)) return;
+        function step() {
+          window.scrollBy(0, scrollSample.v * 16);
+          scrollSample.v *= 0.92;
+          if (!(Math.abs(scrollSample.v) > 0.03)) return;
+          coastFrame = requestAnimationFrame(step);
+        }
+        coastFrame = requestAnimationFrame(step);
       }
       function fingerList() {
         var list = [];
@@ -548,17 +613,10 @@ function mountGlobe(nav, opts) {
         tap = null;
         var mid = [(pts[0].pt[0] + pts[1].pt[0]) / 2, (pts[0].pt[1] + pts[1].pt[1]) / 2];
         projection.scale(pinch.scale);
-        var inv = projection.invert(mid);
-        if (!inv) {
+        if (!armRotate(mid)) {
           dragging = false;
           svg.classList.remove('is-dragging');
-          return;
         }
-        dragging = true;
-        v0 = versorCartesian(inv);
-        r0 = projection.rotate();
-        q0 = versorFromAngles(r0);
-        svg.classList.add('is-dragging');
       }
       function applyPinch() {
         if (!pinch) return;
@@ -568,20 +626,17 @@ function mountGlobe(nav, opts) {
         var mid = [(pts[0].pt[0] + pts[1].pt[0]) / 2, (pts[0].pt[1] + pts[1].pt[1]) / 2];
         var held = pinch.scale;
         projection.scale(held);
-        if (dragging) {
-          var inv = projection.rotate(r0).invert(mid);
-          if (inv) {
-            projection.rotate(versorToAngles(versorMultiply(q0, versorDelta(v0, versorCartesian(inv)))));
-          }
-        }
+        if (dragging) followRotate(mid);
         projection.scale(pinchScale(held, pinch.dist, dist));
         render();
       }
       svg.addEventListener('touchstart', function (event) {
         holdMouse();
+        cancelCoast();
         if (event.touches.length >= 2) {
           event.preventDefault();
           syncFingers(event);
+          touchMode = 'pinch';
           armPinch();
           return;
         }
@@ -589,24 +644,50 @@ function mountGlobe(nav, opts) {
         var pt = t && svgPointer(t, svg);
         if (!t || !pointOnGlobe(pt, cx, cy, radius)) return;
         syncFingers(event);
+        touchMode = 'pending';
         tap = {
           slug: pickCountry(event.target),
           x: t.clientX,
           y: t.clientY,
+          pt: pt,
+          t: Date.now(),
           scrollY: window.scrollY,
           moved: 0,
         };
       }, { passive: false });
       svg.addEventListener('touchmove', function (event) {
-        if (tap && event.touches.length === 1) {
-          var t = event.touches[0];
-          tap.moved = Math.abs(t.clientX - tap.x) + Math.abs(t.clientY - tap.y);
-        }
-        syncFingers(event);
-        if (event.touches.length >= 2 && (pinch || fingers.size >= 2)) {
+        if (event.touches.length >= 2) {
+          cancelCoast();
           event.preventDefault();
+          syncFingers(event);
+          touchMode = 'pinch';
           if (!pinch) armPinch();
           applyPinch();
+          return;
+        }
+        if (touchMode === 'pinch') return;
+        var t = event.touches[0];
+        if (!t || !tap) return;
+        syncFingers(event);
+        var finger = fingers.get(t.identifier);
+        var pt = (finger && finger.pt) || tap.pt;
+        var dx = t.clientX - tap.x;
+        var dy = t.clientY - tap.y;
+        tap.moved = Math.abs(dx) + Math.abs(dy);
+        if (touchMode === 'pending') {
+          var intent = oneFingerIntent(dx, dy, Date.now() - tap.t, TOUCH_SLOP, TOUCH_HOLD_MS);
+          if (intent === 'pending') return;
+          touchMode = intent === 'rotate' && armRotate(pt) ? 'rotate' : 'scroll';
+          if (touchMode === 'scroll') beginScroll(t.clientY);
+        }
+        if (touchMode === 'rotate') {
+          event.preventDefault();
+          if (followRotate(pt)) render();
+          return;
+        }
+        if (touchMode === 'scroll') {
+          event.preventDefault();
+          trackScroll(t.clientY);
         }
       }, { passive: false });
       function endTouch(event, allowTap) {
@@ -616,21 +697,32 @@ function mountGlobe(nav, opts) {
           armPinch();
           return;
         }
+        if (event.touches.length === 1) {
+          if (pinch) {
+            pinch = null;
+            dragging = false;
+            svg.classList.remove('is-dragging');
+            touchMode = 'pinch';
+            event.preventDefault();
+          }
+          return;
+        }
         var wasPinch = !!pinch;
+        var mode = touchMode;
         pinch = null;
         dragging = false;
         svg.classList.remove('is-dragging');
-        var scrolled = tap && Math.abs(window.scrollY - tap.scrollY) > 2;
-        if (allowTap && event.touches.length === 0 && tap && tap.moved < 8 && !scrolled && tap.slug && opts && opts.onSelect) {
+        var pageMoved = tap && Math.abs(window.scrollY - tap.scrollY) > 2;
+        if (mode === 'scroll') coastScroll();
+        if (allowTap && mode === 'pending' && tap && tap.slug && !pageMoved && opts && opts.onSelect) {
           event.preventDefault();
           opts.onSelect(tap.slug);
-        } else if (wasPinch) {
+        } else if (wasPinch || mode === 'rotate' || mode === 'scroll') {
           event.preventDefault();
         }
-        if (event.touches.length === 0) {
-          fingers.clear();
-          tap = null;
-        }
+        fingers.clear();
+        tap = null;
+        touchMode = '';
       }
       svg.addEventListener('touchend', function (event) { endTouch(event, true); }, { passive: false });
       svg.addEventListener('touchcancel', function (event) { endTouch(event, false); }, { passive: false });
