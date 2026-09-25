@@ -4,10 +4,11 @@ slug: Sardinia
 author:
   - grady-davis
 date: 2026-09-25T14:18:00Z
-draft: true
+draft: false
 image: /images/uploads/IMG_2430.jpeg
 country:
   - Italy
+audio_upload: /audio/uploads/Calzone.m4a
 ---
 ![](/images/uploads/IMG_2432.jpeg)
 
@@ -89,3 +90,4 @@ The crowd is local but not rough. People are effusive and drinks are cheap. What
 
 -Grady
 
+PS. Let me know how the audio file sounds from Redskin, thanks to TMO it’s a new feature on the site.
