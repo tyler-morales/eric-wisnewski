@@ -356,6 +356,35 @@ class NewsletterHelperTests(unittest.TestCase):
         self.assertNotIn("searchParams.get('secret')", source)
         self.assertNotIn("querySecret", source)
 
+    def test_send_claim_won_only_on_insert_success(self) -> None:
+        self.assertTrue(call_js_fn(NEWSLETTER_API, "sendClaimWon", {"meta": {"changes": 1}}))
+
+    def test_send_claim_won_ignores_conflict_and_junk_failure(self) -> None:
+        self.assertFalse(call_js_fn(NEWSLETTER_API, "sendClaimWon", {"meta": {"changes": 0}}))
+        self.assertFalse(call_js_fn(NEWSLETTER_API, "sendClaimWon", {"meta": {"changes": 2}}))
+        self.assertFalse(call_js_fn(NEWSLETTER_API, "sendClaimWon", {}))
+        self.assertFalse(call_js_fn(NEWSLETTER_API, "sendClaimWon", None))
+
+    def test_first_dispatch_sends_once_success(self) -> None:
+        data = _send_post_once_probe()
+        self.assertTrue(data["first"])
+        self.assertEqual(
+            data["sends"],
+            [
+                "https://ericwisnewski.com/posts/hello/",
+                "https://ericwisnewski.com/posts/other/",
+            ],
+        )
+        self.assertTrue(data["otherPost"])
+
+    def test_second_dispatch_does_not_resend_failure(self) -> None:
+        data = _send_post_once_probe()
+        self.assertFalse(data["second"])
+        self.assertEqual(data["sends"].count("https://ericwisnewski.com/posts/hello/"), 1)
+        self.assertEqual(data["parallelSends"], 1)
+        source = NEWSLETTER_API.read_text(encoding="utf-8")
+        self.assertLess(source.index("sendPostOnce"), source.index("await sendResendEmail"))
+
     def test_is_valid_token_success(self) -> None:
         self.assertTrue(call_js_fn(SUBSCRIBE_API, "isValidToken", "ab" * 24))
 
@@ -840,6 +869,58 @@ class OverreactedEmailTemplateTests(unittest.TestCase):
         self.assertNotIn("cta-col", blob)
 
 
+def _send_post_once_probe() -> dict[str, object]:
+    """Shared ledger: first claim emails, a repeat and a parallel pair do not."""
+    script = (
+        f"import {{ sendPostOnce }} from {json.dumps(NEWSLETTER_API.as_uri())};\n"
+        "function ledger() {\n"
+        "  const keys = new Set();\n"
+        "  return {\n"
+        "    prepare(sql) {\n"
+        "      if (!sql.includes('INSERT OR IGNORE INTO newsletter_sends')) throw new Error(sql);\n"
+        "      return {\n"
+        "        bind(list, guid) {\n"
+        "          return {\n"
+        "            async run() {\n"
+        "              const key = list + '\\0' + guid;\n"
+        "              if (keys.has(key)) return { meta: { changes: 0 } };\n"
+        "              keys.add(key);\n"
+        "              return { meta: { changes: 1 } };\n"
+        "            },\n"
+        "          };\n"
+        "        },\n"
+        "      };\n"
+        "    },\n"
+        "  };\n"
+        "}\n"
+        "const hello = { guid: 'https://ericwisnewski.com/posts/hello/', url: 'https://ericwisnewski.com/posts/hello/', title: 'Hello' };\n"
+        "const other = { guid: 'https://ericwisnewski.com/posts/other/', url: 'https://ericwisnewski.com/posts/other/', title: 'Other' };\n"
+        "const db = ledger();\n"
+        "const sends = [];\n"
+        "const send = async (item) => { sends.push(item.guid); };\n"
+        "const first = await sendPostOnce(db, 'posts', hello, () => send(hello));\n"
+        "const second = await sendPostOnce(db, 'posts', hello, () => send(hello));\n"
+        "const otherPost = await sendPostOnce(db, 'posts', other, () => send(other));\n"
+        "const parallelDb = ledger();\n"
+        "let parallelSends = 0;\n"
+        "await Promise.all([\n"
+        "  sendPostOnce(parallelDb, 'posts', hello, async () => { parallelSends += 1; }),\n"
+        "  sendPostOnce(parallelDb, 'posts', hello, async () => { parallelSends += 1; }),\n"
+        "]);\n"
+        "console.log(JSON.stringify({ first, second, otherPost, sends, parallelSends }));\n"
+    )
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr or result.stdout or "node failed")
+    return json.loads(result.stdout)
+
+
 def _apply_migrations_through(conn: sqlite3.Connection, last_name: str) -> None:
     for path in sorted(MIGRATIONS_DIR.glob("*.sql")):
         conn.executescript(path.read_text(encoding="utf-8"))
@@ -1081,6 +1162,35 @@ class NewsletterSchemaTests(unittest.TestCase):
         self.assertIn("/jeremy-on-tap/", send["post_guid"])
         self.assertIn("/jeremy-on-tap/", send["post_url"])
         self.assertNotIn("jers-prospect-profiles", send["post_guid"])
+        conn.close()
+
+    def test_newsletter_send_unique_second_insert_is_noop_failure(self) -> None:
+        conn = sqlite3.connect(":memory:")
+        _apply_migrations_through(conn, JEREMY_ON_TAP_MIGRATION.name)
+        row = (
+            "posts",
+            "https://ericwisnewski.com/posts/hello/",
+            "https://ericwisnewski.com/posts/hello/",
+            "Hello",
+        )
+        conn.execute(
+            """INSERT OR IGNORE INTO newsletter_sends
+               (list, post_guid, post_url, post_title)
+               VALUES (?, ?, ?, ?)""",
+            row,
+        )
+        self.assertEqual(conn.execute("SELECT changes()").fetchone()[0], 1)
+        conn.execute(
+            """INSERT OR IGNORE INTO newsletter_sends
+               (list, post_guid, post_url, post_title)
+               VALUES (?, ?, ?, ?)""",
+            row,
+        )
+        self.assertEqual(conn.execute("SELECT changes()").fetchone()[0], 0)
+        self.assertEqual(
+            conn.execute("SELECT COUNT(*) FROM newsletter_sends").fetchone()[0],
+            1,
+        )
         conn.close()
 
     def test_old_jer_list_rejected_after_rename_failure(self) -> None:

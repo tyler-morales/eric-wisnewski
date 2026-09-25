@@ -189,7 +189,7 @@ If someone submits an address, the form stays on the page (it does not reload or
 
 **GitHub:** repo → Settings → Secrets → Actions → `NEWSLETTER_DISPATCH_SECRET` (same value as Cloudflare). The workflow `.github/workflows/newsletter-dispatch.yml` POSTs `/api/newsletter` every 20 minutes.
 
-**Go-live:** verify `ericwisnewski.com` in Resend, run migrations `0004`, `0005`, `0007`, `0008`, and `0009` on D1 (`0007` lets people subscribe to Tad; `0008` then `0009` lets people subscribe to Jeremy On Tap; without them the form returns “Failed to subscribe”), set secrets above (including postal address), deploy. First dispatch run **seeds** existing RSS items without emailing; only new posts email after that. Feeds: `/posts/index.xml`, `/gradys-tour/index.xml`, `/da-breakdown-w-tad/index.xml`, and `/jeremy-on-tap/index.xml` (not home `/index.xml`). Dispatch accepts `Authorization: Bearer` only (no `?secret=`).
+**Go-live:** verify `ericwisnewski.com` in Resend, run migrations `0004`, `0005`, `0007`, `0008`, and `0009` on D1 (`0007` lets people subscribe to Tad; `0008` then `0009` lets people subscribe to Jeremy On Tap; without them the form returns “Failed to subscribe”), set secrets above (including postal address), deploy. First dispatch run **seeds** existing RSS items without emailing; only new posts email after that. The post is written to `newsletter_sends` before Resend runs, so a second or overlapping dispatch for the same list and post does not send again. Feeds: `/posts/index.xml`, `/gradys-tour/index.xml`, `/da-breakdown-w-tad/index.xml`, and `/jeremy-on-tap/index.xml` (not home `/index.xml`). Dispatch accepts `Authorization: Bearer` only (no `?secret=`).
 
 ## Add photos (`/add-photos/`)
 

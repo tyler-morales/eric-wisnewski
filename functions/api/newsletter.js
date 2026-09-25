@@ -67,6 +67,30 @@ export function selectNewItems(items, knownGuids, seedMode) {
   return items.filter((item) => item && item.guid && !known.has(item.guid));
 }
 
+/** True only when this call inserted the ledger row (D1/SQLite changes === 1). */
+export function sendClaimWon(runResult) {
+  return Boolean(runResult && runResult.meta && runResult.meta.changes === 1);
+}
+
+/**
+ * Record the post, then email. UNIQUE (list, post_guid) makes the insert the lock:
+ * a second or overlapping dispatch gets changes === 0 and must not call Resend.
+ * ponytail: one row per post, not per subscriber. If Resend dies mid-loop the rest
+ * of that list is not retried. Upgrade path is a per-recipient ledger.
+ */
+export async function sendPostOnce(db, listId, item, send) {
+  const claim = await db
+    .prepare(
+      `INSERT OR IGNORE INTO newsletter_sends (list, post_guid, post_url, post_title)
+       VALUES (?, ?, ?, ?)`
+    )
+    .bind(listId, item.guid, item.url, item.title)
+    .run();
+  if (!sendClaimWon(claim)) return false;
+  await send();
+  return true;
+}
+
 function extractTag(block, tag) {
   const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i');
   const m = re.exec(block);
@@ -169,28 +193,23 @@ async function processList(db, env, origin, listConfig) {
   const postal = newsletterPostalAddress(env);
 
   for (const item of toSend) {
-    for (const sub of recipients) {
-      const mail = postEmailContent(listConfig.id, item, origin, sub.unsub_token, postal);
-      await sendResendEmail(env, {
-        from,
-        to: sub.email,
-        subject: mail.subject,
-        html: mail.html,
-        text: mail.text,
-        headers: {
-          'List-Unsubscribe': `<${mail.unsubUrl}>`,
-          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-        },
-      });
-      sent += 1;
-    }
-    await db
-      .prepare(
-        `INSERT OR IGNORE INTO newsletter_sends (list, post_guid, post_url, post_title)
-         VALUES (?, ?, ?, ?)`
-      )
-      .bind(listConfig.id, item.guid, item.url, item.title)
-      .run();
+    await sendPostOnce(db, listConfig.id, item, async () => {
+      for (const sub of recipients) {
+        const mail = postEmailContent(listConfig.id, item, origin, sub.unsub_token, postal);
+        await sendResendEmail(env, {
+          from,
+          to: sub.email,
+          subject: mail.subject,
+          html: mail.html,
+          text: mail.text,
+          headers: {
+            'List-Unsubscribe': `<${mail.unsubUrl}>`,
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          },
+        });
+        sent += 1;
+      }
+    });
   }
 
   return {
