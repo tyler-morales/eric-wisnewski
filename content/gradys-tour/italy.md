@@ -104,7 +104,9 @@ Leaving the park we spot a guy in a Bears jersey hurrying by us drinking a beer.
 
 *Da bears crew and incidental LT reunion*
 
-The next day we head to Como and rent a boat from the greasiest Italian boat rental in all of Como. He overcharges us €30 above listed price and says we can’t jump into the water because “itsssa tooo cold youmayya dieee” Thanks, Lucca. The ride itself is worth it, the lake is stunning, great to see Clooney too! Plus we make things right when we return the boat. We tell Lucca his boat flooded. “We got water in” - me. “Nice yeah you swim?” “No, we got water in the boat” - Tmo. The greasy Lucca’s smile slowly fades, “Yeah, it was up to here,” I put my hand to the top of the seats. We let the panic sink in, then burst into drunken laughter. Forever the salesman, he asks for a five-star review; we settle on 3.
+The next day we head to Como and rent a boat from the greasiest Italian boat rental in all of Como. He overcharges us €30 above listed price and says we can’t jump into the water because “itsssa tooo cold youmayya dieee” Thanks, Luca. 
+
+The ride itself is worth it, the lake is stunning, and it’s great to see Clooney too! Plus we make things right when we return the boat. We tell Luca his boat flooded. “We got some water in it” - me. “Nice yeah you swim?” Luca misunderstands. “No, we got water in the boat” - Tmo says firmly. The greasy Luca’s smile slowly fades, “Yeah, it was up to here” I say nodding expressionlessly, putting my hand to the top of the seats. We let the panic sink in then burst into drunken laughter. Forever the salesman, he asks for a five-star review; we settle on 3.
 
 ![](/images/uploads/IMG_2410.jpeg)
 
