@@ -12,7 +12,7 @@ country:
 ---
 ## Switzerland
 
-Switzerland is more shell corporation than country. No language, shady banks, expensive watches and chocolate for corporate gift baskets. Not to mention a burger and fries at McDonalds will set you back $20. That being said, it is shockingly beautiful. It’s full of spectacular cliffside waterfalls, belled cows, and idyllic villages placed on very frolickable meadows. The whole country looks like a post card. But we are just passing by to our final stop in Milan.
+Switzerland is more shell corporation than country. No language, shady banks, expensive watches and chocolate for corporate gift baskets. Not to mention a McDonalds burger and fries will set you back $20. That being said, it is shockingly beautiful. It’s full of spectacular cliffside waterfalls, belled cows, and idyllic villages placed on very frolick’able meadows. The whole country looks like a post card. But we are just passing through. Our final stop is Milan, Italy.
 
 ![](/images/uploads/IMG_1887-1.jpeg)
 
@@ -40,7 +40,7 @@ Switzerland is more shell corporation than country. No language, shady banks, ex
 
 ## Milan
 
-Milan is an international city, it’s a little too easy to forget you’re in Italy. Eager to finally have Italian food, we sit down at an Osteria across from our B and B. The “Italian” restaurant staffed by Ukrainian and Indian waiters doesn’t offer us wine glasses and has no espresso. That should be illegal. The espresso part (I’m not running on the Italian far right, at least not yet).
+Milan is an international city. So much so you can forget you’re in Italy. After hours in traffic and getting locked out of our AirBnb we are eager for an Italian meal, so we sit down at the nearest Osteria. The “Italian” restaurant staffed by Ukrainian and Indian waiters doesn’t offer us wine glasses and has no espresso. That should be illegal. The espresso part (I’m not running on the Italian far right, at least not yet).
 
 
 
