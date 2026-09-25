@@ -316,6 +316,12 @@ class CountrySourceTests(unittest.TestCase):
         chip_css = css[css.find(".post-country-chip") : css.find("article.post-content>header .post-meta")]
         self.assertNotIn("text-decoration: underline", chip_css)
         self.assertIn(".post-country-chip:focus-visible", css)
+        summary_css = re.search(r"\.post-country-chip--menu summary\s*\{([^}]*)\}", css)
+        self.assertIsNotNone(summary_css)
+        summary_body = summary_css.group(1)
+        self.assertIn("background: var(--bg)", summary_body)
+        self.assertIn("color: var(--text)", summary_body)
+        self.assertNotIn("transparent", summary_body)
         self.assertIn(".tour-country-map-tools button:focus-visible", css)
         self.assertIn("tour-country-layout", css)
         self.assertIn("All countries", nav)
