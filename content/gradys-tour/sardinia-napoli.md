@@ -84,7 +84,13 @@ Having exhausted our time in the sun we come back an hour before the deadline. I
 
 *The boss and Gianluca posted up*
 
-That night we head to a bar every local has told us to avoid. “It’s too rough! Too much party! I never go!”. T-mo is intrigued and we drag a reluctant Pudlo there. It’s his last night so what the hell. The bar turns out to be a native american themed bar called “Redskin”. The politically incorrect bar doubled down by changing their name from “Cheyenne” to “Redskin”. Meeting the doorag clad owner we are not surprised, but he is pleased to see Americans here and gives us a tour. Photos of Redskin below.
+That night we head to a Karaoke bar every local has told us to avoid. “It’s too rough! Too much party! I never go!”. T-mo is intrigued so we drag a reluctant Pudlo there. It’s his last night so what the hell. The bar turns out to be a native american themed bar called “Redskin”. 
+
+![](/images/uploads/IMG_2199-1.jpeg)
+
+*The boys sit below the chiefs*
+
+The politically incorrect bar doubled down by changing their name from “Cheyenne” to “Redskin”. Meeting the doorag clad owner we are not surprised, but he is pleased to see Americans here and gives us a tour. Photos of Redskin below.
 
 ![](/images/uploads/IMG_2453.jpeg)
 
@@ -93,10 +99,6 @@ That night we head to a bar every local has told us to avoid. “It’s too roug
 ![](/images/uploads/IMG_2200.jpeg)
 
 *The boss “Italian Springsteen” sings every hour or so*
-
-![](/images/uploads/IMG_2199.jpeg)
-
-*The boys sit below the chiefs*
 
 ![](/images/uploads/IMG_2427.jpeg)
 
