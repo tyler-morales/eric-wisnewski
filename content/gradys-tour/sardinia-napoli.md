@@ -18,7 +18,13 @@ Italys second island. Its a hair smaller than Sicily and 1/3 its size. It’s pa
 
 Just look at their flag (shown above) is displayed everywhere. Its four severed Moorish head. A constant reminder the Moors were never able to take over Sardinia - take that Sicily!
 
-Our home base is the gritty capital city Cagliari. It is beautifully hilly and hosts a charming old town, but we are really here for the nature and beaches. Sardinias real draw. It has some of Italy’s most beautiful beaches with half the crowds. Practically you need a car, so we rented one for a couple days to explore the coast. We lounge at a beach club in between two mountains then go off to rent a boat. We’ve just learned our lesson from the greasy Lucca (refer to Milan article), so we are prepared to play hardball.
+Our home base is the gritty capital city Cagliari. It is beautifully hilly and hosts a charming old town, but we are really here for the nature and beaches. Sardinias real draw. It has some of Italy’s most beautiful beaches with half the crowds. Practically you need a car, so we rented one for a couple days to explore the coast. We lounge at a beach club in between off the rugged foothills then go off to rent a boat. 
+
+![](/images/uploads/IMG_2455.jpeg)
+
+*Sardinia*
+
+We’ve just learned our lesson from the greasy Luca (refer to Milan article), so we are prepared to play hardball.
 
 ![](/images/uploads/IMG_2437.jpeg)
 
@@ -42,7 +48,7 @@ We come to an agreement. Our first impression is out the window these guys have 
 
 They load us up with a cooler of ice, help us pick up sandwiches and track down snorkeling gear. They even offer to take me fishing if I come back. We don’t even put a card down, just a handshake agreement and signature.
 
-The boat is amazing. The weather 85 and sunny we are drinking prosecco off the beautiful rocky coast.
+The boat is amazing. The weather is 85 degrees and sunny, and we’re drinking prosecco off the beautiful rocky coast.
 
 ![](/images/uploads/IMG_2128.jpeg)
 
@@ -80,9 +86,9 @@ Having exhausted our time in the sun we come back an hour before the deadline. I
 
 That night we head to a bar every local has told us to avoid. “It’s too rough! Too much party! I never go!”. T-mo is intrigued and we drag a reluctant Pudlo there. It’s his last night so what the hell. The bar turns out to be a native american themed bar called “Redskin”. The politically incorrect bar reversed course by changing their name from “Cheyenne” to their current name. Meeting the doorag clad owner we are not surprised, but he is pleased to see Americans here and gives us a tour. Photos of Redskin below.
 
-![](/images/uploads/IMG_2426.jpeg)
+![](/images/uploads/IMG_2453.jpeg)
 
-*“Dove e Quando”, the only song I know in Italian*
+*Singing some Frankie Sinatra* 
 
 ![](/images/uploads/IMG_2200.jpeg)
 
@@ -95,8 +101,6 @@ That night we head to a bar every local has told us to avoid. “It’s too roug
 *The T-Mo stare down*
 
 The crowd is local but not rough. People are effusive and drinks are cheap. What else can you ask for? We make friends with a group of students, play foosball and sing duets with them. We stay until 5am and get a couple hours of sleep before making our goodbyes with Pudlo.​​​​​​​​​​​​​​​​
-
-
 
 [/audio/uploads/Calzone.m4a](/audio/uploads/Calzone.m4a)
 
