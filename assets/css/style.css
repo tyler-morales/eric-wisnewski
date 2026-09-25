@@ -1084,6 +1084,30 @@ article.post-content>header time {
   color: #333;
 }
 
+.tour-country-map-hint-touch {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .tour-country-map-tools {
+    display: none;
+  }
+
+  .tour-country-svg {
+    touch-action: pan-y;
+    max-height: min(22rem, 70vw);
+    -webkit-touch-callout: none;
+  }
+
+  .tour-country-map-hint-fine {
+    display: none;
+  }
+
+  .tour-country-map-hint-touch {
+    display: block;
+  }
+}
+
 .tour-country-ocean {
   fill: #b7c9d3;
 }

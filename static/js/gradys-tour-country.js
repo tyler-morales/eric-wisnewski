@@ -165,6 +165,16 @@ export function clampGlobeScale(scale) {
   return Math.max(GLOBE_SCALE_MIN, Math.min(GLOBE_SCALE_MAX, n));
 }
 
+export function pinchScale(startScale, startDist, nextDist) {
+  var start = Number(startScale);
+  var a = Number(startDist);
+  var b = Number(nextDist);
+  if (!isFinite(start) || !isFinite(a) || !isFinite(b) || a <= 0 || b <= 0) {
+    return clampGlobeScale(isFinite(start) ? start : GLOBE_SCALE_MIN);
+  }
+  return clampGlobeScale(start * (b / a));
+}
+
 export function scaleToFit(bounds, currentScale, size, padding) {
   var current = Number(currentScale);
   if (!isFinite(current)) current = GLOBE_SCALE_MIN;
@@ -370,6 +380,13 @@ function mountGlobe(nav, opts) {
     var v0;
     var r0;
     var q0;
+    var coarsePointer = typeof matchMedia === 'function'
+      && matchMedia('(hover: none) and (pointer: coarse)').matches;
+    var blockMouse = false;
+    var blockTimer = 0;
+    var fingers = new Map();
+    var pinch = null;
+    var tap = null;
 
     function postedFeatures() {
       var list = [];
@@ -432,6 +449,8 @@ function mountGlobe(nav, opts) {
     }
 
     svg.addEventListener('pointerdown', function (event) {
+      if (coarsePointer && event.pointerType === 'touch') return;
+      if (blockMouse && event.pointerType === 'mouse') return;
       if (event.button != null && event.button !== 0) return;
       var pt = svgPointer(event, svg);
       if (!pointOnGlobe(pt, cx, cy, radius)) return;
@@ -447,6 +466,7 @@ function mountGlobe(nav, opts) {
       svg.classList.add('is-dragging');
     });
     svg.addEventListener('pointermove', function (event) {
+      if (coarsePointer && event.pointerType === 'touch') return;
       if (!dragging) return;
       moved += Math.abs(event.movementX) + Math.abs(event.movementY);
       var pt = svgPointer(event, svg);
@@ -465,12 +485,16 @@ function mountGlobe(nav, opts) {
       }
     }
     svg.addEventListener('pointerup', function (event) {
+      if (coarsePointer && event.pointerType === 'touch') return;
       var slug = moved < 6 ? pressedSlug : '';
       pressedSlug = '';
       endDrag(event);
       if (slug && opts && opts.onSelect) opts.onSelect(slug);
     });
-    svg.addEventListener('pointercancel', endDrag);
+    svg.addEventListener('pointercancel', function (event) {
+      if (coarsePointer && event.pointerType === 'touch') return;
+      endDrag(event);
+    });
     svg.addEventListener('wheel', function (event) {
       var pt = svgPointer(event, svg);
       if (!pointOnGlobe(pt, cx, cy, radius)) return;
@@ -479,6 +503,138 @@ function mountGlobe(nav, opts) {
       projection.scale(clampGlobeScale(projection.scale() * factor));
       render();
     }, { passive: false });
+
+    if (coarsePointer) {
+      // One finger scrolls the page (touch-action: pan-y). Two fingers zoom and turn.
+      // ponytail: pinch scales about the globe center, same as the buttons, not the finger midpoint.
+      function holdMouse() {
+        blockMouse = true;
+        clearTimeout(blockTimer);
+        blockTimer = setTimeout(function () { blockMouse = false; }, 500);
+      }
+      function fingerList() {
+        var list = [];
+        fingers.forEach(function (p) { list.push(p); });
+        return list;
+      }
+      function syncFingers(event) {
+        var i;
+        for (i = 0; i < event.touches.length; i++) {
+          var t = event.touches[i];
+          var prev = fingers.get(t.identifier);
+          fingers.set(t.identifier, {
+            clientX: t.clientX,
+            clientY: t.clientY,
+            pt: svgPointer(t, svg) || (prev && prev.pt) || null,
+          });
+        }
+      }
+      function dropEnded(event) {
+        var live = {};
+        var i;
+        for (i = 0; i < event.touches.length; i++) live[event.touches[i].identifier] = true;
+        fingers.forEach(function (_, id) {
+          if (!live[id]) fingers.delete(id);
+        });
+      }
+      function armPinch() {
+        var pts = fingerList();
+        if (pts.length < 2 || !pts[0].pt || !pts[1].pt) return;
+        var dx = pts[0].clientX - pts[1].clientX;
+        var dy = pts[0].clientY - pts[1].clientY;
+        var dist = Math.hypot(dx, dy);
+        if (!(dist > 0)) return;
+        pinch = { dist: dist, scale: projection.scale() };
+        tap = null;
+        var mid = [(pts[0].pt[0] + pts[1].pt[0]) / 2, (pts[0].pt[1] + pts[1].pt[1]) / 2];
+        projection.scale(pinch.scale);
+        var inv = projection.invert(mid);
+        if (!inv) {
+          dragging = false;
+          svg.classList.remove('is-dragging');
+          return;
+        }
+        dragging = true;
+        v0 = versorCartesian(inv);
+        r0 = projection.rotate();
+        q0 = versorFromAngles(r0);
+        svg.classList.add('is-dragging');
+      }
+      function applyPinch() {
+        if (!pinch) return;
+        var pts = fingerList();
+        if (pts.length < 2 || !pts[0].pt || !pts[1].pt) return;
+        var dist = Math.hypot(pts[0].clientX - pts[1].clientX, pts[0].clientY - pts[1].clientY);
+        var mid = [(pts[0].pt[0] + pts[1].pt[0]) / 2, (pts[0].pt[1] + pts[1].pt[1]) / 2];
+        var held = pinch.scale;
+        projection.scale(held);
+        if (dragging) {
+          var inv = projection.rotate(r0).invert(mid);
+          if (inv) {
+            projection.rotate(versorToAngles(versorMultiply(q0, versorDelta(v0, versorCartesian(inv)))));
+          }
+        }
+        projection.scale(pinchScale(held, pinch.dist, dist));
+        render();
+      }
+      svg.addEventListener('touchstart', function (event) {
+        holdMouse();
+        if (event.touches.length >= 2) {
+          event.preventDefault();
+          syncFingers(event);
+          armPinch();
+          return;
+        }
+        var t = event.touches[0];
+        var pt = t && svgPointer(t, svg);
+        if (!t || !pointOnGlobe(pt, cx, cy, radius)) return;
+        syncFingers(event);
+        tap = {
+          slug: pickCountry(event.target),
+          x: t.clientX,
+          y: t.clientY,
+          scrollY: window.scrollY,
+          moved: 0,
+        };
+      }, { passive: false });
+      svg.addEventListener('touchmove', function (event) {
+        if (tap && event.touches.length === 1) {
+          var t = event.touches[0];
+          tap.moved = Math.abs(t.clientX - tap.x) + Math.abs(t.clientY - tap.y);
+        }
+        syncFingers(event);
+        if (event.touches.length >= 2 && (pinch || fingers.size >= 2)) {
+          event.preventDefault();
+          if (!pinch) armPinch();
+          applyPinch();
+        }
+      }, { passive: false });
+      function endTouch(event, allowTap) {
+        holdMouse();
+        dropEnded(event);
+        if (event.touches.length >= 2) {
+          armPinch();
+          return;
+        }
+        var wasPinch = !!pinch;
+        pinch = null;
+        dragging = false;
+        svg.classList.remove('is-dragging');
+        var scrolled = tap && Math.abs(window.scrollY - tap.scrollY) > 2;
+        if (allowTap && event.touches.length === 0 && tap && tap.moved < 8 && !scrolled && tap.slug && opts && opts.onSelect) {
+          event.preventDefault();
+          opts.onSelect(tap.slug);
+        } else if (wasPinch) {
+          event.preventDefault();
+        }
+        if (event.touches.length === 0) {
+          fingers.clear();
+          tap = null;
+        }
+      }
+      svg.addEventListener('touchend', function (event) { endTouch(event, true); }, { passive: false });
+      svg.addEventListener('touchcancel', function (event) { endTouch(event, false); }, { passive: false });
+    }
 
     render();
     return {
