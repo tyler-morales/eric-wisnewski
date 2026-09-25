@@ -40,9 +40,7 @@ Switzerland is more shell corporation than country. No language, shady banks, ex
 
 ## Milan
 
-Milan is an international city. So much so you can forget you’re in Italy. After hours in traffic and getting locked out of our AirBnb we are eager for an Italian meal, so we sit down at the nearest Osteria. The “Italian” restaurant staffed by Ukrainian and Indian waiters doesn’t offer us wine glasses and has no espresso. That should be illegal. The espresso part (I’m not running on the Italian far right, at least not yet).
-
-
+Milan is an international city. So much so you can forget you’re in Italy. After hours in traffic and getting locked out of our AirBnb we are eager for an Italian meal, so we sit down at the nearest Osteria. The “Italian” restaurant is staffed by Ukrainian and Indian waiters who don’t offer us wine glasses and don’t have any espresso. That should be illegal. The espresso part (I’m not running on the Italian far right, at least not yet).
 
 We are here to meet my old friend Giada. We met while studying in Verona right before the world turned upside down in 2020. She studied at the local university where our classes were based and volunteered to be our group’s Italian exchange buddy. Kind and open-minded, she became fast friends with our group. She taught us nuances of Italian culture and how to make pizza and tiramisu. Thinking back, I’m not sure if she learned anything from us. We once tried to make her pasta. She watched in silent horror as we broke every rule of Italian cooking. We meet Giada at a bustling street party in Milan. It’s wonderful to see her. It’s been 6 years but it feels like we were in Verona yesterday. It’s a relief to have a true Italian speaker to guide us through the city. Out drinking, we meet some euros talking big game about their basketball skills, so we schedule a showdown the next day. After an hour of Italian goodbyes, we exit the group to get some sleep.
 
