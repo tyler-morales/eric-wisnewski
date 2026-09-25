@@ -1,6 +1,5 @@
 {{/*
 Country dropdown + locator globe on the Grady's Tour index.
-Click a country or pick it from the list to filter. Zoom in to aim.
 */}}
 {{- $section := .Site.GetPage "/gradys-tour" -}}
 {{- if not $section -}}{{- $section = . -}}{{- end -}}
@@ -39,12 +38,11 @@ Click a country or pick it from the list to filter. Zoom in to aim.
     </div>
     <div class="tour-country-map" role="group" aria-labelledby="tour-country-heading">
       <svg class="tour-country-svg" data-tour-globe viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg"
-        aria-label="Globe. Click a country with posts to filter. Drag to rotate. Zoom in to get closer."></svg>
+        aria-label="Globe"></svg>
       <div class="tour-country-map-tools">
         <button type="button" data-tour-zoom-out>Zoom out</button>
         <button type="button" data-tour-zoom-in>Zoom in</button>
       </div>
-      <p class="tour-country-map-hint">Click a country to filter. Drag to rotate.</p>
     </div>
   </div>
   {{- $catalogJSON := $payload | jsonify -}}
