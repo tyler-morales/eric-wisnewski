@@ -10,11 +10,13 @@ country:
   - Italy
 audio_upload: /audio/uploads/Calzone.m4a
 ---
-![](/images/uploads/IMG_2432.jpeg)
-
 ## Sardinia
 
-Italys second island. Its a hair smaller than Sicily and 1/3 its size. It’s part Italy part its own thing kind of like Catalonia Spain, Puerto Rico or Texas. They have their own food and dialect but it feels a lot like Italy. And is part of Italy (but they have a lot of pride so watch what you say around Sardinians). Just look at their flag (shown above) is displayed everywhere. Its four severed Moorish head. A constant reminder the Moors were never able to take over Sardinia - take that Sicily!
+Italys second island. Its a hair smaller than Sicily and 1/3 its size. It’s part Italy part its own thing kind of like Catalonia Spain, Puerto Rico or Texas. They have their own food and dialect but it feels a lot like Italy. And is part of Italy (but they have a lot of pride so watch what you say around Sardinians). 
+
+![image.jpeg](/images/uploads/image-7.jpeg)
+
+Just look at their flag (shown above) is displayed everywhere. Its four severed Moorish head. A constant reminder the Moors were never able to take over Sardinia - take that Sicily!
 
 Our home base is the gritty capital city Cagliari. It is beautifully hilly and hosts a charming old town, but we are really here for the nature and beaches. Sardinias real draw. It has some of Italy’s most beautiful beaches with half the crowds. Practically you need a car, so we rented one for a couple days to explore the coast. We lounge at a beach club in between two mountains then go off to rent a boat. We’ve just learned our lesson from the greasy Lucca (refer to Milan article), so we are prepared to play hardball.
 
@@ -80,11 +82,17 @@ That night we head to a bar every local has told us to avoid. “It’s too roug
 
 ![](/images/uploads/IMG_2426.jpeg)
 
+*Dime Dove Quando, the only song I know in Italian*
+
 ![](/images/uploads/IMG_2200.jpeg)
+
+*The boss “Italian Springsteen” sings every hour or so*
 
 ![](/images/uploads/IMG_2199.jpeg)
 
 ![](/images/uploads/IMG_2427.jpeg)
+
+*The T-Mo stare down*
 
 The crowd is local but not rough. People are effusive and drinks are cheap. What else can you ask for? We make friends with a group of students, play foosball and sing duets with them. We stay until 5am and get a couple hours of sleep before making our goodbyes with Pudlo.​​​​​​​​​​​​​​​​
 
