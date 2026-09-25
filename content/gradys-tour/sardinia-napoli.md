@@ -82,7 +82,7 @@ That night we head to a bar every local has told us to avoid. “It’s too roug
 
 ![](/images/uploads/IMG_2426.jpeg)
 
-*Dime Dove Quando, the only song I know in Italian*
+*“Dove e Quando”, the only song I know in Italian*
 
 ![](/images/uploads/IMG_2200.jpeg)
 
