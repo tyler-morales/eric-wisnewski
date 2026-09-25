@@ -1078,16 +1078,6 @@ article.post-content>header time {
   cursor: pointer;
 }
 
-.tour-country-map-hint {
-  margin: 0.45rem 0 0;
-  font-size: 0.875rem;
-  color: #333;
-}
-
-.tour-country-map-hint-touch {
-  display: none;
-}
-
 @media (hover: none) and (pointer: coarse) {
   .tour-country-map-tools {
     display: none;
@@ -1098,14 +1088,6 @@ article.post-content>header time {
     touch-action: none;
     max-height: min(22rem, 70vw);
     -webkit-touch-callout: none;
-  }
-
-  .tour-country-map-hint-fine {
-    display: none;
-  }
-
-  .tour-country-map-hint-touch {
-    display: block;
   }
 }
 
