@@ -116,7 +116,7 @@ The ride itself is worth it, the lake is stunning, and it’s great to see Cloon
 
 *Lake Como to celebrate T-Mos birthday*
 
-We go to a Como soccer match that night. The game is set in a dreamy stadium on the lake. It’s small but perfect, like T-mo, and only the real fans show up. They drink, sing and smoke cigs all match.
+We go to the Como soccer match that night. The match is set in a dreamy stadium on the lake right on the lake. It’s small but perfect, like T-mo, and only the real fans show up. They drink, sing and smoke cigs all match.
 
 ![](/images/uploads/IMG_2407.jpeg)
 
