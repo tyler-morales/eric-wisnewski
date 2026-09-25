@@ -1,6 +1,6 @@
 ---
-title: "Italy: Sardinia and Napoli"
-slug: Sardinia-Napoli
+title: "Italy: Sardinia"
+slug: Sardinia
 author:
   - grady-davis
 date: 2026-09-25T14:18:00Z
@@ -14,4 +14,38 @@ country:
 ## Sardinia
 
 Italys second most famous and second biggest island. Its just a hair smaller than Sicily and 1/3 its size. It’s half Italy half its own thing kind of like Catalonia Spain or Texas. They have their own food and dialect but to be honest it feels a lot like Italy. But they do have a lot of pride so don’t say that to any Sardinians. Their flag (shown above) is displayed everywhere. Its displaying four severed Moorish heads to 
+
+The Moors were never able to take over Sardinia and they are proud of that - take that Sicily.
+
+While our home base Cagliari is gritty and the old town is charming, we are here for the nature and beaches. And Sardinia is the place for it. It has some of Italy’s most beautiful beaches with half the crowds. You practically need a car so we rented one for a couple days to explore the coast. We lounge at a beach club in between two mountains then go off to rent a boat. We’ve just learned our lesson from the greasy Lucca (refer to Milan article), so we are prepared to play hardball.
+
+We stride into the first rental. The Italian speaking boss and his ironically named assistant “Gianluca” lounge out front. The boss is straight out of Goodfellas and Gianluca plays the part of his bad boy enforcer.
+
+“We want to rent a boat”
+
+“€140 special deal all day” they say in Italian.
+
+“Ah I don’t know maybe we take a lap and get more prices”
+
+They banter in Italian something about €90 but they pay gas they can’t get a better deal.
+
+“Okay, okay we do €90 for 6 hours you pay gas and get a bottle of prosecco” -Gianluca
+
+PHOTO OF THE BOAT LOADING COOLER
+
+We come to an agreement, first impression out the window these guys have amazing customer service they load us up with a cooler of ice, help us pick up sandwiches and track down snorkeling gear for us to use. They even offer to take me fishing if I come back. We don’t even put a card down, just a handshake agreement and signature.
+
+The boat is amazing. The weather 85 and sunny we are drinking prosecco off the beautiful rocky coast. We spend the whole day on the water cruising about, stopping lighthouse island and snorkeling to see a submersed Virgin Mary. We have Mary to ourselves until a rowdy group of drunk English lads pull up. A speedo’d Italian tour guide gives them lip for being in “his” spot.
+
+“Move eh de boat a, a mya spot for tour”-Italian guide.
+
+“What? Move what?” -the Brits
+
+“Tour, I tour” -the Italian guide
+
+Slow English “yes we tour too. We are tour-ists”. Even this Italian grouch can’t ruin these Brits’ fun, then burn out full speed with half their friends still in the water. I don’t blame them, how do you take a 60 year old man in a thong seriously?
+
+Having exhausted our time in the sun we come back an hour before the deadline. I park and walk up to the office, no one is home. We wait and order a beer and one of the other workers goes to the back. Groggily Gianluca comes out in his underwear. “Why you here? You need one more hour” he is clearly upset I interrupted his sleep. No hurry, I tell him we will drink a beer. In Italy you can just knock out on the job, it’s one of the perks, I’ve woken up multiple Italians on the clock. He finally comes and waves me on to check the gas. “Man you have a good job” I say. “It’s okay, even this becomes normal” he sighs lighting a cigarette. Cigarette in mouth proceeds to check the open gas canister. Bad boy!
+
+That night we head to a bar every local has told us to avoid. “It’s too rough! Too much party! I never go!”. T-mo is intrigued and we drag a reluctant Pudlo there. It’s his last night so what the hell. The bar turns out to be a native american themed bar called “Redskin”. The politically incorrect bar reversed course by changing their name from “Cheyenne” to their current name. Meeting the doorag clad owner we are not surprised, but he is pleased to see Americans here and gives us a tour. The crowd is local but not rough. People are extraordinarily friendly and the drinks are cheap. What else can you ask for? We make friends with a group of students, play foosball and sing duets with them. We stay until 5 and get a couple hours of sleep before making our goodbyes with Pudlo.​​​​​​​​​​​​​​​​
 
