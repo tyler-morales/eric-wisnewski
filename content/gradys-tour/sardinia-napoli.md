@@ -17,6 +17,8 @@ Italys second island. Its a hair smaller than Sicily and 1/3 its size. It’s pa
 
 Our home base is the gritty capital city Cagliari. It is beautifully hilly and hosts a charming old town, but we are really here for the nature and beaches. Sardinias real draw. It has some of Italy’s most beautiful beaches with half the crowds. Practically you need a car, so we rented one for a couple days to explore the coast. We lounge at a beach club in between two mountains then go off to rent a boat. We’ve just learned our lesson from the greasy Lucca (refer to Milan article), so we are prepared to play hardball.
 
+![](/images/uploads/IMG_2437.jpeg)
+
 We stride into the first rental. The Italian speaking boss and his ironically named assistant “Gianluca” lounge out front. The boss is straight out of Goodfellas and Gianluca plays the part of his bad boy enforcer.
 
 “We want to rent a boat”
@@ -25,13 +27,15 @@ We stride into the first rental. The Italian speaking boss and his ironically na
 
 “Ah I don’t know maybe we take a lap and get more prices”
 
-They banter in Italian something about €90 but they pay gas they can’t get a better deal.
+They banter in Italian something about €90 but they pay gas… they can’t get a better deal.
 
 “Okay, okay we do €90 for 6 hours you pay gas and get a bottle of prosecco” -Gianluca
 
-PHOTO OF THE BOAT LOADING COOLER
+We come to an agreement. Our first impression is out the window these guys have amazing customer service! 
 
-We come to an agreement, first impression out the window these guys have amazing customer service they load us up with a cooler of ice, help us pick up sandwiches and track down snorkeling gear for us to use. They even offer to take me fishing if I come back. We don’t even put a card down, just a handshake agreement and signature.
+
+
+They load us up with a cooler of ice, help us pick up sandwiches and track down snorkeling gear for us to use. They even offer to take me fishing if I come back. We don’t even put a card down, just a handshake agreement and signature.
 
 The boat is amazing. The weather 85 and sunny we are drinking prosecco off the beautiful rocky coast. We spend the whole day on the water cruising about, stopping lighthouse island and snorkeling to see a submersed Virgin Mary. We have Mary to ourselves until a rowdy group of drunk English lads pull up. A speedo’d Italian tour guide gives them lip for being in “his” spot.
 
