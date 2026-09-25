@@ -514,12 +514,17 @@ article.post-content a.post-country-chip {
 }
 
 .post-country-chip--menu summary {
+  display: inline-flex;
+  align-items: center;
   list-style: none;
   cursor: pointer;
   border: 1px solid #000;
   border-radius: 999px;
   padding: 0.28rem 0.7rem;
   font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  color-scheme: light;
 }
 
 .post-country-chip--menu summary::-webkit-details-marker {
