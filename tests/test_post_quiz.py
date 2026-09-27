@@ -1,4 +1,4 @@
-"""Mock end-of-article quiz on the Northern Illinois post only."""
+"""Mock end-of-article quiz on the Sardinia post only."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 PARTIAL = REPO_ROOT / "layouts" / "partials" / "post-quiz.html"
 SINGLE = REPO_ROOT / "layouts" / "_default" / "single.html"
 QUIZ_JS = REPO_ROOT / "static" / "js" / "post-quiz.js"
+SARDINIA = REPO_ROOT / "content" / "gradys-tour" / "sardinia-napoli.md"
 NIU = REPO_ROOT / "content" / "posts" / "northern-illinois.md"
 BOSTON = REPO_ROOT / "content" / "posts" / "boston-college.md"
 PAGES_YML = REPO_ROOT / ".pages.yml"
@@ -28,7 +29,7 @@ OTHER_QUIZ = "\n".join(
         "draft: false",
         "quiz: true",
         "---",
-        "Not the DeKalb recap.",
+        "Not the Sardinia recap.",
         "",
     ]
 )
@@ -79,58 +80,66 @@ def call_fn(fn_name: str, *args: object) -> object:
 
 class PostQuizSourceTests(unittest.TestCase):
     def test_flagged_post_partial_shape_success(self) -> None:
-        post = NIU.read_text(encoding="utf-8")
+        post = SARDINIA.read_text(encoding="utf-8")
         self.assertIn("quiz: true", post)
+        self.assertIn("Sardinia", post)
         layout = SINGLE.read_text(encoding="utf-8")
         self.assertIn('partial "post-quiz.html"', layout)
         src = PARTIAL.read_text(encoding="utf-8")
-        self.assertIn("northern-illinois", src)
+        self.assertIn("sardinia-napoli", src)
         self.assertIn("Think you caught it all?", src)
         self.assertIn('type="button"', src)
         self.assertIn('aria-expanded="false"', src)
         self.assertIn('role="status"', src)
         self.assertIn("aria-live", src)
         self.assertIn("<fieldset", src)
-        self.assertIn('name="band"', src)
-        self.assertIn('name="opponent"', src)
-        self.assertIn('name="seltzer"', src)
-        self.assertIn("Ball State", src)
+        self.assertIn('name="flag"', src)
+        self.assertIn('name="deal"', src)
+        self.assertIn('name="bar"', src)
+        self.assertIn("Moorish heads", src)
+        self.assertIn("Redskin", src)
         self.assertIn("Coming soon", src)
         self.assertIn("disabled", src)
         self.assertIn("/js/post-quiz.js", src)
+        self.assertNotIn("northern-illinois", src)
+        self.assertNotIn("Ball State", src)
         js = QUIZ_JS.read_text(encoding="utf-8")
-        self.assertIn("ball-state", js)
-        self.assertIn('band: "true"', js)
-        self.assertIn('seltzer: "red-wine"', js)
+        self.assertIn("sardinia-napoli", js)
+        self.assertIn('flag: "true"', js)
+        self.assertIn('deal: "ninety"', js)
+        self.assertIn('bar: "redskin"', js)
+        self.assertNotIn("northern-illinois", js)
+        self.assertNotIn("ball-state", js)
         self.assertNotIn("answer:", src.lower())
         self.assertNotIn("data-correct", src)
         self.assertNotIn("name: quiz", PAGES_YML.read_text(encoding="utf-8"))
 
     def test_other_posts_do_not_carry_the_flag_failure(self) -> None:
+        self.assertNotIn("quiz:", NIU.read_text(encoding="utf-8"))
         self.assertNotIn("quiz:", BOSTON.read_text(encoding="utf-8"))
         tour = (REPO_ROOT / "content" / "gradys-tour" / "italy.md").read_text(encoding="utf-8")
         self.assertNotIn("quiz:", tour)
         src = PARTIAL.read_text(encoding="utf-8")
-        self.assertIn('eq .Section "posts"', src)
-        self.assertIn('eq .File.ContentBaseName "northern-illinois"', src)
+        self.assertIn('eq .Section "gradys-tour"', src)
+        self.assertIn('eq .File.ContentBaseName "sardinia-napoli"', src)
 
 
 class PostQuizJsTests(unittest.TestCase):
     def test_perfect_card_scores_three_success(self) -> None:
-        answers = {"band": "true", "opponent": "ball-state", "seltzer": "red-wine"}
-        picks = {"band": "true", "opponent": "ball-state", "seltzer": "red-wine"}
+        answers = {"flag": "true", "deal": "ninety", "bar": "redskin"}
+        picks = {"flag": "true", "deal": "ninety", "bar": "redskin"}
         self.assertEqual(call_fn("scoreQuiz", answers, picks), {"correct": 3, "total": 3})
         self.assertEqual(call_fn("missingKeys", answers, picks), [])
         self.assertIn("claim a shot", call_fn("prizeLine", 3, 3))
-        self.assertIn("DeKalb", call_fn("feedbackLine", 3, 3))
+        self.assertIn("prosecco", call_fn("feedbackLine", 3, 3))
 
     def test_partial_and_blank_picks_do_not_pass_failure(self) -> None:
-        answers = {"band": "true", "opponent": "ball-state", "seltzer": "red-wine"}
-        wrong = {"band": "false", "opponent": "cal", "seltzer": "red-wine"}
+        answers = {"flag": "true", "deal": "ninety", "bar": "redskin"}
+        wrong = {"flag": "false", "deal": "one-forty", "bar": "redskin"}
         self.assertEqual(call_fn("scoreQuiz", answers, wrong), {"correct": 1, "total": 3})
         self.assertNotIn("claim a shot", call_fn("prizeLine", 2, 3))
-        blank = {"band": "true", "opponent": "", "seltzer": "red-wine"}
-        self.assertEqual(call_fn("missingKeys", answers, blank), ["opponent"])
+        blank = {"flag": "true", "deal": "", "bar": "redskin"}
+        self.assertEqual(call_fn("missingKeys", answers, blank), ["deal"])
         self.assertEqual(call_fn("scoreQuiz", answers, {}), {"correct": 0, "total": 3})
         self.assertEqual(call_fn("scoreQuiz", None, None), {"correct": 0, "total": 0})
 
@@ -151,6 +160,15 @@ class PostQuizBuildTests(unittest.TestCase):
                 f"\n{result.stderr}"
             )
         try:
+            sardinia_pages = list((dest / "gradys-tour").glob("*/index.html"))
+            sardinia_hit = [
+                page.read_text(encoding="utf-8")
+                for page in sardinia_pages
+                if "post-quiz" in page.read_text(encoding="utf-8")
+            ]
+            if len(sardinia_hit) != 1:
+                raise OSError(f"expected one quiz page, found {len(sardinia_hit)}")
+            cls.sardinia = sardinia_hit[0]
             cls.niu = (dest / "posts" / "northern-illinois" / "index.html").read_text(
                 encoding="utf-8"
             )
@@ -171,24 +189,25 @@ class PostQuizBuildTests(unittest.TestCase):
     def tearDownClass(cls) -> None:
         shutil.rmtree(cls._tmp, ignore_errors=True)
 
-    def test_niu_renders_hidden_questions_success(self) -> None:
-        html = self.niu
+    def test_sardinia_renders_hidden_questions_success(self) -> None:
+        html = self.sardinia
         self.assertIn("Think you caught it all?", html)
         self.assertIn('class="post-quiz-panel"', html)
         self.assertIn("hidden", html)
-        self.assertIn("student band", html)
-        self.assertIn("Ball State", html)
-        self.assertIn("Carbonated red wine", html)
+        self.assertIn("Moorish heads", html)
+        self.assertIn("prosecco", html)
+        self.assertIn(">Redskin<", html)
         self.assertIn('role="status"', html)
         self.assertIn("Coming soon", html)
         self.assertIn("disabled", html)
         self.assertNotIn("answer:", html.lower())
+        self.assertNotIn("Ball State", html)
         quiz = html.split('class="post-quiz"', 1)[1].split("</aside>", 1)[0]
         self.assertNotIn("data-correct", quiz)
-        self.assertIn('value="ball-state"', quiz)
-        self.assertNotIn(">ball-state<", quiz)
+        self.assertIn('value="ninety"', quiz)
+        self.assertNotIn(">ninety<", quiz)
 
     def test_other_pages_omit_the_quiz_failure(self) -> None:
-        for html in (self.boston, self.other, self.tour):
+        for html in (self.niu, self.boston, self.other, self.tour):
             self.assertNotIn("post-quiz", html)
             self.assertNotIn("Think you caught it all?", html)

@@ -1,11 +1,11 @@
-// ponytail: answers are hardcoded for the Northern Illinois mock.
+// ponytail: answers are hardcoded for the Sardinia mock (sardinia-napoli.md).
 // A CMS quiz would ship this map from front matter without printing it in HTML.
 
 export var QUIZ_ANSWERS = {
-  "northern-illinois": {
-    band: "true",
-    opponent: "ball-state",
-    seltzer: "red-wine",
+  "sardinia-napoli": {
+    flag: "true",
+    deal: "ninety",
+    bar: "redskin",
   },
 };
 
@@ -26,16 +26,16 @@ export function missingKeys(answers, picks) {
 }
 
 export function feedbackLine(correct, total) {
-  if (correct === total) return "You caught it. DeKalb has nothing left to hide.";
-  if (correct === 0) return "Rough night. The pork tenderloin group knew more than that.";
+  if (correct === total) return "You caught it. Gianluca would pour the prosecco.";
+  if (correct === 0) return "Rough night. Even the karaoke bar was clearer than that.";
   if (correct + 1 === total) return "Close. One fact got past you.";
-  return "A few plays got away.";
+  return "A few stops got away.";
 }
 
 export function prizeLine(correct, total) {
   var score = correct + "/" + total;
-  if (correct === total) return score + " — claim a shot at courtside with Eric.";
-  return score + " — only a perfect card gets a shot at courtside.";
+  if (correct === total) return score + " — claim a shot at the next boat day.";
+  return score + " — only a perfect card gets a shot at the next boat day.";
 }
 
 export function readPicks(form, answers) {

@@ -1,11 +1,11 @@
 {{/*
-  Mock end-of-article quiz. Renders only when `quiz: true` on the Northern
-  Illinois post. Questions are hardcoded from that recap. Correct choices live
-  in static/js/post-quiz.js, not in this markup.
+  Mock end-of-article quiz. Renders only when `quiz: true` on Italy: Sardinia
+  (content/gradys-tour/sardinia-napoli.md). Questions are hardcoded from that
+  post. Correct choices live in static/js/post-quiz.js, not in this markup.
   ponytail: one post, fixed ids. A Pages CMS question field would key by slug.
 */}}
-{{- if and .Params.quiz (eq .Section "posts") (eq .File.ContentBaseName "northern-illinois") -}}
-<aside class="post-quiz" data-quiz-id="northern-illinois">
+{{- if and .Params.quiz (eq .Section "gradys-tour") (eq .File.ContentBaseName "sardinia-napoli") -}}
+<aside class="post-quiz" data-quiz-id="sardinia-napoli">
   <button type="button" class="post-quiz-open" id="post-quiz-open" aria-expanded="false" aria-controls="post-quiz-panel">
     Think you caught it all?
   </button>
@@ -13,23 +13,23 @@
     <p class="post-quiz-lede">Three questions on this post. No name, no email.</p>
     <form class="post-quiz-form">
       <fieldset class="post-quiz-q">
-        <legend>True or false: Northern Illinois had a student band at this game.</legend>
-        <label class="post-quiz-option"><input type="radio" name="band" value="true" required><span>True</span></label>
-        <label class="post-quiz-option"><input type="radio" name="band" value="false"><span>False</span></label>
+        <legend>True or false: The Sardinian flag in this post shows four Moorish heads.</legend>
+        <label class="post-quiz-option"><input type="radio" name="flag" value="true" required><span>True</span></label>
+        <label class="post-quiz-option"><input type="radio" name="flag" value="false"><span>False</span></label>
       </fieldset>
       <fieldset class="post-quiz-q">
-        <legend>Who did Northern Illinois play?</legend>
-        <label class="post-quiz-option"><input type="radio" name="opponent" value="cal" required><span>Cal</span></label>
-        <label class="post-quiz-option"><input type="radio" name="opponent" value="ball-state"><span>Ball State</span></label>
-        <label class="post-quiz-option"><input type="radio" name="opponent" value="boston-college"><span>Boston College</span></label>
-        <label class="post-quiz-option"><input type="radio" name="opponent" value="depaul"><span>DePaul</span></label>
+        <legend>What boat deal did they settle on?</legend>
+        <label class="post-quiz-option"><input type="radio" name="deal" value="one-forty" required><span>€140 all day</span></label>
+        <label class="post-quiz-option"><input type="radio" name="deal" value="ninety"><span>€90 for 6 hours, they pay the gas, plus prosecco</span></label>
+        <label class="post-quiz-option"><input type="radio" name="deal" value="gas-in"><span>€90 with gas included</span></label>
+        <label class="post-quiz-option"><input type="radio" name="deal" value="free"><span>Free, handshake only</span></label>
       </fieldset>
       <fieldset class="post-quiz-q">
-        <legend>Mike said the Husky seltzer tasted more like what?</legend>
-        <label class="post-quiz-option"><input type="radio" name="seltzer" value="cherry" required><span>Cherry vodka</span></label>
-        <label class="post-quiz-option"><input type="radio" name="seltzer" value="red-wine"><span>Carbonated red wine</span></label>
-        <label class="post-quiz-option"><input type="radio" name="seltzer" value="tenderloin"><span>A pork tenderloin</span></label>
-        <label class="post-quiz-option"><input type="radio" name="seltzer" value="popeyes"><span>Popeyes</span></label>
+        <legend>What was the karaoke bar called?</legend>
+        <label class="post-quiz-option"><input type="radio" name="bar" value="cheyenne" required><span>Cheyenne</span></label>
+        <label class="post-quiz-option"><input type="radio" name="bar" value="redskin"><span>Redskin</span></label>
+        <label class="post-quiz-option"><input type="radio" name="bar" value="cagliari"><span>Cagliari</span></label>
+        <label class="post-quiz-option"><input type="radio" name="bar" value="sinatra"><span>Frankie Sinatra</span></label>
       </fieldset>
       <button type="submit" class="post-quiz-submit">Lock it in</button>
     </form>
