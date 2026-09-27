@@ -1078,10 +1078,17 @@ article.post-content>header time {
   cursor: pointer;
 }
 
-.tour-country-map-hint {
-  margin: 0.45rem 0 0;
-  font-size: 0.875rem;
-  color: #333;
+@media (hover: none) and (pointer: coarse) {
+  .tour-country-map-tools {
+    display: none;
+  }
+
+  .tour-country-svg {
+    /* none, not pan-y: the script claims a sideways drag or a held drag, and scrolls the page itself for a vertical swipe. pan-y would take every vertical move before that choice. */
+    touch-action: none;
+    max-height: min(22rem, 70vw);
+    -webkit-touch-callout: none;
+  }
 }
 
 .tour-country-ocean {
