@@ -89,7 +89,7 @@ I recruit a group to do the Rick Steves free self-guided audio tour that Pudlo r
 
  We start the city walking tour in a grand mall which started construction in the 1890s and still lies incomplete. It’s covered in graffiti, netting and wood boards. A sad embodiment of the cities potential. We also walk through tranquil piazzas, like piazza Bellini, Roman ruins and see beautiful churches, all hidden in its the maze of Napoli. 
 
-I met so many **real** people here, and as infuriating as the trash and chaos are, writing this makes me want to go back here more than anywhere else on the trip. The people here love life. They are grounded  and make light of the good and the bad in their city. The hostels front desk worker gives me a warning before I leave “be careful time doesn’t exist here”.
+I met so many **real** people here, and as infuriating as the trash and chaos are, writing this makes me want to go back here more than anywhere else on the trip. The people here love life. Maradona was never accused of not being fun. The hostels front desk worker gives me a warning before I leave “be careful time doesn’t exist here”.
 
 Our last night here we wait for the arrival of our dear friend Schiltz. But he never makes it. We get a note he is in the ER. But that is a story for next article: *The One-Eyed Man: Schiltz’s Disastrous Trip to Italy.*
 
