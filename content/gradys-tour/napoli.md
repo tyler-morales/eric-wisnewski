@@ -6,13 +6,13 @@ author:
 date: 2026-09-27T16:17:00Z
 draft: true
 ---
-To know Napoli you must understand one of its greatest sons, Diego Maradona, who personifies the highs and lows of the city. 
+To know Napoli you must understand one of its greatest sons, Diego Maradona a larger than life figure who personifies the cities highs and lows of the city. The city, like its star, forever has a chip on its shoulder. 
 
 ![](/images/uploads/IMG_1713.jpeg)
 
-*Napoli is covered in memorabilia, murals of the star who passed away in 2020.* 
+*Napoli is covered in memorabilia, photos and murals of the star who passed away in 2020.* 
 
-A city, like its star, forever has a chip on it’s shoulder. Maradona, a child prodigy from the slums of Buenos Aires, Argentina, made his professional debut at 15 years old. What he would next made him one of the greatest in history: his hand of god goal, 11 titles including the 1986 World Cup, and being named **co-player of the century** along with Pelé. All of this while he was slowly consumed by addiction and dramatic personal downfalls.
+Maradona, a child prodigy soccer player from the slums of Buenos Aires, Argentina, became a pro at 15 years old proceeding to lead one of the most prolific careers in history. He is knows for his 11 titles including the 1986 World Cup, being named **co-player of the century** along with Pelé and his controversial *Hand of God* goal. All of this while he was slowly consumed by addiction and dramatic personal downfalls.
 
 [https://m.youtube.com/watch?v=-ccNkksrfls&ra=m](https://m.youtube.com/watch?v=-ccNkksrfls&ra=m)
 
