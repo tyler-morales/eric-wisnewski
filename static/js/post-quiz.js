@@ -51,7 +51,7 @@ export function stepLabel(index, total) {
   return index + 1 + "/" + total;
 }
 
-// First tap reveals Q1. A later tap does not close or reset; Try again does that.
+// First tap reveals Q1. A later tap does not close the quiz. There is no replay.
 export function onStartTap(started) {
   if (started) return { started: true, reveal: false };
   return { started: true, reveal: true };
@@ -77,7 +77,6 @@ export function bindQuiz(root, answers) {
   var result = root.querySelector(".post-quiz-result");
   var scoreEl = root.querySelector(".post-quiz-score");
   var prize = root.querySelector(".post-quiz-prize");
-  var retry = root.querySelector(".post-quiz-retry");
   var index = 0;
   var started = false;
 
@@ -92,15 +91,6 @@ export function bindQuiz(root, answers) {
     next.hidden = false;
     next.textContent = i === steps.length - 1 ? "Lock it in" : "Next";
     if (need) need.hidden = true;
-  }
-
-  function reset() {
-    form.reset();
-    result.hidden = true;
-    scoreEl.textContent = "";
-    if (prize) prize.hidden = true;
-    if (retry) retry.hidden = true;
-    paint(0);
   }
 
   open.addEventListener("click", function () {
@@ -139,18 +129,9 @@ export function bindQuiz(root, answers) {
       scored.correct + "/" + scored.total + ". " + feedbackLine(scored.correct, scored.total);
     result.hidden = false;
     if (prize) prize.hidden = !showStickerClaim(scored.correct, scored.total);
-    if (retry) retry.hidden = false;
     next.hidden = true;
     result.focus();
   });
-
-  if (retry) {
-    retry.addEventListener("click", function () {
-      reset();
-      var first = steps[0] && steps[0].querySelector("input");
-      if (first) first.focus();
-    });
-  }
 }
 
 export function mountQuiz(doc) {

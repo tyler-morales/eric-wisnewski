@@ -1825,8 +1825,7 @@ article.post-content .post-quiz p {
 }
 
 .post-quiz-open,
-.post-quiz-next,
-.post-quiz-retry {
+.post-quiz-next {
   font: inherit;
   font-weight: 600;
   cursor: pointer;
@@ -1847,7 +1846,6 @@ article.post-content .post-quiz p {
 /* Focus ring only. A sticky hover outline on phones sat under the score like a second border. */
 .post-quiz-open:focus-visible,
 .post-quiz-next:focus-visible,
-.post-quiz-retry:focus-visible,
 .post-quiz input:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 3px;
@@ -1969,15 +1967,6 @@ article.post-content .post-quiz-q legend {
   font-weight: 600;
   color: var(--text-muted);
   background: #f6f6f6;
-  border: 1px solid #e4e4e4;
-  border-radius: 0.25rem;
-}
-
-.post-quiz-retry {
-  margin-top: 0.85rem;
-  padding: 0.55rem 1rem;
-  color: var(--text);
-  background: var(--bg);
   border: 1px solid #e4e4e4;
   border-radius: 0.25rem;
 }
