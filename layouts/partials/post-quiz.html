@@ -10,40 +10,41 @@
     Think you caught it all?
   </button>
   <div id="post-quiz-panel" class="post-quiz-panel" role="region" aria-labelledby="post-quiz-open" hidden>
-    <p class="post-quiz-lede">Three questions on this post. No name, no email.</p>
+    <p class="post-quiz-lede">No name, no email.</p>
+    <p class="post-quiz-progress" aria-live="polite">1/3</p>
     <form class="post-quiz-form">
-      <fieldset class="post-quiz-q">
+      <fieldset class="post-quiz-q" data-step="0">
         <legend>True or false: The Sardinian flag in this post shows four Moorish heads.</legend>
-        <label class="post-quiz-option"><input type="radio" name="flag" value="true" required><span>True</span></label>
+        <label class="post-quiz-option"><input type="radio" name="flag" value="true"><span>True</span></label>
         <label class="post-quiz-option"><input type="radio" name="flag" value="false"><span>False</span></label>
       </fieldset>
-      <fieldset class="post-quiz-q">
+      <fieldset class="post-quiz-q" data-step="1" hidden disabled>
         <legend>What boat deal did they settle on?</legend>
-        <label class="post-quiz-option"><input type="radio" name="deal" value="one-forty" required><span>€140 all day</span></label>
+        <label class="post-quiz-option"><input type="radio" name="deal" value="one-forty"><span>€140 all day</span></label>
         <label class="post-quiz-option"><input type="radio" name="deal" value="ninety"><span>€90 for 6 hours, they pay the gas, plus prosecco</span></label>
         <label class="post-quiz-option"><input type="radio" name="deal" value="gas-in"><span>€90 with gas included</span></label>
         <label class="post-quiz-option"><input type="radio" name="deal" value="free"><span>Free, handshake only</span></label>
       </fieldset>
-      <fieldset class="post-quiz-q">
+      <fieldset class="post-quiz-q" data-step="2" hidden disabled>
         <legend>What was the karaoke bar called?</legend>
-        <label class="post-quiz-option"><input type="radio" name="bar" value="cheyenne" required><span>Cheyenne</span></label>
+        <label class="post-quiz-option"><input type="radio" name="bar" value="cheyenne"><span>Cheyenne</span></label>
         <label class="post-quiz-option"><input type="radio" name="bar" value="redskin"><span>Redskin</span></label>
         <label class="post-quiz-option"><input type="radio" name="bar" value="cagliari"><span>Cagliari</span></label>
         <label class="post-quiz-option"><input type="radio" name="bar" value="sinatra"><span>Frankie Sinatra</span></label>
       </fieldset>
-      <button type="submit" class="post-quiz-submit">Lock it in</button>
+      <p class="post-quiz-need" role="status" hidden>Pick one to continue.</p>
+      <button type="button" class="post-quiz-next">Next</button>
     </form>
     <div id="post-quiz-result" class="post-quiz-result" role="status" aria-live="polite" tabindex="-1" hidden>
       <p class="post-quiz-score"></p>
-      <p class="post-quiz-prize-copy"></p>
     </div>
     <div class="post-quiz-prize" hidden>
-      <label for="post-quiz-email">Email for the drawing</label>
+      <label for="post-quiz-email">Email for the sticker</label>
       <input id="post-quiz-email" type="email" disabled placeholder="Coming soon" autocomplete="off" aria-disabled="true" aria-describedby="post-quiz-prize-note">
       <button type="button" disabled>Coming soon</button>
       <p id="post-quiz-prize-note" class="post-quiz-note">No name or email is collected. Signup is not open yet.</p>
-      <button type="button" class="post-quiz-retry">Try again</button>
     </div>
+    <button type="button" class="post-quiz-retry" hidden>Try again</button>
   </div>
   <noscript>
     <p class="post-quiz-note">The quiz needs JavaScript. Nothing is saved either way.</p>

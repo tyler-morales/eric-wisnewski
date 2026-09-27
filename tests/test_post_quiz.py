@@ -96,11 +96,22 @@ class PostQuizSourceTests(unittest.TestCase):
         self.assertIn('name="flag"', src)
         self.assertIn('name="deal"', src)
         self.assertIn('name="bar"', src)
+        self.assertIn('data-step="1" hidden', src)
+        self.assertIn('data-step="2" hidden', src)
+        self.assertIn(">Next<", src)
+        self.assertIn(">1/3<", src)
         self.assertIn("Moorish heads", src)
         self.assertIn("Redskin", src)
         self.assertIn("Coming soon", src)
+        self.assertIn("Email for the sticker", src)
         self.assertIn("disabled", src)
         self.assertIn("/js/post-quiz.js", src)
+        css = (REPO_ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
+        quiz_css = css.split("/* End-of-article quiz", 1)[1].split("article.post-content pre", 1)[0]
+        self.assertNotIn(":hover,", quiz_css)
+        self.assertNotIn(":hover {", quiz_css)
+        self.assertIn(":focus-visible", quiz_css)
+        self.assertNotIn("outline-offset: 4px", quiz_css)
         self.assertNotIn("northern-illinois", src)
         self.assertNotIn("Ball State", src)
         js = QUIZ_JS.read_text(encoding="utf-8")
@@ -108,6 +119,7 @@ class PostQuizSourceTests(unittest.TestCase):
         self.assertIn('flag: "true"', js)
         self.assertIn('deal: "ninety"', js)
         self.assertIn('bar: "redskin"', js)
+        self.assertIn("you've earned a sticker", js)
         self.assertNotIn("northern-illinois", js)
         self.assertNotIn("ball-state", js)
         self.assertNotIn("answer:", src.lower())
@@ -130,16 +142,27 @@ class PostQuizJsTests(unittest.TestCase):
         picks = {"flag": "true", "deal": "ninety", "bar": "redskin"}
         self.assertEqual(call_fn("scoreQuiz", answers, picks), {"correct": 3, "total": 3})
         self.assertEqual(call_fn("missingKeys", answers, picks), [])
-        self.assertIn("claim a shot", call_fn("prizeLine", 3, 3))
-        self.assertIn("prosecco", call_fn("feedbackLine", 3, 3))
+        self.assertTrue(call_fn("showStickerClaim", 3, 3))
+        self.assertIn("sticker", call_fn("feedbackLine", 3, 3))
+        self.assertEqual(call_fn("nextQuizStep", 0, 3, True), {"index": 1, "done": False, "needsAnswer": False})
+        self.assertEqual(call_fn("stepLabel", 0, 3), "1/3")
 
     def test_partial_and_blank_picks_do_not_pass_failure(self) -> None:
         answers = {"flag": "true", "deal": "ninety", "bar": "redskin"}
         wrong = {"flag": "false", "deal": "one-forty", "bar": "redskin"}
         self.assertEqual(call_fn("scoreQuiz", answers, wrong), {"correct": 1, "total": 3})
-        self.assertNotIn("claim a shot", call_fn("prizeLine", 2, 3))
+        self.assertFalse(call_fn("showStickerClaim", 2, 3))
+        self.assertNotIn("sticker", call_fn("feedbackLine", 2, 3))
         blank = {"flag": "true", "deal": "", "bar": "redskin"}
         self.assertEqual(call_fn("missingKeys", answers, blank), ["deal"])
+        self.assertEqual(
+            call_fn("nextQuizStep", 0, 3, False),
+            {"index": 0, "done": False, "needsAnswer": True},
+        )
+        self.assertEqual(
+            call_fn("nextQuizStep", 2, 3, True),
+            {"index": 2, "done": True, "needsAnswer": False},
+        )
         self.assertEqual(call_fn("scoreQuiz", answers, {}), {"correct": 0, "total": 3})
         self.assertEqual(call_fn("scoreQuiz", None, None), {"correct": 0, "total": 0})
 
@@ -193,7 +216,9 @@ class PostQuizBuildTests(unittest.TestCase):
         html = self.sardinia
         self.assertIn("Think you caught it all?", html)
         self.assertIn('class="post-quiz-panel"', html)
-        self.assertIn("hidden", html)
+        self.assertIn('data-step="1" hidden', html)
+        self.assertIn(">Next<", html)
+        self.assertIn(">1/3<", html)
         self.assertIn("Moorish heads", html)
         self.assertIn("prosecco", html)
         self.assertIn(">Redskin<", html)
