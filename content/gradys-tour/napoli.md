@@ -61,6 +61,12 @@ We are staying in a clean and social hostel near the Spanish Quarter. Our dorm c
 
 *Napoli at night*
 
+
+
+![](/images/uploads/IMG_2589.jpeg)
+
+*Napoli at night*
+
 The power is out at the hostel when we get back and no one is working the desk. It’s eerie. We see people wandering through with phone lights on, it’s eerie. I wake to the lights flicked back on at 4am and the AC blasting freezing air. 
 
 ![](/images/uploads/IMG_2591.jpeg)
@@ -76,6 +82,8 @@ The Mongolian sees his Polish bunkmate is cold and lays his blanket over him, us
 ![image.jpeg](/images/uploads/image-8.jpeg)
 
 I recruit a group to do the Rick Steves free self-guided audio tour that Pudlo recommended a while back, and I am hooked. Rick Steves is a national treasure that needs to be protected at all costs. His self guided walking tours are so interesting and they show you things you would never notice (check Rick Steves Audio Europe app). 
+
+![](/images/uploads/IMG_2598.jpeg)
 
 We start the city walking tour in a grand mall which started construction in the 1890s and still lies incomplete. It’s covered in graffiti, netting and wood boards. A sad embodiment of the cities potential. We also walk through tranquil piazzas, like piazza Bellini, Roman ruins and see beautiful churches, all hidden in its the maze of Napoli. I met so many real people here, and as infuriating as the trash and chaos is writing this I want to go back here more than anywhere else on the trip. You got to see it for yourself. The hostels front desk worker says it best: “be careful time doesn’t exist here”.
 
