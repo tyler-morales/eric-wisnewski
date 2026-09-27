@@ -105,3 +105,6 @@ Thanks for reading!
 
 ![](/images/uploads/IMG_2607.jpeg)
 
+Bonus Rick:
+
+[https://www.facebook.com/ricksteves/videos/exploring-the-back-streets-of-naples/2044200815980904/](https://www.facebook.com/ricksteves/videos/exploring-the-back-streets-of-naples/2044200815980904/)
