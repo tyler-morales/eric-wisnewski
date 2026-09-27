@@ -89,7 +89,7 @@ I recruit a group to do the Rick Steves free self-guided audio tour that Pudlo r
 
  We start the city walking tour in a grand mall which started construction in the 1890s and still lies incomplete. It’s covered in graffiti, netting and wood boards. A sad embodiment of the cities potential. We also walk through tranquil piazzas, like piazza Bellini, Roman ruins and see beautiful churches, all hidden in its the maze of Napoli. 
 
-I met so many **real** people here, and as infuriating as the trash and chaos are, writing this makes me want to go back here more than anywhere else on the trip.  People here love life and love living life. Maradona was never accused of boring at party's. 
+I met so many **real** people here, and as infuriating as the trash and chaos are, writing this makes me want to go back here more than anywhere else on the trip. I like it so much because even in the face of all its history and problems people are passionately pursuing life. We have a lot of jobs and food in the US but so many people are like zombies. Let me just add Maradona was never accused of boring at party's. 
 
 [https://m.youtube.com/watch?v=Cdf6D19Etmc&pp=ygUVTWFyYWRvbmEgd2FybSB1cCBsaWZl&ra=m](https://m.youtube.com/watch?v=Cdf6D19Etmc&pp=ygUVTWFyYWRvbmEgd2FybSB1cCBsaWZl&ra=m)
 
@@ -97,7 +97,9 @@ The hostels front desk worker gives me a warning before I leave
 
 > “Be careful, time doesn’t exist here”
 
-Our last night here we wait for the arrival of our dear friend Schiltz. But he never makes it. We get a note he is in the ER. But that is a story for next article: *The One-Eyed Man: Schiltz’s Disastrous Trip to Italy.*
+## Up Next: *The One-Eyed Man: Schiltz’s Disastrous Trip to Italy*
+
+*Our last night here we wait for the arrival of our dear friend Schiltz. But he never makes it. We get a note he is in the ER. Stay tuned for the full story next time.*
 
 Thanks for reading!
 
