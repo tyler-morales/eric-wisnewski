@@ -93,7 +93,9 @@ I met so many **real** people here, and as infuriating as the trash and chaos ar
 
 [https://m.youtube.com/watch?v=Cdf6D19Etmc&pp=ygUVTWFyYWRvbmEgd2FybSB1cCBsaWZl&ra=m](https://m.youtube.com/watch?v=Cdf6D19Etmc&pp=ygUVTWFyYWRvbmEgd2FybSB1cCBsaWZl&ra=m)
 
-The hostels front desk worker gives me a warning before I leave “be careful time doesn’t exist here”.
+The hostels front desk worker gives me a warning before I leave 
+
+> “Be careful, time doesn’t exist here”
 
 Our last night here we wait for the arrival of our dear friend Schiltz. But he never makes it. We get a note he is in the ER. But that is a story for next article: *The One-Eyed Man: Schiltz’s Disastrous Trip to Italy.*
 
