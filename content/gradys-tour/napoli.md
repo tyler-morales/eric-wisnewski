@@ -4,8 +4,10 @@ slug: Napoli
 author:
   - grady-davis
 date: 2026-09-27T16:17:00Z
-draft: true
+draft: false
 image: /images/uploads/IMG_2604.jpeg
+country:
+  - Italy
 ---
 ## Maradona
 
@@ -80,4 +82,6 @@ We start the city walking tour in a grand mall which started construction in the
 Our last night here we wait for the arrival of our dear friend Schiltz. But he never makes it. We get a note he is in the ER. But that story is for next article: *The One-Eyed Man: Schiltz’s Disastrous Trip to Italy*
 
 -Grady​​​​​​​​​​​​​​​​
+
+![](/images/uploads/IMG_2607.jpeg)
 
