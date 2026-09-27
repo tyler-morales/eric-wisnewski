@@ -6,7 +6,13 @@ author:
 date: 2026-09-27T16:17:00Z
 draft: true
 ---
-To know Napoli you must understand one of its greatest sons, Diego Maradona, who personifies the highs and lows of the city. A city, like its star, forever has a chip on its shoulder. Maradona, a child prodigy from the slums of Buenos Aires, Argentina, made his professional debut at 15 years old. What he would next made him one of the greatest in history: his hand of god goal, 11 titles including the 1986 World Cup, and being named **co-player of the century** along with Pelé. All of this while he was slowly consumed by addiction and dramatic personal downfalls.
+To know Napoli you must understand one of its greatest sons, Diego Maradona, who personifies the highs and lows of the city. 
+
+![](/images/uploads/IMG_1713.jpeg)
+
+*Napoli is covered in memorabilia, murals of the star who passed away in 2020.* 
+
+A city, like its star, forever has a chip on it’s shoulder. Maradona, a child prodigy from the slums of Buenos Aires, Argentina, made his professional debut at 15 years old. What he would next made him one of the greatest in history: his hand of god goal, 11 titles including the 1986 World Cup, and being named **co-player of the century** along with Pelé. All of this while he was slowly consumed by addiction and dramatic personal downfalls.
 
 [https://m.youtube.com/watch?v=-ccNkksrfls&ra=m](https://m.youtube.com/watch?v=-ccNkksrfls&ra=m)
 
@@ -14,15 +20,21 @@ To know Napoli you must understand one of its greatest sons, Diego Maradona, who
 
 At 23 he joined a flailing SSC Napoli and turned the team into a first-time league champion, making them the first mainland southern Italian club ever to win it. But as his fame grew his personal life spiraled — a heavy cocaine addiction, relationships with organized crime, and family drama eventually led to his suspension and exit from the club as well as a later suspension from the World Cup.
 
-WORLD CUP PHOTO
+![](/images/uploads/IMG_2564.jpeg)
 
-Napoli’s was once one of the richest, most vibrant capitals in Europe, it faced a dramatic downfall that it’s still struggling to recover from. Italy’s unification in 1861 gutted Napoli, moving political power and gold reserves north while the power vacuum was filled by organized crime.
+*Diego Maradona press conference after being caught doping and eventually expelled his final World Cup 1994*
+
+Like its star, Napoli’s was once one of the richest, most vibrant capitals in Europe, until it faced a dramatic downfall that it’s still struggling to recover from. Italy’s unification in 1861 gutted Napoli, moving political power and gold reserves north while the power vacuum was filled by organized crime.
 
 Coming off the train you need a few breaths to take in the sensory overload. People are stacked on top of each other in narrow winding streets, vendors’ shouts echo, and motorbikes slice wildly through crowds. Once-ornate buildings are covered in graffiti and trash is overflowing from a late night of partying before. Even just crossing the street you need timing, courage, and a little bit of faith to avoid being hit.
 
-This city is not for everybody. Your friend who likes to wear a sweater and go to wineries or stay in fancy places on the Amalfi coast might not like it, but to me there’s something so attractive about it. It’s the opposite of the sterile new mall cities with widely available parking popping up all over the US that I hate so much.
+![](/images/uploads/IMG_2289.jpeg)
 
-The locals are resilient and have an infectious pride. They own the resigned sense of humor needed to survive here - Futtetenne! Forget about it! I was on a street corner in Napoli my first visit and an old timer stopped me while I was eating pizza and complained that I wasn’t drinking a Peroni. “Your a man have a beer with your pizza?”. What you hear time and time again: “Yeah its the best but if you are coming here for work its the wrong place [Italian hand gesture]”. The job market is really rough. I met someone who works at the airport, has an advanced degree, speaks English, Italian, Spanish, and Chinese, and only makes $900 a month.
+*Sisters driving through a busy street*
+
+This city is not for everybody. Your friend who likes to go to wineries or stay in fancy places on the Amalfi coast might not like it, but to me there’s something so attractive about it. It’s the opposite of the sterile new mall cities popping up all over the US that I hate so much (refer to ‘somewhere outside of Denver’).
+
+The locals are resilient and have an infectious pride. They own their resigned sense of humor, a trait needed to survive here - Futtetenne! Forget about it! I was on a street corner in Napoli my first visit and an old timer stopped me while I was eating pizza and complained that I wasn’t drinking a Peroni. “Your a man have a beer with your pizza”. What you hear time and time again: “Yeah its the best but if you are coming here for work its the wrong place [Italian hand gesture]”. The job market is really rough. I met someone who works at the airport, has an advanced degree, speaks English, Italian, Spanish, and Chinese, and only makes $900 a month.
 
 We are staying in a clean and social hostel near the Spanish Quarter. Our dorm consists of a Pole, Canadian, Brazilian, Argentinian, and Mongolian in our room. We go out that night. The nightlife in Napoli consists of thousands of people standing in the street drinking while workers run out delivering drinks.
 
