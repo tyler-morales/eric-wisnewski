@@ -11,6 +11,7 @@ report_card:
   stadium: C-
   fan_base: D
   campus: F
+quiz: true
 ---
 Located about an hour west of Chicago is the city of DeKalb, Illinois.  My familiarity with the city comes from its famous DeKalb Oasis.  The Oasis is home to greats such as multiple claw machines, a perpetually closed Popeyes, and maybe the grossest bathroom in Illinois.  Northern Illinois University is also there, where my friend Mike and I spent a windy afternoon watching Northern Illinois take on MAC rival Ball State.  
 

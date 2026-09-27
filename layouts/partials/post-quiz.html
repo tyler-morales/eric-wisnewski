@@ -1,0 +1,54 @@
+{{/*
+  Mock end-of-article quiz. Renders only when `quiz: true` on the Northern
+  Illinois post. Questions are hardcoded from that recap. Correct choices live
+  in static/js/post-quiz.js, not in this markup.
+  ponytail: one post, fixed ids. A Pages CMS question field would key by slug.
+*/}}
+{{- if and .Params.quiz (eq .Section "posts") (eq .File.ContentBaseName "northern-illinois") -}}
+<aside class="post-quiz" data-quiz-id="northern-illinois">
+  <button type="button" class="post-quiz-open" id="post-quiz-open" aria-expanded="false" aria-controls="post-quiz-panel">
+    Think you caught it all?
+  </button>
+  <div id="post-quiz-panel" class="post-quiz-panel" role="region" aria-labelledby="post-quiz-open" hidden>
+    <p class="post-quiz-lede">Three questions on this post. No name, no email.</p>
+    <form class="post-quiz-form">
+      <fieldset class="post-quiz-q">
+        <legend>True or false: Northern Illinois had a student band at this game.</legend>
+        <label class="post-quiz-option"><input type="radio" name="band" value="true" required><span>True</span></label>
+        <label class="post-quiz-option"><input type="radio" name="band" value="false"><span>False</span></label>
+      </fieldset>
+      <fieldset class="post-quiz-q">
+        <legend>Who did Northern Illinois play?</legend>
+        <label class="post-quiz-option"><input type="radio" name="opponent" value="cal" required><span>Cal</span></label>
+        <label class="post-quiz-option"><input type="radio" name="opponent" value="ball-state"><span>Ball State</span></label>
+        <label class="post-quiz-option"><input type="radio" name="opponent" value="boston-college"><span>Boston College</span></label>
+        <label class="post-quiz-option"><input type="radio" name="opponent" value="depaul"><span>DePaul</span></label>
+      </fieldset>
+      <fieldset class="post-quiz-q">
+        <legend>Mike said the Husky seltzer tasted more like what?</legend>
+        <label class="post-quiz-option"><input type="radio" name="seltzer" value="cherry" required><span>Cherry vodka</span></label>
+        <label class="post-quiz-option"><input type="radio" name="seltzer" value="red-wine"><span>Carbonated red wine</span></label>
+        <label class="post-quiz-option"><input type="radio" name="seltzer" value="tenderloin"><span>A pork tenderloin</span></label>
+        <label class="post-quiz-option"><input type="radio" name="seltzer" value="popeyes"><span>Popeyes</span></label>
+      </fieldset>
+      <button type="submit" class="post-quiz-submit">Lock it in</button>
+    </form>
+    <div id="post-quiz-result" class="post-quiz-result" role="status" aria-live="polite" tabindex="-1" hidden>
+      <p class="post-quiz-score"></p>
+      <p class="post-quiz-prize-copy"></p>
+    </div>
+    <div class="post-quiz-prize" hidden>
+      <label for="post-quiz-email">Email for the drawing</label>
+      <input id="post-quiz-email" type="email" disabled placeholder="Coming soon" autocomplete="off" aria-disabled="true" aria-describedby="post-quiz-prize-note">
+      <button type="button" disabled>Coming soon</button>
+      <p id="post-quiz-prize-note" class="post-quiz-note">No name or email is collected. Signup is not open yet.</p>
+      <button type="button" class="post-quiz-retry">Try again</button>
+    </div>
+  </div>
+  <noscript>
+    <p class="post-quiz-note">The quiz needs JavaScript. Nothing is saved either way.</p>
+  </noscript>
+</aside>
+{{- $quizJS := "/js/post-quiz.js" | relURL -}}
+<script type="module" src="{{ $quizJS }}?v={{ md5 (readFile "static/js/post-quiz.js") }}"></script>
+{{- end -}}

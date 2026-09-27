@@ -1794,6 +1794,157 @@ article.post-content p:has(> .media-frame:only-child)+p:has(> i:only-child) {
   margin-bottom: 1.1em;
 }
 
+/* End-of-article quiz: one full-width button until it opens. Sans, like the report card. */
+article.post-content .post-quiz {
+  margin: 1.75rem 0 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+article.post-content .post-quiz p {
+  margin: 0 0 0.75rem;
+  text-wrap: pretty;
+}
+
+.post-quiz-open,
+.post-quiz-submit,
+.post-quiz-retry {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 2.75rem;
+}
+
+.post-quiz-open,
+.post-quiz-submit {
+  display: block;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 0;
+  background: var(--text);
+  color: var(--bg);
+}
+
+.post-quiz-open:hover,
+.post-quiz-open:focus-visible,
+.post-quiz-submit:hover,
+.post-quiz-submit:focus-visible,
+.post-quiz-retry:hover,
+.post-quiz-retry:focus-visible,
+.post-quiz input:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.post-quiz-panel:not([hidden]) {
+  margin-top: 1.15rem;
+}
+
+.post-quiz-lede,
+.post-quiz-note {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.post-quiz-q {
+  margin: 0 0 1.15rem;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+article.post-content .post-quiz-q legend {
+  float: none;
+  width: 100%;
+  margin: 0 0 0.25rem;
+  padding: 0;
+  font-weight: 600;
+}
+
+.post-quiz-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 0;
+  cursor: pointer;
+}
+
+.post-quiz-option input {
+  flex: 0 0 auto;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.2rem;
+  accent-color: #000;
+}
+
+.post-quiz-result:focus {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+.post-quiz-score {
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.post-quiz-prize {
+  margin-top: 0.35rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #e4e4e4;
+}
+
+.post-quiz-prize-copy {
+  font-weight: 600;
+}
+
+.post-quiz-prize label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.post-quiz-prize input {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.6rem;
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--text-muted);
+  background: #f6f6f6;
+  border: 1px solid #ccc;
+}
+
+.post-quiz-prize button[disabled],
+.post-quiz-prize input:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.post-quiz-prize button[disabled] {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid #ccc;
+}
+
+.post-quiz-retry {
+  margin-top: 0.85rem;
+  padding: 0.55rem 1rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid #000;
+}
+
 article.post-content pre {
   margin: 1.25em 0;
   overflow-x: auto;
