@@ -23,15 +23,15 @@ Maradona, a child prodigy soccer player from the slums of Buenos Aires, Argentin
 
 *Hand of God goal*
 
-But here he is loved for one reason: saving Napoli. At 23 he joined a flailing SSC Napoli and turned the team into a first-time league champion, **making them the first mainland southern Italian club ever to win it.** But as his fame grew his personal life spiraled —  heavy drug use, relationships with organized crime, and family drama eventually led to his suspension and exit from the club as well as a later suspension from the World Cup.
+But here he is loved for one reason: saving Napoli. At 23 he joined a flailing SSC Napoli and turned the team into a first-time league champion, **making them the first mainland southern Italian club ever to win it**. But as his fame grew his personal life spiraled —  heavy drug use, relationships with organized crime, and family drama eventually led to his suspension and exit from the club as well as a later suspension from the World Cup.
 
 ![](/images/uploads/IMG_2564.jpeg)
 
 *Diego Maradona press conference after being caught doping and eventually expelled his final World Cup 1994*
 
-Like its star, Napoli was once one of the most vibrant capitals in Europe until it faced a dramatic downfall of its own that it’s still struggling to recover from today. To oversimplify it greatly, Italy’s unification in 1861 gutted Napoli, moving political power and gold reserves north while the power vacuum was filled by organized crime.
-
 ## Napoli
+
+Like its star, Napoli was once one of the most vibrant capitals in Europe until it faced a dramatic downfall of its own that it’s still struggling to recover from today. To oversimplify it greatly, Italy’s unification in 1861 gutted Napoli, moving political power and gold reserves north while the power vacuum was filled by organized crime.
 
 Coming off the train I needed a few deep breaths to take in the sensory overload. People are stacked on top of each other in narrow winding streets, vendors’ shouts echo, and motorbikes slice wildly through crowds. Once-ornate buildings are covered in graffiti and trash is overflowing from a late night of partying. Just crossing the street you need timing, courage, and a little bit of faith to avoid being hit.
 
