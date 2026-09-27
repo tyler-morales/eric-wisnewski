@@ -81,7 +81,7 @@ We start the city walking tour in a grand mall which started construction in the
 
 Our last night here we wait for the arrival of our dear friend Schiltz. But he never makes it. We get a note he is in the ER. But that is a story for next article: *The One-Eyed Man: Schiltz’s Disastrous Trip to Italy.*
 
-Thanks again for reading!
+Thanks for reading!
 
 -Grady​​​​​​​​​​​​​​​​
 
