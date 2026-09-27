@@ -1,5 +1,5 @@
 ---
-title: Italy - Napoli
+title: "Italy: Napoli"
 slug: Napoli
 author:
   - grady-davis
@@ -10,9 +10,9 @@ To know Napoli you must understand one of its greatest sons, Diego Maradona, who
 
 [https://m.youtube.com/watch?v=-ccNkksrfls&ra=m](https://m.youtube.com/watch?v=-ccNkksrfls&ra=m)
 
+*Hand of God goal*
 
-
-At 23 he joined a flailing SSC Napoli and turned the team into first-time league champions, also making them the first mainland southern Italian club ever to win it. But as his fame grew his personal life spiraled — a heavy cocaine addiction, relationships with organized crime, and family drama eventually led to his suspension and exit from the club as well as a later suspension from the World Cup.
+At 23 he joined a flailing SSC Napoli and turned the team into a first-time league champion, making them the first mainland southern Italian club ever to win it. But as his fame grew his personal life spiraled — a heavy cocaine addiction, relationships with organized crime, and family drama eventually led to his suspension and exit from the club as well as a later suspension from the World Cup.
 
 WORLD CUP PHOTO
 
