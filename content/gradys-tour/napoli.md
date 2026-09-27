@@ -5,7 +5,10 @@ author:
   - grady-davis
 date: 2026-09-27T16:17:00Z
 draft: true
+image: /images/uploads/IMG_2604.jpeg
 ---
+## Maradona
+
 To know Napoli you must understand one of its greatest sons, Diego Maradona a larger than life figure who personifies the cities highs and lows of the city. The city, like its star, forever has a chip on its shoulder. 
 
 ![](/images/uploads/IMG_1713.jpeg)
@@ -18,15 +21,17 @@ Maradona, a child prodigy soccer player from the slums of Buenos Aires, Argentin
 
 *Hand of God goal*
 
-But here he is loved for one saving Napoli. At 23 he joined a flailing SSC Napoli and turned the team into a first-time league champion, making them the first mainland southern Italian club ever to win it. But as his fame grew his personal life spiraled — a heavy cocaine addiction, relationships with organized crime, and family drama eventually led to his suspension and exit from the club as well as a later suspension from the World Cup.
+But here he is loved for one saving Napoli. At 23 he joined a flailing SSC Napoli and turned the team into a first-time league champion, making them the first mainland southern Italian club ever to win it. But as his fame grew his personal life spiraled — a heavy drug use, relationships with organized crime, and family drama eventually led to his suspension and exit from the club as well as a later suspension from the World Cup.
 
 ![](/images/uploads/IMG_2564.jpeg)
 
 *Diego Maradona press conference after being caught doping and eventually expelled his final World Cup 1994*
 
-Like its star, Napoli’s was once one of the richest, most vibrant capitals in Europe, until it faced a dramatic downfall that it’s still struggling to recover from. Italy’s unification in 1861 gutted Napoli, moving political power and gold reserves north while the power vacuum was filled by organized crime.
+Like its star, Napoli was once one of the most vibrant capitals in Europe until it faced a dramatic downfall of its own that it’s still struggling to recover from today. To oversimplify it greatly, Italy’s unification in 1861 gutted Napoli, moving political power and gold reserves north while the power vacuum was filled by organized crime.
 
-Coming off the train you need a few breaths to take in the sensory overload. People are stacked on top of each other in narrow winding streets, vendors’ shouts echo, and motorbikes slice wildly through crowds. Once-ornate buildings are covered in graffiti and trash is overflowing from a late night of partying before. Even just crossing the street you need timing, courage, and a little bit of faith to avoid being hit.
+## Napoli
+
+Coming off the train I needed a few deep breaths to take in the sensory overload. People are stacked on top of each other in narrow winding streets, vendors’ shouts echo, and motorbikes slice wildly through crowds. Once-ornate buildings are covered in graffiti and trash is overflowing from a late night of partying. Just crossing the street you need timing, courage, and a little bit of faith to avoid being hit.
 
 ![](/images/uploads/IMG_2289.jpeg)
 
@@ -34,17 +39,37 @@ Coming off the train you need a few breaths to take in the sensory overload. Peo
 
 This city is not for everybody. Your friend who likes to go to wineries or stay in fancy places on the Amalfi coast might not like it, but to me there’s something so attractive about it. It’s the opposite of the sterile new mall cities popping up all over the US that I hate so much (refer to ‘somewhere outside of Denver’).
 
-The locals are resilient and have an infectious pride. They own their resigned sense of humor, a trait needed to survive here - Futtetenne! Forget about it! I was on a street corner in Napoli my first visit and an old timer stopped me while I was eating pizza and complained that I wasn’t drinking a Peroni. “You’ra a man have a beer with your pizza”. What you hear time and time again: “Yeah its the best but if you are coming here for work its the wrong place [Italian hand gesture]”. The job market is really rough. I met someone who works at the airport, has an advanced degree, speaks English, Italian, Spanish, and Chinese, and only makes $900 a month.
+![](/images/uploads/IMG_2594.jpeg)
+
+*A faded Maradona mural*
+
+![](/images/uploads/IMG_2600-1.jpeg)
+
+*Napoli*
+
+The locals are resilient and have an infectious pride. They own their resigned sense of humor, a trait needed to survive here - *Futtetenne! Forget about it!* I was on a street corner in Napoli on my first visit and an old timer stopped me while I was eating pizza and complained that I wasn’t drinking a Peroni. “You’ra a man have a Peroni with your pizza”. People here speak their mind. What you hear time and time again: “Yeah its the best here but if you are coming for work its the wrong place [Italian hand gesture]”. The job market is really rough. I met someone who works at the airport, has an advanced degree, speaks English, Italian, Spanish, and Chinese, and only makes $900 a month.
+
+![](/images/uploads/IMG_2595.jpeg)
+
+*A local fish vendor*
 
 We are staying in a clean and social hostel near the Spanish Quarter. Our dorm consists of a Pole, Canadian, Brazilian, Argentinian, and Mongolian in our room. We go out that night. The nightlife in Napoli consists of thousands of people standing in the street drinking while workers run out delivering drinks.
 
-PHOTOS
+![](/images/uploads/IMG_2588.jpeg)
 
-The power is out at the hostel when we get back and no one is working the desk. It’s eerie. We see people wandering through with phone lights on, it’s eerie. I wake to the lights flicked back on at 4am and the AC blasting freezing air. The Mongolian sees his Polish bunkmate is cold and lays his blanket over him, us comrades must look after each other. The next day T-mo is off to see the pope and I go to a cooking class. It’s led by an enthusiastic Venezuelan-Italian staffer who aims to inspire. He starts, “I have two rules. Wash your hands, one. And two, you DON’T touch the food if you are holding any anger towards anyone. That will ruin the dish”. He makes us chant “I forgive” before we start. Out of nowhere he centers his attention on an increasingly nervous guy from Jersey and goes on a tirade about how he should never yell at women and instead treat them like flowers”. He is a god-fearing man. We don’t eat until 10pm but have a blast, our class closer because of it.
+*Napoli at night*
 
-TAPE PHOTO
+The power is out at the hostel when we get back and no one is working the desk. It’s eerie. We see people wandering through with phone lights on, it’s eerie. I wake to the lights flicked back on at 4am and the AC blasting freezing air. 
 
-Walking with Rick
+![](/images/uploads/IMG_2591.jpeg)
+
+*We attempt to cover the light by taping T-Mo’s shirt to it. It doesn't work*
+
+The Mongolian sees his Polish bunkmate is cold and lays his blanket over him, us comrades must look after each other. The next day T-mo is off to see the pope and I go to a cooking class. It’s led by an enthusiastic Venezuelan-Italian staffer who aims to inspire. He starts, “I have two rules. Wash your hands, one. And two, you DON’T touch the food if you are holding any anger towards anyone. That will ruin the dish”. He makes us chant “I forgive” before we start. Out of nowhere he centers his attention on an increasingly nervous guy from Jersey and goes on a tirade about how he should never yell at women and instead treat them like flowers”. He is a god-fearing man. We don’t eat until 10pm but have a blast, our class closer because of it.
+
+![](/images/uploads/IMG_2603.jpeg)
+
+## Walking with Rick
 
 RICK STEVES PHOTO
 
