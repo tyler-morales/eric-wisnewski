@@ -110,6 +110,8 @@ class PostQuizSourceTests(unittest.TestCase):
         quiz_css = css.split("/* End-of-article quiz", 1)[1].split("article.post-content pre", 1)[0]
         self.assertNotIn(":hover,", quiz_css)
         self.assertNotIn(":hover {", quiz_css)
+        self.assertIn(".post-quiz [hidden]", quiz_css)
+        self.assertIn(".post-quiz-next:not([hidden])", quiz_css)
         self.assertIn(":focus-visible", quiz_css)
         self.assertNotIn("outline-offset: 4px", quiz_css)
         self.assertNotIn("northern-illinois", src)

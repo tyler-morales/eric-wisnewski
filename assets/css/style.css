@@ -1819,6 +1819,11 @@ article.post-content .post-quiz p {
   appearance: none;
 }
 
+/* Author display rules must not beat the hidden attribute (the score hides Next). */
+.post-quiz [hidden] {
+  display: none;
+}
+
 .post-quiz-open,
 .post-quiz-next,
 .post-quiz-retry {
@@ -1828,8 +1833,8 @@ article.post-content .post-quiz p {
   min-height: 2.75rem;
 }
 
-.post-quiz-open,
-.post-quiz-next {
+.post-quiz-open:not([hidden]),
+.post-quiz-next:not([hidden]) {
   display: block;
   width: 100%;
   padding: 0.8rem 1rem;
