@@ -93,7 +93,7 @@ I met so many **real** people here, and as infuriating as the trash and chaos ar
 
 [https://m.youtube.com/watch?v=Cdf6D19Etmc&pp=ygUVTWFyYWRvbmEgd2FybSB1cCBsaWZl&ra=m](https://m.youtube.com/watch?v=Cdf6D19Etmc&pp=ygUVTWFyYWRvbmEgd2FybSB1cCBsaWZl&ra=m)
 
-The hostels front desk worker gives me a warning before I leave 
+Before I leave I get a warning from a hostel staffer:
 
 > “Be careful, time doesn’t exist here”
 
