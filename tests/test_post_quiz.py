@@ -122,6 +122,9 @@ class PostQuizSourceTests(unittest.TestCase):
         self.assertIn('deal: "ninety"', js)
         self.assertIn('bar: "redskin"', js)
         self.assertIn("you've earned a sticker", js)
+        self.assertIn("onStartTap", js)
+        self.assertIn("open.hidden = true", js)
+        self.assertNotIn("panel.hidden = !", js)
         self.assertNotIn("northern-illinois", js)
         self.assertNotIn("ball-state", js)
         self.assertNotIn("answer:", src.lower())
@@ -148,6 +151,14 @@ class PostQuizJsTests(unittest.TestCase):
         self.assertIn("sticker", call_fn("feedbackLine", 3, 3))
         self.assertEqual(call_fn("nextQuizStep", 0, 3, True), {"index": 1, "done": False, "needsAnswer": False})
         self.assertEqual(call_fn("stepLabel", 0, 3), "1/3")
+        self.assertEqual(call_fn("onStartTap", False), {"started": True, "reveal": True})
+
+    def test_second_start_tap_does_not_close_or_reset_failure(self) -> None:
+        self.assertEqual(call_fn("onStartTap", True), {"started": True, "reveal": False})
+        js = QUIZ_JS.read_text(encoding="utf-8")
+        start = js.split("open.addEventListener", 1)[1].split("next.addEventListener", 1)[0]
+        self.assertNotIn("reset()", start)
+        self.assertNotIn('aria-expanded", "false"', start)
 
     def test_partial_and_blank_picks_do_not_pass_failure(self) -> None:
         answers = {"flag": "true", "deal": "ninety", "bar": "redskin"}

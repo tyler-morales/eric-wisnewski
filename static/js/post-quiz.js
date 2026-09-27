@@ -51,6 +51,12 @@ export function stepLabel(index, total) {
   return index + 1 + "/" + total;
 }
 
+// First tap reveals Q1. A later tap does not close or reset; Try again does that.
+export function onStartTap(started) {
+  if (started) return { started: true, reveal: false };
+  return { started: true, reveal: true };
+}
+
 export function readPicks(form, answers) {
   var picks = {};
   Object.keys(answers).forEach(function (key) {
@@ -73,6 +79,7 @@ export function bindQuiz(root, answers) {
   var prize = root.querySelector(".post-quiz-prize");
   var retry = root.querySelector(".post-quiz-retry");
   var index = 0;
+  var started = false;
 
   function paint(i) {
     index = i;
@@ -97,11 +104,13 @@ export function bindQuiz(root, answers) {
   }
 
   open.addEventListener("click", function () {
-    var willOpen = panel.hidden;
-    panel.hidden = !willOpen;
-    open.setAttribute("aria-expanded", willOpen ? "true" : "false");
-    if (!willOpen) return;
-    reset();
+    var tap = onStartTap(started);
+    started = tap.started;
+    if (!tap.reveal) return;
+    panel.hidden = false;
+    open.hidden = true;
+    open.disabled = true;
+    open.setAttribute("aria-expanded", "true");
     var first = steps[0] && steps[0].querySelector("input");
     if (first) first.focus();
   });
