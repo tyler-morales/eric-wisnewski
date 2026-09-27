@@ -99,7 +99,7 @@ The hostels front desk worker gives me a warning before I leave
 
 ## Up Next: *The One-Eyed Man: Schiltz’s Disastrous Trip to Italy*
 
-*Our last night here we wait for the arrival of our dear friend Schiltz. But he never makes it. We get a note he is in the ER. Stay tuned for the full story next time.*
+*We wait for the arrival of our dear friend Schiltz. But he never shows. We get a note he is in the ER. Stay tuned for the full story next time.*
 
 Thanks for reading!
 
