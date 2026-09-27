@@ -11,7 +11,7 @@ country:
 ---
 ## Maradona
 
-To know Napoli you must first understand one of its greatest sons, Diego Maradona. A larger than life figure who personifies the cities highs and lows. The city, like its star, forever has a chip on its shoulder. 
+To know Napoli (Naples) you must first understand one of its greatest sons, Diego Maradona. A larger than life figure who personifies the cities highs and lows. Napoli, like its star, forever has a chip on its shoulder. 
 
 ![](/images/uploads/IMG_1713.jpeg)
 
