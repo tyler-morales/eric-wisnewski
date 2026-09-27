@@ -71,10 +71,13 @@ The Mongolian sees his Polish bunkmate is cold and lays his blanket over him, us
 
 ## Walking with Rick
 
-RICK STEVES PHOTO
+![image.jpeg](/images/uploads/image-8.jpeg)
 
-I recruit a group to do the Rick Steves free self-guided audio tour that Pudlo recommended a while back, and I am hooked. We start a walking tour of the city in a grand mall started in the 1890s that still lies incomplete, now covered in graffiti, netting, and wood boards. We walk through tranquil piazzas, Roman ruins, beautiful churches, all hidden in its maze of streets. Rick Steves is the man. Napoli is a lot, but writing this I want to go back. The front desk worker said it best: “be careful time doesn’t exist here”.
+I recruit a group to do the Rick Steves free self-guided audio tour that Pudlo recommended a while back, and I am hooked. Rick Steves is a national treasure that needs to be protected at all costs. His self guided walking tours are so interesting and they show you things you would never notice (check Rick Steves Audio Europe app). 
 
-That night we await the arrival of our dear friend Schiltz. But he never makes it. We get a note he is in the ER. To mark his harrowing story, stay tuned for a special article next: The One-Eyed Man: Schiltz’s Disastrous Trip to Italy
+We start the city walking tour in a grand mall which started construction in the 1890s and still lies incomplete. It’s covered in graffiti, netting and wood boards. A sad embodiment of the cities potential. We also walk through tranquil piazzas, like piazza Bellini, Roman ruins and see beautiful churches, all hidden in its the maze of Napoli. I met so many real people here, and as infuriating as the trash and chaos is writing this I want to go back here more than anywhere else on the trip. You got to see it for yourself. The hostels front desk worker says it best: “be careful time doesn’t exist here”.
+
+Our last night here we wait for the arrival of our dear friend Schiltz. But he never makes it. We get a note he is in the ER. But that story is for next article: *The One-Eyed Man: Schiltz’s Disastrous Trip to Italy*
 
 -Grady​​​​​​​​​​​​​​​​
+
