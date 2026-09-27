@@ -23,7 +23,7 @@ Maradona, a child prodigy soccer player from the slums of Buenos Aires, Argentin
 
 *Hand of God goal*
 
-But here he is loved for one reason: saving Napoli. At 23 he joined a flailing SSC Napoli and turned the team into a first-time league champion, **making them the first mainland southern Italian club ever to win it**. But as his fame grew his personal life spiraled —  heavy drug use, relationships with organized crime, and family drama eventually led to his suspension and exit from the club as well as a later suspension from the World Cup.
+But here he is loved for one reason: saving Napoli. At 23 he joined a flailing SSC Napoli and turned the team into a first-time league champion, **making them the first mainland southern Italian club ever to win it.** But as his fame grew his personal life spiraled —  heavy drug use, relationships with organized crime, and family drama eventually led to his suspension and exit from the club as well as a later suspension from the World Cup.
 
 ![](/images/uploads/IMG_2564.jpeg)
 
