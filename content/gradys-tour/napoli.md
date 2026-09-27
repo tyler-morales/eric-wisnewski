@@ -8,7 +8,9 @@ draft: true
 ---
 To know Napoli you must understand one of its greatest sons, Diego Maradona, who personifies the highs and lows of the city. A city, like its star, forever has a chip on its shoulder. Maradona, a child prodigy from the slums of Buenos Aires, Argentina, made his professional debut at 15 years old. What he would next made him one of the greatest in history: his hand of god goal, 11 titles including the 1986 World Cup, and being named **co-player of the century** along with Pelé. All of this while he was slowly consumed by addiction and dramatic personal downfalls.
 
-**Video hand of godff**
+[https://m.youtube.com/watch?v=-ccNkksrfls&ra=m](https://m.youtube.com/watch?v=-ccNkksrfls&ra=m)
+
+
 
 At 23 he joined a flailing SSC Napoli and turned the team into first-time league champions, also making them the first mainland southern Italian club ever to win it. But as his fame grew his personal life spiraled — a heavy cocaine addiction, relationships with organized crime, and family drama eventually led to his suspension and exit from the club as well as a later suspension from the World Cup.
 
