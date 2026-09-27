@@ -12,13 +12,13 @@ To know Napoli you must understand one of its greatest sons, Diego Maradona a la
 
 *Napoli is covered in memorabilia, photos and murals of the star who passed away in 2020.* 
 
-Maradona, a child prodigy soccer player from the slums of Buenos Aires, Argentina, became a pro at 15 years old proceeding to lead one of the most prolific careers in history. He is knows for his 11 titles including the 1986 World Cup, being named **co-player of the century** along with Pelé and his controversial *Hand of God* goal. All of this while he was slowly consumed by addiction and dramatic personal downfalls.
+Maradona, a child prodigy soccer player from the slums of Buenos Aires, Argentina, became a pro at 15 years old proceeding to lead one of the most prolific careers in history. He is knows for his 11 titles including the 1986 World Cup, being named **co-player of the century** along with Pelé and his controversial *Hand of God* goal (see below). All of this while he was slowly consumed by off the field battles with addiction and dramatic personal downfalls.
 
 [https://m.youtube.com/watch?v=-ccNkksrfls&ra=m](https://m.youtube.com/watch?v=-ccNkksrfls&ra=m)
 
 *Hand of God goal*
 
-At 23 he joined a flailing SSC Napoli and turned the team into a first-time league champion, making them the first mainland southern Italian club ever to win it. But as his fame grew his personal life spiraled — a heavy cocaine addiction, relationships with organized crime, and family drama eventually led to his suspension and exit from the club as well as a later suspension from the World Cup.
+But here he is loved for one saving Napoli. At 23 he joined a flailing SSC Napoli and turned the team into a first-time league champion, making them the first mainland southern Italian club ever to win it. But as his fame grew his personal life spiraled — a heavy cocaine addiction, relationships with organized crime, and family drama eventually led to his suspension and exit from the club as well as a later suspension from the World Cup.
 
 ![](/images/uploads/IMG_2564.jpeg)
 
