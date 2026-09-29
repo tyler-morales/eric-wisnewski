@@ -32,7 +32,7 @@ const BYPASS_PREFIXES = [
   "/subscribe/manage/",
 ];
 
-const SHELL_ATTR = /(?:href|src)="([^"]+)"/g;
+const SHELL_ATTR = /(?:href|src)\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/gi;
 
 export function cacheKey(input, origin) {
   const raw = typeof input === "string" ? input : input.url;
@@ -112,15 +112,24 @@ export function shellUrlsFromHomeHtml(html) {
   const urls = [];
   const seen = new Set();
   if (!html) return urls;
+  SHELL_ATTR.lastIndex = 0;
   for (const match of html.matchAll(SHELL_ATTR)) {
-    const raw = match[1];
+    const raw = match[1] || match[2] || match[3];
     const keep =
       raw.startsWith("/css/") ||
       raw.startsWith("/js/media.js") ||
-      raw.startsWith("/js/nav-scroll.js");
+      raw.startsWith("/js/nav-scroll.js") ||
+      raw.startsWith("/js/offline.js");
     if (keep && !seen.has(raw)) {
       seen.add(raw);
       urls.push(raw);
+    }
+  }
+  for (const match of html.matchAll(/(?:\\\/|\/)js(?:\\\/|\/)offline\.js\?v=([A-Za-z0-9]+)/g)) {
+    const url = "/js/offline.js?v=" + match[1];
+    if (!seen.has(url)) {
+      seen.add(url);
+      urls.push(url);
     }
   }
   return urls;
@@ -201,6 +210,15 @@ async function matchFirst(cacheStorage, names, key) {
   return undefined;
 }
 
+export function fallbackDocument() {
+  const html =
+    "<!doctype html><html lang=en><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><title>You're offline</title><body><h1>You're offline</h1><p>This page isn't saved on this device.</p><p><a href=/>Back to the home page</a></p></body></html>";
+  return new Response(html, {
+    status: 200,
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
+}
+
 export function createPwa({ version, offlineUrl = "/offline/" } = {}) {
   const shellName = "ericwiz-shell-" + (version || "dev");
   return {
@@ -219,14 +237,24 @@ export function createPwa({ version, offlineUrl = "/offline/" } = {}) {
       const urls = [cacheKey("/", base), ...SHELL_FILES, ...shellUrlsFromHomeHtml(html)];
       const seen = new Set();
       const bodies = new Map([[cacheKey("/", base), home]]);
+      const required = new Set(["/", offlineUrl]);
       for (const url of urls) {
         const key = cacheKey(url, base);
         if (seen.has(key)) continue;
         seen.add(key);
         let response = bodies.get(key);
-        if (!response) response = await fetchImpl(url);
-        if (!response || response.status !== 200) throw new Error("precache failed: " + key);
-        if (!canStore(response)) throw new Error("precache failed: " + key);
+        if (!response) {
+          try {
+            response = await fetchImpl(url);
+          } catch (err) {
+            if (required.has(key)) throw new Error("precache failed: " + key);
+            continue;
+          }
+        }
+        if (!response || response.status !== 200 || !canStore(response)) {
+          if (required.has(key)) throw new Error("precache failed: " + key);
+          continue;
+        }
         const make = await snapshot(response.clone ? response.clone() : response);
         await shell.put(key, make());
         await assets.put(key, make());
@@ -345,6 +373,8 @@ export function createPwa({ version, offlineUrl = "/offline/" } = {}) {
           const offline = await matchFirst(cacheStorage, [shellName, ASSETS_CACHE], cacheKey(offlineUrl, origin));
           if (offline && noteOffline) noteOffline();
           if (offline) return offline;
+          if (noteOffline) noteOffline();
+          return fallbackDocument();
         }
         throw err;
       }
@@ -373,7 +403,20 @@ if (inWorker) {
     const data = event.data;
     if (!data) return;
     if (data.type === "prefetch-recent") {
-      event.waitUntil(pwa.prefetchRecent(caches, (input) => fetch(input), self.location.origin));
+      event.waitUntil(
+        pwa.prefetchRecent(caches, (input) => fetch(input), self.location.origin).then((result) => {
+          self._packReady = !!(result && result.ok);
+          return self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+            list.forEach((client) => {
+              client.postMessage({ type: "offline-ready", ok: self._packReady });
+            });
+          });
+        })
+      );
+      return;
+    }
+    if (data.type === "offline-ready-query" && event.source) {
+      event.source.postMessage({ type: "offline-ready", ok: !!self._packReady });
       return;
     }
     if (data.type === "offline-nav" && event.source) {
@@ -396,6 +439,11 @@ if (inWorker) {
         noteOnline() {
           if (id) offlineClients.delete(id);
         },
+      }).catch(() => {
+        if (event.request.mode === "navigate" || event.request.destination === "document") {
+          return fallbackDocument();
+        }
+        return new Response("", { status: 504, statusText: "Offline" });
       })
     );
   });

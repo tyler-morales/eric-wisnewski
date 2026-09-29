@@ -1,3 +1,4 @@
+export var READY_COPY = "Ready offline";
 export var BANNER_COPY = "You're offline — reading cached pages.";
 export var COMMENTS_COPY = "Comments need a connection.";
 export var LIKES_COPY = "Likes unavailable offline.";
@@ -8,6 +9,7 @@ export var POST_COPY = "This post needs a connection.";
 export var MAP_COPY = "This map needs a connection.";
 export var GLOBE_COPY = "The globe needs a connection.";
 export var DISMISS_KEY = "ericwiz-offline-dismissed";
+export var READY_DISMISS_KEY = "ericwiz-ready-dismissed";
 
 var SERVED_FLAG = "ericwizServedOffline";
 
@@ -30,6 +32,13 @@ export function isNetworkFailure(err) {
   if (err.name === "TypeError" || err.name === "NetworkError") return true;
   var msg = String(err.message || "");
   return /failed to fetch|networkerror|load failed|internet connection appears to be offline/i.test(msg);
+}
+
+export function shouldShowReady(state) {
+  if (!state || !state.ready || state.dismissed || state.offline) return false;
+  var path = state.path || "";
+  if (path === "/offline" || path === "/offline/") return false;
+  return true;
 }
 
 export function shouldShowOfflineBanner(state) {
@@ -64,6 +73,20 @@ function dismissed() {
   } catch (err) {
     return false;
   }
+}
+
+function readyDismissed() {
+  try {
+    return sessionStorage.getItem(READY_DISMISS_KEY) === "1";
+  } catch (err) {
+    return false;
+  }
+}
+
+function rememberReadyDismiss() {
+  try {
+    sessionStorage.setItem(READY_DISMISS_KEY, "1");
+  } catch (err) {}
 }
 
 function rememberDismiss() {
@@ -126,6 +149,45 @@ function bannerState(doc) {
   };
 }
 
+var packReady = false;
+
+function renderReady(doc) {
+  var banner = doc.getElementById("offline-banner");
+  var offlineVisible = !!(banner && !banner.hidden);
+  var show = shouldShowReady({
+    ready: packReady,
+    dismissed: readyDismissed(),
+    offline: isOffline() || offlineVisible,
+    path: typeof location === "undefined" ? "" : location.pathname,
+  });
+  var chip = doc.getElementById("offline-ready");
+  if (!show) {
+    if (chip) chip.hidden = true;
+    return;
+  }
+  if (!chip) {
+    chip = doc.createElement("div");
+    chip.id = "offline-ready";
+    chip.className = "offline-banner";
+    chip.setAttribute("role", "status");
+    var text = doc.createElement("p");
+    text.textContent = READY_COPY;
+    var button = doc.createElement("button");
+    button.type = "button";
+    button.textContent = "Dismiss";
+    button.addEventListener("click", function () {
+      rememberReadyDismiss();
+      renderReady(doc);
+    });
+    chip.appendChild(text);
+    chip.appendChild(button);
+    var header = doc.querySelector(".site-header");
+    if (header && header.parentNode) header.parentNode.insertBefore(chip, header.nextSibling);
+    else doc.body.appendChild(chip);
+  }
+  chip.hidden = false;
+}
+
 function renderBanner(doc) {
   var show = shouldShowOfflineBanner(bannerState(doc));
   var banner = doc.getElementById("offline-banner");
@@ -158,6 +220,7 @@ function renderBanner(doc) {
 
 function refresh(doc, offline) {
   renderBanner(doc);
+  renderReady(doc);
   softenEmbeds(doc);
   dispatch(offline);
 }
@@ -183,12 +246,20 @@ export function startOfflineUx(doc) {
   if (navigator.serviceWorker) {
     navigator.serviceWorker.addEventListener("message", function (event) {
       var data = event.data;
-      if (!data || data.type !== "offline-nav" || !data.offline) return;
+      if (!data) return;
+      if (data.type === "offline-ready") {
+        packReady = !!data.ok;
+        renderReady(root);
+        return;
+      }
+      if (data.type !== "offline-nav" || !data.offline) return;
       markServedFromCache(true);
       sync(true);
     });
     navigator.serviceWorker.ready.then(function (reg) {
-      if (reg.active) reg.active.postMessage({ type: "offline-nav" });
+      if (!reg.active) return;
+      reg.active.postMessage({ type: "offline-nav" });
+      reg.active.postMessage({ type: "offline-ready-query" });
     }).catch(function () {});
   }
 

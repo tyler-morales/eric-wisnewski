@@ -53,6 +53,7 @@ const homeHtml = [
   '<script type="module" src="/js/media.js?v=aaa"></script>',
   '<script type="module" src="/js/nav-scroll.js?v=bbb"></script>',
   '<script type="module" src="/js/comments.js?v=ccc"></script>',
+  'import { startOfflineUx } from "\\/js\\/offline.js?v=abc";',
 ].join("");
 
 const files = {
@@ -156,6 +157,9 @@ pwa.handle = function (request, opts) {
 await pwa.install(caches, fetchImpl, origin);
 
 const shellUrls = shellUrlsFromHomeHtml(homeHtml);
+const bareShell = shellUrlsFromHomeHtml(
+  "<link rel=stylesheet href=/css/style.min.abc.css><script src=/js/media.js?v=aaa></script>"
+);
 offline = true;
 const cssOffline = await (await pwa.handle(
   new Request(origin + "/css/style.min.abc.css"),
@@ -210,6 +214,13 @@ let claimed = false;
 await pwa.activate(caches, async () => { claimed = true; });
 offline = true;
 const stillOffline = await (await pwa.handle(doc("/posts/hello/"), { cacheStorage: caches, fetchImpl, origin })).text();
+const emptyCaches = new MemoryCaches();
+let bareOffline = "threw";
+try {
+  bareOffline = await (await pwa.handle(doc("/nope/"), { cacheStorage: emptyCaches, fetchImpl, origin })).text();
+} catch (err) {
+  bareOffline = "threw";
+}
 
 const stored = caches.dump();
 const allKeys = Object.values(stored).flat();
@@ -232,6 +243,7 @@ console.log(JSON.stringify({
     image: plan("/images/pic.jpg"),
   },
   shellUrls,
+  bareShell,
   cssOffline,
   visitedOnline,
   after500,
@@ -250,6 +262,7 @@ console.log(JSON.stringify({
   oldShell: stored["ericwiz-shell-old"] !== undefined,
   offlineNotes,
   onlineNotes,
+  bareOffline,
 }));
 """
 
@@ -265,7 +278,9 @@ class PwaLogicTests(unittest.TestCase):
         self.assertEqual(report["plans"]["page"], "network-first-page")
         self.assertEqual(report["visitedOnline"], "v1")
         self.assertEqual(report["visitedOffline"], "v1")
-        self.assertEqual(report["offlineNotes"], 4)
+        self.assertEqual(report["offlineNotes"], 5)
+        self.assertIn("You're offline", report["bareOffline"])
+        self.assertNotEqual(report["bareOffline"], "threw")
         self.assertEqual(report["onlineNotes"], 2)
         self.assertEqual(report["stillOffline"], "v1")
         self.assertIn("style.min.abc.css", report["homeOffline"])
@@ -306,8 +321,9 @@ class PwaLogicTests(unittest.TestCase):
         self.assertFalse(self.report["hugeCached"])
         self.assertEqual(
             self.report["shellUrls"],
-            ["/css/style.min.abc.css", "/js/media.js?v=aaa", "/js/nav-scroll.js?v=bbb"],
+            ["/css/style.min.abc.css", "/js/media.js?v=aaa", "/js/nav-scroll.js?v=bbb", "/js/offline.js?v=abc"],
         )
+        self.assertEqual(self.report["bareShell"], ["/css/style.min.abc.css", "/js/media.js?v=aaa"])
         self.assertNotIn("/js/comments.js?v=ccc", self.report["shellUrls"])
 
     def test_install_fails_when_shell_file_is_missing_failure(self) -> None:
@@ -540,7 +556,8 @@ class PwaAssetTests(unittest.TestCase):
         self.assertIn("/sw.js", base)
         self.assertIn("prefetch-recent", base)
         self.assertIn("requestIdleCallback", base)
-        self.assertIn('printf "%s-3"', base)
+        self.assertIn('printf "%s-4"', base)
+        self.assertIn("offline-ready", SW_JS.read_text(encoding="utf-8"))
         self.assertIn("startOfflineUx", base)
         self.assertIn("/js/offline.js", base)
         offline = OFFLINE_LAYOUT.read_text(encoding="utf-8")
@@ -575,6 +592,7 @@ class PwaAssetTests(unittest.TestCase):
 OFFLINE_JS = """
 import {
   shouldShowOfflineBanner,
+  shouldShowReady,
   isNetworkFailure,
   youtubeWatchUrl,
   BANNER_COPY,
@@ -588,6 +606,9 @@ console.log(JSON.stringify({
   comments: COMMENTS_COPY,
   likes: LIKES_COPY,
   newsletter: NEWSLETTER_COPY,
+  ready: shouldShowReady({ ready: true, offline: false, dismissed: false, path: "/" }),
+  readyOffline: shouldShowReady({ ready: true, offline: true, dismissed: false, path: "/" }),
+  readyDismissed: shouldShowReady({ ready: true, offline: false, dismissed: true, path: "/" }),
   cached: shouldShowOfflineBanner({ onLine: true, servedFromCache: true, path: "/gradys-tour/day-5-7/", dismissed: false }),
   radioOff: shouldShowOfflineBanner({ onLine: false, servedFromCache: false, path: "/", dismissed: false }),
   online: shouldShowOfflineBanner({ onLine: true, servedFromCache: false, path: "/", dismissed: false }),
@@ -616,12 +637,15 @@ class PwaOfflineUxTests(unittest.TestCase):
         self.assertEqual(report["newsletter"], "Newsletter signup needs the internet.")
         self.assertTrue(report["cached"])
         self.assertTrue(report["radioOff"])
+        self.assertTrue(report["ready"])
         self.assertTrue(report["fetchFailed"])
         self.assertEqual(report["watch"], "https://www.youtube.com/watch?v=abcdefghijk")
 
     def test_banner_stays_hidden_online_and_validation_is_not_a_network_failure_failure(self) -> None:
         report = self.report
         self.assertFalse(report["online"])
+        self.assertFalse(report["readyOffline"])
+        self.assertFalse(report["readyDismissed"])
         self.assertFalse(report["dismissed"])
         self.assertFalse(report["fallbackPage"])
         self.assertFalse(report["substituted"])
@@ -733,6 +757,9 @@ class PwaBuildTests(unittest.TestCase):
         self.assertIn('rel="manifest"', home)
         self.assertIn('href="/manifest.webmanifest"', home)
         self.assertNotIn("https://ericwisnewski.com/manifest.webmanifest", home)
+        self.assertIn('href="/gradys-tour/rome/"', home)
+        self.assertNotIn('href="https://ericwisnewski.com/gradys-tour/rome/"', home)
+        self.assertIn('href="/"', home)
         self.assertIn('name="theme-color" content="#ffffff"', home)
         self.assertIn("serviceWorker.register", home)
         self.assertIn("/sw.js?v=", home)

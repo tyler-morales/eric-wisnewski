@@ -1,8 +1,8 @@
 <header class="site-header" role="banner">
   {{ if .IsHome }}
-  <h1 class="brand-name"><a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a></h1>
+  <h1 class="brand-name"><a href="{{ "/" | relURL }}">{{ .Site.Title }}</a></h1>
   {{ else }}
-  <p class="brand-name"><a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a></p>
+  <p class="brand-name"><a href="{{ "/" | relURL }}">{{ .Site.Title }}</a></p>
   {{ end }}
   <nav class="site-nav" aria-label="Main navigation">
     <ul role="list">

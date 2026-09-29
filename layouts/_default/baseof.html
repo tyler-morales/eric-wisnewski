@@ -13,8 +13,8 @@
     {{ $mediaHash := md5 (readFile "static/js/media.js") }}
     <script type="module" src="{{ $mediaJS }}?v={{ $mediaHash }}"></script>
     {{ if not (or (eq .Type "admin") (eq .Type "add-photos")) }}
-    {{/* Bump the "-3" when static/sw.js behavior changes so the shell cache name moves. */}}
-    {{ $swVersion := printf "%s-3" $style.Data.Integrity }}
+    {{/* Bump the "-4" when static/sw.js behavior changes so the shell cache name moves. */}}
+    {{ $swVersion := printf "%s-4" $style.Data.Integrity }}
     {{ $swJS := "/sw.js" | relURL }}
     {{ $offlineJS := "/js/offline.js" | relURL }}
     {{ $offlineHash := md5 (readFile "static/js/offline.js") }}
