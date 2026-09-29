@@ -105,7 +105,7 @@ Content and media are edited via **Pages CMS**. Eric signs in with **email** (ma
 Technical SEO here is crawl/index basics, not a ranking plugin.
 
 - **`404.html`:** Hugo builds `layouts/404.html` to `public/404.html`. Cloudflare Pages then returns a real 404 for missing paths instead of serving the homepage (`200` soft 404).
-- **`robots.txt`:** `enableRobotsTXT = true` plus `layouts/robots.txt`. Allows the site, disallows `/admin/`, `/add-photos/`, and `/subscribe/manage/`, and points crawlers at `https://ericwisnewski.com/sitemap.xml`. After deploy, the response should end with a `Sitemap:` line (Cloudflare may prepend managed AI-bot rules). If `/robots.txt` returns homepage HTML, the build did not ship `robots.txt`.
+- **`robots.txt`:** `enableRobotsTXT = true` plus `layouts/robots.txt`. Allows the site, disallows `/admin/`, `/add-photos/`, `/subscribe/manage/`, and `/offline/`, and points crawlers at `https://ericwisnewski.com/sitemap.xml`. After deploy, the response should end with a `Sitemap:` line (Cloudflare may prepend managed AI-bot rules). If `/robots.txt` returns homepage HTML, the build did not ship `robots.txt`.
 - **Sitemap:** Hugo’s default `sitemap.xml` lists public pages. Admin, add-photos, Updates (list never), and subscribe utilities stay out via `build.list = never`. Live `/sitemap.xml` should return `200`.
 - **Meta description:** Every page gets `<meta name="description">` (plain text, truncated to ~170 characters) from the site description, page summary, or author bio. Home `params.description` is the lifelong Division I / friends copy — not “personal site and blog,” and it is **not** shown as body text on the homepage. Without this tag, Google invents a snippet from nav or the subscribe form.
 - **JSON-LD:** `layouts/partials/json-ld.html` adds `WebSite` (home), `BlogPosting` (posts / Grady / Tad / Jeremy), and `Person` (author pages). The home `WebSite` lists each main-nav landing as `hasPart` (`WebPage` or `CollectionPage`, same Tad/Jeremy gates as the header). Those landings also emit their own `WebPage`/`CollectionPage` with `isPartOf` the site. No `SearchAction` (no site search).
@@ -219,6 +219,30 @@ Every page includes a short footer from `layouts/partials/footer.html` (wired in
 Once published, `/updates/` is footer-only (not in the main nav). It reads like a product changelog: notes are grouped by day, newest first, with the date in a rail beside each entry. The feed shows each note’s **Summary**; the full note lives at `/updates/<slug>/` (pinned in `[permalinks]`). Notes are not blog posts, have no comments or subscribe form, and never appear on the home page (`build.list = 'local'`).
 
 Add one in Pages CMS under **Site updates** (or as markdown in `content/updates/`) with `title`, `slug`, `date`, `summary`, an optional `image`, and a body that adds detail the summary does not. Write for readers, not developers — `tests/test_updates.py` fails the build if a note uses tooling words.
+
+## Install as an app (PWA)
+
+The public site is an installable web app. Chrome and Android use `static/manifest.webmanifest` (name **Eric Wisnewski**, short name **Ericwiz**, `display: standalone`, white theme and background to match the page). Icons are the existing portrait favicon plus `static/icons/icon-192.png` and `icon-512.png` scaled from `apple-touch-icon.png`. iOS Add to Home Screen uses the apple touch icon and the apple web-app meta tags in `layouts/partials/head.html`.
+
+`static/sw.js` registers from `layouts/_default/baseof.html` on every public page (`/sw.js?v=<css integrity>-1`, module worker, scope `/`). It does **not** register on `/admin/` or `/add-photos/`. Bump the `-1` in `baseof.html` when the worker’s behavior changes.
+
+**Works offline**
+
+- The app shell: home page, CSS, `media.js`, `nav-scroll.js`, favicons, manifest, and `/offline/`.
+- HTML pages you already opened on this device, including their same-origin images and other static files (cached on that visit).
+- A page you have never opened shows `/offline/` instead of a blank error.
+
+**Does not work offline**
+
+- Anything under `/api/` (comments, likes, newsletter signup, subscribe manage). Those requests are network-only and are not cached.
+- `/admin/`, `/add-photos/`, and `/subscribe/manage/` (network-only).
+- A post, photo, or audio file this device has never opened. Audio/video byte ranges are not cached. Files larger than 8MB are not stored.
+- The Grady’s Tour globe (`d3` loads from jsDelivr), YouTube and X embeds, Turnstile, and Umami.
+- Fresh posts published after the last online visit.
+
+Visited pages stay in the `ericwiz-pages` cache across deploys. A new CSS build (or a bumped worker suffix) replaces the `ericwiz-shell-*` precache and calls `skipWaiting` / `clients.claim`. Cloudflare Pages’ default `Cache-Control: public, max-age=0, must-revalidate` on `sw.js` is repeated in `static/_headers` so the browser can see a new worker.
+
+Local check: `hugo server`, open the site, Application → Manifest / Service Workers. Tests: `python3 -m unittest tests.test_pwa`.
 
 ## Tech notes
 

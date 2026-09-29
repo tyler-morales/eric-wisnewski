@@ -3,5 +3,6 @@ Allow: /
 Disallow: /admin/
 Disallow: /add-photos/
 Disallow: /subscribe/manage/
+Disallow: /offline/
 
 Sitemap: {{ site.BaseURL }}sitemap.xml

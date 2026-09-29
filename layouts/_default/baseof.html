@@ -12,5 +12,15 @@
     {{ $mediaJS := "/js/media.js" | relURL }}
     {{ $mediaHash := md5 (readFile "static/js/media.js") }}
     <script type="module" src="{{ $mediaJS }}?v={{ $mediaHash }}"></script>
+    {{ if not (or (eq .Type "admin") (eq .Type "add-photos")) }}
+    {{/* Bump the "-1" when static/sw.js behavior changes so the shell cache name moves. */}}
+    {{ $swVersion := printf "%s-1" $style.Data.Integrity }}
+    {{ $swJS := "/sw.js" | relURL }}
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("{{ $swJS }}?v={{ $swVersion | urlquery }}", { scope: "/", type: "module" });
+      }
+    </script>
+    {{ end }}
   </body>
 </html>
