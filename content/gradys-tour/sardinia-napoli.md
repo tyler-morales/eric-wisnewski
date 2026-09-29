@@ -9,6 +9,7 @@ image: /images/uploads/IMG_2430.jpeg
 country:
   - Italy
 audio_upload: /audio/uploads/Calzone.m4a
+quiz: true
 ---
 ## Sardinia
 

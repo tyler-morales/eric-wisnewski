@@ -1801,6 +1801,176 @@ article.post-content p:has(> .media-frame:only-child)+p:has(> i:only-child) {
   margin-bottom: 1.1em;
 }
 
+/* End-of-article quiz. One question at a time. Light rules, no stacked black boxes. */
+article.post-content .post-quiz {
+  margin: 1.75rem 0 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+article.post-content .post-quiz p {
+  margin: 0 0 0.75rem;
+  text-wrap: pretty;
+}
+
+.post-quiz button {
+  box-shadow: none;
+  appearance: none;
+}
+
+/* Author display rules must not beat the hidden attribute (the score hides Next). */
+.post-quiz [hidden] {
+  display: none;
+}
+
+.post-quiz-open,
+.post-quiz-next {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 2.75rem;
+}
+
+.post-quiz-open:not([hidden]),
+.post-quiz-next:not([hidden]) {
+  display: block;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* Focus ring only. A sticky hover outline on phones sat under the score like a second border. */
+.post-quiz-open:focus-visible,
+.post-quiz-next:focus-visible,
+.post-quiz input:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+}
+
+.post-quiz-panel:not([hidden]) {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e4e4e4;
+}
+
+.post-quiz-progress {
+  margin: 0 0 0.65rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.post-quiz-lede,
+.post-quiz-note,
+.post-quiz-need {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.post-quiz-q {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  min-inline-size: 0;
+}
+
+article.post-content .post-quiz-q legend {
+  float: none;
+  width: 100%;
+  margin: 0 0 0.35rem;
+  padding: 0;
+  font-weight: 600;
+}
+
+.post-quiz-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0;
+  cursor: pointer;
+}
+
+.post-quiz-option input {
+  flex: 0 0 auto;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0.2rem 0 0;
+  accent-color: #000;
+}
+
+.post-quiz-result {
+  margin: 1rem 0 0;
+}
+
+.post-quiz-result:focus {
+  outline: none;
+}
+
+.post-quiz-result:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+}
+
+.post-quiz-score {
+  margin: 0 0 0.35rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.post-quiz-prize {
+  margin-top: 0.75rem;
+}
+
+.post-quiz-prize-copy {
+  font-weight: 600;
+}
+
+.post-quiz-prize label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.post-quiz-prize input {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.6rem;
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--text-muted);
+  background: #f6f6f6;
+  border: 1px solid #e4e4e4;
+  border-radius: 0.25rem;
+}
+
+.post-quiz-prize button[disabled],
+.post-quiz-prize input:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.post-quiz-prize button[disabled] {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: #f6f6f6;
+  border: 1px solid #e4e4e4;
+  border-radius: 0.25rem;
+}
+
 article.post-content pre {
   margin: 1.25em 0;
   overflow-x: auto;
