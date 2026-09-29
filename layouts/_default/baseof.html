@@ -13,9 +13,15 @@
     {{ $mediaHash := md5 (readFile "static/js/media.js") }}
     <script type="module" src="{{ $mediaJS }}?v={{ $mediaHash }}"></script>
     {{ if not (or (eq .Type "admin") (eq .Type "add-photos")) }}
-    {{/* Bump the "-2" when static/sw.js behavior changes so the shell cache name moves. */}}
-    {{ $swVersion := printf "%s-2" $style.Data.Integrity }}
+    {{/* Bump the "-3" when static/sw.js behavior changes so the shell cache name moves. */}}
+    {{ $swVersion := printf "%s-3" $style.Data.Integrity }}
     {{ $swJS := "/sw.js" | relURL }}
+    {{ $offlineJS := "/js/offline.js" | relURL }}
+    {{ $offlineHash := md5 (readFile "static/js/offline.js") }}
+    <script type="module">
+      import { startOfflineUx } from "{{ $offlineJS }}?v={{ $offlineHash }}";
+      startOfflineUx();
+    </script>
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("{{ $swJS }}?v={{ $swVersion | urlquery }}", { scope: "/", type: "module" }).then(function () {

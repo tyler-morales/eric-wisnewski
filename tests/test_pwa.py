@@ -144,6 +144,15 @@ function plan(path, extra) {
 
 const caches = new MemoryCaches();
 const pwa = createPwa({ version: "sha256-test-1" });
+let offlineNotes = 0;
+let onlineNotes = 0;
+const handlePage = pwa.handle.bind(pwa);
+pwa.handle = function (request, opts) {
+  return handlePage(request, Object.assign({
+    noteOffline: function () { offlineNotes += 1; },
+    noteOnline: function () { onlineNotes += 1; },
+  }, opts));
+};
 await pwa.install(caches, fetchImpl, origin);
 
 const shellUrls = shellUrlsFromHomeHtml(homeHtml);
@@ -239,6 +248,8 @@ console.log(JSON.stringify({
   apiCached: allKeys.some((key) => key.startsWith("/api/")),
   hugeCached: allKeys.includes("/images/huge.jpg"),
   oldShell: stored["ericwiz-shell-old"] !== undefined,
+  offlineNotes,
+  onlineNotes,
 }));
 """
 
@@ -254,6 +265,8 @@ class PwaLogicTests(unittest.TestCase):
         self.assertEqual(report["plans"]["page"], "network-first-page")
         self.assertEqual(report["visitedOnline"], "v1")
         self.assertEqual(report["visitedOffline"], "v1")
+        self.assertEqual(report["offlineNotes"], 4)
+        self.assertEqual(report["onlineNotes"], 2)
         self.assertEqual(report["stillOffline"], "v1")
         self.assertIn("style.min.abc.css", report["homeOffline"])
         self.assertEqual(report["cssOffline"], "css-body")
@@ -527,9 +540,13 @@ class PwaAssetTests(unittest.TestCase):
         self.assertIn("/sw.js", base)
         self.assertIn("prefetch-recent", base)
         self.assertIn("requestIdleCallback", base)
-        self.assertIn('printf "%s-2"', base)
+        self.assertIn('printf "%s-3"', base)
+        self.assertIn("startOfflineUx", base)
+        self.assertIn("/js/offline.js", base)
         offline = OFFLINE_LAYOUT.read_text(encoding="utf-8")
-        self.assertIn("You are offline", offline)
+        self.assertIn("You're offline", offline)
+        self.assertIn("isn't saved on this device", offline)
+        self.assertIn("data-offline-page", offline)
         self.assertIn("header.html", offline)
         self.assertIn("<h1>", offline)
         self.assertIn('href="{{ "/" | relURL }}"', offline)
@@ -550,7 +567,66 @@ class PwaAssetTests(unittest.TestCase):
         self.assertNotIn('"/api/"', source.split("SHELL_FILES", 1)[1].split("];", 1)[0])
         self.assertIn("skipWaiting", source)
         self.assertIn("clients.claim", source)
+        self.assertIn("offline-nav", source)
+        self.assertIn("noteOffline", source)
         self.assertIn("ericwiz-pages", source)
+
+
+OFFLINE_JS = """
+import {
+  shouldShowOfflineBanner,
+  isNetworkFailure,
+  youtubeWatchUrl,
+  BANNER_COPY,
+  COMMENTS_COPY,
+  LIKES_COPY,
+  NEWSLETTER_COPY,
+} from "__OFFLINE__";
+
+console.log(JSON.stringify({
+  banner: BANNER_COPY,
+  comments: COMMENTS_COPY,
+  likes: LIKES_COPY,
+  newsletter: NEWSLETTER_COPY,
+  cached: shouldShowOfflineBanner({ onLine: true, servedFromCache: true, path: "/gradys-tour/day-5-7/", dismissed: false }),
+  radioOff: shouldShowOfflineBanner({ onLine: false, servedFromCache: false, path: "/", dismissed: false }),
+  online: shouldShowOfflineBanner({ onLine: true, servedFromCache: false, path: "/", dismissed: false }),
+  dismissed: shouldShowOfflineBanner({ onLine: false, path: "/posts/hello/", dismissed: true }),
+  fallbackPage: shouldShowOfflineBanner({ onLine: false, path: "/offline/", dismissed: false }),
+  substituted: shouldShowOfflineBanner({ onLine: false, path: "/posts/missing/", offlinePage: true, dismissed: false }),
+  fetchFailed: isNetworkFailure(new TypeError("Failed to fetch")),
+  validation: isNetworkFailure(new Error("Please fill in your name and comment.")),
+  watch: youtubeWatchUrl("https://www.youtube-nocookie.com/embed/abcdefghijk"),
+  watchMissing: youtubeWatchUrl(""),
+}));
+"""
+
+
+class PwaOfflineUxTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        script = OFFLINE_JS.replace("__OFFLINE__", (REPO_ROOT / "static" / "js" / "offline.js").as_uri())
+        cls.report = run_node(script)
+
+    def test_banner_shows_while_reading_cached_pages_success(self) -> None:
+        report = self.report
+        self.assertEqual(report["banner"], "You're offline — reading cached pages.")
+        self.assertEqual(report["comments"], "Comments need a connection.")
+        self.assertEqual(report["likes"], "Likes unavailable offline.")
+        self.assertEqual(report["newsletter"], "Newsletter signup needs the internet.")
+        self.assertTrue(report["cached"])
+        self.assertTrue(report["radioOff"])
+        self.assertTrue(report["fetchFailed"])
+        self.assertEqual(report["watch"], "https://www.youtube.com/watch?v=abcdefghijk")
+
+    def test_banner_stays_hidden_online_and_validation_is_not_a_network_failure_failure(self) -> None:
+        report = self.report
+        self.assertFalse(report["online"])
+        self.assertFalse(report["dismissed"])
+        self.assertFalse(report["fallbackPage"])
+        self.assertFalse(report["substituted"])
+        self.assertFalse(report["validation"])
+        self.assertEqual(report["watchMissing"], "")
 
 
 class PwaBuildTests(unittest.TestCase):
@@ -664,8 +740,11 @@ class PwaBuildTests(unittest.TestCase):
         self.assertIn("requestIdleCallback", home)
         self.assertIn("prefetch-recent", home)
         self.assertNotIn("prefetch-recent", admin)
-        self.assertIn("You are offline", offline)
-        self.assertIn("Pages you already opened still work", offline)
+        self.assertIn("You're offline", offline)
+        self.assertIn("This page isn't saved on this device.", offline)
+        self.assertIn("latest posts saved while you were online", offline)
+        self.assertIn("startOfflineUx", offline)
+        self.assertIn("offline.js", offline)
         self.assertIn('href="/"', offline)
         self.assertNotIn("Get email when new posts go up", offline)
         self.assertIn("serviceWorker.register", offline)

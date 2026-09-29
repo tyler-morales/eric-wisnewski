@@ -312,7 +312,7 @@ export function createPwa({ version, offlineUrl = "/offline/" } = {}) {
       if (claim) await claim();
     },
 
-    async handle(request, { cacheStorage, fetchImpl, origin }) {
+    async handle(request, { cacheStorage, fetchImpl, origin, noteOffline, noteOnline }) {
       const plan = cachePlan(request, origin);
       if (plan === "network-only") return fetchImpl(request);
 
@@ -333,12 +333,17 @@ export function createPwa({ version, offlineUrl = "/offline/" } = {}) {
         if (canStore(response)) {
           await store(await cacheStorage.open(cacheName), key, response);
         }
+        if (plan === "network-first-page" && noteOnline) noteOnline();
         return response;
       } catch (err) {
         const cached = await matchFirst(cacheStorage, [cacheName, shellName], key);
-        if (cached) return cached;
+        if (cached) {
+          if (plan === "network-first-page" && noteOffline) noteOffline();
+          return cached;
+        }
         if (plan === "network-first-page") {
           const offline = await matchFirst(cacheStorage, [shellName, ASSETS_CACHE], cacheKey(offlineUrl, origin));
+          if (offline && noteOffline) noteOffline();
           if (offline) return offline;
         }
         throw err;
@@ -355,6 +360,7 @@ const inWorker =
 if (inWorker) {
   const version = new URL(self.location.href).searchParams.get("v") || "dev";
   const pwa = createPwa({ version });
+  const offlineClients = new Set();
   self.addEventListener("install", (event) => {
     event.waitUntil(
       pwa.install(caches, (input) => fetch(input), self.location.origin).then(() => self.skipWaiting())
@@ -364,15 +370,32 @@ if (inWorker) {
     event.waitUntil(pwa.activate(caches, () => self.clients.claim()));
   });
   self.addEventListener("message", (event) => {
-    if (!event.data || event.data.type !== "prefetch-recent") return;
-    event.waitUntil(pwa.prefetchRecent(caches, (input) => fetch(input), self.location.origin));
+    const data = event.data;
+    if (!data) return;
+    if (data.type === "prefetch-recent") {
+      event.waitUntil(pwa.prefetchRecent(caches, (input) => fetch(input), self.location.origin));
+      return;
+    }
+    if (data.type === "offline-nav" && event.source) {
+      event.source.postMessage({
+        type: "offline-nav",
+        offline: offlineClients.has(event.source.id),
+      });
+    }
   });
   self.addEventListener("fetch", (event) => {
+    const id = event.resultingClientId || event.clientId || "";
     event.respondWith(
       pwa.handle(event.request, {
         cacheStorage: caches,
         fetchImpl: (input) => fetch(input),
         origin: self.location.origin,
+        noteOffline() {
+          if (id) offlineClients.add(id);
+        },
+        noteOnline() {
+          if (id) offlineClients.delete(id);
+        },
       })
     );
   });

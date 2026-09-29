@@ -1,3 +1,5 @@
+import { MANAGE_COPY, NEWSLETTER_COPY, isNetworkFailure, isOffline, onConnection } from './offline.js';
+
 export const PENDING_EMAIL_KEY = 'subscribe_pending_email';
 export const CONFIRMED_KEY = 'subscribe_confirmed';
 export const SAVED_LISTS_KEY = 'subscribe_lists';
@@ -361,15 +363,42 @@ function initSignup() {
     });
   }
 
-  try {
-    if (typeof turnstile !== 'undefined' && turnstile.ready) {
-      turnstile.ready(renderTurnstile);
-    } else {
-      window.addEventListener('load', function () {
-        setTimeout(renderTurnstile, 100);
-      });
-    }
-  } catch (_) { }
+  var mutedForOffline = false;
+
+  function setSignupEnabled(enabled) {
+    var controls = formEl.querySelectorAll('input, button');
+    var i;
+    for (i = 0; i < controls.length; i++) controls[i].disabled = !enabled;
+    var widget = document.getElementById('subscribe-turnstile-container');
+    if (widget) widget.hidden = !enabled;
+  }
+
+  function muteSignup() {
+    if (nextEl && !nextEl.hidden) return;
+    mutedForOffline = true;
+    showStatus(statusEl, errorEl, NEWSLETTER_COPY);
+    setSignupEnabled(false);
+  }
+
+  function unmuteSignup() {
+    if (!mutedForOffline) return;
+    mutedForOffline = false;
+    setSignupEnabled(true);
+    if (statusEl && statusEl.textContent === NEWSLETTER_COPY) clearMessages(statusEl, errorEl);
+    renderTurnstile();
+  }
+
+  if (!isOffline()) {
+    try {
+      if (typeof turnstile !== 'undefined' && turnstile.ready) {
+        turnstile.ready(renderTurnstile);
+      } else {
+        window.addEventListener('load', function () {
+          setTimeout(renderTurnstile, 100);
+        });
+      }
+    } catch (_) { }
+  }
 
   formEl.addEventListener('change', function (e) {
     var target = e.target;
@@ -385,6 +414,10 @@ function initSignup() {
 
   formEl.addEventListener('submit', function (e) {
     e.preventDefault();
+    if (isOffline()) {
+      muteSignup();
+      return;
+    }
     clearMessages(statusEl, errorEl);
 
     var emailInput = formEl.querySelector('#subscribe-email');
@@ -448,16 +481,25 @@ function initSignup() {
         }
         resetTurnstile();
       })
-      .catch(function () {
-        showError(statusEl, errorEl, 'Could not reach the server. Try again.');
-        resetTurnstile();
+      .catch(function (err) {
+        if (isOffline() || isNetworkFailure(err)) muteSignup();
+        else {
+          showError(statusEl, errorEl, 'Could not reach the server. Try again.');
+          resetTurnstile();
+        }
       })
       .finally(function () {
-        if (submitBtn) submitBtn.disabled = false;
+        if (submitBtn && !mutedForOffline) submitBtn.disabled = false;
       });
   });
 
   restoreSignupState(formEl);
+
+  onConnection(function (offline) {
+    if (offline) muteSignup();
+    else unmuteSignup();
+  });
+  if (isOffline()) muteSignup();
 
   var store = browserStorage();
   var pending = readPendingEmail(store);
@@ -520,13 +562,14 @@ function initManage() {
     return;
   }
 
-  showStatus(statusEl, errorEl, 'Loading your preferences…');
   var controls = formEl.querySelectorAll('input, button');
   var i;
   for (i = 0; i < controls.length; i++) {
     controls[i].disabled = true;
   }
 
+  function loadPreferences() {
+  showStatus(statusEl, errorEl, 'Loading your preferences…');
   fetch('/api/subscribe?preferences=' + encodeURIComponent(token))
     .then(parseJsonResponse)
     .then(function (result) {
@@ -553,14 +596,26 @@ function initManage() {
         controls[i].disabled = false;
       }
     })
-    .catch(function () {
+    .catch(function (err) {
+      if (isOffline() || isNetworkFailure(err)) {
+        showStatus(statusEl, errorEl, MANAGE_COPY);
+        return;
+      }
       formEl.hidden = true;
       showError(statusEl, errorEl, 'Could not reach the server. Try again.');
       if (errorEl) errorEl.focus();
     });
+  }
+
+  if (isOffline()) showStatus(statusEl, errorEl, MANAGE_COPY);
+  else loadPreferences();
 
   formEl.addEventListener('submit', function (e) {
     e.preventDefault();
+    if (isOffline()) {
+      showStatus(statusEl, errorEl, MANAGE_COPY);
+      return;
+    }
     clearMessages(statusEl, errorEl);
 
     var lists = selectedLists(formEl);
@@ -592,8 +647,9 @@ function initManage() {
           (result.data && result.data.message) || 'Preferences saved.'
         );
       })
-      .catch(function () {
-        showError(statusEl, errorEl, 'Could not reach the server. Try again.');
+      .catch(function (err) {
+        if (isOffline() || isNetworkFailure(err)) showStatus(statusEl, errorEl, MANAGE_COPY);
+        else showError(statusEl, errorEl, 'Could not reach the server. Try again.');
       })
       .finally(function () {
         if (submitBtn) submitBtn.disabled = false;
