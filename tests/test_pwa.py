@@ -318,6 +318,182 @@ class PwaLogicTests(unittest.TestCase):
         self.assertTrue(run_node(script)["failed"])
 
 
+PREFETCH = r"""
+import { createPwa, articleImageUrls, recentPostUrls, cacheKey } from "__SW__";
+
+const origin = "https://ericwisnewski.com";
+const quoted = [
+  '<img src="/images/chrome.png">',
+  '<article class="post-content">',
+  '<img src="https://ericwisnewski.com/images/uploads/hero.jpg">',
+  '<img src="/images/uploads/inline.jpg">',
+  '<img src="https://cdn.example/x.jpg">',
+  '<img src="/audio/uploads/clip.mp3">',
+  '<img src="/api/comments">',
+  '</article>',
+  '<img src="/images/uploads/more-from.jpg">',
+].join("");
+const minified = '<article class=post-content><img src=/images/uploads/hero.jpg></article>';
+
+function postHtml(image) {
+  return "<article class=post-content><img src=" + image + "><img src=/audio/uploads/clip.mp3></article><img src=/images/more.jpg>";
+}
+
+class MemoryCache {
+  constructor() { this.map = new Map(); }
+  async match(key) {
+    const hit = this.map.get(key);
+    return hit ? hit.clone() : undefined;
+  }
+  async put(key, response) { this.map.set(key, response.clone()); }
+}
+class MemoryCaches {
+  constructor() { this.map = new Map(); }
+  async open(name) {
+    if (!this.map.has(name)) this.map.set(name, new MemoryCache());
+    return this.map.get(name);
+  }
+  async keys() { return [...this.map.keys()]; }
+  async delete(name) { return this.map.delete(name); }
+  dump() {
+    const out = {};
+    for (const [name, cache] of this.map) out[name] = [...cache.map.keys()];
+    return out;
+  }
+}
+
+const pack = [];
+for (let i = 1; i <= 14; i += 1) pack.push("/posts/p" + i + "/");
+pack.push("/posts/huge/");
+pack.push("/posts/sixteen/");
+pack.splice(2, 0, "/api/comments");
+
+let index = { rev: "a", posts: pack };
+let offline = false;
+const calls = [];
+const files = {
+  "/": "<!doctype html><link rel=stylesheet href=/css/style.min.abc.css>",
+  "/offline/": "<h1>You are offline</h1>",
+  "/favicon.ico": "ico",
+  "/favicon.png": "png",
+  "/apple-touch-icon.png": "apple",
+  "/icons/icon-192.png": "192",
+  "/icons/icon-512.png": "512",
+  "/manifest.webmanifest": "{}",
+  "/css/style.min.abc.css": "css",
+  "/posts/extra/": postHtml("/images/extra.jpg"),
+};
+
+function bodyFor(key) {
+  if (key === "/recent.json") return JSON.stringify(index);
+  if (key === "/posts/huge/") return postHtml("/images/huge.jpg");
+  if (key === "/posts/extra/") return postHtml("/images/extra.jpg");
+  if (key.startsWith("/posts/")) return postHtml("/images/hero.jpg");
+  if (key === "/images/huge.jpg") {
+    return new Response("huge", { status: 200, headers: { "Content-Type": "image/jpeg", "Content-Length": String(9 * 1024 * 1024) } });
+  }
+  if (key.startsWith("/images/")) return "img";
+  return files[key];
+}
+
+async function fetchImpl(input) {
+  if (offline) throw new Error("offline");
+  const key = cacheKey(typeof input === "string" ? input : input.url, origin);
+  calls.push(key);
+  const body = bodyFor(key);
+  if (body instanceof Response) return body;
+  if (body == null) return new Response("missing", { status: 404 });
+  return new Response(body, { status: 200, headers: { "Content-Type": key.endsWith(".jpg") ? "image/jpeg" : "text/html" } });
+}
+
+function doc(path) {
+  return new Request(origin + path, {
+    headers: { "Sec-Fetch-Dest": "document", "Sec-Fetch-Mode": "navigate" },
+  });
+}
+
+const caches = new MemoryCaches();
+const pwa = createPwa({ version: "prefetch" });
+await pwa.install(caches, fetchImpl, origin);
+const first = await pwa.prefetchRecent(caches, fetchImpl, origin);
+const afterFirst = calls.filter((key) => key.startsWith("/posts/") || key.startsWith("/images/") || key.startsWith("/api/") || key.startsWith("/audio/")).slice();
+await pwa.prefetchRecent(caches, fetchImpl, origin);
+const postFetchesAfterRepeat = calls.filter((key) => key === "/posts/p1/").length;
+const heroFetchesAfterRepeat = calls.filter((key) => key === "/images/hero.jpg").length;
+index = { rev: "b", posts: ["/posts/extra/", ...pack.slice(0, 14)] };
+const third = await pwa.prefetchRecent(caches, fetchImpl, origin);
+const heroFetchesAfterRefresh = calls.filter((key) => key === "/images/hero.jpg").length;
+const extraImageFetches = calls.filter((key) => key === "/images/extra.jpg").length;
+offline = true;
+const extraOffline = await (await pwa.handle(doc("/posts/extra/"), { cacheStorage: caches, fetchImpl, origin })).text();
+let outside = "";
+try {
+  outside = await (await pwa.handle(doc("/posts/never-in-pack/"), { cacheStorage: caches, fetchImpl, origin })).text();
+} catch (err) {
+  outside = "threw";
+}
+const stored = Object.values(caches.dump()).flat();
+
+console.log(JSON.stringify({
+  quoted: articleImageUrls(quoted, origin),
+  minified: articleImageUrls(minified, origin),
+  capped: recentPostUrls({ posts: pack }, origin).length,
+  apiDropped: recentPostUrls({ posts: ["/api/comments", "/posts/ok/"] }, origin),
+  firstPosts: first.posts,
+  firstFetched: first.fetched,
+  afterFirst,
+  postFetchesAfterRepeat,
+  heroFetchesAfterRepeat,
+  thirdFetched: third.fetched,
+  heroFetchesAfterRefresh,
+  extraImageFetches,
+  extraOffline,
+  outside,
+  hugeStored: stored.includes("/images/huge.jpg"),
+  heroStored: stored.includes("/images/hero.jpg"),
+  apiStored: stored.some((key) => key.startsWith("/api/")),
+  sixteenStored: stored.includes("/posts/sixteen/"),
+  moreStored: stored.includes("/images/more.jpg"),
+}));
+"""
+
+
+class PwaPrefetchTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.report = run_node(PREFETCH.replace("__SW__", SW_JS.as_uri()))
+
+    def test_prefetch_caches_unvisited_posts_and_article_images_success(self) -> None:
+        report = self.report
+        self.assertEqual(
+            report["quoted"],
+            ["/images/uploads/hero.jpg", "/images/uploads/inline.jpg"],
+        )
+        self.assertEqual(report["minified"], ["/images/uploads/hero.jpg"])
+        self.assertEqual(report["capped"], 15)
+        self.assertIn("/images/extra.jpg", report["extraOffline"])
+        self.assertIn("post-content", report["extraOffline"])
+        self.assertEqual(report["outside"], "<h1>You are offline</h1>")
+        self.assertTrue(report["heroStored"])
+        self.assertEqual(report["heroFetchesAfterRepeat"], 1)
+        self.assertEqual(report["postFetchesAfterRepeat"], 1)
+        self.assertEqual(report["heroFetchesAfterRefresh"], 1)
+        self.assertEqual(report["extraImageFetches"], 1)
+        self.assertIn("/posts/extra/", report["thirdFetched"])
+
+    def test_prefetch_skips_api_audio_and_oversized_images_failure(self) -> None:
+        report = self.report
+        self.assertEqual(report["apiDropped"], ["/posts/ok/"])
+        self.assertFalse(report["apiStored"])
+        self.assertFalse(report["sixteenStored"])
+        self.assertFalse(report["hugeStored"])
+        self.assertFalse(report["moreStored"])
+        self.assertNotIn("/api/comments", report["afterFirst"])
+        self.assertNotIn("/posts/sixteen/", report["afterFirst"])
+        self.assertNotIn("/audio/uploads/clip.mp3", report["afterFirst"])
+        self.assertNotIn("/images/more.jpg", report["afterFirst"])
+
+
 class PwaAssetTests(unittest.TestCase):
     def test_manifest_names_colors_and_icons_success(self) -> None:
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -349,6 +525,9 @@ class PwaAssetTests(unittest.TestCase):
         self.assertIn('eq .Type "admin"', base)
         self.assertIn('eq .Type "add-photos"', base)
         self.assertIn("/sw.js", base)
+        self.assertIn("prefetch-recent", base)
+        self.assertIn("requestIdleCallback", base)
+        self.assertIn('printf "%s-2"', base)
         offline = OFFLINE_LAYOUT.read_text(encoding="utf-8")
         self.assertIn("You are offline", offline)
         self.assertIn("header.html", offline)
@@ -359,6 +538,7 @@ class PwaAssetTests(unittest.TestCase):
         self.assertIn("disable: true", page)
         robots = ROBOTS.read_text(encoding="utf-8")
         self.assertIn("Disallow: /offline/", robots)
+        self.assertIn("Disallow: /recent.json", robots)
         headers = HEADERS.read_text(encoding="utf-8")
         self.assertIn("application/manifest+json", headers)
         self.assertIn("max-age=0, must-revalidate", headers)
@@ -385,10 +565,50 @@ class PwaBuildTests(unittest.TestCase):
             "---\n"
             "title: Hello stadium\n"
             "slug: hello\n"
-            "date: 2026-01-01T00:00:00Z\n"
+            "date: 2020-01-01T00:00:00Z\n"
             "draft: false\n"
             "---\n"
             "A visited recap.\n",
+            encoding="utf-8",
+        )
+        for day in range(1, 17):
+            (content / "posts" / f"post-{day:02d}.md").write_text(
+                "---\n"
+                f"title: Post {day}\n"
+                f"slug: post-{day:02d}\n"
+                f"date: 2026-01-{day:02d}T00:00:00Z\n"
+                "draft: false\n"
+                "---\n"
+                "Recap.\n",
+                encoding="utf-8",
+            )
+        (content / "posts" / "secret.md").write_text(
+            "---\n"
+            "title: Secret\n"
+            "slug: secret\n"
+            "date: 2026-12-01T00:00:00Z\n"
+            "draft: true\n"
+            "---\n"
+            "Hidden.\n",
+            encoding="utf-8",
+        )
+        (content / "gradys-tour").mkdir()
+        (content / "gradys-tour" / "rome.md").write_text(
+            "---\n"
+            "title: Rome\n"
+            "slug: rome\n"
+            "date: 2026-06-01T00:00:00Z\n"
+            "draft: false\n"
+            "---\n"
+            "Tour.\n",
+            encoding="utf-8",
+        )
+        (content / "parking.md").write_text(
+            "---\n"
+            "title: Parking\n"
+            "date: 2026-12-02T00:00:00Z\n"
+            "---\n"
+            "Not a post.\n",
             encoding="utf-8",
         )
         (content / "offline.md").write_text(OFFLINE_PAGE.read_text(encoding="utf-8"), encoding="utf-8")
@@ -441,6 +661,9 @@ class PwaBuildTests(unittest.TestCase):
         self.assertIn("serviceWorker.register", home)
         self.assertIn("/sw.js?v=", home)
         self.assertIn('type: "module"', home)
+        self.assertIn("requestIdleCallback", home)
+        self.assertIn("prefetch-recent", home)
+        self.assertNotIn("prefetch-recent", admin)
         self.assertIn("You are offline", offline)
         self.assertIn("Pages you already opened still work", offline)
         self.assertIn('href="/"', offline)
@@ -459,6 +682,24 @@ class PwaBuildTests(unittest.TestCase):
         self.assertNotIn("/offline/", sitemap)
         robots = (self.public / "robots.txt").read_text(encoding="utf-8")
         self.assertIn("Disallow: /offline/", robots)
+        self.assertIn("Disallow: /recent.json", robots)
+        self.assertTrue((self.public / "index.xml").is_file())
+
+    def test_recent_json_is_the_newest_15_posts_success(self) -> None:
+        index = json.loads((self.public / "recent.json").read_text(encoding="utf-8"))
+        posts = index["posts"]
+        self.assertEqual(len(posts), 15)
+        self.assertTrue(index["rev"])
+        self.assertEqual(posts[0], "/gradys-tour/rome/")
+        self.assertIn("/posts/post-16/", posts)
+        self.assertNotIn("/posts/hello/", posts)
+        self.assertNotIn("/posts/post-01/", posts)
+        self.assertNotIn("/posts/post-02/", posts)
+        self.assertNotIn("/posts/secret/", posts)
+        self.assertNotIn("/parking/", posts)
+        self.assertNotIn("/offline/", posts)
+        sitemap = (self.public / "sitemap.xml").read_text(encoding="utf-8")
+        self.assertNotIn("recent.json", sitemap)
 
     def test_built_home_shell_urls_point_at_real_files_success(self) -> None:
         home = (self.public / "index.html").read_text(encoding="utf-8")

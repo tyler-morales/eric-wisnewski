@@ -4,5 +4,6 @@ Disallow: /admin/
 Disallow: /add-photos/
 Disallow: /subscribe/manage/
 Disallow: /offline/
+Disallow: /recent.json
 
 Sitemap: {{ site.BaseURL }}sitemap.xml

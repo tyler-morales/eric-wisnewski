@@ -224,21 +224,23 @@ Add one in Pages CMS under **Site updates** (or as markdown in `content/updates/
 
 The public site is an installable web app. Chrome and Android use `static/manifest.webmanifest` (name **Eric Wisnewski**, short name **Ericwiz**, `display: standalone`, white theme and background to match the page). Icons are the existing portrait favicon plus `static/icons/icon-192.png` and `icon-512.png` scaled from `apple-touch-icon.png`. iOS Add to Home Screen uses the apple touch icon and the apple web-app meta tags in `layouts/partials/head.html`.
 
-`static/sw.js` registers from `layouts/_default/baseof.html` on every public page (`/sw.js?v=<css integrity>-1`, module worker, scope `/`). It does **not** register on `/admin/` or `/add-photos/`. Bump the `-1` in `baseof.html` when the worker’s behavior changes.
+`static/sw.js` registers from `layouts/_default/baseof.html` on every public page (`/sw.js?v=<css integrity>-2`, module worker, scope `/`). It does **not** register on `/admin/` or `/add-photos/`. Bump the `-2` in `baseof.html` when the worker’s behavior changes. After the worker is ready, the page waits for an idle moment (or about four seconds) and asks the worker to prefetch `/recent.json`.
 
 **Works offline**
 
 - The app shell: home page, CSS, `media.js`, `nav-scroll.js`, favicons, manifest, and `/offline/`.
 - HTML pages you already opened on this device, including their same-origin images and other static files (cached on that visit).
-- A page you have never opened shows `/offline/` instead of a blank error.
+- The newest 15 public posts (Eric, Grady, Tad, Jeremy), prefetched in the background while you are online, plus the hero and in-article images on those posts. `/recent.json` is that list (`rev` changes when the set or a post date changes). A repeat visit does not download the pack again until that list changes. Images already saved are not downloaded again. Posts that fall out of the 15 stay in the cache.
+- Anything older than those 15, or never opened and not in the pack, shows `/offline/` instead of a blank error.
 
 **Does not work offline**
 
 - Anything under `/api/` (comments, likes, newsletter signup, subscribe manage). Those requests are network-only and are not cached.
 - `/admin/`, `/add-photos/`, and `/subscribe/manage/` (network-only).
-- A post, photo, or audio file this device has never opened. Audio/video byte ranges are not cached. Files larger than 8MB are not stored.
+- Audio and video, including byte ranges. Files larger than 8MB are not stored.
+- Photos that sit outside the article (the “more from this author” row) and were never opened.
 - The Grady’s Tour globe (`d3` loads from jsDelivr), YouTube and X embeds, Turnstile, and Umami.
-- Fresh posts published after the last online visit.
+- A post published after the last online visit, once the prefetch has already run. The next online page load refreshes the pack.
 
 Visited pages stay in the `ericwiz-pages` cache across deploys. A new CSS build (or a bumped worker suffix) replaces the `ericwiz-shell-*` precache and calls `skipWaiting` / `clients.claim`. Cloudflare Pages’ default `Cache-Control: public, max-age=0, must-revalidate` on `sw.js` is repeated in `static/_headers` so the browser can see a new worker.
 

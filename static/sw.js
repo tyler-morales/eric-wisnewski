@@ -1,15 +1,18 @@
 /**
- * Offline cache for pages this browser has already opened, plus the app shell.
+ * Offline cache: pages this browser has already opened, the app shell, and a
+ * background pack of the newest public posts (/recent.json).
  * /api/, /admin/, /add-photos/, and /subscribe/manage/ stay network-only.
  * The pages cache is not versioned so a new deploy does not wipe visited posts.
  * ponytail: assets cache has no entry cap (device quota is the ceiling); upgrade
  * path is a max-entry eviction if storage complaints show up. Bodies over 8MB
- * are not stored.
+ * are not stored. Posts that age out of the newest 15 stay cached.
  */
 
 export const PAGES_CACHE = "ericwiz-pages";
 export const ASSETS_CACHE = "ericwiz-assets";
 export const MAX_CACHED_BYTES = 8 * 1024 * 1024;
+export const RECENT_PATH = "/recent.json";
+export const PREFETCH_LIMIT = 15;
 
 const SHELL_FILES = [
   "/offline/",
@@ -35,6 +38,74 @@ export function cacheKey(input, origin) {
   const raw = typeof input === "string" ? input : input.url;
   const url = new URL(raw, origin || "https://ericwisnewski.com");
   return url.pathname + url.search;
+}
+
+export function recentPostUrls(index, origin) {
+  const posts = index && Array.isArray(index.posts) ? index.posts : [];
+  const urls = [];
+  const seen = new Set();
+  const base = origin || "https://ericwisnewski.com";
+  for (const raw of posts) {
+    if (urls.length >= PREFETCH_LIMIT) break;
+    if (typeof raw !== "string" || !raw) continue;
+    let url;
+    try {
+      url = new URL(raw, base);
+    } catch {
+      continue;
+    }
+    if (url.origin !== new URL(base).origin) continue;
+    if (isBypassPath(url.pathname)) continue;
+    const key = url.pathname + url.search;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    urls.push(key);
+  }
+  return urls;
+}
+
+function attrValue(tag, name) {
+  const quoted = tag.match(new RegExp("\\b" + name + "\\s*=\\s*([\"'])(.*?)\\1", "i"));
+  if (quoted) return quoted[2].replace(/&amp;/g, "&");
+  const bare = tag.match(new RegExp("\\b" + name + "\\s*=\\s*([^\\s>]+)", "i"));
+  return bare ? bare[1].replace(/&amp;/g, "&") : "";
+}
+
+function articleHtml(html) {
+  if (!html) return "";
+  const start = html.search(/<article\b[^>]*\bclass\s*=\s*["']?[^"'>]*\bpost-content\b/i);
+  if (start < 0) return "";
+  const end = html.toLowerCase().indexOf("</article>", start);
+  return end < 0 ? html.slice(start) : html.slice(start, end + "</article>".length);
+}
+
+export function articleImageUrls(html, origin) {
+  const urls = [];
+  const seen = new Set();
+  const base = origin || "https://ericwisnewski.com";
+  const article = articleHtml(html);
+  for (const tag of article.matchAll(/<img\b[^>]*>/gi)) {
+    const src = attrValue(tag[0], "src");
+    if (!src || src.startsWith("data:") || src.startsWith("blob:")) continue;
+    let url;
+    try {
+      url = new URL(src, base);
+    } catch {
+      continue;
+    }
+    if (url.origin !== new URL(base).origin) continue;
+    if (isBypassPath(url.pathname)) continue;
+    if (/\.(?:mp3|m4a|ogg|mp4|webm|wav)(?:$|\?)/i.test(url.pathname)) continue;
+    const key = url.pathname + url.search;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    urls.push(key);
+  }
+  return urls;
+}
+
+function mediaType(response) {
+  return ((response && response.headers.get("content-type")) || "").toLowerCase();
 }
 
 export function shellUrlsFromHomeHtml(html) {
@@ -162,6 +233,76 @@ export function createPwa({ version, offlineUrl = "/offline/" } = {}) {
       }
     },
 
+    async prefetchRecent(cacheStorage, fetchImpl, origin) {
+      if (this._prefetching) return this._prefetching;
+      this._prefetching = this._prefetchRecent(cacheStorage, fetchImpl, origin).finally(() => {
+        this._prefetching = null;
+      });
+      return this._prefetching;
+    },
+
+    async _prefetchRecent(cacheStorage, fetchImpl, origin) {
+      const base = origin || "https://ericwisnewski.com";
+      let indexRes;
+      try {
+        indexRes = await fetchImpl(RECENT_PATH);
+      } catch {
+        return { ok: false, reason: "offline" };
+      }
+      if (!indexRes || indexRes.status !== 200) return { ok: false, reason: "index" };
+      const text = await indexRes.clone().text();
+      let index;
+      try {
+        index = JSON.parse(text);
+      } catch {
+        return { ok: false, reason: "parse" };
+      }
+      const posts = recentPostUrls(index, base);
+      const pages = await cacheStorage.open(PAGES_CACHE);
+      const assets = await cacheStorage.open(ASSETS_CACHE);
+      const previous = await pages.match(RECENT_PATH);
+      const previousText = previous ? await previous.text() : "";
+      const changed = previousText !== text;
+      const fetched = [];
+      for (const post of posts) {
+        const cachedPage = changed ? undefined : await pages.match(post);
+        let html = "";
+        if (cachedPage) {
+          html = await cachedPage.text();
+        } else {
+          let response;
+          try {
+            response = await fetchImpl(post);
+          } catch {
+            continue;
+          }
+          if (!response || response.status !== 200 || !canStore(response)) continue;
+          html = await response.clone().text();
+          await store(pages, post, response);
+          fetched.push(post);
+        }
+        for (const image of articleImageUrls(html, base)) {
+          if (await assets.match(image)) continue;
+          let response;
+          try {
+            response = await fetchImpl(image);
+          } catch {
+            continue;
+          }
+          if (!response || !canStore(response)) continue;
+          const type = mediaType(response);
+          if (type.startsWith("audio/") || type.startsWith("video/")) continue;
+          await store(assets, image, response);
+        }
+      }
+      const saved = new Response(text, {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+      await store(pages, RECENT_PATH, saved);
+      return { ok: true, posts, fetched, changed };
+    },
+
     async activate(cacheStorage, claim) {
       const keep = new Set([shellName, PAGES_CACHE, ASSETS_CACHE]);
       const names = await cacheStorage.keys();
@@ -221,6 +362,10 @@ if (inWorker) {
   });
   self.addEventListener("activate", (event) => {
     event.waitUntil(pwa.activate(caches, () => self.clients.claim()));
+  });
+  self.addEventListener("message", (event) => {
+    if (!event.data || event.data.type !== "prefetch-recent") return;
+    event.waitUntil(pwa.prefetchRecent(caches, (input) => fetch(input), self.location.origin));
   });
   self.addEventListener("fetch", (event) => {
     event.respondWith(

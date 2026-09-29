@@ -1,0 +1,10 @@
+{{- $sections := slice "posts" "gradys-tour" "da-breakdown-w-tad" "jeremy-on-tap" -}}
+{{- $pages := where site.RegularPages "Section" "in" $sections -}}
+{{- $pages = first 15 (sort $pages "Date" "desc") -}}
+{{- $urls := slice -}}
+{{- $rev := "" -}}
+{{- range $pages -}}
+  {{- $urls = $urls | append .RelPermalink -}}
+  {{- $rev = printf "%s%x" $rev .Lastmod.Unix -}}
+{{- end -}}
+{{- dict "rev" $rev "posts" $urls | jsonify -}}
