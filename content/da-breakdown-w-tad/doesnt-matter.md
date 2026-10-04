@@ -21,6 +21,5 @@ The hot hand fallacy is believing someone who’s made several shots in a row is
 
 So we are going to see Bagent Sunday. I think we win. Jets are a much better team this year. Garrett Wilson might eat us alive. But clear day in Chicago, our defense gains momentum from last week, minimal mistakes on special teams and offensive penalties. I don’t see us losing but doesn’t mean it won’t be close. Shoutout to fellow colleague Grady Man with the idea of letting other get in on the fun with predicting the game. Created the graphic below to track our records throughout the season. Apologies for starting this at Week 4. See you after the game.  
 
-
 ![image.png](/images/uploads/image-1.png)
 
