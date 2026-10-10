@@ -3,6 +3,7 @@ title: Week 5 Prediction
 slug: Go go go
 author:
   - tad-davis
+  - christian-pudlo
 date: 2026-10-10T13:00:00Z
 draft: false
 image: /images/uploads/IMG_2804.webp
