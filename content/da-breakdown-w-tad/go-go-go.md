@@ -20,7 +20,7 @@ And then a video my friend Grady sent of Ditka singing take me out to the ball g
 
 [https://youtu.be/brkXK7yF79o?si=XRK87yc-NInTST3f](https://youtu.be/brkXK7yF79o?si=XRK87yc-NInTST3f)
 
- 
+
 
 Man was a legend. Top major respect moment to Monken with words for Coach Ditka. And even Ditka with a quote about Brownies.
 
@@ -44,10 +44,7 @@ Now the biggest story on Sunday I HOPE will be the Bears defense. Who I would al
 
 My number one source for all things Bears Christian chimes in for his prediction tomorrow.
 
-  
-“If you told me before the season that Caleb Williams would get hurt in a Week 2 home loss to the Vikings and the Bears would still be 3-1 heading into Lambeau, I’d GLADLY take it. So here we are with Tyson Bagent under center, and again, I’m not that worried. 
-
- 
+> “If you told me before the season that Caleb Williams would get hurt in a Week 2 home loss to the Vikings and the Bears would still be 3-1 heading into Lambeau, I’d GLADLY take it. So here we are with Tyson Bagent under center, and again, I’m not that worried. 
 
 The Packers are a shell of their usual selves. They’re 2-2 and have been outscored by 32. Micah Parsons and Edgerin Cooper are out, the defense is bad, and the run game is nonexistent: 232 yards through four games, dead last in the league. Jordan Love has been sacked 10 times and the offense can’t convert on third down.
 
@@ -62,3 +59,6 @@ Prediction: Bears 27, Packers 13. Roschon Johnson finds the end zone.”
 
 
 I know everyone has been waiting for the Abraham Apples predictions for tomorrow. I am going to leave it up to the reader. What should the champion at the end of the year receive? Or should we do a punishment for the person in last place? Let me know in the comments.  
+
+![image.png](/images/uploads/image-2.png)
+
