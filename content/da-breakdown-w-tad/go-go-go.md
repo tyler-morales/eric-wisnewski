@@ -64,6 +64,6 @@ I know everyone has been waiting for the Abraham Apples predictions for tomorrow
 
 ![image.png](/images/uploads/image-2.png)
 
-Thank you for everything Coach, from everyone at Ericwisnewski.com. 
+Thank you for everything Coach, from everyone at Ericwisnewski.com. GO BEARS!
 
 [https://m.youtube.com/shorts/RdgTR0kN7_8?ra=m](https://m.youtube.com/shorts/RdgTR0kN7_8?ra=m)
