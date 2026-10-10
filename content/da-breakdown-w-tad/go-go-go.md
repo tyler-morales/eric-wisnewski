@@ -47,15 +47,15 @@ My number one source for all things Bears Christian chimes in for his prediction
 
 > “If you told me before the season that Caleb Williams would get hurt in a Week 2 home loss to the Vikings and the Bears would still be 3-1 heading into Lambeau, I’d GLADLY take it. So here we are with Tyson Bagent under center, and again, I’m not that worried. 
 
-The Packers are a shell of their usual selves. They’re 2-2 and have been outscored by 32. Micah Parsons and Edgerin Cooper are out, the defense is bad, and the run game is nonexistent: 232 yards through four games, dead last in the league. Jordan Love has been sacked 10 times and the offense can’t convert on third down.
+> The Packers are a shell of their usual selves. They’re 2-2 and have been outscored by 32. Micah Parsons and Edgerin Cooper are out, the defense is bad, and the run game is nonexistent: 232 yards through four games, dead last in the league. Jordan Love has been sacked 10 times and the offense can’t convert on third down.
 
 
 
-The game plan should be simple: run the damn ball and dominate time of possession like last week. The Bears lead the NFL in rushing for a reason. It should be straightforward, but it’s the greatest rivalry in sports, and starting a backup quarterback in Green Bay isn’t exactly a recipe for success.
+> The game plan should be simple: run the damn ball and dominate time of possession like last week. The Bears lead the NFL in rushing for a reason. It should be straightforward, but it’s the greatest rivalry in sports, and starting a backup quarterback in Green Bay isn’t exactly a recipe for success.
 
 
 
-Prediction: Bears 27, Packers 13. Roschon Johnson finds the end zone.”
+> Prediction: Bears 27, Packers 13. Roschon Johnson finds the end zone.”
 
 
 
