@@ -4,7 +4,8 @@ slug: Go go go
 author:
   - tad-davis
 date: 2026-10-10T13:00:00Z
-draft: true
+draft: false
+image: /images/uploads/IMG_2804.webp
 ---
 HERE WE GO. Week 5 prediction. And oh boy this is a big one. Packers week. First and foremost the city of Chicago and the Bears family lost one the most prominent figures to date. Mike Ditka passed away yesterday Friday, October 9th. RIP. There is so much you can say about what Ditka meant to Bears fans young and old. If I become half the man Ditka was, I can call my life successful. It has been so cool hearing the stories from coaches and players about their interactions with Ditka. Here was one I really enjoyed.
 
