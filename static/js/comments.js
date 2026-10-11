@@ -1,3 +1,5 @@
+import { COMMENTS_COPY, LIKES_COPY, isNetworkFailure, isOffline, onConnection } from './offline.js';
+
 export var AUTHOR_KEY = 'comment_author';
 export var EMAIL_KEY = 'comment_email';
 export var EMAIL_REPLY_HINT = "Add your email to be notified when someone replies to your comment";
@@ -240,6 +242,16 @@ function initComments() {
 
   function showError(msg) {
     if (!errorEl) return;
+    errorEl.classList.remove('comments-note');
+    errorEl.setAttribute('role', 'alert');
+    errorEl.textContent = msg;
+    errorEl.hidden = false;
+  }
+
+  function showNote(msg) {
+    if (!errorEl) return;
+    errorEl.classList.add('comments-note');
+    errorEl.setAttribute('role', 'status');
     errorEl.textContent = msg;
     errorEl.hidden = false;
   }
@@ -248,7 +260,34 @@ function initComments() {
     if (errorEl) {
       errorEl.textContent = '';
       errorEl.hidden = true;
+      errorEl.classList.remove('comments-note');
     }
+  }
+
+  function setInteractive(enabled) {
+    var controls = section.querySelectorAll('input, textarea, button');
+    var i;
+    for (i = 0; i < controls.length; i++) controls[i].disabled = !enabled;
+    var widgets = section.querySelectorAll('.comments-turnstile');
+    for (i = 0; i < widgets.length; i++) widgets[i].hidden = !enabled;
+  }
+
+  function markCommentsOffline() {
+    var loaded = listEl.querySelector('.comment-item');
+    if (!loaded) {
+      listEl.replaceChildren();
+      var li = document.createElement('li');
+      li.className = 'comments-offline';
+      li.textContent = COMMENTS_COPY;
+      listEl.appendChild(li);
+    }
+    showNote(loaded ? COMMENTS_COPY + ' ' + LIKES_COPY : COMMENTS_COPY);
+    setInteractive(false);
+  }
+
+  function failAction(err, fallback) {
+    if (isOffline() || isNetworkFailure(err)) showNote(COMMENTS_COPY);
+    else showError((err && err.message) || fallback);
   }
 
   function getTokens() {
@@ -475,7 +514,7 @@ function initComments() {
           listEl.focus();
         })
         .catch(function (err) {
-          showError(err.message || 'Could not post reply.');
+          failAction(err, 'Could not post reply.');
         });
     });
     return { form: form };
@@ -561,6 +600,10 @@ function initComments() {
     applyLikeState(likeBtn, likeCountEl, likeState.liked, likeState.count);
     likeBtn.addEventListener('click', function () {
       if (likeBtn.disabled) return;
+      if (isOffline()) {
+        showNote(LIKES_COPY);
+        return;
+      }
       var visitorId = ensureVisitorId(identityStorage(), function () {
         try { return crypto.randomUUID(); } catch (_) { return ''; }
       });
@@ -593,7 +636,8 @@ function initComments() {
           likeState.liked = prev.liked;
           likeState.count = prev.count;
           applyLikeState(likeBtn, likeCountEl, likeState.liked, likeState.count);
-          showError(err.message || 'Could not like this comment.');
+          if (isOffline() || isNetworkFailure(err)) showNote(LIKES_COPY);
+          else showError((err && err.message) || 'Could not like this comment.');
         })
         .then(function () {
           likeBtn.disabled = false;
@@ -699,7 +743,7 @@ function initComments() {
               loadComments();
             })
             .catch(function (err) {
-              showError(err.message || 'Could not update comment.');
+              failAction(err, 'Could not update comment.');
             });
         });
         btnWrap.appendChild(cancelBtn);
@@ -738,7 +782,7 @@ function initComments() {
             loadComments();
           })
           .catch(function (err) {
-            showError(err.message || 'Could not delete comment.');
+            failAction(err, 'Could not delete comment.');
           });
       });
       appendAction(delBtn);
@@ -782,6 +826,10 @@ function initComments() {
   }
 
   function loadComments() {
+    if (isOffline()) {
+      markCommentsOffline();
+      return;
+    }
     var url = normalizeUrl();
     var visitorId = ensureVisitorId(identityStorage(), function () {
       try { return crypto.randomUUID(); } catch (_) { return ''; }
@@ -795,7 +843,8 @@ function initComments() {
       })
       .then(renderComments)
       .catch(function (err) {
-        showLoadError(err.message || 'Could not load comments. Check that the comments API is running.');
+        if (isOffline() || isNetworkFailure(err)) markCommentsOffline();
+        else showLoadError(err.message || 'Could not load comments. Check that the comments API is running.');
       });
   }
 
@@ -847,7 +896,7 @@ function initComments() {
         listEl.focus();
       })
       .catch(function (err) {
-        showError(err.message || 'Could not post comment.');
+        failAction(err, 'Could not post comment.');
       });
   });
 
@@ -885,7 +934,18 @@ function initComments() {
     }
   } catch (_) { }
 
-  loadComments();
+  onConnection(function (offline) {
+    if (offline) {
+      markCommentsOffline();
+      return;
+    }
+    setInteractive(true);
+    if (listEl.querySelector('.comments-offline')) loadComments();
+    else clearError();
+  });
+
+  if (isOffline()) markCommentsOffline();
+  else loadComments();
 }
 
 initComments();

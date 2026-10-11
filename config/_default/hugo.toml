@@ -3,6 +3,15 @@ baseURL = 'https://ericwisnewski.com'
 languageCode = 'en-us'
 title = 'Eric Wisnewski'
 enableRobotsTXT = true
+# Home also emits /recent.json (newest 15 public posts) for the offline prefetch.
+# Keep HTML and RSS or the home feed and /index.xml disappear.
+[outputFormats.recent]
+  mediaType = "application/json"
+  baseName = "recent"
+  isPlainText = true
+  notAlternative = true
+[outputs]
+  home = ["HTML", "RSS", "recent"]
 # Empty Hugo taxonomies create /tags/ and /categories/ with no posts — thin
 # pages in the sitemap that dilute crawl budget. No content uses tags today.
 disableKinds = ['taxonomy', 'term']

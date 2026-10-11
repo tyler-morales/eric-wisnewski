@@ -34,6 +34,55 @@ body {
   flex-direction: column;
 }
 
+.offline-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  padding: 0.55rem 1rem;
+  background: #f3f3f3;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.offline-banner[hidden] {
+  display: none;
+}
+
+.offline-banner p {
+  margin: 0;
+}
+
+.offline-banner button {
+  flex: none;
+  margin: 0;
+  padding: 0.15rem 0.2rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.offline-banner button:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.offline-embed,
+#comments .comments-offline {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.map-embed-wrapper.is-offline {
+  aspect-ratio: auto;
+  min-height: 0;
+}
+
 /* Header: Big Name — clamp() for responsive scaling without media queries */
 .site-header .brand-name {
   font-size: clamp(3rem, 12vw, 10rem);
@@ -2337,6 +2386,16 @@ article.post-content hr {
   color: #c00;
   font-size: 0.875rem;
   margin: 0 0 0.75rem;
+}
+
+#comments .comments-error.comments-note {
+  color: var(--text-muted);
+}
+
+#comments .comments-form button:disabled,
+#comments .comment-like-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 /* New comment form */

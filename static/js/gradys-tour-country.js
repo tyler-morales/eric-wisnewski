@@ -1,3 +1,5 @@
+import { GLOBE_COPY } from './offline.js';
+
 export var COUNTRY_SLUG_ALIASES = {
   'united-states-of-america': 'united-states',
   'bosnia-and-herz': 'bosnia-and-herzegovina',
@@ -822,6 +824,13 @@ function initTourCountry(root) {
   }).then(function (api) {
     globe = api;
     if (globe) globe.sync(selected, counts, { aim: true });
+  }).catch(function () {
+    var map = nav.querySelector('.tour-country-map');
+    if (!map || map.querySelector('.offline-embed')) return;
+    var note = document.createElement('p');
+    note.className = 'offline-embed';
+    note.textContent = GLOBE_COPY;
+    map.replaceChildren(note);
   });
 }
 

@@ -1,0 +1,15 @@
+{{ define "title" }}You're offline | {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "header.html" . }}
+  <main>
+    <article class="post-content subscribe-status-page" data-offline-page>
+      <header>
+        <h1>You're offline</h1>
+      </header>
+      <p>This page isn't saved on this device.</p>
+      <p>Pages you already opened, and the latest posts saved while you were online, still work.</p>
+      <p><a href="{{ "/" | relURL }}">Back to the home page</a></p>
+    </article>
+  </main>
+{{ end }}

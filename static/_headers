@@ -5,3 +5,11 @@
 
 /subscribe/manage/*
   Referrer-Policy: no-referrer
+
+/sw.js
+  Content-Type: application/javascript
+  Cache-Control: public, max-age=0, must-revalidate
+
+/manifest.webmanifest
+  Content-Type: application/manifest+json
+  Cache-Control: public, max-age=0, must-revalidate
