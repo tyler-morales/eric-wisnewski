@@ -1,4 +1,4 @@
-"""Author invite stays drafts-only: checklist email plus CMS draft defaults."""
+"""Author invite: own section, draft stub, welcome email. CMS draft defaults stay."""
 
 from __future__ import annotations
 
@@ -14,27 +14,34 @@ AUTHORS_DIR = REPO_ROOT / "content" / "authors"
 
 REQUIRED_PHRASES = (
     "collaborators",
-    "authors",
-    "add-photos",
-    "posts",
+    "author stub",
     "draft",
+    "own section",
+    "don't use the posts section",
+    "continue with email",
+    "[comments password]",
+    "your section is ready",
 )
 
 GOOD_INVITE = """
-1. Collaborators invite their email.
-2. Authors stub with Draft on.
-3. They write Posts at /add-photos/ then Save as Draft.
+1. Author stub with Draft on, merged before they sign in.
+2. Collaborators invite their email.
+3. Welcome email: reply with your own section name. Continue with email.
+   Don't use the Posts section. Comments password is [COMMENTS PASSWORD].
+4. After they reply, build the section, then send "your section is ready".
 """
 
 BAD_INVITE_NO_DRAFT = """
-1. Collaborators invite their email.
-2. Authors stub.
-3. They write Posts and save. Photos at /add-photos/.
+1. Author stub, already public.
+2. Collaborators invite their email.
+3. They get their own section. Continue with email.
+   Don't use the Posts section. Comments password is [COMMENTS PASSWORD].
+4. Send "your section is ready".
 """
 
 
 def is_invite_doc(text: str) -> bool:
-    """True when the invite copy covers CMS access, profile, photos, Posts, and drafts."""
+    """True when the invite copy covers the own-section flow, email sign-in, and drafts."""
     if not text or not text.strip():
         return False
     lowered = text.lower()
@@ -74,7 +81,22 @@ class InviteDocContentTests(unittest.TestCase):
         text = INVITE_DOC.read_text(encoding="utf-8")
         self.assertTrue(
             is_invite_doc(text),
-            "invite doc must mention Collaborators, Authors, add-photos, Posts, and Draft",
+            "invite doc must cover the stub, Collaborators, own section, Draft, "
+            "Continue with email, and the comments-password placeholder",
+        )
+
+    def test_welcome_email_forbids_posts_and_github_save_failure_path(self) -> None:
+        text = INVITE_DOC.read_text(encoding="utf-8")
+        self.assertIn("don't use the Posts section", text)
+        self.assertNotIn("Open Posts → New", text)
+        self.assertIn("can open the CMS but can’t save", text)
+        self.assertIn("Continue with email", text)
+        self.assertIn("[NAME]", text)
+        self.assertIn("[EMAIL]", text)
+        self.assertIn("[COMMENTS PASSWORD]", text)
+        self.assertNotRegex(
+            text,
+            r"(?i)password to access comments:\s*(?!\[COMMENTS PASSWORD\])\S+",
         )
 
     def test_readme_points_at_invite_doc_success(self) -> None:
