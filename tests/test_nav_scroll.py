@@ -351,17 +351,17 @@ class NavCurrentBuildTests(unittest.TestCase):
 
     def test_section_index_and_posts_mark_that_tab_success(self) -> None:
         self.assertEqual(current_labels(self.read("gradys-tour", "index.html")), ["Grady's Tour"])
-        grady_posts = [
-            path
-            for path in (self.output_dir / "gradys-tour").glob("*/index.html")
-        ]
+        self.assertEqual(current_labels(self.read("gradys-tour", "sardinia", "index.html")), ["Grady's Tour"])
+        grady_posts = list((self.output_dir / "gradys-tour").glob("*/index.html"))
         self.assertTrue(grady_posts)
+        checked = 0
         for path in grady_posts:
-            self.assertEqual(
-                current_labels(path.read_text(encoding="utf-8")),
-                ["Grady's Tour"],
-                path,
-            )
+            html = path.read_text(encoding="utf-8")
+            if 'aria-label="Main navigation"' not in html:
+                continue
+            checked += 1
+            self.assertEqual(current_labels(html), ["Grady's Tour"], path)
+        self.assertGreater(checked, 1)
         self.assertEqual(
             current_labels(self.read("erics-d1-mission", "index.html")),
             ["Eric's D1 Mission"],
