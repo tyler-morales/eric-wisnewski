@@ -1,107 +1,81 @@
 # Invite a new author
 
-They write in Pages CMS right away. Nothing they create is public until you uncheck **Draft**. No GitHub, no Cloudflare, no repo.
+Every new writer gets their own section, the same shape as **Jeremy On Tap** or **Da Breakdown w Tad**. They do not write in **Posts**. Nothing they save is public until **Draft** is unchecked. They do not need GitHub, Cloudflare, or the repo.
 
-## Invite (now)
+## Steps
 
-1. Get their **email** and **byline name**.
-2. Open [Pages CMS](https://app.pagescms.org/) (GitHub sign-in). **Collaborators** → invite that email. A magic-link invite goes to their inbox.
-3. **Authors** → New: Name, Slug (`firstname-lastname`), a one-line placeholder bio, **Draft on**. Leave the slug alone after this. The stub is so they can pick themselves as Authors on posts; `/authors/<slug>/` stays unpublished.
-4. Send the email below. Fill in `[NAME]` and the `/add-photos/` password. Do not send a live author URL yet — it 404s until you undraft them.
+1. **Author stub**, merged before they sign in. **Authors** → New: Name, Slug (`firstname-lastname`), a one-line placeholder bio, **Draft on**. Leave the slug alone. The stub is so they can pick themselves under Authors. `/authors/<slug>/` stays unpublished, so do not send that URL yet.
+2. **Collaborators invite**, in the [Pages CMS](https://app.pagescms.org/) web UI (you sign in with GitHub). **Collaborators** → invite their email. A magic-link invite goes to their inbox.
+3. **Welcome email** below. Fill in `[NAME]`, `[EMAIL]`, and `[COMMENTS PASSWORD]`. The comments password is Cloudflare `COMMENTS_ADMIN_SECRET`. Do not commit it.
+4. They reply with a section name. You (with your assistant) build that section like Jeremy On Tap / Da Breakdown w Tad: a content folder, a Pages CMS collection, a permalink, and a nav tab that appears when the first post in that folder is undrafted and saved. Merge it, then send the **section ready** email below.
+5. **Go live** later. **Authors** → their profile → uncheck **Draft** → Save, before any post, or bylines will not resolve. Then undraft the posts that should go live, or they do that from the welcome email.
 
-They can edit every collection (Posts, Grady’s Tour, Da Breakdown w Tad, Jeremy On Tap, Authors, Site updates). That is trust, not a permission system. The email tells them where to write. A writer does not need their own nav tab — they can join an existing section (Christian writes in Grady’s Tour). On a shared post, pick every writer under **Authors** and add a **Who wrote what** block per person.
+They can edit every collection. That is trust, not a permission system. The email tells them to wait for their section and not use Posts. On a shared post, pick every writer under **Authors** and add a **Who wrote what** block per person.
 
-## Go live (later)
+Christian Pudlo (`cpudlo@outlook.com`) already writes in Grady’s Tour. That is the old exception. New writers do not join someone else’s section.
 
-When you want them public (after any tab/UI work, or just on the main Posts list):
+Phone photos that are too big for the CMS still go through [add-photos](https://ericwisnewski.com/add-photos/) (`UPLOAD_SECRET`). The welcome email does not include that password.
 
-1. Do the site UI first (skip if they are staying on the home-page Posts list).
-2. **Authors** → their profile → uncheck **Draft** → Save. Do this before any post, or bylines will not resolve.
-3. Uncheck **Draft** on the posts that should go live and Save — or tell them to do that.
+## Welcome email (copy and paste)
 
-A dedicated nav tab per author (like Grady’s Tour) is separate work unless one already exists. Tad writes in **Da Breakdown w Tad**; Jeremy writes in **Jeremy On Tap**. Those nav tabs appear when the first post in that folder is undrafted and saved.
-
-## Email (copy and paste)
-
-Subject: You’re set up to write on Eric’s site
+Subject: Welcome, [NAME] to ericwisnewski.com
 
 ```
 Hi [NAME],
 
-You’re set up as a writer. You can start now. Nothing you save is public until we say so.
+Welcome to ericwisnewski.com as a writer. I'm very excited Eric has brought you on the site.
 
-1. Sign in at https://app.pagescms.org/
-   Use the same email this was sent to. You’ll get a sign-in link in your inbox — no password, no GitHub.
+Please follow the steps below in order and save this email for your reference.
 
-2. Add your bio and photo
-   Open Authors, click your name, write a short Bio, add a Photo. Leave Draft checked.
-   If the photo is from your phone, upload it at https://ericwisnewski.com/add-photos/ first (password: [ADD-PHOTOS PASSWORD]), wait until it says Saved, then pick it in the Photo field. Don’t upload big files in the CMS — that path fails.
+STEP 1 (do this now): Reply with your section name
+    You'll get your own section on the site. Reply to this email with what you'd like it called. (For reference, Tad's is "Da Breakdown w Tad" and Jeremy's is "Jeremy On Tap.")
 
-3. Write a post
-   Open Posts → New. Pick yourself under Authors. Add a title, a slug (lowercase-with-hyphens), a date, and the body.
-   Leave Draft checked. Hit Save. You can make as many drafts as you want.
+STEP 2 (do this now): Sign in and set up your profile
+    Sign in at https://app.pagescms.org/
+    Use this email address ([EMAIL]) and choose "Continue with email." You'll get a sign-in link in your inbox. No password and no GitHub needed. Please don't sign in with GitHub, or saving won't work.
+    Then open Authors, click your name, write a short Bio, and add a Photo. Leave Draft checked.
 
-When we’re ready to publish, we’ll tell you to uncheck Draft and Save. Don’t uncheck it before then. Don’t edit other people’s posts, Grady’s Tour, or Site updates.
+Please don't write any posts yet, not even drafts, and don't use the Posts section. Wait for my next email.
+
+STEP 3 (after I email you that your section is ready): Write a post
+    Your section will show up in the left menu of Pages CMS under the name you picked. Open it, then New. Pick yourself under Authors, add a title, a slug (lowercase-with-hyphens), a date, and the body. Leave Draft checked and hit Save. You can make as many drafts as you want.
+
+STEP 4: Publish
+    When you're ready to publish a post, uncheck Draft and Save. Don't uncheck it before then.
+
+Managing comments
+    You also have access to remove/edit comments from people.
+    Go here to see comments on posts: https://ericwisnewski.com/admin/comments/
+    Use this password to access comments: [COMMENTS PASSWORD]
+
+If something breaks, email me and I will fix ASAP.
+
+Welcome,
+Tyler
+```
+
+## Section ready (copy and paste)
+
+Send this after the section is merged. Fill in `[NAME]`, `[EMAIL]`, and `[SECTION NAME]`.
+
+Subject: Your section is ready
+
+```
+Hi [NAME],
+
+Your section is ready. It’s called [SECTION NAME].
+
+Sign in at https://app.pagescms.org/ with [EMAIL] and choose "Continue with email." Don’t sign in with GitHub.
+
+Open [SECTION NAME] in the left menu, then New. Pick yourself under Authors. Add a title, a slug (lowercase-with-hyphens), a date, and the body. Leave Draft checked and hit Save.
+
+Don’t use the Posts section. Don’t uncheck Draft until you want the post public.
 
 If something breaks, email me.
 
 Tyler
 ```
 
-## Email for Jeremy (copy and paste)
+## If they can’t save
 
-Subject: You’re set up to write on Eric’s site
-
-```
-Hi Jeremy,
-
-You’re set up as a writer. You can start now. Nothing you save is public until we say so.
-
-1. Sign in at https://app.pagescms.org/
-   Use jeremybryan123@gmail.com. You’ll get a sign-in link in your inbox — no password, no GitHub.
-
-2. Add your bio and photo
-   Open Authors, click Jeremy Bryan, write a short Bio, add a Photo. Leave Draft checked until you are happy — the live site will not show your profile until you uncheck it.
-   If the photo is from your phone, upload it at https://ericwisnewski.com/add-photos/ first (password: [ADD-PHOTOS PASSWORD]), wait until it says Saved, then pick it in the Photo field. Don’t upload big files in the CMS — that path fails.
-
-3. Write a post
-   Open Jeremy On Tap → New. Pick yourself under Authors. Add a title, a slug (lowercase-with-hyphens), a date, and the body.
-   Leave Draft checked. Hit Save. You can make as many drafts as you want.
-   Don’t write in Posts, Grady’s Tour, or Da Breakdown w Tad.
-
-When you’re ready to publish, uncheck Draft and Save. That rebuilds the site and puts your tab plus the email checkbox on the live site. Don’t edit other people’s posts or Site updates.
-
-If something breaks, email me.
-
-Tyler
-```
-
-## Email for Christian (copy and paste)
-
-Subject: You’re set up to write on Eric’s site
-
-```
-Hi Christian,
-
-You’re set up as a writer. You can start now. Nothing you save is public until we say so.
-
-1. Sign in at https://app.pagescms.org/
-   Use cpudlo@outlook.com. You’ll get a sign-in link in your inbox — no password, no GitHub.
-
-2. Add your bio and photo
-   Open Authors, click Christian Pudlo, write a short Bio, add a Photo. Leave Draft unchecked (your profile is already live so bylines work).
-   If the photo is from your phone, upload it at https://ericwisnewski.com/add-photos/ first (password: [ADD-PHOTOS PASSWORD]), wait until it says Saved, then pick it in the Photo field. Don’t upload big files in the CMS — that path fails.
-
-3. Write a post
-   Open Grady’s Tour → New. You don’t have your own tab — you write in Grady’s Tour (and can help on other sections if we ask).
-   For a post you write with Grady, pick both Grady Davis and Christian Pudlo under Authors (Grady first). Put any shared intro in Body. Then under Who wrote what, add one block for Grady and one for you so readers can see who wrote each part.
-   Add a title, a slug (lowercase-with-hyphens), a date, and the text.
-   Leave Draft checked. Hit Save. You can make as many drafts as you want.
-   Don’t edit other people’s solo posts or Site updates.
-
-When we’re ready to publish, we’ll tell you to uncheck Draft and Save. Don’t uncheck it before then.
-
-If something breaks, email me.
-
-Tyler
-```
+A writer who signs into Pages CMS with GitHub instead of the email link can open the CMS but can’t save. Sign out, then use **Continue with email** on the invited address.
