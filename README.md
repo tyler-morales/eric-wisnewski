@@ -86,7 +86,7 @@ Edit `config/_default/hugo.toml`. Under `[params]` you’ll see:
 
 Update these values and rebuild. Nav links are used in the site header; the CSV URL is read by Hugo's `resources.GetRemote` when building Eric's D1 Mission.
 
-The main nav stays on one row. When the labels don’t fit (typical on a phone, and later if more sections are added), the row scrolls horizontally. A white fade on the left and/or right shows there is more to scroll in that direction; if everything fits, there is no fade and no scroll.
+The main nav stays on one row. When the labels don’t fit (typical on a phone, and later if more sections are added), the row scrolls horizontally. A white fade on the left and/or right shows there is more to scroll in that direction; if everything fits, there is no fade and no scroll. The tab for the section you are in — the section index or a post in that section — is bold and underlined, with `aria-current="page"`. Eric’s posts and `/erics-d1-mission/` mark **Eric's D1 Mission**. The home feed mixes every writer, so no tab is current there. Profiles, updates, and other non-section pages are the same. On load the row scrolls that tab into view (centered when there is room), instantly, including when reduced motion is requested. With JavaScript off, the tab is still marked and the row stays at the start. Tabs that wait for a section’s first published post still wait.
 
 Every article page (Posts, Grady’s Tour, Da Breakdown) has a **Back to top** link after the last photo / gallery, next to the footer Share control. It is an in-flow `#top` link, not a floating corner button.
 
