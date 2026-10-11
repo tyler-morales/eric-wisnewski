@@ -234,26 +234,24 @@ class NavScrollTemplateTests(unittest.TestCase):
         self.assertIn('type="module"', header)
         self.assertIn('aria-label="Main navigation"', header)
 
-    def test_current_section_is_marked_in_the_header_success(self) -> None:
+    def test_current_section_comes_from_the_nav_list_success(self) -> None:
         header = HEADER_PARTIAL.read_text(encoding="utf-8")
-        self.assertIn("not .IsHome", header)
-        self.assertIn('eq .Section "posts"', header)
-        self.assertIn('hasPrefix .RelPermalink "/erics-d1-mission"', header)
-        self.assertIn('eq .Section "gradys-tour"', header)
-        self.assertIn('eq .Section "da-breakdown-w-tad"', header)
-        self.assertIn('eq .Section "jeremy-on-tap"', header)
-        self.assertEqual(header.count('aria-current="page"{{ end }}'), 4)
-        for gate, key in (
-            ("has-da-breakdown-posts.html", "da-breakdown-w-tad"),
-            ("has-jeremy-on-tap-posts.html", "jeremy-on-tap"),
-        ):
-            gate_at = header.find(gate)
-            current_at = header.find(f'eq $navCurrent "{key}"')
-            end_at = header.find("{{ end }}", current_at)
-            self.assertGreater(gate_at, -1)
-            self.assertGreater(current_at, gate_at)
-            self.assertGreater(end_at, current_at)
-            self.assertIn("aria-current=\"page\"", header[current_at:end_at])
+        menu = (REPO_ROOT / "layouts" / "partials" / "nav-menu.html").read_text(encoding="utf-8")
+        invite = (REPO_ROOT / "docs" / "invite-author.md").read_text(encoding="utf-8")
+        self.assertIn('partial "nav-menu.html"', header)
+        self.assertIn("not $.IsHome", header)
+        self.assertIn("hasPrefix $.RelPermalink .href", header)
+        self.assertIn("eq $.Section .section", header)
+        self.assertIn("eq $.Section .also", header)
+        self.assertEqual(header.count('aria-current="page"'), 2)
+        self.assertIn('"gated" true', menu)
+        self.assertIn("section-has-posts.html", menu)
+        self.assertIn("nav-menu.html", invite)
+        self.assertIn("header.html", invite)
+        for section in ("gradys-tour", "da-breakdown-w-tad", "jeremy-on-tap"):
+            self.assertIn(f'"section" "{section}"', menu)
+            self.assertNotIn(f'eq .Section "{section}"', header)
+            self.assertNotIn(f'eq $.Section "{section}"', header)
 
     def test_load_scrolls_the_nav_not_the_page_success(self) -> None:
         header = HEADER_PARTIAL.read_text(encoding="utf-8")
@@ -273,7 +271,8 @@ class NavScrollTemplateTests(unittest.TestCase):
         self.assertIn("scroll-behavior: auto", ul)
         current = first_block(css, '.site-nav a[aria-current="page"]')
         self.assertIn("font-weight: 700", current)
-        self.assertIn("underline", current)
+        self.assertNotIn("underline", current)
+        self.assertIn("underline", first_block(css, ".site-nav a:hover"))
 
     def test_nav_list_does_not_wrap_failure(self) -> None:
         css = STYLE_CSS.read_text(encoding="utf-8")
@@ -388,6 +387,92 @@ class NavCurrentBuildTests(unittest.TestCase):
         self.assertEqual(current_labels(jeremy), [])
         self.assertIn("Grady's Tour", main_nav_html(jeremy))
         self.assertIn("Da Breakdown w Tad", main_nav_html(self.read("index.html")))
+
+
+class NewWriterNavTests(unittest.TestCase):
+    """A section that only exists as one nav-menu.html entry still gets the current tab."""
+
+    def test_new_menu_entry_is_current_and_a_draft_section_stays_hidden_success(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            layouts = root / "layouts"
+            content = root / "content"
+            shutil.copytree(REPO_ROOT / "layouts", layouts)
+            shutil.copytree(REPO_ROOT / "content", content)
+            menu_path = layouts / "partials" / "nav-menu.html"
+            text = menu_path.read_text(encoding="utf-8")
+            needle = '"section" "jeremy-on-tap" "gated" true)'
+            self.assertIn(needle, text)
+            menu_path.write_text(
+                text.replace(
+                    needle,
+                    needle
+                    + '\n  (dict "label" "Fixture Writer" "href" "/fixture-writer/" '
+                    + '"section" "fixture-writer" "gated" true)'
+                    + '\n  (dict "label" "Fixture Hidden" "href" "/fixture-hidden/" '
+                    + '"section" "fixture-hidden" "gated" true)',
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            self._write_section(content / "fixture-writer", draft=False)
+            self._write_section(content / "fixture-hidden", draft=True)
+            dest = root / "public"
+            result = subprocess.run(
+                [
+                    "hugo",
+                    "--contentDir",
+                    str(content),
+                    "--layoutDir",
+                    str(layouts),
+                    "--destination",
+                    str(dest),
+                    "--quiet",
+                    "--noBuildLock",
+                ],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=HUGO_TIMEOUT_SECONDS,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            post = (dest / "fixture-writer" / "hello" / "index.html").read_text(encoding="utf-8")
+            index = (dest / "fixture-writer" / "index.html").read_text(encoding="utf-8")
+            home = (dest / "index.html").read_text(encoding="utf-8")
+            eric = (dest / "posts" / "boston-college" / "index.html").read_text(encoding="utf-8")
+            self.assertEqual(current_labels(post), ["Fixture Writer"])
+            self.assertEqual(current_labels(index), ["Fixture Writer"])
+            self.assertIn("Fixture Writer", main_nav_html(post))
+            self.assertNotIn("Fixture Hidden", main_nav_html(post))
+            self.assertEqual(current_labels(home), [])
+            self.assertIn("Fixture Writer", main_nav_html(home))
+            self.assertNotIn("Fixture Hidden", main_nav_html(home))
+            self.assertEqual(current_labels(eric), ["Eric's D1 Mission"])
+
+    def test_menu_without_the_entry_would_not_mark_it_failure(self) -> None:
+        menu = (REPO_ROOT / "layouts" / "partials" / "nav-menu.html").read_text(encoding="utf-8")
+        header = HEADER_PARTIAL.read_text(encoding="utf-8")
+        self.assertNotIn("fixture-writer", menu)
+        self.assertNotIn("fixture-writer", header)
+        self.assertNotIn('eq $.Section "fixture-writer"', header)
+
+    def _write_section(self, directory: Path, *, draft: bool) -> None:
+        directory.mkdir()
+        (directory / "_index.md").write_text(
+            f"---\ntitle: {directory.name}\n---\n",
+            encoding="utf-8",
+        )
+        (directory / "hello.md").write_text(
+            "---\n"
+            f"title: {directory.name} hello\n"
+            "slug: hello\n"
+            "date: 2026-01-02T00:00:00Z\n"
+            f"draft: {'true' if draft else 'false'}\n"
+            "---\n"
+            "Hi.\n",
+            encoding="utf-8",
+        )
 
 
 if __name__ == "__main__":

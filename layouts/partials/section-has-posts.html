@@ -1,0 +1,12 @@
+{{/*
+  True when a section path ("/jeremy-on-tap") has at least one published post.
+  Nav tabs and the per-section wrappers use this so a new writer does not
+  get a new copy of the check. Uses that section's RegularPages, not a
+  site-wide scan, so the header does not walk .Site.RegularPages while Hugo
+  is still collecting them.
+*/}}
+{{- $section := site.GetPage . -}}
+{{- if not $section -}}
+  {{- return false -}}
+{{- end -}}
+{{- return gt (len $section.RegularPages) 0 -}}

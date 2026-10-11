@@ -1,21 +1,10 @@
 {{/*
-  Landing pages that appear in the main nav, same set and gates as header.html.
+  Landing pages that appear in the main nav, same set and gates as nav-menu.html.
   Returns WebPage / CollectionPage dicts for WebSite.hasPart (sitelinks).
 */}}
 {{- $items := slice -}}
-{{- with .Site.GetPage "/erics-d1-mission" -}}
-  {{- $items = $items | append (partial "nav-section-ld.html" .) -}}
-{{- end -}}
-{{- with .Site.GetPage "/gradys-tour" -}}
-  {{- $items = $items | append (partial "nav-section-ld.html" .) -}}
-{{- end -}}
-{{- if partial "has-da-breakdown-posts.html" . -}}
-  {{- with .Site.GetPage "/da-breakdown-w-tad" -}}
-    {{- $items = $items | append (partial "nav-section-ld.html" .) -}}
-  {{- end -}}
-{{- end -}}
-{{- if partial "has-jeremy-on-tap-posts.html" . -}}
-  {{- with .Site.GetPage "/jeremy-on-tap" -}}
+{{- range partial "nav-menu.html" . -}}
+  {{- with site.GetPage .href -}}
     {{- $items = $items | append (partial "nav-section-ld.html" .) -}}
   {{- end -}}
 {{- end -}}

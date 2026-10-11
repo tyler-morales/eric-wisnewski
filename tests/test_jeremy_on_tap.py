@@ -102,20 +102,28 @@ class JeremyOnTapContractTests(unittest.TestCase):
 
     def test_nav_gates_on_published_posts_success(self) -> None:
         header = HEADER_PARTIAL.read_text(encoding="utf-8")
+        menu = (REPO_ROOT / "layouts" / "partials" / "nav-menu.html").read_text(encoding="utf-8")
         gate = HAS_POSTS_PARTIAL.read_text(encoding="utf-8")
-        self.assertIn("has-jeremy-on-tap-posts.html", header)
-        self.assertIn("Jeremy On Tap", header)
-        self.assertIn("Da Breakdown w Tad", header)
+        shared = (REPO_ROOT / "layouts" / "partials" / "section-has-posts.html").read_text(encoding="utf-8")
+        self.assertIn('partial "nav-menu.html"', header)
+        self.assertIn("Jeremy On Tap", menu)
+        self.assertIn("Da Breakdown w Tad", menu)
+        self.assertLess(menu.find("Da Breakdown w Tad"), menu.find("Jeremy On Tap"))
+        self.assertIn('"section" "jeremy-on-tap" "gated" true', menu.replace("\n", " "))
         self.assertNotIn("jers-prospect-profiles", header)
-        self.assertNotIn("Prospect Profiles", header)
-        self.assertIn("RegularPages", gate)
-        self.assertIn("GetPage", gate)
+        self.assertNotIn("jers-prospect-profiles", menu)
+        self.assertNotIn("Prospect Profiles", menu)
+        self.assertIn("RegularPages", shared)
+        self.assertIn("GetPage", shared)
         self.assertIn("/jeremy-on-tap", gate)
+        self.assertIn("section-has-posts.html", gate)
         self.assertNotIn("jers-prospect-profiles", gate)
 
     def test_nav_without_post_gate_failure(self) -> None:
         header = HEADER_PARTIAL.read_text(encoding="utf-8")
+        menu = (REPO_ROOT / "layouts" / "partials" / "nav-menu.html").read_text(encoding="utf-8")
         self.assertNotIn(".Site.RegularPages", header)
+        self.assertNotIn(".Site.RegularPages", menu)
         self.assertNotIn("render 'never'", header)
 
     def test_home_and_author_templates_include_section_success(self) -> None:

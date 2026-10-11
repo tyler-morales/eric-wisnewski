@@ -201,12 +201,14 @@ class SeoTemplateTests(unittest.TestCase):
         nav = (REPO_ROOT / "layouts" / "partials" / "nav-section-pages.html").read_text(
             encoding="utf-8"
         )
-        self.assertIn("has-da-breakdown-posts.html", nav)
-        self.assertIn("has-jeremy-on-tap-posts.html", nav)
-        self.assertIn("/erics-d1-mission", nav)
-        self.assertIn("/gradys-tour", nav)
-        self.assertNotIn("/school-sheets", nav)
-        self.assertNotIn('"/map"', nav)
+        menu = (REPO_ROOT / "layouts" / "partials" / "nav-menu.html").read_text(encoding="utf-8")
+        self.assertIn("nav-menu.html", nav)
+        self.assertIn("section-has-posts.html", menu)
+        self.assertIn("/erics-d1-mission", menu)
+        self.assertIn("/gradys-tour", menu)
+        self.assertIn('"gated" true', menu)
+        self.assertNotIn("/school-sheets", menu)
+        self.assertNotIn('"/map"', menu)
 
     def test_nav_section_pages_without_gates_failure(self) -> None:
         nav = (REPO_ROOT / "layouts" / "partials" / "nav-section-pages.html").read_text(

@@ -5,27 +5,16 @@
   <p class="brand-name"><a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a></p>
   {{ end }}
   <nav class="site-nav" aria-label="Main navigation">
-    {{/* Home mixes every writer, so no tab is current. posts and the hub are Eric's D1 Mission. */}}
-    {{ $navCurrent := "" }}
-    {{ if not .IsHome }}
-      {{ if or (eq .Section "posts") (hasPrefix .RelPermalink "/erics-d1-mission") }}
-        {{ $navCurrent = "erics-d1-mission" }}
-      {{ else if eq .Section "gradys-tour" }}
-        {{ $navCurrent = "gradys-tour" }}
-      {{ else if eq .Section "da-breakdown-w-tad" }}
-        {{ $navCurrent = "da-breakdown-w-tad" }}
-      {{ else if eq .Section "jeremy-on-tap" }}
-        {{ $navCurrent = "jeremy-on-tap" }}
-      {{ end }}
-    {{ end }}
+    {{/* Tabs live in nav-menu.html. Current is any entry whose section (or href) is this page. Home mixes every writer, so no tab is current. */}}
     <ul role="list">
-      <li><a href="{{ .Site.Params.nav_erics_d1_mission | default "/erics-d1-mission/" }}"{{ if eq $navCurrent "erics-d1-mission" }} aria-current="page"{{ end }}>Eric's D1 Mission</a></li>
-      <li><a href="{{ .Site.Params.nav_gradys_tour | default "/gradys-tour/" }}"{{ if eq $navCurrent "gradys-tour" }} aria-current="page"{{ end }}>Grady's Tour</a></li>
-      {{ if partial "has-da-breakdown-posts.html" . }}
-      <li><a href="{{ .Site.Params.nav_da_breakdown_w_tad | default "/da-breakdown-w-tad/" }}"{{ if eq $navCurrent "da-breakdown-w-tad" }} aria-current="page"{{ end }}>Da Breakdown w Tad</a></li>
+      {{ range partial "nav-menu.html" . }}
+      {{ $on := false }}
+      {{ if not $.IsHome }}
+        {{ if hasPrefix $.RelPermalink .href }}{{ $on = true }}{{ end }}
+        {{ if and .section (eq $.Section .section) }}{{ $on = true }}{{ end }}
+        {{ if and .also (eq $.Section .also) }}{{ $on = true }}{{ end }}
       {{ end }}
-      {{ if partial "has-jeremy-on-tap-posts.html" . }}
-      <li><a href="{{ .Site.Params.nav_jeremy_on_tap | default "/jeremy-on-tap/" }}"{{ if eq $navCurrent "jeremy-on-tap" }} aria-current="page"{{ end }}>Jeremy On Tap</a></li>
+      <li><a href="{{ .href }}"{{ if $on }} aria-current="page"{{ end }}>{{ .label | safeHTML }}</a></li>
       {{ end }}
     </ul>
     <script>
