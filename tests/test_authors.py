@@ -324,6 +324,13 @@ class AuthorBuildTests(unittest.TestCase):
         self.assertTrue(self.authors_index.is_file(), "Missing /authors/ index")
         self.assertTrue(self.tyler.is_file(), "Missing /authors/tyler-morales/")
 
+    def test_draft_author_john_peterson_stays_off_the_live_site_failure_path(self) -> None:
+        page = self._output_dir / "authors" / "john-peterson" / "index.html"
+        self.assertFalse(page.exists(), "/authors/john-peterson/ must stay unpublished")
+        self.assertNotIn("John Peterson", author_list_names(self.authors_index_html))
+        sitemap = (self._output_dir / "sitemap.xml").read_text(encoding="utf-8")
+        self.assertNotIn("john-peterson", sitemap)
+
     def test_authors_index_lists_eric_first_then_name_success(self) -> None:
         names = author_list_names(self.authors_index_html)
         self.assertGreaterEqual(len(names), 5, f"Expected a roster, got {names}")

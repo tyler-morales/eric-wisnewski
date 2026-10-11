@@ -100,6 +100,14 @@ class InviteDocContentTests(unittest.TestCase):
         text = (AUTHORS_DIR / "jeremy-bryan.md").read_text(encoding="utf-8")
         self.assertRegex(text, r"(?m)^draft:\s*true\s*$")
 
+    def test_john_peterson_stub_stays_draft_success(self) -> None:
+        text = (AUTHORS_DIR / "john-peterson.md").read_text(encoding="utf-8")
+        self.assertRegex(text, r"(?m)^name:\s*John Peterson\s*$")
+        self.assertRegex(text, r"(?m)^slug:\s*john-peterson\s*$")
+        self.assertRegex(text, r"(?m)^draft:\s*true\s*$")
+        self.assertRegex(text, r"(?m)^bio:\s*\S.+$")
+        self.assertNotRegex(text, r"(?m)^image:")
+
 
 class CmsDraftDefaultTests(unittest.TestCase):
     def test_posts_and_authors_draft_default_true_success(self) -> None:
