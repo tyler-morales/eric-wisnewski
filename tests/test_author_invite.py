@@ -100,6 +100,22 @@ class InviteDocContentTests(unittest.TestCase):
         text = (AUTHORS_DIR / "jeremy-bryan.md").read_text(encoding="utf-8")
         self.assertRegex(text, r"(?m)^draft:\s*true\s*$")
 
+    def test_john_peterson_stub_stays_draft_success(self) -> None:
+        text = (AUTHORS_DIR / "john-peterson.md").read_text(encoding="utf-8")
+        self.assertRegex(text, r"(?m)^name:\s*John Peterson\s*$")
+        self.assertRegex(text, r"(?m)^slug:\s*john-peterson\s*$")
+        self.assertRegex(text, r"(?m)^draft:\s*true\s*$")
+        self.assertRegex(text, r"(?m)^bio:\s*\S.+$")
+        self.assertNotRegex(text, r"(?m)^image:")
+
+    def test_john_peterson_has_no_section_or_nav_failure_path(self) -> None:
+        self.assertFalse((REPO_ROOT / "content" / "john-peterson").exists())
+        hugo_toml = (REPO_ROOT / "config" / "_default" / "hugo.toml").read_text(encoding="utf-8")
+        self.assertNotIn("john-peterson", hugo_toml)
+        pages = PAGES_YML.read_text(encoding="utf-8")
+        self.assertNotIn("name: john-peterson", pages)
+        self.assertNotIn("default: john-peterson", pages)
+
 
 class CmsDraftDefaultTests(unittest.TestCase):
     def test_posts_and_authors_draft_default_true_success(self) -> None:

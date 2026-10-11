@@ -1,6 +1,7 @@
 # TODOS
 
 ## Next
+- [ ] Send John Peterson (`jpeterson928@gmail.com`) the writer email in [docs/invite-author.md](docs/invite-author.md). Fill `[NAME]` and the `/add-photos/` password. Collaborators invite is the Pages CMS UI, not the repo. Stub is `content/authors/john-peterson.md` (`draft: true`); he writes in Posts, no nav tab. Do not send `/authors/john-peterson/` — it 404s until Draft is unchecked.
 - [ ] SEO Phase 3 (rank — not more template code): Search Console + links + publishing. See README **SEO → Phase 3**. Checklist:
   - [ ] Google Search Console: verify `ericwisnewski.com` (DNS), submit sitemap, Request indexing on `/`, `/erics-d1-mission/`, `/gradys-tour/`, `/da-breakdown-w-tad/`, `/authors/eric-wisnewski/`, and key posts (`an-introduction`, school posts)
   - [x] Cloudflare: 301 `www` → apex (Single Redirect template) — confirm in a private window
@@ -20,6 +21,7 @@
 - [x] Run D1 migration `0005_email_confirm_guard.sql` on production (comment email confirm columns + subscriber `confirm_sent_at`). Applied remotely 28 Aug 2026 (`5` queries, `49` rows written).
 
 ## Done
+- [x] John Peterson author stub: `content/authors/john-peterson.md` (`name`, `slug: john-peterson`, `draft: true`, one-line placeholder bio, no photo). Production Hugo omits `/authors/john-peterson/` and the contributors roster. No nav tab, section, or posts. Tests in `tests/test_author_invite.py` and `tests/test_authors.py`. Deleted/consolidated: none.
 - [x] Grady’s Tour globe: removed the hint under the map (desktop “Click a country… Drag to rotate.” and the touch “Tap a country… Pinch to zoom.”). No replacement line. SVG name is just “Globe”. Tests in `tests/test_gradys_tour_country.py`. Deleted/consolidated: `.tour-country-map-hint` rules.
 - [x] Grady’s Tour globe, one-finger intent: `oneFingerIntent` waits out a 12px slop. A quick vertical (or tied) move scrolls the page (`scrollBy`, short coast). A quick sideways move rotates. A move that leaves the slop only after 220ms rotates in any direction, so a press-then-drag can tilt. A finger that never leaves the slop still taps a country. `touch-action` stays `none` on that screen so the browser does not take the vertical pan before the choice. Pinch zoom unchanged. Zoom buttons stay hidden. Tests in `tests/test_gradys_tour_country.py`. Deleted/consolidated: `touch-action: pan-y` (it made every vertical swipe a page scroll, so one finger could not turn the globe).
 - [x] Grady’s Tour globe on touch screens: Zoom in / Zoom out are hidden (`(hover: none) and (pointer: coarse)`). One finger scrolls the page (`touch-action: pan-y`, no pointer capture). Pinch zooms and two fingers rotate. Desktop keeps the buttons, drag, and wheel zoom. Globe is capped at `min(22rem, 70vw)` on those screens. A country pick (globe or dropdown) writes `?country=` again — `pushState` had required an opts object, so neither caller was updating the URL. Tests in `tests/test_gradys_tour_country.py` (`pinchScale`). Deleted/consolidated: none — buttons stay in the HTML for desktop and for the keyboard.
