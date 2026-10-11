@@ -246,12 +246,18 @@ class NavScrollTemplateTests(unittest.TestCase):
         self.assertEqual(header.count('aria-current="page"'), 2)
         self.assertIn('"gated" true', menu)
         self.assertIn("section-has-posts.html", menu)
+        shared = (REPO_ROOT / "layouts" / "partials" / "section-has-posts.html").read_text(encoding="utf-8")
+        self.assertIn("return $ok", shared)
         self.assertIn("nav-menu.html", invite)
         self.assertIn("header.html", invite)
         for section in ("gradys-tour", "da-breakdown-w-tad", "jeremy-on-tap"):
             self.assertIn(f'"section" "{section}"', menu)
             self.assertNotIn(f'eq .Section "{section}"', header)
             self.assertNotIn(f'eq $.Section "{section}"', header)
+
+    def test_unparenthesized_gate_return_fails_pages_build_failure(self) -> None:
+        shared = (REPO_ROOT / "layouts" / "partials" / "section-has-posts.html").read_text(encoding="utf-8")
+        self.assertNotRegex(shared, r"return\s+gt\b")
 
     def test_load_scrolls_the_nav_not_the_page_success(self) -> None:
         header = HEADER_PARTIAL.read_text(encoding="utf-8")
