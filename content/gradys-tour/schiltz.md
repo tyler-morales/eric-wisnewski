@@ -32,7 +32,7 @@ At first glance Schiltz is the everyman. He is of average height, works 9-5 and 
 
 ![](/images/uploads/IMG_0864.jpeg)
 
-*Schiltz under question in Japan*
+*Schiltz under question in Japan, for eating ice cream.*
 
 Now, he is nearly here in Napoli. He needed this break. A few years back, he gave up a life of soulless profiteering in high finance to dedicate his time to search and rescue operations and management in Texas. He even says “y’all” now. I eagerly wait in the hostel, but he never shows. The storm cloud that follows him and everything he touches for the next 5 days is staggering. I receive a chain of alarming messages that there has been ‘a change of plan’, he is ‘on his way to the ER’ and ‘he may lose his eye’.
 
