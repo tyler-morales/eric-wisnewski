@@ -72,7 +72,7 @@ The next morning, I debrief with T-Mo.
 
 >  “Schiltz is done. He’s on the next flight back to Austin” - T-Mo
 
-I call quickly and manage to talk him off the ledge, we head off to Rome to extract. We pick him up then grab a rental car, then head to the hills for Schiltz to recover. Like an aging rock star withdrawing from benzos, he must wear sunglasses day and night to protect the eye. He is clearly in a lot of pain and his humiliation continues as he walks glasses-first into the sliding door checking into the hotel. 
+I call quickly and manage to talk him off the ledge, we head off to Rome to extract. We pick him up then grab a rental car, then head to the hills for Schiltz to recover. Like an aging rock star withdrawing from benzos, he must wear sunglasses day and night to protect the eye. He is clearly in a lot of pain and his humiliation continues as he walks glasses-first into a sliding door checking into the hotel. 
 
 ![](/images/uploads/IMG_2831.jpeg)
 
