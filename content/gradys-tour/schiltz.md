@@ -46,21 +46,23 @@ How did we get here?
 
 ![](/images/uploads/IMG_2607-2.jpeg)
 
-> “The plan was very simple. Take a 5-hour train down to Naples, meet up with Grady and T-Mo, then immediately get after it. On the train, my contacts were acting up, so I went to the bathroom to take them out. But as soon as I took out my right contact, I felt a searing pain erupt from my eye. I blinked a bunch; but after a few frantic seconds of blinking, the pain and blurriness that normally would’ve gone away didn’t. If anything, it got worse. A milky white haze began covering half of my vision. I could barely see. Looking at things hurt, blinking hurt, tears kept coming from my right eye, but I wasn’t sad.
-
-
-
-> Naturally, I went to Google to see if this was something serious, and its little AI summary gave me a cheery piece of advice: “you need to find a hospital immediately”. This was not fun to hear, considering I was in a foreign country on a high-speed rail train going almost the entire length of the country. I had to come up with a plan fast. After talking to Grady, my parents, and an eye doctor I know from Chicago, I rushed off the train in Rome and decided to call a taxi to the hospital. Taxis were getting scooped up left and right, and my Uber app essentially told me to go F myself because there was too much traffic for the app to keep up with.
-
-
-
-> I started to have heart palpitations from the noise, commotion, and my increasingly worsening eye condition. Then some random man yelled at me, asking me if I needed a taxi. Of course I said yes, and he said “have cash?” I said no, but he then guided me to an ATM and told me he could take me to the hospital for 40 euros. Definitely a ripoff, but to skip the line, I agreed. I took out the cash, thinking that he was going to drive me, but then this big, lumbering elderly man dude pops out of nowhere next to him. “He will take you”. We walk to his beat-up Fiat (just his personal car, btw), then he proceeds to text and drive the entire way without using a turn signal, while talking to me about how HE had to get eye surgery from the same place. We finally pull up to the eye hospital, and he hits me with a crisp “good luck” in Italian, takes the money and peels off.
-
-
-
+> “The plan was very simple. Take a 5-hour train down to Naples, meet up with Grady and T-Mo, then immediately get after it. On the train, my contacts were acting up, so I went to the bathroom to take them out. But as soon as I took out my right contact, I felt a searing pain erupt from my eye. I blinked a bunch, but after a few frantic seconds, the pain and blurriness intensified and a milky white haze began covering my vision. The tears began to come, but I wasn’t sad.
+>
+>
+>
+> Naturally, I went to Google to see if this was something serious, and its little AI summary gave me a cheery piece of advice: “you need to find a hospital immediately”.
+>
+>
+>
+> I had to come up with a plan fast. After talking to Grady, my parents, and an eye doctor I know from Chicago, I rushed off the train in Rome to call a taxi to the hospital. Taxis were getting scooped up left and right, and my Uber app essentially told me to go F myself because there was too much traffic for the app to keep up with.
+>
+>
+>
+> I started to have heart palpitations from the noise, commotion, and my increasingly worsening eye condition. Then some random man yelled at me, asking me if I needed a taxi. Did I “have cash?” I said no, so guided me to an ATM and told me he could take me to the hospital for 40 euros. Definitely a ripoff, but to skip the line, I agreed. I took out the cash, thinking that he was going to drive me, but then this big, lumbering elderly man pops out of nowhere next to him. “He will take you”. We walk to his beat-up Fiat, and he proceeds to text and drive the entire way without using a turn signal. He lets me know HE had to get eye surgery from the same place. We finally pull up to the eye hospital, and he hits me with a crisp “good luck” in Italian, takes the money and peels off.
+>
+>
+>
 > After paying an upfront $600, the hospital saw me pretty quickly. I learn that if I had not gone directly to the hospital and gotten this checked out, in the words of my Italian doctor, **“you have no more your eye”.**
-
-
 
 /[https://www.youtube.com/watch?v=7felNSYzoD4](https://www.youtube.com/watch?v=7felNSYzoD4) 
 
