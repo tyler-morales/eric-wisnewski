@@ -78,7 +78,7 @@ I call quickly and manage to talk him off the ledge, we head off to Rome to extr
 
 *Rescuing Schiltz from Rome*
 
-A couple days after the ER his eye is on the mend, and we can finally start having some fun we drive to the beautiful town of Polignano a Mare, ready to celebrate Schiltz’s restored health.  
+A couple days after his ER visit the eye is on the mend, and we can finally start having some fun, so we drive to the beautiful town of Polignano a Mare.
 
 ![](/images/uploads/IMG_2829.jpeg)
 
