@@ -24,7 +24,7 @@ gallery:
 ---
 Napoli - Italy
 
-Sitting at the hostel, I wait for the newest addition to a long cast of characters on this trip: Schiltz. He had a first name once, but it has been long lost to history. It’s only to be summoned in whispers by those who knew him long ago or government officials.
+Sitting at the hostel, I wait for the newest addition to a long cast of characters on this trip: Schiltz. He had a first name once, but it has been long lost to history. It’s only to be summoned in whispers by those who knew him long long ago or government officials.
 
 
 
