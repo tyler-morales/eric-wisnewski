@@ -5,7 +5,7 @@ author:
   - grady-davis
 date: 2026-09-27T22:27:00Z
 draft: false
-image: /images/uploads/IMG_2517.jpeg
+image: /images/uploads/IMG_2517-1.jpeg
 country:
   - Italy
 gallery:
