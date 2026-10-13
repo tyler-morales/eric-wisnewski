@@ -120,4 +120,4 @@ Thanks for reading my euro trip!
 
 Grady
 
-PS the gallery includes some photos of the last couple days spent with family in Bari.
+PS the gallery includes some photos of the last couple days spent with family in Bari. Plus T-Mo getting detained for looking too foreign in Bari.
