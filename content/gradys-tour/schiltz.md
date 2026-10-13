@@ -5,9 +5,13 @@ author:
   - grady-davis
 date: 2026-09-27T22:27:00Z
 draft: true
-image: /images/uploads/IMG_2607-1.jpeg
+image: /images/uploads/IMG_2517.jpeg
 country:
   - Italy
+gallery:
+  - /images/uploads/IMG_2569.jpeg
+  - /images/uploads/IMG_2504.jpeg
+  - /images/uploads/IMG_2547.jpeg
 ---
 Napoli - Italy
 
@@ -17,7 +21,9 @@ Sitting at the hostel, I await for the newest addition to the trip: Schiltz. He 
 
 At first glance Schiltz is the everyman. He is of average height, works 9-5 and pays his taxes. He is humble, reflective and good-hearted natured and me him and T-Mo have travelled far and wide together. But he does have one special almost supernatural ability, his approachability. I’ve seen complete strangers do and say things to him that would leave me reeling. I’ve witnessed him accidentally have dinner with a pimp, make clothing deals with a homeless crackhead and be catcalled aggressively cat called by seemingly nice women. Even the Japanese, a people who take painstaking efforts to not even sit next to a foreigner on a crowded train, could not resist approaching him. During a trip with him, in a sushi restaurant an elderly woman smiled at him and in broken English called him ‘handsome boy’; in back-to-back bars he was compared to Tom Hanks, then Tom Horr[ll]and; and to top it off, at a bathhouse full of stark-naked Japanese men, he received affectionate jeers and thigh slaps. Complete strangers of all ages feel fully free to harass, grab and say all manner of things to him. It’s a unique and endearing quality.
 
+![](/images/uploads/IMG_0864.jpeg)
 
+*Schiltz under question in Japan*
 
 Now, he is nearly here in Napoli. He needed this break. A few years back, he gave up a life of soulless profiteering in high finance to dedicate his time to search and rescue operations and management in Texas. He even says “y’all” now. I eagerly wait in the hostel, but he never shows. The storm cloud that follows him and everything he touches for the next 5 days is staggering. I receive a chain of alarming messages that there has been ‘a change of plan’, he is ‘on his way to the ER’ and ‘he may lose his eye’.
 
@@ -37,7 +43,7 @@ How did we get here?
 
 
 
-> After paying an upfront $600, the hospital saw me pretty quickly. They applied a dye to my eyes and saw pretty quickly there was a cut on my cornea. For those who don’t know, when you wear contacts, it’s generally a good idea that you swap them out with regular rotation. Wearing a pair of contacts for too long can cause bacteria buildup, eye strain, and, in the worst of cases, literally cut your eye and cause infection. It’s rare, but it can happen. And in this case, if I had not gone directly to the hospital and gotten this checked out, in the words of my Italian doctor, **“you have no more your eye”.**
+> After paying an upfront $600, the hospital saw me pretty quickly. I learn that if I had not gone directly to the hospital and gotten this checked out, in the words of my Italian doctor, **“you have no more your eye”.**
 
 
 
@@ -51,7 +57,19 @@ The next morning, I debrief with T-Mo.
 
 >  “Schiltz is done. He’s on the next flight back to Austin” - T-Mo
 
-I call quickly and manage to talk him off the ledge, we are off to Rome to extract. We pick him up then grab a rental car, then head to the hills for Schiltz to recover. Like an aging rock star withdrawing from benzos, he must wear sunglasses day and night to protect the eye. He is clearly in a lot of pain and his humiliation continues as he walks glasses-first into a glass door checking into the hotel. A couple days after the ER his eye is on the mend, and we can finally start having some fun we drive to the beautiful town of Polignano a Mare, ready to celebrate Schiltz’s restored health.  We sit down to dinner and Schiltz utters his famous last words:
+I call quickly and manage to talk him off the ledge, we are off to Rome to extract. We pick him up then grab a rental car, then head to the hills for Schiltz to recover. Like an aging rock star withdrawing from benzos, he must wear sunglasses day and night to protect the eye. He is clearly in a lot of pain and his humiliation continues as he walks glasses-first into a glass door checking into the hotel. 
+
+![](/images/uploads/IMG_2831.jpeg)
+
+*Rescuing Schiltz from Rome*
+
+A couple days after the ER his eye is on the mend, and we can finally start having some fun we drive to the beautiful town of Polignano a Mare, ready to celebrate Schiltz’s restored health.  
+
+![](/images/uploads/IMG_2829.jpeg)
+
+*Pogliano de Mare*
+
+We sit down to dinner and Schiltz utters his famous last words:
 
 > "Finally, I’m healthy we can sit down have a nice dinner and enjoy a couple days on the beach”.
 
@@ -69,8 +87,6 @@ I mutter, collapsed in my underwear on the hall floor. They tell me I passed out
 
 The silence in the room is vast. I look up at Schiltz, he pauses, then looks away, his sorrowful stare telling me enough.
 
-
-
 I lie on the ground for the next ten minutes, unable to summon the strength to move, as T-Mo heads off for water and medicine. Eventually I clean up, and Schiltz and I lie on the cold ground together. 20 minutes go by, and his screams return as he runs to the bathroom, followed by crashing inside, “whatever you do don’t come in here”.
 
 
@@ -79,4 +95,18 @@ T-Mo returns with medicine and water, our only remaining healthy member. “Jesu
 
 
 
-We spend the next two days holed up in different accommodations drinking soup broth and eating as much rice and bread as we can stomach. Regaining some strength we reach my Grandmas cousins in Puglia only to find out the trains are cancelled Schiltz must leave immediately to make his flight they offer to drive him. Just like that, he is swept away off to a three-leg flight home. He texts that my cousins drive like Tokyo Drift, but they got him there in time. Strangely, two hours later we still haven’t heard from the cousins, even though it was only 15-minute drive. When we finally do we learn they were in a car crash right after dropping him off and something about everyone is alright but someone is in the hospital, but the Italian is too fast and I can’t follow. The storm cloud keeps following. We hear from him the next morning: he pulled an all-nighter only to have his flight canceled. This is followed by what can only be described as a full mental breakdown and a proclamation he will not be going to Europe for a “long, long, time”.
+We spend the next two days holed up in different accommodations drinking soup broth and eating as much rice and bread as we can stomach. 
+
+![](/images/uploads/IMG_2825-1.jpeg)
+
+![](/images/uploads/IMG_2826.jpeg)
+
+*We recover im McDonalds and nap in a local park, killing time before our next checkin.*
+
+Regaining some strength we reach my Grandmas cousins in Puglia only to find out the trains are cancelled Schiltz must leave immediately to make his flight they offer to drive him. Just like that, he is swept away off to a three-leg flight home. He texts that my cousins drive like Tokyo Drift, but they got him there in time. Strangely, two hours later we still haven’t heard from the cousins, even though it was only 15-minute drive. When we finally do we learn they were in a car crash right after dropping him off and something about everyone is alright but someone is in the hospital, but the Italian is too fast and I can’t follow. The storm cloud keeps following. We hear from him the next morning: he pulled an all-nighter only to have his flight canceled. This is followed by what can only be described as a full mental breakdown and a proclamation he will not be going to Europe for a “long, long, time”.
+
+Thanks for reading my euro trip! 
+
+Grady
+
+PS the gallery includes some photos of the last couple days spent with family in Bari.
