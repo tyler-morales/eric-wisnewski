@@ -1,0 +1,16 @@
+{{/*
+  True when a section path ("/jeremy-on-tap") has at least one published post.
+  Nav tabs and the per-section wrappers use this so a new writer does not
+  get a new copy of the check. Uses that section's RegularPages, not a
+  site-wide scan, so the header does not walk .Site.RegularPages while Hugo
+  is still collecting them.
+
+  The count is assigned before return. Hugo 0.147 (Cloudflare Pages) parses
+  a return of the gt function as extra arguments and the Pages build fails.
+*/}}
+{{- $section := site.GetPage . -}}
+{{- $ok := false -}}
+{{- with $section -}}
+  {{- $ok = gt (len .RegularPages) 0 -}}
+{{- end -}}
+{{- return $ok -}}

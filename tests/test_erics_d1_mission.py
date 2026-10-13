@@ -75,19 +75,25 @@ def run_hugo(*, destination: Path) -> subprocess.CompletedProcess[str]:
 class EricsD1MissionTemplateTests(unittest.TestCase):
     def test_nav_has_one_mission_tab_success(self) -> None:
         header = HEADER_PARTIAL.read_text(encoding="utf-8")
-        self.assertIn("Eric's D1 Mission", header)
-        self.assertIn("nav_erics_d1_mission", header)
-        self.assertIn("/erics-d1-mission/", header)
-        self.assertNotIn("nav_school_sheets", header)
-        self.assertNotIn("nav_map", header)
+        menu = (REPO_ROOT / "layouts" / "partials" / "nav-menu.html").read_text(encoding="utf-8")
+        self.assertIn('partial "nav-menu.html"', header)
+        self.assertIn("Eric's D1 Mission", menu)
+        self.assertIn("nav_erics_d1_mission", menu)
+        self.assertIn("/erics-d1-mission/", menu)
+        self.assertIn('"also" "posts"', menu)
+        self.assertNotIn("nav_school_sheets", menu)
+        self.assertNotIn("nav_map", menu)
         self.assertNotIn("List of College Stadiums", header)
+        self.assertNotIn("List of College Stadiums", menu)
         self.assertNotRegex(header, r">Map</a>")
 
     def test_nav_sections_point_at_the_hub_success(self) -> None:
         nav = NAV_SECTIONS.read_text(encoding="utf-8")
-        self.assertIn("/erics-d1-mission", nav)
-        self.assertNotIn("/school-sheets", nav)
-        self.assertNotIn("/map", nav)
+        menu = (REPO_ROOT / "layouts" / "partials" / "nav-menu.html").read_text(encoding="utf-8")
+        self.assertIn("nav-menu.html", nav)
+        self.assertIn("/erics-d1-mission", menu)
+        self.assertNotIn("/school-sheets", menu)
+        self.assertNotIn("/map", menu)
 
     def test_hub_layout_embeds_map_list_and_posts_success(self) -> None:
         layout = MISSION_LAYOUT.read_text(encoding="utf-8")

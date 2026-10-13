@@ -100,16 +100,24 @@ class DaBreakdownContractTests(unittest.TestCase):
 
     def test_nav_gates_on_published_posts_success(self) -> None:
         header = HEADER_PARTIAL.read_text(encoding="utf-8")
+        menu = (REPO_ROOT / "layouts" / "partials" / "nav-menu.html").read_text(encoding="utf-8")
         gate = HAS_POSTS_PARTIAL.read_text(encoding="utf-8")
-        self.assertIn("has-da-breakdown-posts.html", header)
-        self.assertIn("Da Breakdown w Tad", header)
-        self.assertIn("Grady's Tour", header)
-        self.assertIn("RegularPages", gate)
-        self.assertIn("GetPage", gate)
+        shared = (REPO_ROOT / "layouts" / "partials" / "section-has-posts.html").read_text(encoding="utf-8")
+        self.assertIn('partial "nav-menu.html"', header)
+        self.assertIn("Da Breakdown w Tad", menu)
+        self.assertIn("Grady's Tour", menu)
+        self.assertIn('"section" "da-breakdown-w-tad" "gated" true', menu.replace("\n", " "))
+        self.assertIn("section-has-posts.html", menu)
+        self.assertIn('"/da-breakdown-w-tad"', gate)
+        self.assertIn("section-has-posts.html", gate)
+        self.assertIn("RegularPages", shared)
+        self.assertIn("GetPage", shared)
 
     def test_nav_without_post_gate_failure(self) -> None:
         header = HEADER_PARTIAL.read_text(encoding="utf-8")
+        menu = (REPO_ROOT / "layouts" / "partials" / "nav-menu.html").read_text(encoding="utf-8")
         self.assertNotIn(".Site.RegularPages", header)
+        self.assertNotIn(".Site.RegularPages", menu)
         self.assertNotIn("render 'never'", header)
 
     def test_home_and_author_templates_include_section_success(self) -> None:
