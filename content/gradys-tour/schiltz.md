@@ -100,7 +100,7 @@ I mutter, collapsed in my underwear on the hall floor. They tell me I passed out
 
 > “Well, at least I didn’t shit myself”.
 
-The silence in the room is vast. I look up at Schiltz, he pauses, then looks away, his sorrowful stare telling me enough.
+The silence that comes next is vast. I look up at Schiltz, he pauses, then looks away, his sorrowful stare telling me enough.
 
 I lie on the ground for the next ten minutes, unable to summon the strength to move, as T-Mo heads off for water and medicine. Eventually I clean up, and Schiltz and I lie on the cold ground together. 20 minutes go by, and his screams return as he runs to the bathroom, followed by crashing inside, “whatever you do don’t come in here”.
 
