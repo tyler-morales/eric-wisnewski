@@ -92,7 +92,7 @@ For dinner we specifically look for a restaurant with my favorite dish, Spaghett
 
 > “Oh god. Oh my god. It’s coming.”
 
-Out of my delirium, I piece together that Schiltz has been hit and is dealing with something very unpleasant in the bathroom. Rapidly, I realize I have urgent business in there as well. I pull myself up stumbling towards the can. I knock the door open, I see Schiltz seated with a look of despair and know I will have a long wait. I turn and feel something twist in my skull. The last thing I remember is pushing T-Mo’s door open before coming to in a heap on the ground. What I see next is hard  decipher between hallucination and reality. T-Mo is standing over me screaming my name, and a stark-naked Schiltz is crouched inches away from me with a hand on my shoulder, telling me he’s calling an ambulance.
+Out of my delirium, I piece together that Schiltz has been hit and is dealing with something very unpleasant in the bathroom. Rapidly, I realize I have urgent business in there as well. I pull myself up stumbling towards the can. I knock the door open, I see Schiltz seated with a look of despair and know I will have a long wait. I turn and feel something twist in my skull. The last thing I remember is pushing T-Mo’s door open before coming to in a heap on the ground. What I see next is surreal. T-Mo is standing over me screaming my name, and a stark-naked Schiltz is crouched inches away from me with a hand on my shoulder, telling me he’s calling an ambulance.
 
 > “No don’t just wait.. I’m fine” 
 
