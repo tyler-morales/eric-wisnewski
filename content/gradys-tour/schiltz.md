@@ -1,5 +1,5 @@
 ---
-title: "Italy: The One-Eyed Man; Schiltz’s Disastrous Trip to Italy*"
+title: "Italy: The One-Eyed Man; Schiltz’s Disastrous Trip to Italy"
 slug: Schiltz
 author:
   - grady-davis
