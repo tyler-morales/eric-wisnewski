@@ -94,11 +94,11 @@ For dinner we specifically look for a restaurant with my favorite dish, Spaghett
 
 Out of my delirium, I piece together that Schiltz has been hit and is dealing with something very unpleasant in the bathroom. Rapidly, I realize I have urgent business in there as well. I pull myself up stumbling towards the can. I knock the door open, I see Schiltz seated with a look of despair and know I will have a long wait. I turn and feel something twist in my skull. The last thing I remember is pushing T-Mo’s door open before coming to in a heap on the ground. What I see next is surreal. T-Mo is standing over me screaming my name, and a stark-naked Schiltz is crouched inches away from me with a hand on my shoulder, telling me he’s calling an ambulance.
 
-> “No don’t just wait.. I’m fine” 
+> “No don’t.. just wait.. I’m fine” 
 
 I mutter, collapsed in my underwear on the hall floor. They tell me I passed out, slamming my head on the door, and, forever glass half full, I say chuckling:
 
-> “Well at least I didn’t shit myself”.
+> “Well, at least I didn’t shit myself”.
 
 The silence in the room is vast. I look up at Schiltz, he pauses, then looks away, his sorrowful stare telling me enough.
 
