@@ -4,14 +4,23 @@ slug: Schiltz
 author:
   - grady-davis
 date: 2026-09-27T22:27:00Z
-draft: true
+draft: false
 image: /images/uploads/IMG_2517.jpeg
 country:
   - Italy
 gallery:
+  - /images/uploads/IMG_2547.jpeg
   - /images/uploads/IMG_2569.jpeg
   - /images/uploads/IMG_2504.jpeg
-  - /images/uploads/IMG_2547.jpeg
+  - /images/uploads/IMG_2827.jpeg
+  - /images/uploads/IMG_2559.jpeg
+  - /images/uploads/IMG_2556.jpeg
+  - /images/uploads/IMG_2837.jpeg
+  - /images/uploads/IMG_2838.jpeg
+  - /images/uploads/IMG_2839.jpeg
+  - /images/uploads/IMG_2836.jpeg
+  - /images/uploads/IMG_2832.jpeg
+  - /images/uploads/IMG_2840.jpeg
 ---
 Napoli - Italy
 
