@@ -46,7 +46,7 @@ How did we get here?
 
 ![](/images/uploads/IMG_2607-2.jpeg)
 
-> “The plan was very simple. Take a 5-hour train down to Naples, meet up with Grady and T-Mo, then immediately get after it. On the train, my contacts were acting up, so I went to the bathroom to take them out. But as soon as I took out my right contact, I felt a searing pain erupt from my eye. I blinked a bunch, but after a few frantic seconds, the pain and blurriness intensified and a milky white haze began covering my vision. The tears began to come, but I wasn’t sad.
+> The plan was very simple. Take a 5-hour train down to Naples, meet up with Grady and T-Mo, then immediately get after it. On the train, my contacts were acting up, so I went to the bathroom to take them out. But as soon as I took out my right contact, I felt a searing pain erupt from my eye. I blinked a bunch, but after a few frantic seconds, the pain and blurriness intensified and a milky white haze began covering my vision. The tears began to come, but I wasn’t sad.
 >
 >
 >
@@ -68,13 +68,11 @@ How did we get here?
 
 For a visual representation of how it felt.
 
-
-
 The next morning, I debrief with T-Mo.
 
 >  “Schiltz is done. He’s on the next flight back to Austin” - T-Mo
 
-I call quickly and manage to talk him off the ledge, we are off to Rome to extract. We pick him up then grab a rental car, then head to the hills for Schiltz to recover. Like an aging rock star withdrawing from benzos, he must wear sunglasses day and night to protect the eye. He is clearly in a lot of pain and his humiliation continues as he walks glasses-first into a glass door checking into the hotel. 
+I call quickly and manage to talk him off the ledge, we head off to Rome to extract. We pick him up then grab a rental car, then head to the hills for Schiltz to recover. Like an aging rock star withdrawing from benzos, he must wear sunglasses day and night to protect the eye. He is clearly in a lot of pain and his humiliation continues as he walks glasses-first into a glass door checking into the hotel. 
 
 ![](/images/uploads/IMG_2831.jpeg)
 
