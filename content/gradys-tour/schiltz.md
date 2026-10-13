@@ -88,7 +88,7 @@ We sit down to dinner and Schiltz utters his famous last words:
 
 > "Finally, I’m healthy and we can just sit down have a nice dinner and enjoy a couple days on the beach”.
 
-For dinner we specifically look for a restaurant with my favorite dish, Spaghetti Frutti di Mare, and all order it. I can’t believe I’ve been in Italy this long and haven’t had it. We enjoy a couple bottles of wine, appetizers, and the food is great. An hour into the dinner something starts to feel off. I excuse myself early and head to the apartment. By the time I lie in bed, I’m burning up and bracing myself for a long night. 2 hours into profuse sweating and fever dreams, I hear screaming from the bathroom.
+For dinner we specifically look for a restaurant with my favorite dish, Spaghetti Frutti di Mare, and all order it. I can’t believe I’ve been in Italy this long and haven’t had it. We enjoy a couple bottles of wine, appetizers, and the food is great. But an hour into the dinner something starts to feel off. I excuse myself early and head to the apartment. By the time I lie in bed, I’m burning up and bracing myself for a long night. 2 hours into profuse sweating and fever dreams, I hear screaming from the bathroom.
 
 > “Oh god. Oh my god. It’s coming.”
 
