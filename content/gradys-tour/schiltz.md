@@ -106,7 +106,7 @@ I lie on the ground for the next ten minutes, unable to summon the strength to m
 
 
 
-T-Mo returns with medicine and water, our only remaining healthy member. “Jesus look at you two” he says in shock disgust. We talk for a while then he begins to cough go pale then books it to the bathroom, where he starts to heave. We learned later he sent one off our third story down to the sidewalk. We are three men down with one bathroom, the next 8 hours are long ones.
+T-Mo returns with medicine and water, our only remaining healthy member. “Jesus, look at you two” he says in shock disgust. We talk for a while then he begins to cough go pale then books it to the bathroom, where he starts to heave. We learned later he sent one off our third story down to the sidewalk. We are three men down with one bathroom, the next 8 hours are long ones.
 
 
 
