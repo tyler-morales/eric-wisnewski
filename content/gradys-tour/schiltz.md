@@ -46,7 +46,7 @@ How did we get here?
 
 ![](/images/uploads/IMG_2607-2.jpeg)
 
-> “The plan was very simple. Take a 5-hour train down to Naples, meet up with Grady and T-Mo, then immediately get after it. On the train, my contacts were acting up, and since I wanted to catch up on some sleep, I went to the bathroom to take them out and put my glasses on. But as soon as I took out my right contact, I felt a searing pain erupt from my eye. I blinked a bunch; maybe it was just a dry contact? Maybe I didn’t do a good job taking it out? Usually that works, but after a few frantic seconds of blinking, the pain and blurriness that normally would’ve gone away didn’t. If anything, it got worse. A milky white haze began covering half of my vision. I could barely see. Looking at things hurt, blinking hurt, tears kept coming from my right eye, but I wasn’t sad.
+> “The plan was very simple. Take a 5-hour train down to Naples, meet up with Grady and T-Mo, then immediately get after it. On the train, my contacts were acting up, so I went to the bathroom to take them out and put my glasses on. But as soon as I took out my right contact, I felt a searing pain erupt from my eye. I blinked a bunch; maybe it was just a dry contact? Maybe I didn’t do a good job taking it out? Usually that works, but after a few frantic seconds of blinking, the pain and blurriness that normally would’ve gone away didn’t. If anything, it got worse. A milky white haze began covering half of my vision. I could barely see. Looking at things hurt, blinking hurt, tears kept coming from my right eye, but I wasn’t sad.
 
 
 
