@@ -114,6 +114,8 @@ We spend the next two days holed up in different accommodations drinking soup br
 
 ![](/images/uploads/IMG_2825-1.jpeg)
 
+*Our first real meal two days later is a pile of McDonalds salty french fries.*
+
 ![](/images/uploads/IMG_2826.jpeg)
 
 *We recover im McDonalds and nap in a local park, killing time before our next checkin.*
