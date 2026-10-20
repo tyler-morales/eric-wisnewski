@@ -5,7 +5,7 @@ A forever-stable Hugo blog: no JavaScript frameworks, no CSS frameworks, no Node
 ## Preview and build
 
 - **Preview (dev):** `hugo server` — uses **http://localhost:1313/** so you stay local (no redirect to production).
-- **Production build:** Run `./scripts/sync-uploaded-images.sh` then `hugo --gc --minify`. The sync copies CMS uploads from `assets/images/uploads/` and `assets/audio/uploads/` into `static/` so featured images, inline images, and audio clips resolve on the live site.
+- **Production build:** Run `./scripts/sync-uploaded-images.sh` then `hugo --gc --minify`. The sync copies CMS uploads from `assets/images/uploads/` and `assets/audio/uploads/` into `static/`, including subfolders a writer creates in Pages CMS, as the original bytes. Featured images, inline images, and audio clips then resolve on the live site.
 
 This site is hosted on **Cloudflare Pages**. Set the build command to `./scripts/sync-uploaded-images.sh && hugo --gc --minify` in the Pages project. You can also deploy the `public/` directory to another static host if needed.
 
@@ -59,7 +59,7 @@ Placeholder bios/images can be replaced anytime by editing the author files in t
 ## Images (CMS and Markdown)
 
 - **Lazy images:** Photos use native `loading="lazy"` (featured images on articles are eager). A skeleton shine sits in the reserved frame until the file arrives; `prefers-reduced-motion` drops the shine.
-- **Where to put images:** Images under `/images/uploads/` are served from `static/images/uploads/`. The CMS writes to `assets/images/uploads/`; the build script `scripts/sync-uploaded-images.sh` copies them into `static/images/uploads/` before Hugo runs, so featured, gallery, and inline images work on the live site without manual copy.
+- **Where to put images:** Images under `/images/uploads/` are served from `static/images/uploads/`. The CMS writes to `assets/images/uploads/` (a subfolder such as `Boston/` is part of the URL, `/images/uploads/Boston/photo.jpeg`). The build script `scripts/sync-uploaded-images.sh` copies that tree, including subfolders, into `static/images/uploads/` before Hugo runs. The copy is the original file, so a 2–3 MB JPEG stays that size. Featured, gallery, and inline images then work on the live site without a manual copy.
 - **Gallery (several at once):** Posts have a `gallery` front matter list. In Pages CMS, **Gallery** is an image field with `options.multiple` so the author can pick several photos from Photos in one upload, then remove any they do not want. Hugo renders that list as a grid via `layouts/partials/post-gallery.html`. Do not set `multiple` on Featured Image (`image` must stay a single path).
 - **In post body (rich-text):** The post Body in Pages CMS is a rich-text (WYSIWYG) field. Use the editor toolbar or slash commands (`/`) to add **links** and **inline images**; “insert image” uses the same media library (`assets/images/uploads/`). Body content is stored as HTML and rendered by Hugo (Goldmark with raw HTML enabled). Inline body images are output as `<img>` tags; the responsive picture/WebP pipeline applies to images inserted via Markdown syntax in non-CMS workflows.
 - **YouTube:** Paste a YouTube URL (`youtube.com/watch?v=…` or `youtu.be/…`) on its own line. Hugo turns that into a player (`layouts/_default/_markup/render-link.html`). A named link such as “campus tour” stays a clickable link.
@@ -98,7 +98,7 @@ Content and media are edited via **Pages CMS**. Eric signs in with **email** (ma
 
 **If a new Grady’s Tour post is missing from `/gradys-tour/`:** Confirm it lives in `content/gradys-tour/` with `draft: false`. A publish date still in the future used to drop the post from the Hugo build; `buildFuture = true` keeps those posts in the output. Missing URLs on Cloudflare Pages used to fall through to the home page (SPA behavior when there is no `404.html`); the site now ships `public/404.html` so unknown paths return a real not-found page.
 
-**Images for og:image / build:** Posts with a Featured Image use that file for share previews. Home and other pages use `static/images/og-default.jpg` (Eric’s portrait). Featured, gallery, and body images under `/images/uploads/` are served from `static/images/uploads/`. Run `./scripts/sync-uploaded-images.sh` before `hugo` (or use the full build command above) so CMS uploads are available on the live site.
+**Images for og:image / build:** Posts with a Featured Image use that file for share previews. Home and other pages use `static/images/og-default.jpg` (Eric’s portrait). Featured, gallery, and body images under `/images/uploads/` (including a subfolder such as `/images/uploads/Boston/photo.jpeg`) are served from `static/images/uploads/`. Run `./scripts/sync-uploaded-images.sh` before `hugo` (or use the full build command above) so CMS uploads are available on the live site.
 
 ## SEO (crawl and index)
 
