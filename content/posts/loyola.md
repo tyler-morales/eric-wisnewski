@@ -23,7 +23,7 @@ Campus: B-
 
 Loyola is located in the Rogers Park neighborhood of Chicago, which is, I believe, the northernmost neighborhood in the city.  I got dropped off near the corner of Sheridan and Devon and was hit with the hustle and bustle of Chicago.  However, the second you walk onto campus, there is an immediate calmness to the campus.  All the outside noise seemed to fade away.  Maybe it is my familiarity with the white noise of Chicago, but it really felt like the beginning of campus acted as a literal blockade of the outside noise.  Loyola is right up on Lake Michigan, probably about ten feet from the water.  For an October day, there was little to no wind, so the lake was calm, but I could see their lake path being a literal hell on a windy day.  The campus is small, maybe like three to four city blocks, so it was really easy to take a loop and feel like I wasn’t missing anything.  There is a nice combination of newer buildings along with old historic ones I came to expect for an old catholic university.  Simply put, the school seems well funded, clean, and has good proximity to the Red Line.
 
-![](</images/uploads/Boston/View recent photos.png>)
+![](/images/uploads/Boston/IMG_4720.jpeg)
 
 While nice to look at and virtually inoffensive, Loyola’s campus is kind of boring.  It is hard not to compare the campus to DePaul as both are Chicago-based Catholic schools.  DePaul has the benefit of being located in Lincoln Park; Loyola has Rogers Park.  Not that Rogers Park is bad by any means; it simply just isn’t Lincoln Park.  Less to do for college-aged kids and the things like that Loyola Lincoln Park has in a greater capacity.  I go back to the outside noise fading away.  Since the city fades away, Loyola closes itself off to what is a major draw: the fact that it is located in Chicago.  The Naperville of Chicago universities.  Kind of rich coming from a suburban kid. 
 
@@ -31,7 +31,7 @@ Stadium: B-
 
 Here is the biggest positive for me in regards to the stadium.  It is right on campus.  Located directly across the street from the Red Line station, it is not hard to get to at all.  Accessibility is the best asset of the Gentile Arena.  A statue outside the building of beloved Chicago icon Sister Jean welcomes you into the arena. She loved ball, I love ball, therefore I love Sister Jean.
 
-![](</images/uploads/Boston/View recent photos (1).png>)
+![](/images/uploads/Boston/IMG_4723.jpeg)
 
 The stadium itself seems to be a newer/ish building with modern lighting, a trendy circular middle jumbotron, and two LED scoreboards on each baseline.  About a 4,500-person capacity with two levels of seating makes sure there is not a bad seat in the house.  There are some minor obstructed views of the court because of railings but in all not a bad seat in the building for watching basketball.  The ceiling in this place was real low, which made this place fucking loud.  I’d say on the day I went there was maybe 1,500 total people, and I was shocked at how loud it was.  If that place was sold out it would be a fortress. There were times when I had to yell to speak with my dad right next to me.  Loud, it is really fucking loud.  
 
