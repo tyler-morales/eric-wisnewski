@@ -4,7 +4,7 @@ slug: loyola
 author:
   - eric-wisnewski
 date: 2026-10-19T20:08:00Z
-draft: true
+draft: false
 image: /images/uploads/IMG_4724.jpeg
 scoreboard:
   home: Loyola
