@@ -15,6 +15,56 @@ export function scrollFadeState(scrollLeft, clientWidth, scrollWidth) {
   };
 }
 
+export function prefersReducedMotion() {
+  try {
+    var query = globalThis.matchMedia;
+    return typeof query === 'function' && query('(prefers-reduced-motion: reduce)').matches;
+  } catch (err) {
+    return false;
+  }
+}
+
+export function activeTabScrollLeft(scrollLeft, clientWidth, scrollWidth, activeLeft, activeWidth, scrollerLeft) {
+  var left = Number(scrollLeft);
+  var view = Number(clientWidth);
+  var total = Number(scrollWidth);
+  var itemLeft = Number(activeLeft);
+  var itemWidth = Number(activeWidth);
+  var origin = Number(scrollerLeft);
+  if (!isFinite(left) || !isFinite(view) || !isFinite(total) || !isFinite(itemLeft) || !isFinite(itemWidth) || !isFinite(origin) || view <= 0) {
+    return isFinite(left) ? left : 0;
+  }
+  var next = left + (itemLeft + itemWidth / 2) - (origin + view / 2);
+  var maxScroll = total - view;
+  if (maxScroll < 0) maxScroll = 0;
+  if (next < 0) return 0;
+  if (next > maxScroll) return maxScroll;
+  return next;
+}
+
+export function centerActiveTab(scroller) {
+  if (!scroller || typeof scroller.querySelector !== 'function') return null;
+  var active = scroller.querySelector('[aria-current="page"]');
+  if (!active || typeof active.getBoundingClientRect !== 'function' || typeof scroller.getBoundingClientRect !== 'function') {
+    return null;
+  }
+  var item = active.getBoundingClientRect();
+  var box = scroller.getBoundingClientRect();
+  var left = activeTabScrollLeft(
+    scroller.scrollLeft,
+    scroller.clientWidth,
+    scroller.scrollWidth,
+    item.left,
+    item.width,
+    box.left
+  );
+  if (!isFinite(left) || Math.abs((Number(scroller.scrollLeft) || 0) - left) <= 1) return left;
+  // Instant either way. A smooth scroll after paint is the jump, and reduced motion forbids it.
+  if (prefersReducedMotion()) scroller.scrollLeft = left;
+  else scroller.scrollLeft = left;
+  return left;
+}
+
 export function applyScrollFade(nav, scroller) {
   var state = scrollFadeState(
     scroller && scroller.scrollLeft,
@@ -31,19 +81,41 @@ export function applyScrollFade(nav, scroller) {
 function bindNavScroll(nav) {
   var scroller = nav.querySelector('ul');
   if (!scroller) return;
+  var userMoved = false;
+  var centering = false;
 
   function update() {
     applyScrollFade(nav, scroller);
   }
 
-  scroller.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
+  function center() {
+    if (userMoved) return;
+    centering = true;
+    centerActiveTab(scroller);
+    centering = false;
+  }
+
+  scroller.addEventListener('scroll', function () {
+    if (!centering) userMoved = true;
+    update();
+  }, { passive: true });
+  window.addEventListener('resize', function () {
+    center();
+    update();
+  });
   if (typeof ResizeObserver === 'function') {
-    new ResizeObserver(update).observe(scroller);
+    new ResizeObserver(function () {
+      center();
+      update();
+    }).observe(scroller);
   }
   if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
-    document.fonts.ready.then(update);
+    document.fonts.ready.then(function () {
+      center();
+      update();
+    });
   }
+  center();
   update();
 }
 

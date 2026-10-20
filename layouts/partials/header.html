@@ -5,16 +5,36 @@
   <p class="brand-name"><a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a></p>
   {{ end }}
   <nav class="site-nav" aria-label="Main navigation">
+    {{/* Tabs live in nav-menu.html. Current is any entry whose section (or href) is this page. Home mixes every writer, so no tab is current. */}}
     <ul role="list">
-      <li><a href="{{ .Site.Params.nav_erics_d1_mission | default "/erics-d1-mission/" }}">Eric's D1 Mission</a></li>
-      <li><a href="{{ .Site.Params.nav_gradys_tour | default "/gradys-tour/" }}">Grady's Tour</a></li>
-      {{ if partial "has-da-breakdown-posts.html" . }}
-      <li><a href="{{ .Site.Params.nav_da_breakdown_w_tad | default "/da-breakdown-w-tad/" }}">Da Breakdown w Tad</a></li>
+      {{ range partial "nav-menu.html" . }}
+      {{ $on := false }}
+      {{ if not $.IsHome }}
+        {{ if hasPrefix $.RelPermalink .href }}{{ $on = true }}{{ end }}
+        {{ if and .section (eq $.Section .section) }}{{ $on = true }}{{ end }}
+        {{ if and .also (eq $.Section .also) }}{{ $on = true }}{{ end }}
       {{ end }}
-      {{ if partial "has-jeremy-on-tap-posts.html" . }}
-      <li><a href="{{ .Site.Params.nav_jeremy_on_tap | default "/jeremy-on-tap/" }}">Jeremy On Tap</a></li>
+      <li><a href="{{ .href }}"{{ if $on }} aria-current="page"{{ end }}>{{ .label | safeHTML }}</a></li>
       {{ end }}
     </ul>
+    <script>
+      (function () {
+        var scroller = document.currentScript && document.currentScript.previousElementSibling;
+        if (!scroller || !scroller.querySelector || scroller.clientWidth <= 0) return;
+        var active = scroller.querySelector('[aria-current="page"]');
+        if (!active || !active.getBoundingClientRect) return;
+        var item = active.getBoundingClientRect();
+        var box = scroller.getBoundingClientRect();
+        var left = scroller.scrollLeft + (item.left + item.width / 2) - (box.left + scroller.clientWidth / 2);
+        var max = scroller.scrollWidth - scroller.clientWidth;
+        if (max < 0) max = 0;
+        if (left < 0) left = 0;
+        if (left > max) left = max;
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduce) scroller.scrollLeft = left;
+        else scroller.scrollLeft = left;
+      })();
+    </script>
   </nav>
   <script type="module" src="{{ "/js/nav-scroll.js" | relURL }}?v={{ md5 (readFile "static/js/nav-scroll.js") }}"></script>
 </header>

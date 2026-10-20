@@ -1,0 +1,34 @@
+{{/*
+  Main nav tabs, in order. This is the only list to edit for a new writer.
+
+  Add one dict: label, href (trailing slash), section (the content folder),
+  and gated true so the tab stays off until that folder has a published post.
+  Optional param is a site param that overrides href. Optional also is a second
+  section that highlights this tab (Eric's posts live in posts, not under the hub).
+
+  Every entry gets the bold current tab and the scroll-into-view behavior.
+  Do not add a per-section check in header.html.
+*/}}
+{{- $defs := slice
+  (dict "label" "Eric's D1 Mission" "param" "nav_erics_d1_mission" "href" "/erics-d1-mission/" "also" "posts")
+  (dict "label" "Grady's Tour" "param" "nav_gradys_tour" "href" "/gradys-tour/" "section" "gradys-tour")
+  (dict "label" "Da Breakdown w Tad" "param" "nav_da_breakdown_w_tad" "href" "/da-breakdown-w-tad/" "section" "da-breakdown-w-tad" "gated" true)
+  (dict "label" "Jeremy On Tap" "param" "nav_jeremy_on_tap" "href" "/jeremy-on-tap/" "section" "jeremy-on-tap" "gated" true)
+-}}
+{{- $out := slice -}}
+{{- range $defs -}}
+  {{- $href := .href -}}
+  {{- with .param -}}
+    {{- with index site.Params . -}}
+      {{- $href = . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $show := true -}}
+  {{- if .gated -}}
+    {{- $show = partial "section-has-posts.html" (printf "/%s" .section) -}}
+  {{- end -}}
+  {{- if $show -}}
+    {{- $out = $out | append (merge . (dict "href" $href)) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}
