@@ -1300,6 +1300,7 @@ article.post-content blockquote {
 article.post-content p:has(> img:only-child),
 article.post-content p:has(> .media-frame:only-child),
 article.post-content p:has(> iframe.youtube-embed:only-child),
+article.post-content p:has(> iframe.spotify-embed:only-child),
 article.post-content figure {
   margin-top: 1em;
   margin-bottom: 0.45em;
@@ -1333,6 +1334,27 @@ article.post-content iframe.youtube-embed {
 }
 
 article.post-content iframe.youtube-embed:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+article.post-content iframe.spotify-embed {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  border: 0;
+  border-radius: 12px;
+}
+
+article.post-content iframe.spotify-embed--compact {
+  height: 152px;
+}
+
+article.post-content iframe.spotify-embed--tall {
+  height: 352px;
+}
+
+article.post-content iframe.spotify-embed:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 2px;
 }

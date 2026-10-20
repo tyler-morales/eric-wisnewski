@@ -1,6 +1,6 @@
 {{/*
   Markdown YouTube, X/Twitter, and uploaded-audio URLs are already embeds via
-  render-link.html. Pages CMS often stores the same paste as an HTML <a>;
-  rewrite those here.
+  render-link.html. Spotify own-line URLs, and Pages CMS HTML <a> leftovers,
+  are rewritten in html-embeds.html.
 */}}
 {{ partial "html-embeds.html" (dict "page" . "html" .Content) }}

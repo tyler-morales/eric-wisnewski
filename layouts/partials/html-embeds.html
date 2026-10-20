@@ -1,7 +1,11 @@
 {{/*
   Rewrite CMS leftover YouTube <a> tags into privacy embeds, leftover
-  X/Twitter status <a> tags into official tweet embeds, and leftover
-  /audio/uploads/ links into a native player.
+  X/Twitter status <a> tags into official tweet embeds, leftover
+  /audio/uploads/ links into a native player, and a Spotify URL that is the
+  only content of its paragraph into Spotify's iframe.
+  The link render hook cannot see the rest of the paragraph, so Spotify is
+  promoted here for markdown (the hook emits the anchor) and for Who wrote
+  what HTML. A Spotify link inside a sentence stays a link.
   Context is dict "page" (the page, for widgets.js) and "html" (page .Content
   or a parts body).
 */}}
@@ -9,6 +13,12 @@
 {{- $html = replaceRE `<a href="https://(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)([A-Za-z0-9_-]{11})[^"]*"[^>]*>https?://[^<]*</a>` `<iframe class="youtube-embed" src="https://www.youtube-nocookie.com/embed/$1" title="YouTube video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>` $html -}}
 {{- $html = replaceRE `<a href="https?://(?:(?:www|mobile)\.)?(?:twitter\.com|x\.com)/[A-Za-z0-9_]+/status(?:es)?/(\d+)[^"]*"[^>]*>https?://[^<]*</a>` `<blockquote class="twitter-tweet" data-dnt="true"><a href="https://x.com/i/status/$1">View post on X</a></blockquote>` $html -}}
 {{- $html = replaceRE `(?i)<a href="(?:https?://[^"/]+)?(/audio/uploads/[^"?]+\.(?:mp3|m4a|ogg))(?:\?[^"]*)?"[^>]*>[^<]*/audio/uploads/[^<]*\.(?:mp3|m4a|ogg)[^<]*</a>` `<audio class="audio-embed" controls preload="none" src="$1" aria-label="Audio clip"><a href="$1">Listen to audio</a></audio>` $html -}}
+{{- /* ponytail: show and artist use the 352px album/playlist frame (Spotify's artist oEmbed height). Upgrade path is a per-type height if Spotify's show player changes. */ -}}
+{{- $spotify := `(?i)<p([^>]*)>\s*<a href="https?://open\.spotify\.com/(?:intl-[a-z]{2}/)?(?:embed/)?(%s)/([A-Za-z0-9]{22})[^"]*"[^>]*>https?://[^<]*</a>\s*</p>` -}}
+{{- $compact := printf $spotify "track|episode" -}}
+{{- $tall := printf $spotify "album|playlist|show|artist" -}}
+{{- $html = replaceRE $compact `<p$1><iframe class="spotify-embed spotify-embed--compact" src="https://open.spotify.com/embed/$2/$3" title="Spotify $2" width="100%" height="152" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"><a href="https://open.spotify.com/$2/$3">Listen on Spotify</a></iframe></p>` $html -}}
+{{- $html = replaceRE $tall `<p$1><iframe class="spotify-embed spotify-embed--tall" src="https://open.spotify.com/embed/$2/$3" title="Spotify $2" width="100%" height="352" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"><a href="https://open.spotify.com/$2/$3">Listen on Spotify</a></iframe></p>` $html -}}
 {{- $html = replaceRE `(?s)<p([^>]*)>\s*<img([^>]*)>\s*</p>` `<p$1><span class="media-frame media-frame--fluid"><img loading="lazy" decoding="async"$2></span></p>` $html -}}
 {{- if in $html "twitter-tweet" -}}
   {{- $_ := .page.Store.Set "hasTwitterEmbed" true -}}

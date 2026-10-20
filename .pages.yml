@@ -200,7 +200,7 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it. Upload an mp3, m4a, or ogg in Audio upload (under about 10 MB), then paste that /audio/uploads/ path on its own line where the clip should play.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it. A Spotify link (track, album, playlist, episode, show, or artist) on its own line embeds too. Upload an mp3, m4a, or ogg in Audio upload (under about 10 MB), then paste that /audio/uploads/ path on its own line where the clip should play.
         options:
           media: images
       - name: audio_upload
@@ -231,7 +231,7 @@ content:
             label: Their text
             type: rich-text
             required: true
-            description: Paste a YouTube or X/Twitter status URL on its own line to embed it. An uploaded audio path (/audio/uploads/….mp3, .m4a, or .ogg) on its own line becomes a player. Keep clips under about 10 MB.
+            description: Paste a YouTube or X/Twitter status URL on its own line to embed it. A Spotify link (track, album, playlist, episode, show, or artist) on its own line embeds too. An uploaded audio path (/audio/uploads/….mp3, .m4a, or .ogg) on its own line becomes a player. Keep clips under about 10 MB.
             options:
               media: images
 
@@ -487,7 +487,7 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it. Upload an mp3, m4a, or ogg in Audio upload (under about 10 MB), then paste that /audio/uploads/ path on its own line where the clip should play.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it. A Spotify link (track, album, playlist, episode, show, or artist) on its own line embeds too. Upload an mp3, m4a, or ogg in Audio upload (under about 10 MB), then paste that /audio/uploads/ path on its own line where the clip should play.
         options:
           media: images
       - name: audio_upload
@@ -518,7 +518,7 @@ content:
             label: Their text
             type: rich-text
             required: true
-            description: Paste a YouTube or X/Twitter status URL on its own line to embed it. An uploaded audio path (/audio/uploads/….mp3, .m4a, or .ogg) on its own line becomes a player. Keep clips under about 10 MB.
+            description: Paste a YouTube or X/Twitter status URL on its own line to embed it. A Spotify link (track, album, playlist, episode, show, or artist) on its own line embeds too. An uploaded audio path (/audio/uploads/….mp3, .m4a, or .ogg) on its own line becomes a player. Keep clips under about 10 MB.
             options:
               media: images
 
@@ -594,7 +594,7 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it. Upload an mp3, m4a, or ogg in Audio upload (under about 10 MB), then paste that /audio/uploads/ path on its own line where the clip should play.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it. A Spotify link (track, album, playlist, episode, show, or artist) on its own line embeds too. Upload an mp3, m4a, or ogg in Audio upload (under about 10 MB), then paste that /audio/uploads/ path on its own line where the clip should play.
         options:
           media: images
       - name: audio_upload
@@ -625,7 +625,7 @@ content:
             label: Their text
             type: rich-text
             required: true
-            description: Paste a YouTube or X/Twitter status URL on its own line to embed it. An uploaded audio path (/audio/uploads/….mp3, .m4a, or .ogg) on its own line becomes a player. Keep clips under about 10 MB.
+            description: Paste a YouTube or X/Twitter status URL on its own line to embed it. A Spotify link (track, album, playlist, episode, show, or artist) on its own line embeds too. An uploaded audio path (/audio/uploads/….mp3, .m4a, or .ogg) on its own line becomes a player. Keep clips under about 10 MB.
             options:
               media: images
 
@@ -701,7 +701,7 @@ content:
       - name: body
         label: Body
         type: rich-text
-        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it. Upload an mp3, m4a, or ogg in Audio upload (under about 10 MB), then paste that /audio/uploads/ path on its own line where the clip should play.
+        description: Shared intro, or the whole post when one person wrote it. Paste a YouTube or X/Twitter status URL on its own line to embed it. A Spotify link (track, album, playlist, episode, show, or artist) on its own line embeds too. Upload an mp3, m4a, or ogg in Audio upload (under about 10 MB), then paste that /audio/uploads/ path on its own line where the clip should play.
         options:
           media: images
       - name: audio_upload
@@ -732,7 +732,7 @@ content:
             label: Their text
             type: rich-text
             required: true
-            description: Paste a YouTube or X/Twitter status URL on its own line to embed it. An uploaded audio path (/audio/uploads/….mp3, .m4a, or .ogg) on its own line becomes a player. Keep clips under about 10 MB.
+            description: Paste a YouTube or X/Twitter status URL on its own line to embed it. A Spotify link (track, album, playlist, episode, show, or artist) on its own line embeds too. An uploaded audio path (/audio/uploads/….mp3, .m4a, or .ogg) on its own line becomes a player. Keep clips under about 10 MB.
             options:
               media: images
 
