@@ -12,6 +12,12 @@ report_card:
   school: DePaul University
   year: 2026
 image: /images/uploads/IMG_4798-1.jpeg
+gallery:
+  - /images/uploads/IMG_4806.jpeg
+  - /images/uploads/IMG_4809.jpeg
+  - /images/uploads/IMG_4808.jpeg
+  - /images/uploads/IMG_4803.jpeg
+  - /images/uploads/IMG_4802.jpeg
 ---
 DePaul basketball is why I started this blog.  Going to 20-plus DePaul games made me fall in love with college basketball like never before.  There were Iowa teams in the past (and currently) that had ignited an interest in the sport, but nothing like what I experienced in the 2025/26 season.  I saw a roster of players with three returning players start as a complete mess, losing to a Buffalo team that should have been an enhancement talent (professional wrestling term), to beating rivals Marquette twice and winning the most number of Big East games since 2007.  I am a sucker for an underdog story.  DePaul is less of an underdog.  They are more in line with a fallen giant, trying to rekindle that past success. The Wintrust Arena is harboring the potential of one of the greatest returns to greatness in college basketball history, as DePaul continues in their relevancy not only nationally, but in Chicago.  
 
