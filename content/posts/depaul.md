@@ -31,7 +31,10 @@ Let’s talk about the band real quick.  They have like 8 people in it, and the
 
 DePaul needs to incentivize the students to attend the games.  They have taken strides in that department with Coach Holtman buying students’ lunches after games, buying them beers after big wins, and free coaches down to the stadium from campus.  They need to capture the hearts of Chicago as 70% of the stadium is designated for non-student seating.  The only way to do that is improvement on the court.  To their credit, they are aware of this and are making moves to be better.  Reaching highs in NIL donations and bringing in an established coach in Chris Holtman should, in theory, make this team better for the future.  There have been glimpses where you can feel the energy in that building, and it is addicting.  I am a junkie for it.
 
+![](/images/uploads/Boston/IMG_4811.jpeg)
+
 I love this team, I love this school, and I love this arena.  I have zero affiliation with the university except the fact it is nearby where I grew up.  I know before I die they will make an NCAA tournament (haven’t been since 2004), and it will make all my pain and suffering worth it.  For those who live in Chicago, I know it is unlikely that you went to DePaul, but they are part of your city and the identity of Chicago’s Basketball Greatness.  Before there was Michael Jordan, there was DePaul Basketball.  DePaul is Chicago’s Basketball Team.  Derrick thinks so. 
 
 ![](/images/uploads/Boston/IMG_4801.jpeg)
 
+[https://open.spotify.com/track/42VsgItocQwOQC3XWZ8JNA?si=9ZJTuWwTRmKbfvjDaw1HSA&utm_source=copy-link](https://open.spotify.com/track/42VsgItocQwOQC3XWZ8JNA?si=9ZJTuWwTRmKbfvjDaw1HSA&utm_source=copy-link)
