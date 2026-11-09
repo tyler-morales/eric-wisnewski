@@ -4,7 +4,7 @@ slug: depaul
 author:
   - eric-wisnewski
 date: 2026-11-09T16:08:00Z
-draft: true
+draft: false
 report_card:
   stadium: A-
   fan_base: D+
