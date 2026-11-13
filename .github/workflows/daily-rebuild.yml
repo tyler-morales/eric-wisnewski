@@ -1,0 +1,27 @@
+# Rebuild production so the List of Stadiums picks up Google Sheet edits.
+# Hugo fetches the sheet CSV at build time (resources.GetRemote); a sheet edit
+# does not show up until the next Pages build, and the only other cron is newsletter dispatch.
+# 12:00 UTC = 06:00 America/Chicago in standard time (CST, UTC-6)
+# and 07:00 during daylight time (CDT, UTC-5). GitHub Actions cron is UTC only.
+# Requires repo secret CLOUDFLARE_PAGES_DEPLOY_HOOK (Pages deploy hook URL, branch main).
+
+name: Daily rebuild
+
+on:
+  schedule:
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cloudflare Pages production rebuild
+        env:
+          CLOUDFLARE_PAGES_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_PAGES_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$CLOUDFLARE_PAGES_DEPLOY_HOOK" ]; then
+            echo "::error::CLOUDFLARE_PAGES_DEPLOY_HOOK is not set. Add it under GitHub repo Settings → Secrets and variables → Actions → New repository secret. The value is the Cloudflare Pages deploy hook URL (Workers & Pages → the project → Settings → Builds → Add deploy hook, Branch to build: main)."
+            exit 1
+          fi
+          curl --fail --silent --show-error --request POST "$CLOUDFLARE_PAGES_DEPLOY_HOOK"

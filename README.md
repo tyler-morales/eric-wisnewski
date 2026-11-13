@@ -87,6 +87,15 @@ Edit `config/_default/hugo.toml`. Under `[params]` you’ll see:
 
 Update these values and rebuild. Nav links are used in the site header; the CSV URL is read by Hugo's `resources.GetRemote` when building Eric's D1 Mission.
 
+**Daily rebuild (List of Stadiums):** That CSV is fetched only when Hugo builds (`layouts/partials/school-sheets.html`). A Google Sheet edit stays off `/erics-d1-mission/` until the next production build. `.github/workflows/daily-rebuild.yml` POSTs a Cloudflare Pages deploy hook every day at 12:00 UTC — 06:00 America/Chicago in standard time (CST, UTC-6), 07:00 during daylight time (CDT, UTC-5); GitHub cron is UTC and does not follow DST — and from the Actions tab (**Daily rebuild** → **Run workflow**).
+
+One-time setup, from the [Pages deploy hooks](https://developers.cloudflare.com/pages/configuration/deploy-hooks/) docs (this site is Pages, so use that page, not the Workers Builds hook UI):
+
+1. Cloudflare dashboard → **Workers & Pages** → select this Pages project → **Settings** → **Builds** → **Add deploy hook**. Set **Deploy hook name** (for example `daily-rebuild`) and **Branch to build** to `main`. Copy the hook URL. It is a secret: a POST to it rebuilds that branch with no extra auth header.
+2. GitHub repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**. Name: `CLOUDFLARE_PAGES_DEPLOY_HOOK`. Value: that URL.
+
+Until the secret exists, the workflow fails and names the missing secret. After it is set, sheet edits show up on the next daily run (or a manual **Run workflow**). Pushes to `main` still build on their own.
+
 The main nav stays on one row. When the labels don’t fit (typical on a phone, and later if more sections are added), the row scrolls horizontally. A white fade on the left and/or right shows there is more to scroll in that direction; if everything fits, there is no fade and no scroll.
 
 Every article page (Posts, Grady’s Tour, Da Breakdown) has a **Back to top** link after the last photo / gallery, next to the footer Share control. It is an in-flow `#top` link, not a floating corner button.
