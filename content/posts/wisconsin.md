@@ -71,3 +71,4 @@ Bucky is probably a top 10 mascot. I don’t know, he looks pretty awesome, kind
 
 The fan base for this game was a little more timid since it was against an out of conference low rated opponent, or maybe it was also because Coastal was kind of kicking Wisconsin’s ass for a bit.  From experience though I do know how amazing their fanbase can be, and there were times when the arena was rocking.  Especially as Wisconsin senior Owen Foxwell scored 33 points that night.  Wisconsin sports fans are an excellent example of what fans should be, which pains me to say as a Chicago and Iowa fan, but I will give them their flowers.
 
+[https://open.spotify.com/track/6c6SiWLlH6yMSoMbbGpZ1Y?si=mMH3gq2bScumI1Xz1PDf-g&utm_source=copy-link](https://open.spotify.com/track/6c6SiWLlH6yMSoMbbGpZ1Y?si=mMH3gq2bScumI1Xz1PDf-g&utm_source=copy-link)
