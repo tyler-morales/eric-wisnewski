@@ -17,6 +17,15 @@ report_card:
   stadium: B+
   fan_base: A
   campus: A
+gallery:
+  - /images/uploads/IMG_4899.jpeg
+  - /images/uploads/IMG_4898.jpeg
+  - /images/uploads/IMG_4896-1.jpeg
+  - /images/uploads/IMG_4893.jpeg
+  - /images/uploads/IMG_4892.jpeg
+  - /images/uploads/IMG_4891.jpeg
+  - /images/uploads/IMG_4886.jpeg
+  - /images/uploads/IMG_4885.jpeg
 ---
 About a month or two ago I was sent a link from TMO and Grady showing me that I was not alone in my journey.  It was a link to another who was trying to see all of the college basketball arenas in America, and he too also has a blog.  His name is Dan Nardini and he is from Connecticut.  Dan has been doing this from what I can tell since 2016 and continues today visiting 153 unique stadiums and counting.  If you’d like to check out Dan’s blog the link is below.  
 
