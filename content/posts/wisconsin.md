@@ -5,7 +5,7 @@ author:
   - eric-wisnewski
 date: 2026-11-20T09:56:00Z
 draft: false
-image: /images/uploads/IMG_4897.jpeg
+image: /images/uploads/IMG_4900.jpeg
 scoreboard:
   home: Wisconsin
   home_score: 89
