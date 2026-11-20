@@ -4,7 +4,7 @@ slug: wisconsin
 author:
   - eric-wisnewski
 date: 2026-11-20T09:56:00Z
-draft: true
+draft: false
 image: /images/uploads/IMG_4897.jpeg
 scoreboard:
   home: Wisconsin
