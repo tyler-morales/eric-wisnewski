@@ -9,7 +9,7 @@ image: /images/uploads/IMG_4897.jpeg
 scoreboard:
   home: Wisconsin
   home_score: 89
-  away: Costal Carolina
+  away: Coastal Carolina
   away_score: 81
 report_card:
   school: University of Wisconsin
