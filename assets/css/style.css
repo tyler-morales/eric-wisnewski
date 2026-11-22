@@ -2858,6 +2858,10 @@ article.post-content hr {
   border-bottom: 1px solid #ccc;
 }
 
+.school-sheets-table td {
+  overflow-wrap: anywhere;
+}
+
 .school-sheets-table th {
   font-weight: 600;
   background: #f5f5f5;
@@ -2878,6 +2882,8 @@ article.post-content hr {
 .school-sheets-table a {
   color: var(--text);
   text-decoration: underline;
+  text-underline-offset: 0.12em;
+  overflow-wrap: anywhere;
 }
 
 .school-sheets-table a:hover,

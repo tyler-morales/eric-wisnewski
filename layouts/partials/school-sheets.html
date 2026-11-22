@@ -51,7 +51,7 @@
       <tr class="school-sheets-row">
         {{ range $i, $cell := . }}
         {{ if ne (index $headers $i) "Check" }}
-        <td data-col="{{ $i }}" data-value="{{ $cell }}" data-label="{{ index $headers $i }}">{{ $cell }}</td>
+        <td data-col="{{ $i }}" data-value="{{ $cell }}" data-label="{{ index $headers $i }}">{{ partial "school-sheets-cell.html" ($cell | string) }}</td>
         {{ end }}
         {{ end }}
       </tr>

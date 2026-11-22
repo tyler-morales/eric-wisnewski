@@ -1,4 +1,16 @@
+export function rowMatchesQuery(text, values, query) {
+  var q = String(query || '').trim().toLowerCase();
+  if (!q) return true;
+  if (String(text || '').toLowerCase().indexOf(q) !== -1) return true;
+  var list = values || [];
+  for (var i = 0; i < list.length; i++) {
+    if (String(list[i] || '').toLowerCase().indexOf(q) !== -1) return true;
+  }
+  return false;
+}
+
 (function () {
+  if (typeof document === 'undefined') return;
   var table = document.getElementById('school-sheets-table');
   var searchInput = document.getElementById('school-sheets-search');
   var countEl = document.getElementById('school-sheets-count');
@@ -14,11 +26,13 @@
   }
 
   function filterRows() {
-    var q = (searchInput.value || '').trim().toLowerCase();
+    var q = searchInput.value || '';
     var visible = 0;
     rows.forEach(function (row) {
-      var text = row.textContent.toLowerCase();
-      var show = !q || text.indexOf(q) !== -1;
+      var values = Array.prototype.map.call(row.querySelectorAll('td[data-value]'), function (td) {
+        return td.getAttribute('data-value') || '';
+      });
+      var show = rowMatchesQuery(row.textContent, values, q);
       row.style.display = show ? '' : 'none';
       if (show) visible++;
     });
