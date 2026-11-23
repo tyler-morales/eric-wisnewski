@@ -1,0 +1,64 @@
+{{- /*
+  ponytail: http(s) URLs only, trailing punctuation stripped. Sheet cells are plain text.
+  Upgrade path: markdown links in the cell if this misses a real URL.
+*/ -}}
+{{- $raw := strings.TrimSpace (. | string) -}}
+{{- if $raw -}}
+{{- $matches := findRE `https?://[^\s<>"']+` $raw -}}
+{{- $built := "" -}}
+{{- range $matches -}}
+  {{- $found := . -}}
+  {{- if strings.Contains $raw $found -}}
+    {{- $core := $found | strings.TrimRight ".,;:!?)]" -}}
+    {{- $trail := strings.TrimPrefix $core $found -}}
+    {{- $before := index (split $raw $found) 0 -}}
+    {{- $anchor := $core | htmlEscape -}}
+    {{- $parsed := urls.Parse $core -}}
+    {{- $host := lower $parsed.Hostname -}}
+    {{- /* hugo server sets baseURL to localhost; the sheet still uses the public host. */ -}}
+    {{- $bare := strings.TrimPrefix "www." (lower (urls.Parse site.BaseURL).Hostname) -}}
+    {{- $hosts := slice $bare (printf "www.%s" $bare) "ericwisnewski.com" "www.ericwisnewski.com" "ericwiz.com" "www.ericwiz.com" -}}
+    {{- $internal := and $host (in $hosts $host) -}}
+    {{- if and $internal (not (hasPrefix $parsed.Path "//")) -}}
+      {{- $path := $parsed.Path -}}
+      {{- if not $path -}}
+        {{- $path = "/" -}}
+      {{- else if not (hasPrefix $path "/") -}}
+        {{- $path = printf "/%s" $path -}}
+      {{- end -}}
+      {{- $postPath := strings.TrimSuffix "/" (lower $path) -}}
+      {{- $isPost := false -}}
+      {{- if findRE `^/posts/[^/]+$` $postPath -}}
+        {{- $isPost = true -}}
+      {{- end -}}
+      {{- $rel := $path -}}
+      {{- if $isPost -}}
+        {{- $rel = printf "%s/" $postPath -}}
+      {{- end -}}
+      {{- with $parsed.RawQuery -}}
+        {{- $rel = printf "%s?%s" $rel . -}}
+      {{- end -}}
+      {{- with $parsed.Fragment -}}
+        {{- $rel = printf "%s#%s" $rel . -}}
+      {{- end -}}
+      {{- $label := $rel -}}
+      {{- if $isPost -}}
+        {{- $label = "Read the review" -}}
+        {{- with site.GetPage $postPath -}}
+          {{- with .Title -}}
+            {{- $label = . -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if hasPrefix $rel "/" -}}
+        {{- $anchor = printf `<a href="%s">%s</a>` ($rel | htmlEscape) ($label | htmlEscape) -}}
+      {{- end -}}
+    {{- else if $host -}}
+      {{- $anchor = printf `<a href="%s" target="_blank" rel="noopener noreferrer">%s<span class="visually-hidden"> (opens in a new tab)</span></a>` ($core | htmlEscape) ($core | htmlEscape) -}}
+    {{- end -}}
+    {{- $built = printf "%s%s%s%s" $built ($before | htmlEscape) $anchor ($trail | htmlEscape) -}}
+    {{- $raw = strings.TrimPrefix (printf "%s%s" $before $found) $raw -}}
+  {{- end -}}
+{{- end -}}
+{{- printf "%s%s" $built ($raw | htmlEscape) | safeHTML -}}
+{{- end -}}

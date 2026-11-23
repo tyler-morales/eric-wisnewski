@@ -35,6 +35,22 @@ def main_nav_html(html: str) -> str:
     return match.group(1) if match else ""
 
 
+def _school_table(html: str) -> str:
+    match = re.search(
+        r'<table class="school-sheets-table" id="school-sheets-table">.*?</table>',
+        html,
+        re.DOTALL,
+    )
+    return match.group(0) if match else ""
+
+
+def _school_row(table: str, school: str) -> str:
+    for row in re.findall(r'<tr class="school-sheets-row">.*?</tr>', table, re.DOTALL):
+        if f'data-value="{school}"' in row:
+            return row
+    return ""
+
+
 def post_list_titles(html: str) -> list[str]:
     match = POST_LIST_RE.search(html)
     if not match:
@@ -107,6 +123,11 @@ class EricsD1MissionTemplateTests(unittest.TestCase):
         self.assertIn('partial "subscribe.html"', layout)
         self.assertIn("/js/school-sheets.js", layout)
         self.assertNotIn('" /js/school-sheets.js"', layout)
+        self.assertIn('<script type="module" src="{{ $sheetsJS }}', layout)
+        sheets_partial = (REPO_ROOT / "layouts" / "partials" / "school-sheets.html").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('partial "school-sheets-cell.html"', sheets_partial)
         self.assertIn('data-d1-nav', layout)
         self.assertIn('aria-label="Eric\'s D1 Mission sections"', layout)
         self.assertIn('href="#posts"', layout)
@@ -250,6 +271,35 @@ class EricsD1MissionBuildTests(unittest.TestCase):
         self.assertNotRegex(nav, r">Map</a>")
         self.assertFalse((self._output_dir / "map" / "index.html").is_file())
         self.assertFalse((self._output_dir / "school-sheets" / "index.html").is_file())
+
+    def test_sheet_post_urls_are_relative_links_success(self) -> None:
+        table = _school_table(self.hub)
+        self.assertTrue(table, "school table must be in the hub build")
+        expected = {
+            "DePaul": ("/posts/depaul/", "Wintrust Arena - DePaul University"),
+            "Loyola Chicago": ("/posts/loyola/", "Gentile Arena - Loyola University Chicago"),
+            "Boston College": ("/posts/boston-college/", "Boston College - Conte Fourm"),
+        }
+        for school, (path, title) in expected.items():
+            row = _school_row(table, school)
+            self.assertTrue(row, f"missing sheet row for {school}")
+            self.assertIn(f'<a href="{path}">{title}</a>', row)
+            self.assertIn(f'data-value="https://ericwisnewski.com{path}"', row)
+            self.assertNotIn('target="_blank"', row)
+            self.assertNotIn(f'<a href="https://ericwisnewski.com{path}"', row)
+        self.assertRegex(
+            self.hub,
+            r'<script type="module" src="/js/school-sheets\.js\?v=[0-9a-f]+"></script>',
+        )
+
+    def test_sheet_grades_stay_plain_text_failure(self) -> None:
+        table = _school_table(self.hub)
+        row = _school_row(table, "DePaul")
+        self.assertTrue(row, "missing DePaul row")
+        self.assertIn('data-value="A-"', row)
+        self.assertRegex(row, r'<td[^>]*data-value="A-"[^>]*>A-</td>')
+        self.assertNotIn("<script", table.lower())
+        self.assertNotIn("javascript:", table.lower())
 
     def test_redirects_copy_into_the_build_success(self) -> None:
         built = self._output_dir / "_redirects"

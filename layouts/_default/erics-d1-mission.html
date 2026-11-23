@@ -57,5 +57,5 @@
 {{ $sheetsJS := "/js/school-sheets.js" | relURL }}
 {{ $sheetsFile := "static/js/school-sheets.js" }}
 <script type="module" src="{{ $missionJS }}?v={{ md5 (readFile $missionFile) }}"></script>
-<script src="{{ $sheetsJS }}?v={{ md5 (readFile $sheetsFile) }}"></script>
+<script type="module" src="{{ $sheetsJS }}?v={{ md5 (readFile $sheetsFile) }}"></script>
 {{ end }}
